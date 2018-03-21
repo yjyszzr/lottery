@@ -14,10 +14,10 @@ public class DlJcZqMatchCellDTO implements Serializable{
 	public String leagueId;
 	
 	@ApiModelProperty(value = "联赛名称", required = true)
-	public String matchName;
+	public String leagueName;
 	
 	@ApiModelProperty(value = "场次id", required = true)
-	public String playId;
+	public String changCiId;
 	
 	@ApiModelProperty(value = "场次:周三001", required = true)
 	public String changCi;
