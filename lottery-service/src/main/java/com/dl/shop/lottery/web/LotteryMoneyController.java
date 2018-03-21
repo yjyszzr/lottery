@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.dto.TestDemoDTO;
 import com.dl.param.LotterySelectBallParam;
 import com.dl.param.LotterySelectBallParam.SelectData;
 import com.dl.shop.lottery.utils.LotteryUtil;
@@ -33,8 +32,7 @@ public class LotteryMoneyController {
 
 	@ApiOperation(value = "获取彩票注数", notes = "获取彩票注数")
     @PostMapping("/getCountAndMoney")
-    public BaseResult<TestDemoDTO> getCountAndMoney(@Valid @RequestBody LotterySelectBallParam param) {
-		TestDemoDTO dto = new TestDemoDTO();
+    public BaseResult<String> getCountAndMoney(@Valid @RequestBody LotterySelectBallParam param) {
 		List<SelectData> selectDatas = param.getSelectBallParam();
 		int combCounts = 0;
 		if(CollectionUtils.isNotEmpty(selectDatas)) {
@@ -46,8 +44,7 @@ public class LotteryMoneyController {
 			}
 			combCounts = LotteryUtil.getCount(selectBalls);
 		}
-		dto.setTestStr(String.valueOf(combCounts));
-    	return ResultGenerator.genSuccessResult("获取彩票注数成功", dto);
+    	return ResultGenerator.genSuccessResult("获取彩票注数成功", String.valueOf(combCounts));
     }
 	
 }
