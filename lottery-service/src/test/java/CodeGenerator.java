@@ -40,12 +40,12 @@ import static com.dl.shop.lottery.core.ProjectConstant.SERVICE_PACKAGE;
  */
 public class CodeGenerator {
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/lovnx_db";
-    private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "adminroot";
+    private static final String JDBC_URL = "jdbc:mysql://39.106.18.39:3306/cxm_test";
+    private static final String JDBC_USERNAME = "caixiaomi";
+    private static final String JDBC_PASSWORD = "caixiaomi";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-    private static final String PROJECT_PATH = System.getProperty("user.dir") + "/demo-service";//项目在硬盘上的基础路径
+    private static final String PROJECT_PATH = System.getProperty("user.dir") /*+ "/demo-service"*/;//项目在硬盘上的基础路径
     private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置
 
     private static final String JAVA_PATH = "/src/main/java"; //java文件路径	
@@ -59,7 +59,7 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCodeByCustomModelName("szy_admin", "Admin");
+        genCodeByCustomModelName("dl_match", "LotteryMatch");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
