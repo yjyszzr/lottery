@@ -1,4 +1,4 @@
-﻿package com.dl.shop.lottery.configurer;
+package com.dl.shop.lottery.configurer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class Swagger2 {
-    @Bean
+
+	@Bean
     public Docket createRestApi() {
         List<Parameter> pars = new ArrayList<>();
         ParameterBuilder tokenPar = new ParameterBuilder();
@@ -31,13 +32,6 @@ public class Swagger2 {
                 .required(false);
         pars.add(tokenPar.build());
 
-        /*tokenPar = new ParameterBuilder();
-        tokenPar.name(CommonConstants.HTTP_HEADER_ADDRESS)
-                .description("地址")
-                .modelRef(new ModelRef("string"))
-                .parameterType("header")
-                .required(false);
-        pars.add(tokenPar.build());*/
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
@@ -48,8 +42,8 @@ public class Swagger2 {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("彩票中心")
-                .description("lottery")
+                .title("lovnx")
+                .description("lovnx")
                 .termsOfServiceUrl("")
                 .version("1.0")
                 .build();
