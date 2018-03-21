@@ -7,17 +7,16 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.NetWorkUtil;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchListParam;
@@ -87,11 +86,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<String, JSONObject> matchs = (Map<String, JSONObject>) map.get("matchs");
 		@SuppressWarnings("unchecked")
 		List<Map<String, JSONObject>> matchPlays = (List<Map<String, JSONObject>>) map.get("matchPlays");
-		JSONArray hadJa = getBackMatchData(playType);
-		if(null != hadJa) {
+		Map<String, Object> backDataMap = getBackMatchData(playType);
+		if(null != backDataMap && backDataMap.size() > 0) {
 			Map<String, JSONObject> matchPlay = new HashMap<String, JSONObject>();
-	    	for(int i=0;i<hadJa.size();i++) {
-	    		JSONObject jo = (JSONObject) hadJa.get(i);
+	    	for(Map.Entry<String, Object> entry : backDataMap.entrySet()) {
+	    		JSONObject jo = (JSONObject) entry.getValue();
 	    		Set<String> keys = matchs.keySet();
 	    		if(!keys.contains(jo.getString("id"))) {
 	    			matchs.put(jo.getString("id"), jo);
@@ -109,15 +108,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * 获取返回的赛事数据
 	 * @return
 	 */
-	private JSONArray getBackMatchData(String playType) {
-		String url = "http://i.sporttery.cn/odds_calculator/get_odds?i_format=json&poolcode[]={playType}";
-		String json = restTemplate.getForObject(url, String.class, playType);
+	private Map<String, Object> getBackMatchData(String playType) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("poolcode[]", playType);
+		String url = "http://i.sporttery.cn/odds_calculator/get_odds?i_format=json";
+		String json = NetWorkUtil.doGet(url, map, "UTF-8");
 	    if (json.contains("error")) {
 	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), playType + "赛事查询失败");
 	    }
 	    JSONObject jsonObject = JSONObject.parseObject(json);
-	    JSONArray jsonArray = jsonObject.getJSONArray("data");
-	    return jsonArray;
+	    JSONObject jo = jsonObject.getJSONObject("data");
+	    map = jo;
+	    return map;
 	}
 	
 	/**
@@ -127,7 +129,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	private List<LotteryMatch> getLotteryMatchData(Map<String, JSONObject> matchs){
 		List<LotteryMatch> lotteryMatchs = new LinkedList<LotteryMatch>();
-		if(CollectionUtils.isNotEmpty(lotteryMatchs)) {
+		if(null != matchs && matchs.size() > 0) {
 			for (Map.Entry<String, JSONObject> entry : matchs.entrySet()) {
 				LotteryMatch lotteryMatch = new LotteryMatch();
 				JSONObject jo = entry.getValue();
