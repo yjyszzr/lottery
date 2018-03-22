@@ -105,6 +105,13 @@ public class LotteryMatch {
      */
     @Column(name = "create_time")
     private Integer createTime;
+    
+    
+    /**
+     * 是否显示 0-不显示 1-显示
+     */
+    @Column(name = "is_show")
+    private Integer isShow;
 
     /**
      * 是否删除 0-未删除 1-删除
@@ -417,8 +424,16 @@ public class LotteryMatch {
     public void setCreateTime(Integer createTime) {
         this.createTime = createTime;
     }
+    
+    public Integer getIsShow() {
+		return isShow;
+	}
 
-    /**
+	public void setIsShow(Integer isShow) {
+		this.isShow = isShow;
+	}
+
+	/**
      * 获取是否删除 0-未删除 1-删除
      *
      * @return is_del - 是否删除 0-未删除 1-删除

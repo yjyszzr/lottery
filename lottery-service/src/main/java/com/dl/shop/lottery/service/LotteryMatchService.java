@@ -7,9 +7,9 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
@@ -21,8 +21,10 @@ import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchListParam;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
+import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
+import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,10 +35,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
 	@Resource
     private LotteryMatchMapper lotteryMatchMapper;
-
-    @Resource
-    private RestTemplate restTemplate;
 	
+	@Resource
+	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+
     /**
      * 获取赛事列表
      * @param param
@@ -48,7 +50,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	/**
-	 * 抓取赛事列表保存
+	 * 抓取赛事列表并保存
 	 */
 	@Transactional
 	public void saveMatchList() {
@@ -57,7 +59,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//赛事列表
 		Map<String, JSONObject> matchs = new HashMap<String, JSONObject>();
 		//各赛事的玩法列表
-		List<Map<String, JSONObject>> matchPlays = new LinkedList<Map<String, JSONObject>>();
+		List<Map<String, Object>> matchPlays = new LinkedList<Map<String, Object>>();
 		map.put("matchs", matchs);
 		map.put("matchPlays", matchPlays);
 		//抓取胜负彩数据
@@ -71,8 +73,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		List<LotteryMatch> lotteryMatchs = getLotteryMatchData(matchs);
 		log.info(lotteryMatchs.toString());
-		List<LotteryMatchPlay> lotteryMatchPlays = getLotteryMatchPlayData(matchPlays);
-		log.info(lotteryMatchPlays.toString());
+		
+		//保存赛事数据
+		saveMatchData(lotteryMatchs, matchPlays);
 	}
 	
 	/**
@@ -85,10 +88,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		@SuppressWarnings("unchecked")
 		Map<String, JSONObject> matchs = (Map<String, JSONObject>) map.get("matchs");
 		@SuppressWarnings("unchecked")
-		List<Map<String, JSONObject>> matchPlays = (List<Map<String, JSONObject>>) map.get("matchPlays");
+		List<Map<String, Object>> matchPlays = (List<Map<String, Object>>) map.get("matchPlays");
 		Map<String, Object> backDataMap = getBackMatchData(playType);
 		if(null != backDataMap && backDataMap.size() > 0) {
-			Map<String, JSONObject> matchPlay = new HashMap<String, JSONObject>();
+			Map<String, Object> matchPlay = new HashMap<String, Object>();
 	    	for(Map.Entry<String, Object> entry : backDataMap.entrySet()) {
 	    		JSONObject jo = (JSONObject) entry.getValue();
 	    		Set<String> keys = matchs.keySet();
@@ -96,8 +99,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    			matchs.put(jo.getString("id"), jo);
 	    		}
 	    		matchPlay.put(jo.getString("id"), jo);
-	    		matchPlays.add(matchPlay);
+	    		matchPlay.put("playType", playType);
 	    	}
+	    	matchPlays.add(matchPlay);
 	    }
 		map.put("matchs", matchs);
 		map.put("matchPlays", matchPlays);
@@ -149,6 +153,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatch.setMatchTime(jo.getString("date") + " " + jo.getString("time"));
 				lotteryMatch.setShowTime(jo.getString("b_date"));
 				lotteryMatch.setCreateTime(DateUtil.getCurrentTimeLong());
+				lotteryMatch.setIsShow(1);
 				lotteryMatch.setIsDel(0);
 				lotteryMatchs.add(lotteryMatch);
 			}   
@@ -161,9 +166,47 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param matchPlays
 	 * @return
 	 */
-	private List<LotteryMatchPlay> getLotteryMatchPlayData(List<Map<String, JSONObject>> matchPlays){
-		List<LotteryMatchPlay> lotteryMatchPlays = new LinkedList<LotteryMatchPlay>();
-		
-		return lotteryMatchPlays;
+	private LotteryMatchPlay getLotteryMatchPlayData(JSONObject matchPlay, Integer matchId, String playType){
+		if(null == matchPlay) return null;
+		LotteryMatchPlay lotteryMatchPlay = new LotteryMatchPlay();
+		lotteryMatchPlay.setMatchId(matchId);
+		lotteryMatchPlay.setPlayContent(matchPlay.getString(playType));
+		lotteryMatchPlay.setPlayType(PlayTypeUtil.getPlayTypeCode(playType));
+		lotteryMatchPlay.setStatus(0);
+		lotteryMatchPlay.setIsHot(0);
+		lotteryMatchPlay.setIsDel(0);
+		lotteryMatchPlay.setCreateTime(DateUtil.getCurrentTimeLong());
+		lotteryMatchPlay.setUpdateTime(DateUtil.getCurrentTimeLong());
+		return lotteryMatchPlay;
 	}
+	
+	/**
+	 * 保存赛事数据
+	 * @param lotteryMatchs
+	 * @param matchPlays
+	 */
+	private void saveMatchData(List<LotteryMatch> lotteryMatchs, List<Map<String, Object>> matchPlays) {
+		if(CollectionUtils.isNotEmpty(lotteryMatchs)) {
+			for(LotteryMatch lotteryMatch : lotteryMatchs) {
+				List<LotteryMatchPlay> lotteryMatchPlays = new LinkedList<LotteryMatchPlay>();
+				lotteryMatchMapper.insertMatch(lotteryMatch);
+				if(CollectionUtils.isNotEmpty(matchPlays)) {
+					for(Map<String, Object> map : matchPlays) {
+						for(Map.Entry<String, Object> entry : map.entrySet()) {
+							if(lotteryMatch.getChangciId().toString().equals(entry.getKey())) {
+								LotteryMatchPlay lotteryMatchPlay = getLotteryMatchPlayData((JSONObject)map.get(lotteryMatch.getChangciId().toString()), lotteryMatch.getMatchId(), map.get("playType").toString());
+								if(null != lotteryMatchPlay) {
+									lotteryMatchPlays.add(lotteryMatchPlay);
+								}
+							}
+						}
+					}
+					if(CollectionUtils.isNotEmpty(lotteryMatchPlays)) {
+						lotteryMatchPlayMapper.insertList(lotteryMatchPlays);
+					}
+				}
+			}
+		}
+	}
+	
 }

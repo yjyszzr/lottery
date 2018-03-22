@@ -22,6 +22,17 @@
     <result column="match_time" jdbcType="VARCHAR" property="matchTime" />
     <result column="show_time" jdbcType="VARCHAR" property="showTime" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
   </resultMap>
+  
+  <insert id="insertMatch" useGeneratedKeys="true" keyProperty="matchId">
+    insert into dl_match(league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
+             home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
+             is_show,is_del)
+    values(#{leagueId},#{leagueName},#{leagueAddr},#{changciId},#{changci},#{homeTeamId},#{homeTeamName},#{homeTeamAbbr},#{homeTeamRank},
+             #{visitingTeamId},#{visitingTeamName},#{visitingTeamAbbr},#{visitingTeamRank},#{matchTime},#{showTime},#{createTime},
+             #{isShow},#{isDel})
+  </insert>
+  
 </mapper>
