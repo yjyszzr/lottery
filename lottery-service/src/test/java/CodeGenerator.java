@@ -1,5 +1,21 @@
-﻿import com.google.common.base.CaseFormat;
-import freemarker.template.TemplateExceptionHandler;
+import static com.dl.shop.lottery.core.ProjectConstant.BASE_PACKAGE;
+import static com.dl.shop.lottery.core.ProjectConstant.CONTROLLER_PACKAGE;
+import static com.dl.shop.lottery.core.ProjectConstant.MAPPER_BASE;
+import static com.dl.shop.lottery.core.ProjectConstant.MAPPER_PACKAGE;
+import static com.dl.shop.lottery.core.ProjectConstant.MODEL_PACKAGE;
+import static com.dl.shop.lottery.core.ProjectConstant.SERVICE_IMPL_PACKAGE;
+import static com.dl.shop.lottery.core.ProjectConstant.SERVICE_PACKAGE;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.Configuration;
@@ -15,37 +31,23 @@ import org.mybatis.generator.config.SqlMapGeneratorConfiguration;
 import org.mybatis.generator.config.TableConfiguration;
 import org.mybatis.generator.internal.DefaultShellCallback;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.CaseFormat;
 
-import static com.dl.shop.lottery.core.ProjectConstant.BASE_PACKAGE;
-import static com.dl.shop.lottery.core.ProjectConstant.CONTROLLER_PACKAGE;
-import static com.dl.shop.lottery.core.ProjectConstant.MAPPER_BASE;
-import static com.dl.shop.lottery.core.ProjectConstant.MAPPER_PACKAGE;
-import static com.dl.shop.lottery.core.ProjectConstant.MODEL_PACKAGE;
-import static com.dl.shop.lottery.core.ProjectConstant.SERVICE_IMPL_PACKAGE;
-import static com.dl.shop.lottery.core.ProjectConstant.SERVICE_PACKAGE;
-
+import freemarker.template.TemplateExceptionHandler;
 
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  * https://mapperhelper.github.io
  */
 public class CodeGenerator {
-    //JDBC配置，请修改为你项目的实际配置
+
+	 //JDBC配置，请修改为你项目的实际配置
     private static final String JDBC_URL = "jdbc:mysql://39.106.18.39:3306/cxm_test";
     private static final String JDBC_USERNAME = "caixiaomi";
     private static final String JDBC_PASSWORD = "caixiaomi";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
-    private static final String PROJECT_PATH = System.getProperty("user.dir") /*+ "/demo-service"*/;//项目在硬盘上的基础路径
+    private static final String PROJECT_PATH = System.getProperty("user.dir") ;//项目在硬盘上的基础路径
     private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置
 
     private static final String JAVA_PATH = "/src/main/java"; //java文件路径	
@@ -59,7 +61,7 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCodeByCustomModelName("dl_match", "LotteryMatch");
+        genCodeByCustomModelName("dl_payment", "PayMent");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -244,5 +246,4 @@ public class CodeGenerator {
     private static String packageConvertPath(String packageName) {
         return String.format("/%s/", packageName.contains(".") ? packageName.replaceAll("\\.", "/") : packageName);
     }
-
 }
