@@ -20,6 +20,22 @@ public final class ProjectConstant {
     public static final String MAPPER_INTERFACE_REFERENCE = BASE_PACKAGE + ".mapper.Mapper";//Mapper插件基础接口的完全限定名
     public static final String MAPPER_BASE = "com.dl.base.mapper.Mapper";//Mapper插件基础接口的完全限定名
     
+    //状态 0-售卖中 1-售卖结束
+    public final static Integer MATCH_PLAY_STATUS_SELLING = 0; //售卖中
+    public final static Integer MATCH_PLAY_STATUS_SELLED = 1;  //售卖结束
+    
+    //是否热门 0-非热门 1-热门
+    public final static Integer MATCH_PLAY_NOT_HOT = 0; //非热门
+    public final static Integer MATCH_PLAY_IS_HOT = 1;  //热门
+    
+    //是否删除 0-未删除 1-删除
+    public final static Integer IS_NOT_DEL = 0;  //未删除
+    public final static Integer IS_DEL = 1;      //删除
+    
+    //是否显示 0-不显示 1-显示
+    public final static Integer IS_NOT_SHOW = 0;  //不显示
+    public final static Integer IS_SHOW= 1;       //显示
+    
     public final static String CONTENTSPLITEFLAG_ShuXian = "|";
     public final static String CONTENTSPLITEFLAG_DouHao = ",";
     public final static String RANDOMSPLITEFLAG_FenHao = ";";

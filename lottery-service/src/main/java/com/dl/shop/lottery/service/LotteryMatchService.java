@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import com.dl.base.util.NetWorkUtil;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchListParam;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -38,6 +40,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+	
+	@Value("${match.url}")
+	private String matchUrl;
 
     /**
      * 获取赛事列表
@@ -115,8 +120,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private Map<String, Object> getBackMatchData(String playType) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("poolcode[]", playType);
-		String url = "http://i.sporttery.cn/odds_calculator/get_odds?i_format=json";
-		String json = NetWorkUtil.doGet(url, map, "UTF-8");
+		String json = NetWorkUtil.doGet(matchUrl, map, "UTF-8");
 	    if (json.contains("error")) {
 	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), playType + "赛事查询失败");
 	    }
@@ -153,8 +157,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatch.setMatchTime(jo.getString("date") + " " + jo.getString("time"));
 				lotteryMatch.setShowTime(jo.getString("b_date"));
 				lotteryMatch.setCreateTime(DateUtil.getCurrentTimeLong());
-				lotteryMatch.setIsShow(1);
-				lotteryMatch.setIsDel(0);
+				lotteryMatch.setIsShow(ProjectConstant.IS_SHOW);
+				lotteryMatch.setIsDel(ProjectConstant.IS_NOT_DEL);
 				lotteryMatchs.add(lotteryMatch);
 			}   
 		}
@@ -172,9 +176,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		lotteryMatchPlay.setMatchId(matchId);
 		lotteryMatchPlay.setPlayContent(matchPlay.getString(playType));
 		lotteryMatchPlay.setPlayType(PlayTypeUtil.getPlayTypeCode(playType));
-		lotteryMatchPlay.setStatus(0);
-		lotteryMatchPlay.setIsHot(0);
-		lotteryMatchPlay.setIsDel(0);
+		lotteryMatchPlay.setStatus(ProjectConstant.MATCH_PLAY_STATUS_SELLING);
+		lotteryMatchPlay.setIsHot(ProjectConstant.MATCH_PLAY_NOT_HOT);
+		lotteryMatchPlay.setIsDel(ProjectConstant.IS_NOT_DEL);
 		lotteryMatchPlay.setCreateTime(DateUtil.getCurrentTimeLong());
 		lotteryMatchPlay.setUpdateTime(DateUtil.getCurrentTimeLong());
 		return lotteryMatchPlay;
@@ -198,6 +202,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 								if(null != lotteryMatchPlay) {
 									lotteryMatchPlays.add(lotteryMatchPlay);
 								}
+								break;
 							}
 						}
 					}
