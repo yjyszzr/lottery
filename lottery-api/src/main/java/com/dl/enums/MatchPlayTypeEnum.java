@@ -4,7 +4,9 @@ public enum MatchPlayTypeEnum {
 	PLAY_TYPE_HAD(1,"had"), // 胜平负
 	PLAY_TYPE_HAFU(2,"hafu"), //半全场
 	PLAY_TYPE_HHAD(3,"hhad"), //让球胜平负
-	PLAY_TYPE_TTG(4,"ttg"); //总进球
+	PLAY_TYPE_CRS(4,"crs"), //比分
+	PLAY_TYPE_TSO(5,"tso"), //2选1
+	PLAY_TYPE_TTG(6,"ttg"); //总进球
 	
 	private Integer code;
     private String msg;

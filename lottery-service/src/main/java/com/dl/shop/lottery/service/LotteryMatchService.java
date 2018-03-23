@@ -67,14 +67,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<Map<String, Object>> matchPlays = new LinkedList<Map<String, Object>>();
 		map.put("matchs", matchs);
 		map.put("matchPlays", matchPlays);
-		//抓取胜负彩数据
+		//抓取胜平负数据
 		map = getCollectMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_HAD.getMsg());
-		//抓取让球胜负彩数据
+		//抓取让球胜平负数据
 		map = getCollectMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_HHAD.getMsg());
 		//抓取半全场数据
 		map = getCollectMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_HAFU.getMsg());
 		//抓取总进球数据
 		map = getCollectMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_TTG.getMsg());
+		//抓取比分数据
+		map = getCollectMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_CRS.getMsg());
+		//2选1不是标准玩法，需要数据转换获取
+		map = getTwoSelOneMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_TSO.getMsg());
 		
 		List<LotteryMatch> lotteryMatchs = getLotteryMatchData(matchs);
 		log.info(lotteryMatchs.toString());
@@ -108,6 +112,75 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    	}
 	    	matchPlays.add(matchPlay);
 	    }
+		map.put("matchs", matchs);
+		map.put("matchPlays", matchPlays);
+		return map;
+	}
+	
+	/**
+	 * 转换2选1数据
+	 * @param map
+	 * @param playType
+	 * @return
+	 */
+	private Map<String, Object> getTwoSelOneMatchData(Map<String, Object> map, String playType) {
+		@SuppressWarnings("unchecked")
+		Map<String, JSONObject> matchs = (Map<String, JSONObject>) map.get("matchs");
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> matchPlays = (List<Map<String, Object>>) map.get("matchPlays");
+		Map<String, Object> hadMatchPlay = new HashMap<String, Object>();
+		Map<String, Object> hhadMatchPlay = new HashMap<String, Object>();
+		Map<String, Object> tsoMatchPlay = new HashMap<String, Object>();
+		for(Map<String, Object> matchPlay : matchPlays) {
+			if(MatchPlayTypeEnum.PLAY_TYPE_HAD.getMsg().equals(matchPlay.get("playType").toString())) {
+				hadMatchPlay = matchPlay;
+			}
+			if(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getMsg().equals(matchPlay.get("playType").toString())) {
+				for(Map.Entry<String, Object> entry : matchPlay.entrySet()) {
+					if(!"playType".equals(entry.getKey())) {
+						JSONObject jo = (JSONObject) entry.getValue();
+						JSONObject hhadJo = jo.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getMsg());
+						String fixedodds = hhadJo.getString("fixedodds");
+						if(fixedodds.equals("+1") || fixedodds.equals("-1")) {
+							hhadMatchPlay.put(entry.getKey(), entry.getValue());
+						}
+					}
+				}
+			}
+		}
+		if(hhadMatchPlay.size() > 0) {
+			for(Map.Entry<String, Object> entry : hhadMatchPlay.entrySet()) {
+				JSONObject jo = (JSONObject) entry.getValue();
+				JSONObject hhadJo = jo.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getMsg());
+				String fixedodds = hhadJo.getString("fixedodds");
+				JSONObject tsoJo = new JSONObject();
+				boolean flag = false;
+				JSONObject hadJo = null;
+				for(Map.Entry<String, Object> hadEntry : hadMatchPlay.entrySet()) {
+					if(!"playType".equals(entry.getKey())) {
+						if(entry.getKey().equals(hadEntry.getKey())) {
+							JSONObject jsonObject = (JSONObject) hadEntry.getValue();
+							hadJo = jsonObject.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HAD.getMsg());
+						}
+					}
+				}
+				if(fixedodds.equals("+1")) {
+					tsoJo.put("zbb", "主不败 " + hhadJo.getString("h"));
+					tsoJo.put("zb", "主败 " + hadJo.getString("a"));
+					flag = true;
+				} else if(fixedodds.equals("-1")) {
+					tsoJo.put("zbs", "主不胜 " + hhadJo.getString("a"));
+					tsoJo.put("zs", "主胜 " + hadJo.getString("h"));
+					flag = true;
+				}
+				if(flag) {
+					jo.put("tso", tsoJo);
+					tsoMatchPlay.put(entry.getKey(), jo);
+					tsoMatchPlay.put("playType", playType);
+				}
+			}
+			matchPlays.add(tsoMatchPlay);
+		}
 		map.put("matchs", matchs);
 		map.put("matchPlays", matchPlays);
 		return map;
@@ -197,7 +270,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(CollectionUtils.isNotEmpty(matchPlays)) {
 					for(Map<String, Object> map : matchPlays) {
 						for(Map.Entry<String, Object> entry : map.entrySet()) {
-							if(lotteryMatch.getChangciId().toString().equals(entry.getKey())) {
+							if(!"playType".equals(entry.getKey()) && lotteryMatch.getChangciId().toString().equals(entry.getKey())) {
 								LotteryMatchPlay lotteryMatchPlay = getLotteryMatchPlayData((JSONObject)map.get(lotteryMatch.getChangciId().toString()), lotteryMatch.getMatchId(), map.get("playType").toString());
 								if(null != lotteryMatchPlay) {
 									lotteryMatchPlays.add(lotteryMatchPlay);
