@@ -10,12 +10,16 @@ import javax.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import com.dl.base.util.DateUtil;
 import com.dl.dto.DlHallDTO;
+import com.dl.dto.DlHallDTO.DlActivityDTO;
 import com.dl.dto.DlHallDTO.DlLotteryClassifyDTO;
 import com.dl.dto.DlHallDTO.DlWinningLogDTO;
 import com.dl.shop.lottery.core.ProjectConstant;
+import com.dl.shop.lottery.dao.LotteryActivityMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
+import com.dl.shop.lottery.model.LotteryActivity;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
@@ -25,22 +29,49 @@ import tk.mybatis.mapper.entity.Condition;
 public class LotteryHallService {
 	
 	@Resource
+	private LotteryActivityMapper lotteryActivityMapper;
+	
+	@Resource
 	private LotteryWinningLogTempMapper lotteryWinningLogTempMapper;
 	
 	@Resource
 	private LotteryClassifyMapper lotteryClassifyMapper;
-
+	
 	/**
 	 * 获取彩票大厅数据
 	 * @return
 	 */
 	public DlHallDTO getHallData() {
 		DlHallDTO dlHallDTO = new DlHallDTO();
+		//获取活动数据
+		dlHallDTO.setActivity(getDlActivityDTO());
 		//获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		//获取彩票分类列表
 		dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
         return dlHallDTO;		
+	}
+	
+	/**
+	 * 获取活动数据
+	 * @return
+	 */
+	private DlActivityDTO getDlActivityDTO() {
+		DlActivityDTO dlActivityDTO = new DlActivityDTO();
+		Condition condition = new Condition(LotteryActivity.class);
+        condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1)
+                 .andGreaterThan("endTime", DateUtil.getCurrentTimeLong())
+                 .andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+		List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+		if(CollectionUtils.isNotEmpty(lotteryActivitys)) {
+			LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+			if(null != lotteryActivity) {
+				dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+				dlActivityDTO.setActImg(lotteryActivity.getActImg());
+				dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+			}
+		}
+		return dlActivityDTO;
 	}
 	
 	/**
@@ -79,6 +110,7 @@ public class LotteryHallService {
         if(CollectionUtils.isNotEmpty(lotteryClassifys)) {
         	for(LotteryClassify lotteryClassify : lotteryClassifys) {
         		DlLotteryClassifyDTO dlLotteryClassifyDTO = new DlLotteryClassifyDTO();
+        		dlLotteryClassifyDTO.setLotteryId(lotteryClassify.getLotteryClassifyId());
         		dlLotteryClassifyDTO.setLotteryName(lotteryClassify.getLotteryName());
         		dlLotteryClassifyDTO.setLotteryImg(lotteryClassify.getLotteryImg());
         		dlLotteryClassifyDTO.setStatus(lotteryClassify.getStatus());
