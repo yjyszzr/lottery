@@ -37,6 +37,8 @@ public class ProjectConstant {
 	    public final static Integer IS_NOT_SHOW = 0;  //不显示
 	    public final static Integer IS_SHOW= 1;       //显示
 	    
+	    public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖{1}元";
+	    
 	    public final static String CONTENTSPLITEFLAG_ShuXian = "|";
 	    public final static String CONTENTSPLITEFLAG_DouHao = ",";
 	    public final static String RANDOMSPLITEFLAG_FenHao = ";";
