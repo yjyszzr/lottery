@@ -61,7 +61,7 @@ public class CodeGenerator {
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCodeByCustomModelName("dl_winning_log_temp", "LotteryWinningLogTemp");
+        genCodeByCustomModelName("dl_lottery_classify", "LotteryClassify");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 

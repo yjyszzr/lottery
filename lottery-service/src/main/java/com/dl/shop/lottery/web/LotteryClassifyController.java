@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 * Created by CodeGenerator on 2018/03/23.
 */
 @RestController
-@RequestMapping("/lottery/winning/log/temp")
-public class LotteryWinningLogTempController {
+@RequestMapping("/lottery/classify")
+public class LotteryClassifyController {
 	
 }
