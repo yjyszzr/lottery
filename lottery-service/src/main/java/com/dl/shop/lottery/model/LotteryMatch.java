@@ -1,6 +1,10 @@
 package com.dl.shop.lottery.model;
 
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Table(name = "dl_match")
 public class LotteryMatch {
@@ -92,13 +96,13 @@ public class LotteryMatch {
      * 比赛时间
      */
     @Column(name = "match_time")
-    private String matchTime;
+    private Date matchTime;
 
     /**
      * 显示时间
      */
     @Column(name = "show_time")
-    private String showTime;
+    private Date showTime;
 
     /**
      * 创建时间
@@ -376,7 +380,7 @@ public class LotteryMatch {
      *
      * @return match_time - 比赛时间
      */
-    public String getMatchTime() {
+    public Date getMatchTime() {
         return matchTime;
     }
 
@@ -385,7 +389,7 @@ public class LotteryMatch {
      *
      * @param matchTime 比赛时间
      */
-    public void setMatchTime(String matchTime) {
+    public void setMatchTime(Date matchTime) {
         this.matchTime = matchTime;
     }
 
@@ -394,7 +398,7 @@ public class LotteryMatch {
      *
      * @return show_time - 显示时间
      */
-    public String getShowTime() {
+    public Date getShowTime() {
         return showTime;
     }
 
@@ -403,7 +407,7 @@ public class LotteryMatch {
      *
      * @param showTime 显示时间
      */
-    public void setShowTime(String showTime) {
+    public void setShowTime(Date showTime) {
         this.showTime = showTime;
     }
 

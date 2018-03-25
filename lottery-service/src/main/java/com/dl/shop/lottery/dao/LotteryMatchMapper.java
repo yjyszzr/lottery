@@ -1,6 +1,11 @@
 package com.dl.shop.lottery.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.dl.base.mapper.Mapper;
+import com.dl.dto.DlJcZqMatchCellDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
@@ -10,4 +15,11 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @param lotteryMatch
 	 */
 	public void insertMatch(LotteryMatch lotteryMatch);
+
+	/**
+	 * 
+	 * @param playType获取赛事列表
+	 * @return
+	 */
+	public List<DlJcZqMatchCellDTO> getMatchList(@Param("playType")String playType);
 }

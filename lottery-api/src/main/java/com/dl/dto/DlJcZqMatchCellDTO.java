@@ -1,6 +1,7 @@
 package com.dl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,80 +17,53 @@ public class DlJcZqMatchCellDTO implements Serializable{
 	@ApiModelProperty(value = "联赛名称", required = true)
 	public String leagueName;
 	
+	@ApiModelProperty(value = "联赛名称", required = true)
+	public String leagueAddr;
+	
 	@ApiModelProperty(value = "场次id", required = true)
-	public String changCiId;
+	public String changciId;
 	
 	@ApiModelProperty(value = "场次:周三001", required = true)
-	public String changCi;
+	public String changci;
 	
 	@ApiModelProperty(value = "主队id", required = true)
-	public Integer hId;
+	public Integer homeTeamId;
 	
 	@ApiModelProperty(value = "主队名称", required = true)
-	public String hTeam;
+	public String homeTeamName;
+	
+	@ApiModelProperty(value = "主队名称", required = true)
+	public String homeTeamAbbr;
+	
+	@ApiModelProperty(value = "主队名称", required = true)
+	public String homeTeamRank;
 	
 	@ApiModelProperty(value = "客队id", required = true)
-	public String vId;
+	public String visitingTeamId;
 	
 	@ApiModelProperty(value = "客队名称", required = true)
-	public String vTeam;
+	public String visitingTeamName;
+	
+	@ApiModelProperty(value = "客队名称", required = true)
+	public String visitingTeamAbbr;
+	
+	@ApiModelProperty(value = "客队名称", required = true)
+	public String visitingTeamRank;
 	
 	@ApiModelProperty(value = "比赛日期", required = true)
 	public String matchDay;
 	
 	@ApiModelProperty(value = "比赛时间", required = true)
-	public String matchTime;
+	public Date matchTime;
 	
-	@ApiModelProperty(value = "显示时间", required = true)
-	public String showTime;
+	@ApiModelProperty(value = "玩法内容", required = true)
+	public String playContent;
 	
-	/** 胜平负 */
-	@ApiModelProperty(value = "胜平负-胜赔率", required = true)
-	public String spfBetWinBl;
+	@ApiModelProperty(value = "玩法类型", required = true)
+	private Integer playType;
 	
-	@ApiModelProperty(value = "胜平负-平赔率", required = true)
-	public String spfBetPingBl;
+	@ApiModelProperty(value = "是否热度", required = true)
+	private Integer isHot;
 	
-	@ApiModelProperty(value = "胜平负-负赔率", required = true)
-	public String spfBetFuBl;
 	
-	/** 让球胜平负 */
-	@ApiModelProperty(value = "让球胜平负-胜赔率", required = true)
-	public String rqspfBetWinBl;
-	
-	@ApiModelProperty(value = "让球胜平负-平赔率", required = true)
-	public String rqspfBetPingBl;
-	
-	@ApiModelProperty(value = "让球胜平负-负赔率", required = true)
-	public String rqspfBetFuBl;
-	
-	/** 半全场胜平负 */
-	@ApiModelProperty(value = "半全场胜平负-胜赔率", required = true)
-	public String bqspfBetWinBl;
-	
-	@ApiModelProperty(value = "半全场胜平负-平赔率", required = true)
-	public String bqspfBetPingBl;
-	
-	@ApiModelProperty(value = "半全场胜平负-负赔率", required = true)
-	public String bqspfBetFuBl;
-	
-	/** 比分 */
-	@ApiModelProperty(value = "比分-胜赔率", required = true)
-	public String bfBetWinBl;
-	
-	@ApiModelProperty(value = "比分-平赔率", required = true)
-	public String bfBetPingBl;
-	
-	@ApiModelProperty(value = "比分-负赔率", required = true)
-	public String bfBetFuBl;
-	
-	/** 总进球 */
-	@ApiModelProperty(value = "总进球-胜赔率", required = true)
-	public String zjqBetWinBl;
-	
-	@ApiModelProperty(value = "总进球-平赔率", required = true)
-	public String zjqBetPingBl;
-	
-	@ApiModelProperty(value = "总进球-负赔率", required = true)
-	public String zjqBetFuBl;
 }

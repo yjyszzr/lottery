@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dl.shop.lottery.dao.LotteryMatchMapper">
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryMatch">
-    <!--
-      WARNING - @mbg.generated
-    -->
     <id column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
@@ -19,13 +16,40 @@
     <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
     <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
     <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
-    <result column="match_time" jdbcType="VARCHAR" property="matchTime" />
-    <result column="show_time" jdbcType="VARCHAR" property="showTime" />
+    <result column="match_time" jdbcType="DATE" property="matchTime" />
+    <result column="show_time" jdbcType="DATE" property="showTime" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
   </resultMap>
+  <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchCellDTO">
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="changci" jdbcType="VARCHAR" property="changci" />
+    <result column="home_team_id" jdbcType="INTEGER" property="homeTeamId" />
+    <result column="home_team_name" jdbcType="VARCHAR" property="homeTeamName" />
+    <result column="home_team_abbr" jdbcType="VARCHAR" property="homeTeamAbbr" />
+    <result column="home_team_rank" jdbcType="VARCHAR" property="homeTeamRank" />
+    <result column="visiting_team_id" jdbcType="INTEGER" property="visitingTeamId" />
+    <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
+    <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
+    <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
+    <result column="match_time" jdbcType="DATE" property="matchTime" />
+    <result column="play_content" jdbcType="VARCHAR" property="playContent" />
+    <result column="play_type" jdbcType="INTEGER" property="playType" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+  </resultMap>
   
+  <sql id="matchFields">
+  	m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci,
+  	m.home_team_id, m.home_team_name, m.home_team_abbr, m.home_team_rank, m.visiting_team_id, 
+  	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, m.match_time
+  </sql>
+  <sql id="tableName">
+  	dl_match m
+  </sql>
   <insert id="insertMatch" useGeneratedKeys="true" keyProperty="matchId">
     insert into dl_match(league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
              home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
@@ -35,4 +59,16 @@
              #{isShow},#{isDel})
   </insert>
   
+  <select id="getMatchList" resultMap="matchDtoResultMap">
+  	select 
+  	  mp.play_content,mp.play_type,mp.is_hot,
+  	 <include refid="matchFields"/>
+  	from 
+  		dl_match m, dl_match_play mp
+  	where DATEDIFF(show_time,NOW())=0 and m.is_del = 0 and m.is_show=1 
+  	 and m.match_id=mp.match_id 
+  	 and mp.play_type=#{playType} 
+  	 and mp.is_del = 0 
+  	 and mp.status=0
+  </select>
 </mapper>

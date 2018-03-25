@@ -1,4 +1,12 @@
 package com.dl.shop.lottery.service;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,9 +26,12 @@ import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.dto.DlJcZqMatchCellDTO;
+import com.dl.dto.DlJcZqMatchDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchListParam;
+import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
@@ -51,9 +62,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      */
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
+		List<DlJcZqMatchCellDTO> matchCellDTOList = lotteryMatchMapper.getMatchList(param.getPlayType());
+		Map<String, DlJcZqMatchDTO> map = new HashMap<String, DlJcZqMatchDTO>();
+		matchCellDTOList.forEach(dto->{
+			Date matchTime = dto.getMatchTime();
+			String matchDay = this.date2Show(matchTime);
+			dto.setMatchDay(matchDay);
+			DlJcZqMatchDTO dlJcZqMatchDTO = map.get(matchDay);
+			if(null == dlJcZqMatchDTO) {
+				dlJcZqMatchDTO = new DlJcZqMatchDTO();
+				dlJcZqMatchDTO.setMatchDay(matchDay);
+				map.put(matchDay, dlJcZqMatchDTO);
+			}
+			dlJcZqMatchDTO.getPlayList().add(dto);
+			if(dto.getIsHot() == 1) {
+				dlJcZqMatchListDTO.getHotPlayList().add(dto);
+			}
+		});
+		map.forEach((key, value) ->{
+			dlJcZqMatchListDTO.getPlayList().add(value);
+		});
+		dlJcZqMatchListDTO.setAllMatchCount(matchCellDTOList.size()+"");
 	    return dlJcZqMatchListDTO;
 	}
 	
+	private String date2Show(Date matchTime) {
+		LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+		DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+		int value = dayOfWeek.getValue();
+		String name = LocalWeekDate.getName(value);
+		String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+		return name + matchDate;
+	}
 	/**
 	 * 抓取赛事列表并保存
 	 */
@@ -227,8 +267,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatch.setVisitingTeamName(jo.getString("a_cn"));
 				lotteryMatch.setVisitingTeamRank(jo.getString("a_order"));
 				lotteryMatch.setVisitingTeamAbbr(jo.getString("a_cn_abbr"));
-				lotteryMatch.setMatchTime(jo.getString("date") + " " + jo.getString("time"));
-				lotteryMatch.setShowTime(jo.getString("b_date"));
+				try {
+					String machtimeStr = jo.getString("date") + " " + jo.getString("time");
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:MM:ss");
+					Date machTime = sdf.parse(machtimeStr);
+					lotteryMatch.setMatchTime(machTime);
+					sdf.applyPattern("yyyy-mm-dd");
+					Date showTime = sdf.parse(jo.getString("b_date"));
+					lotteryMatch.setShowTime(showTime);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 				lotteryMatch.setCreateTime(DateUtil.getCurrentTimeLong());
 				lotteryMatch.setIsShow(ProjectConstant.IS_SHOW);
 				lotteryMatch.setIsDel(ProjectConstant.IS_NOT_DEL);
