@@ -14,19 +14,25 @@ import com.dl.base.util.DateUtil;
 import com.dl.dto.DlHallDTO;
 import com.dl.dto.DlHallDTO.DlActivityDTO;
 import com.dl.dto.DlHallDTO.DlLotteryClassifyDTO;
+import com.dl.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.dto.DlHallDTO.DlWinningLogDTO;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
+import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
 import com.dl.shop.lottery.model.LotteryActivity;
 import com.dl.shop.lottery.model.LotteryClassify;
+import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
 import tk.mybatis.mapper.entity.Condition;
 
 @Service
 public class LotteryHallService {
+	
+	@Resource
+	private LotteryNavBannerMapper lotteryNavBannerMapper;
 	
 	@Resource
 	private LotteryActivityMapper lotteryActivityMapper;
@@ -43,6 +49,8 @@ public class LotteryHallService {
 	 */
 	public DlHallDTO getHallData() {
 		DlHallDTO dlHallDTO = new DlHallDTO();
+		//获取首页轮播图列表
+		dlHallDTO.setNavBanners(getDlNavBannerDTO());
 		//获取活动数据
 		dlHallDTO.setActivity(getDlActivityDTO());
 		//获取中奖信息列表
@@ -50,6 +58,28 @@ public class LotteryHallService {
 		//获取彩票分类列表
 		dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
         return dlHallDTO;		
+	}
+	
+	/**
+	 * 获取活动数据
+	 * @return
+	 */
+	private List<DlNavBannerDTO> getDlNavBannerDTO() {
+		List<DlNavBannerDTO> dlNavBannerDTOs = new LinkedList<DlNavBannerDTO>();
+		Condition condition = new Condition(LotteryClassify.class);
+        condition.createCriteria().andCondition("is_show=", 1);
+        condition.setOrderByClause("banner_sort asc");
+		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
+		if(CollectionUtils.isNotEmpty(lotteryNavBanners)) {
+			for(LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
+				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
+				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
+				dlNavBannerDTO.setBannerImage(lotteryNavBanner.getBannerImage());
+				dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());
+				dlNavBannerDTOs.add(dlNavBannerDTO);
+			}
+		}
+		return dlNavBannerDTOs;
 	}
 	
 	/**

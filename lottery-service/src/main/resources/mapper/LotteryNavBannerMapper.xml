@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.LotteryNavBannerMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryNavBanner">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="banner_name" jdbcType="VARCHAR" property="bannerName" />
+    <result column="banner_image" jdbcType="VARCHAR" property="bannerImage" />
+    <result column="banner_link" jdbcType="VARCHAR" property="bannerLink" />
+    <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+  </resultMap>
+</mapper>
