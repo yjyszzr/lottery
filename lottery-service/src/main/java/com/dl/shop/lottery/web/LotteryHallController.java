@@ -1,14 +1,18 @@
 package com.dl.shop.lottery.web;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.dto.DlHallDTO;
+import com.dl.dto.DlPlayClassifyDTO;
+import com.dl.param.DlPlayClassifyParam;
 import com.dl.shop.lottery.service.LotteryHallService;
 
 import io.swagger.annotations.ApiOperation;
@@ -25,5 +29,12 @@ public class LotteryHallController {
     public BaseResult<DlHallDTO> getHallData() {
 		DlHallDTO dlHallDTO = lotteryHallService.getHallData();
     	return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
+    }
+	
+	@ApiOperation(value = "获取彩票玩法列表", notes = "获取彩票玩法列表")
+    @PostMapping("/getPlayClassifyList")
+    public BaseResult<DlPlayClassifyDTO> getPlayClassifyList(@Valid @RequestBody DlPlayClassifyParam param) {
+		DlPlayClassifyDTO dlPlayClassifyDTO = lotteryHallService.getPlayClassifyList(param);
+    	return ResultGenerator.genSuccessResult("获取彩票玩法列表成功", dlPlayClassifyDTO);
     }
 }

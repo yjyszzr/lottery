@@ -42,8 +42,8 @@ public class Swagger2 {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("lovnx")
-                .description("lovnx")
+                .title("商品中心")
+                .description("lottery")
                 .termsOfServiceUrl("")
                 .version("1.0")
                 .build();

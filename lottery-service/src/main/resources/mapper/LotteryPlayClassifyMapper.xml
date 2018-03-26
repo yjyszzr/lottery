@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.LotteryPlayClassifyMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryPlayClassify">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="lottery_play_classify_id" jdbcType="INTEGER" property="lotteryPlayClassifyId" />
+    <result column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
+    <result column="play_name" jdbcType="VARCHAR" property="playName" />
+    <result column="play_img" jdbcType="VARCHAR" property="playImg" />
+    <result column="play_label_id" jdbcType="INTEGER" property="playLabelId" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+  </resultMap>
+  
+  <select id="selectAllData" resultType="com.dl.dto.DlPlayClassifyDetailDTO">
+        select
+           dl.play_name playClassifyName,
+           dl.play_img playClassifyImg,
+           dl.lottery_play_classify_id playClassifyId,
+           dl.play_label_id playClassifyLabelId,
+           dpl.label_name playClassifyLabelName
+        from
+            dl_lottery_play_classify dl 
+        left join dl_play_label dpl on dl.play_label_id = dpl.play_label_id
+        where 
+            dl.status = 0 
+        and 
+            dl.is_show = 1
+        order by dl.sort asc, dl.create_time desc
+  </select>
+</mapper>

@@ -16,10 +16,15 @@ import com.dl.dto.DlHallDTO.DlActivityDTO;
 import com.dl.dto.DlHallDTO.DlLotteryClassifyDTO;
 import com.dl.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.dto.DlHallDTO.DlWinningLogDTO;
+import com.dl.dto.DlPlayClassifyDTO;
+import com.dl.dto.DlPlayClassifyDetailDTO;
+import com.dl.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
+import com.dl.param.DlPlayClassifyParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
 import com.dl.shop.lottery.model.LotteryActivity;
 import com.dl.shop.lottery.model.LotteryClassify;
@@ -43,6 +48,9 @@ public class LotteryHallService {
 	@Resource
 	private LotteryClassifyMapper lotteryClassifyMapper;
 	
+	@Resource
+	private LotteryPlayClassifyMapper lotteryPlayClassifyMapper;
+	
 	/**
 	 * 获取彩票大厅数据
 	 * @return
@@ -58,6 +66,23 @@ public class LotteryHallService {
 		//获取彩票分类列表
 		dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
         return dlHallDTO;		
+	}
+	
+	/**
+	 * 获取彩票玩法列表
+	 * @return
+	 */
+	public DlPlayClassifyDTO getPlayClassifyList(DlPlayClassifyParam param) {
+		DlPlayClassifyDTO dlPlayClassifyDTO = new DlPlayClassifyDTO();
+		DlPlayTitleDTO dlPlayTitleDTO = new DlPlayTitleDTO();
+		LotteryClassify lotteryClassify = lotteryClassifyMapper.selectByPrimaryKey(Integer.valueOf(param.getLotteryClassifyId()));
+		if(null != lotteryClassify) {
+			dlPlayTitleDTO.setPlayName(lotteryClassify.getLotteryName());
+		}
+		dlPlayClassifyDTO.setDlPlayTitleDTO(dlPlayTitleDTO);
+		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(Integer.valueOf(param.getLotteryClassifyId()));
+		dlPlayClassifyDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
+		return dlPlayClassifyDTO;
 	}
 	
 	/**
