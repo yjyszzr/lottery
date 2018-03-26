@@ -30,6 +30,7 @@
             dl.status = 0 
         and 
             dl.is_show = 1
+        and dl.lottery_classify_id = #{lotteryClassifyId}
         order by dl.sort asc, dl.create_time desc
   </select>
 </mapper>
