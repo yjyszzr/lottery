@@ -17,8 +17,8 @@ import com.dl.dto.DlHallDTO.DlLotteryClassifyDTO;
 import com.dl.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.dto.DlHallDTO.DlWinningLogDTO;
 import com.dl.dto.DlPlayClassifyDTO;
-import com.dl.dto.DlPlayClassifyDetailDTO;
 import com.dl.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
+import com.dl.dto.DlPlayClassifyDetailDTO;
 import com.dl.param.DlPlayClassifyParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
@@ -64,7 +64,9 @@ public class LotteryHallService {
 		//获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		//获取彩票分类列表
-		dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
+		//dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs()); //第一版只显示竞彩足球的子列表
+		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
+		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
         return dlHallDTO;		
 	}
 	
@@ -101,6 +103,7 @@ public class LotteryHallService {
 				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
 				dlNavBannerDTO.setBannerImage(lotteryNavBanner.getBannerImage());
 				dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());
+				dlNavBannerDTO.setBusinessId(lotteryNavBanner.getBusinessId());
 				dlNavBannerDTOs.add(dlNavBannerDTO);
 			}
 		}

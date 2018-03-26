@@ -20,8 +20,12 @@ public class DlHallDTO implements Serializable{
 	@ApiModelProperty(value = "中奖信息列表")
 	public List<DlWinningLogDTO> winningMsgs;
 	
-	@ApiModelProperty(value = "彩票分类列表")
-	public List<DlLotteryClassifyDTO> lotteryClassifys;
+	//第一版只显示竞彩足球的子列表
+//	@ApiModelProperty(value = "彩票分类列表")
+//	public List<DlLotteryClassifyDTO> lotteryClassifys;
+	
+	@ApiModelProperty(value = "玩法分类明细")
+	public List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs;
 	
 	@Data
 	public static class DlNavBannerDTO {
@@ -34,6 +38,9 @@ public class DlHallDTO implements Serializable{
 		
 		@ApiModelProperty(value = "图片链接")
 		public String bannerLink;
+		
+		@ApiModelProperty(value = "业务id")
+		public String businessId;
 	}
 	
 	@Data

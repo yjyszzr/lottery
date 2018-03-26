@@ -9,6 +9,7 @@
     <result column="banner_name" jdbcType="VARCHAR" property="bannerName" />
     <result column="banner_image" jdbcType="VARCHAR" property="bannerImage" />
     <result column="banner_link" jdbcType="VARCHAR" property="bannerLink" />
+    <result column="business_id" jdbcType="VARCHAR" property="businessId" />
     <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
