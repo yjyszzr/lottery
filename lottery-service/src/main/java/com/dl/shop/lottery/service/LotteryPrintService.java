@@ -1,5 +1,8 @@
 package com.dl.shop.lottery.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +18,13 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
 import com.dl.dto.DlQueryAccountDTO;
 import com.dl.dto.DlQueryIssueDTO;
+import com.dl.dto.DlQueryIssueDTO.QueryIssue;
 import com.dl.dto.DlQueryPrizeFileDTO;
 import com.dl.dto.DlQueryStakeDTO;
 import com.dl.dto.DlQueryStakeFileDTO;
 import com.dl.dto.DlToStakeDTO;
+import com.dl.dto.DlToStakeDTO.BackOrderDetail;
+import com.dl.dto.DlQueryStakeDTO.BackQueryStake;
 import com.dl.param.DlQueryAccountParam;
 import com.dl.param.DlQueryIssueParam;
 import com.dl.param.DlQueryPrizeFileParam;
@@ -55,7 +61,10 @@ public class LotteryPrintService {
 		JSONObject jo = JSONObject.fromObject(param);
 		String backStr = getBackDateByJsonData(jo, "/stake");
 		JSONObject backJo = JSONObject.fromObject(backStr);
-		DlToStakeDTO dlToStakeDTO = (DlToStakeDTO) JSONObject.toBean(backJo, DlToStakeDTO.class); 
+		@SuppressWarnings("rawtypes")
+		Map<String,Class> mapClass = new HashMap<String,Class>();
+		mapClass.put("orders", BackOrderDetail.class);
+		DlToStakeDTO dlToStakeDTO = (DlToStakeDTO) JSONObject.toBean(backJo, DlToStakeDTO.class, mapClass); 
 		return dlToStakeDTO;
 	}
 	
@@ -68,7 +77,10 @@ public class LotteryPrintService {
 		JSONObject jo = JSONObject.fromObject(param);
 		String backStr = getBackDateByJsonData(jo, "/stake_query");
 		JSONObject backJo = JSONObject.fromObject(backStr);
-		DlQueryStakeDTO dlQueryStakeDTO = (DlQueryStakeDTO) JSONObject.toBean(backJo, DlQueryStakeDTO.class); 
+		@SuppressWarnings("rawtypes")
+		Map<String,Class> mapClass = new HashMap<String,Class>();
+		mapClass.put("orders", BackQueryStake.class);
+		DlQueryStakeDTO dlQueryStakeDTO = (DlQueryStakeDTO) JSONObject.toBean(backJo, DlQueryStakeDTO.class, mapClass); 
 		return dlQueryStakeDTO;
 	}
 	
@@ -81,7 +93,10 @@ public class LotteryPrintService {
 		JSONObject jo = JSONObject.fromObject(param);
 		String backStr = getBackDateByJsonData(jo, "/issue_query");
 		JSONObject backJo = JSONObject.fromObject(backStr);
-		DlQueryIssueDTO dlQueryIssueDTO = (DlQueryIssueDTO) JSONObject.toBean(backJo, DlQueryIssueDTO.class); 
+		@SuppressWarnings("rawtypes")
+		Map<String,Class> mapClass = new HashMap<String,Class>();
+		mapClass.put("issue", QueryIssue.class);
+		DlQueryIssueDTO dlQueryIssueDTO = (DlQueryIssueDTO) JSONObject.toBean(backJo, DlQueryIssueDTO.class, mapClass); 
 		return dlQueryIssueDTO;
 	}
 	

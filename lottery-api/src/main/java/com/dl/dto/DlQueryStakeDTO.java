@@ -33,7 +33,10 @@ public class DlQueryStakeDTO implements Serializable{
 	public static class BackQueryStake {
 		
 		@ApiModelProperty(value = "返回码 0-成功 4-票不存在", required = true)
-	    private Integer retCode;
+	    private Integer status;
+		
+		@ApiModelProperty(value = "订单id", required = true)
+	    private String orderId;
 		
 		@ApiModelProperty(value = "商户订单号", required = true)
 	    private String ticketId;
