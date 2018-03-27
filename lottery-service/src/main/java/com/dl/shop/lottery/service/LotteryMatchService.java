@@ -459,10 +459,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatch.setVisitingTeamAbbr(jo.getString("a_cn_abbr"));
 				try {
 					String machtimeStr = jo.getString("date") + " " + jo.getString("time");
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:MM:ss");
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					Date machTime = sdf.parse(machtimeStr);
 					lotteryMatch.setMatchTime(machTime);
-					sdf.applyPattern("yyyy-mm-dd");
+					sdf.applyPattern("yyyy-MM-dd");
 					Date showTime = sdf.parse(jo.getString("b_date"));
 					lotteryMatch.setShowTime(showTime);
 				} catch (ParseException e) {
