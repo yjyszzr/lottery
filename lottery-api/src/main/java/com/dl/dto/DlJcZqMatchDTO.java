@@ -19,5 +19,5 @@ public class DlJcZqMatchDTO implements Serializable{
 	//public String matchCount;
 	
 	@ApiModelProperty(value = "当日赛事列表", required = true)
-	public List<DlJcZqMatchCellDTO> playList = new ArrayList<DlJcZqMatchCellDTO>();
+	public List<DlJcZqMatchPlayDTO> playList = new ArrayList<DlJcZqMatchPlayDTO>();
 }

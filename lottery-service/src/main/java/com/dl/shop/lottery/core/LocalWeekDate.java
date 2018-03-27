@@ -27,6 +27,15 @@ public enum LocalWeekDate {
 		return null;
 	}
 	
+	public static Integer getCode(String value) {
+		for(LocalWeekDate lwd: LocalWeekDate.values()) {
+			if(lwd.getMsg().equals(value)) {
+				return lwd.getCode();
+			}
+		}
+		return null;
+	}
+	
 	public Integer getCode() {
 		return code;
 	}

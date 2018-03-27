@@ -22,7 +22,7 @@
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
   </resultMap>
-  <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchCellDTO">
+  <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchPlayDTO">
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
     <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />

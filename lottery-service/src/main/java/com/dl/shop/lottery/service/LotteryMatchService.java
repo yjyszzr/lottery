@@ -6,12 +6,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -20,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.druid.sql.visitor.functions.Substring;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
@@ -29,6 +35,7 @@ import com.dl.base.util.NetWorkUtil;
 import com.dl.dto.DlJcZqMatchCellDTO;
 import com.dl.dto.DlJcZqMatchDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
+import com.dl.dto.DlJcZqMatchPlayDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
@@ -62,18 +69,32 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      */
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		List<DlJcZqMatchCellDTO> matchCellDTOList = lotteryMatchMapper.getMatchList(param.getPlayType());
+		List<DlJcZqMatchPlayDTO> matchPlayDTOList = lotteryMatchMapper.getMatchList(param.getPlayType());
 		Map<String, DlJcZqMatchDTO> map = new HashMap<String, DlJcZqMatchDTO>();
-		matchCellDTOList.forEach(dto->{
+		matchPlayDTOList.forEach(dto->{
+			//页面展示日期
 			Date matchTime = dto.getMatchTime();
-			String matchDay = this.date2Show(matchTime);
+			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
+			int value = dayOfWeek.getValue();
+			String name = LocalWeekDate.getName(value);
+			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			String matchDay = name + matchDate;
 			dto.setMatchDay(matchDay);
+			//赛事编码
+			String changci = dto.getChangci();
+			String changcinew = LocalWeekDate.getCode(changci.substring(0, 2))+changci.substring(3);
+			String playCode = localDate.format(DateTimeFormatter.BASIC_ISO_DATE) + changcinew;
+			dto.setPlayCode(playCode);
+			//
 			DlJcZqMatchDTO dlJcZqMatchDTO = map.get(matchDay);
 			if(null == dlJcZqMatchDTO) {
 				dlJcZqMatchDTO = new DlJcZqMatchDTO();
 				dlJcZqMatchDTO.setMatchDay(matchDay);
 				map.put(matchDay, dlJcZqMatchDTO);
 			}
+			//初始化投注选项
+			initDlJcZqMatchCell(dto);
 			dlJcZqMatchDTO.getPlayList().add(dto);
 			if(dto.getIsHot() == 1) {
 				dlJcZqMatchListDTO.getHotPlayList().add(dto);
@@ -82,10 +103,179 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map.forEach((key, value) ->{
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
-		dlJcZqMatchListDTO.setAllMatchCount(matchCellDTOList.size()+"");
+		dlJcZqMatchListDTO.setAllMatchCount(matchPlayDTOList.size()+"");
 	    return dlJcZqMatchListDTO;
 	}
-	
+	/**
+	 * 初始化球赛类型投注选项
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell(DlJcZqMatchPlayDTO dto) {
+		Integer playType = dto.getPlayType();
+		switch(playType) {
+			case 1:
+				initDlJcZqMatchCell1(dto);
+				break;
+			case 2:
+				initDlJcZqMatchCell2(dto);
+				break;
+			case 3:
+				initDlJcZqMatchCell3(dto);
+				break;
+			case 4:
+				initDlJcZqMatchCell4(dto);
+				break;
+			case 5:
+				initDlJcZqMatchCell5(dto);
+				break;
+			case 6:
+				initDlJcZqMatchCell6(dto);
+				break;
+			case 7:
+				initDlJcZqMatchCell7(dto);
+				break;
+		}
+	}
+	/**
+	 * 让球胜平负
+	 * {"p_status":"Selling","a":"2.35","d_trend":"0","fixedodds":"+1","d":"3.20","h":"2.56","vbt":"0",
+		"int":"1","a_trend":"0","goalline":"","single":"0","o_type":"F","p_code":"HHAD","cbt":"1",
+		"allup":"1","h_trend":"0","p_id":"471462","l_trend":"0"}
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell1(DlJcZqMatchPlayDTO dto) {
+		String playContent = dto.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String hOdds = jsonObj.getString("h");
+		String dOdds = jsonObj.getString("d");
+		String aOdds = jsonObj.getString("a");
+		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
+		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
+	}
+	/**
+	 * 胜平负
+	 * {"p_status":"Selling","a":"1.39","d_trend":"0","fixedodds":"","d":"3.90","h":"6.50","vbt":"0",
+		"int":"1","a_trend":"0","goalline":"","single":"0","o_type":"F","p_code":"HAD","cbt":"1",
+		"allup":"1","h_trend":"0","p_id":"471461","l_trend":"0"}
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell2(DlJcZqMatchPlayDTO dto) {
+		String playContent = dto.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String hOdds = jsonObj.getString("h");
+		String dOdds = jsonObj.getString("d");
+		String aOdds = jsonObj.getString("a");
+		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
+		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
+	}
+	/**
+	 * 比分
+	 * {"fixedodds":"","vbt":"0","a_trend":"0","0105":"60.00","0204":"60.00","0303":"80.00",
+	 * "0402":"250.0","0501":"700.0","goalline":"","0205":"120.0","0502":"700.0","o_type":"F",
+	 * "0004":"19.00","0103":"11.00","0202":"17.00","0301":"60.00","0400":"300.0","0005":"50.00",
+	 * "0104":"25.00","0203":"26.00","0302":"60.00","0401":"250.0","0500":"900.0","0002":"6.00",
+	 * "0101":"7.00","0200":"30.00","p_code":"CRS","0003":"9.50","0102":"7.00","0201":"16.00",
+	 * "0300":"80.00","0000":"9.50","0001":"5.80","0100":"13.00","l_trend":"0","p_status":"Selling",
+	 * "d_trend":"0","-1-h":"250.0","-1-a":"40.00","-1-d":"500.0","int":"1","single":"1","cbt":"1",
+	 * "allup":"1","h_trend":"0","p_id":"471464"}
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell3(DlJcZqMatchPlayDTO dto) {
+		String playContent = dto.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		Set<String> keySet = jsonObj.keySet();
+		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
+		String regex = "^0\\d{3}$";
+		for(String key: keySet) {
+			if(Pattern.matches(regex, key)) {
+				String code = String.valueOf(new char[] {key.charAt(1),key.charAt(3)});
+				String odds = jsonObj.getString(key);
+				String name = "";
+				if("90".equals(code)) {
+					name = "胜其它";
+				} else if("99".equals(code)) {
+					name = "平其它";
+				} else if("09".equals(code)) {
+					name = "负其它";
+				}else {
+					name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
+				}
+				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
+			}
+		}
+		dto.setMatchCells(matchCells);
+	}
+	/**
+	 * 总进球数
+	 * {"s3":"3.55","p_status":"Selling","s4":"5.60","d_trend":"0","s5":"10.50","fixedodds":"",
+		"s6":"18.00","s7":"29.00","vbt":"0","int":"1","a_trend":"0","single":"1","goalline":"",
+		"o_type":"F","p_code":"TTG","cbt":"1","allup":"1","h_trend":"0","s0":"9.50","s1":"4.10",
+		"p_id":"471465","s2":"3.15","l_trend":"0"}
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell4(DlJcZqMatchPlayDTO dto) {
+		String playContent = dto.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		Set<String> keySet = jsonObj.keySet();
+		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
+		String regex = "^s\\d$";
+		for(String key: keySet) {
+			if(Pattern.matches(regex, key)) {
+				String code = String.valueOf(key.charAt(1));
+				String odds = jsonObj.getString(key);
+				String name = String.valueOf(new char[] {key.charAt(1),'球'});
+				if("7".equals(code)) {
+					name += "或更多";
+				} 
+				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
+			}
+		}
+		dto.setMatchCells(matchCells);
+	}
+	/**
+	 * {"aa":"1.92","dd":"5.60","hh":"10.50","p_status":"Selling","d_trend":"0","fixedodds":"",
+		"ad":"16.00","dh":"12.00","ah":"50.00","vbt":"0","int":"1","a_trend":"0","single":"1",
+		"goalline":"","o_type":"F","p_code":"HAFU","cbt":"1","allup":"1","ha":"25.00","h_trend":"0",
+		"hd":"16.00","da":"4.00","p_id":"471463","l_trend":"0"}
+	 * @param dto
+	 */
+	private void initDlJcZqMatchCell5(DlJcZqMatchPlayDTO dto) {
+		String playContent = dto.getPlayContent();
+		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String hhOdds = jsonObj.getString("hh");
+		matchCells.add(new DlJcZqMatchCellDTO("33", "胜-胜", hhOdds));
+		String hdOdds = jsonObj.getString("hd");
+		matchCells.add(new DlJcZqMatchCellDTO("31", "胜-平", hdOdds));
+		String haOdds = jsonObj.getString("ha");
+		matchCells.add(new DlJcZqMatchCellDTO("30", "胜-负", haOdds));
+		String ddOdds = jsonObj.getString("dd");
+		matchCells.add(new DlJcZqMatchCellDTO("11", "平-平", ddOdds));
+		String daOdds = jsonObj.getString("da");
+		matchCells.add(new DlJcZqMatchCellDTO("10", "平-负", daOdds));
+		String dhOdds = jsonObj.getString("dh");
+		matchCells.add(new DlJcZqMatchCellDTO("13", "平-胜", dhOdds));
+		String aaOdds = jsonObj.getString("aa");
+		matchCells.add(new DlJcZqMatchCellDTO("00", "负-负", aaOdds));
+		String adOdds = jsonObj.getString("ad");
+		matchCells.add(new DlJcZqMatchCellDTO("01", "负-平", adOdds));
+		String ahOdds = jsonObj.getString("ah");
+		matchCells.add(new DlJcZqMatchCellDTO("03", "负-胜", ahOdds));
+		dto.setMatchCells(matchCells);
+	}
+	private void initDlJcZqMatchCell6(DlJcZqMatchPlayDTO dto) {
+		
+	}
+	private void initDlJcZqMatchCell7(DlJcZqMatchPlayDTO dto) {
+		
+	}
+	/**
+	 * 转换页面展示用的比赛时间
+	 * @param matchTime
+	 * @return
+	 */
 	private String date2Show(Date matchTime) {
 		LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
 		DayOfWeek dayOfWeek = localDate.getDayOfWeek();
