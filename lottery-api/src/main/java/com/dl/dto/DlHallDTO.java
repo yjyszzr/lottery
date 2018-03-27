@@ -36,11 +36,8 @@ public class DlHallDTO implements Serializable{
 		@ApiModelProperty(value = "banner大图")
 		public String bannerImage;
 		
-		@ApiModelProperty(value = "图片链接")
+		@ApiModelProperty(value = "图片跳转链接")
 		public String bannerLink;
-		
-		@ApiModelProperty(value = "业务id")
-		public String businessId;
 	}
 	
 	@Data

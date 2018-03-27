@@ -102,8 +102,7 @@ public class LotteryHallService {
 				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
 				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
 				dlNavBannerDTO.setBannerImage(lotteryNavBanner.getBannerImage());
-				dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());
-				dlNavBannerDTO.setBusinessId(lotteryNavBanner.getBusinessId());
+				dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink() + "?cxmxc=scm&" + lotteryNavBanner.getBannerParam());
 				dlNavBannerDTOs.add(dlNavBannerDTO);
 			}
 		}
