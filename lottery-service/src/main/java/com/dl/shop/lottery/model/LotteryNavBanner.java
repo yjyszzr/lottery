@@ -25,6 +25,12 @@ public class LotteryNavBanner {
      */
     @Column(name = "banner_link")
     private String bannerLink;
+    
+    /**
+     * 链接参数列表
+     */
+    @Column(name = "banner_param")
+    private String bannerParam;
 
     /**
      * 排序
@@ -111,8 +117,16 @@ public class LotteryNavBanner {
     public void setBannerLink(String bannerLink) {
         this.bannerLink = bannerLink;
     }
+    
+	public String getBannerParam() {
+		return bannerParam;
+	}
 
-    /**
+	public void setBannerParam(String bannerParam) {
+		this.bannerParam = bannerParam;
+	}
+
+	/**
      * 获取排序
      *
      * @return banner_sort - 排序
