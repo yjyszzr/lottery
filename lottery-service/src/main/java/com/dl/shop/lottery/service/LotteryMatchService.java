@@ -83,7 +83,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dto.setMatchDay(matchDay);
 			//赛事编码
 			String changci = dto.getChangci();
-			String changcinew = LocalWeekDate.getCode(changci.substring(0, 2))+changci.substring(3);
+			String changcinew = LocalWeekDate.getCode(changci.substring(0, 2))+changci.substring(2);
 			String playCode = localDate.format(DateTimeFormatter.BASIC_ISO_DATE) + changcinew;
 			dto.setPlayCode(playCode);
 			//
@@ -186,7 +186,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		Set<String> keySet = jsonObj.keySet();
-		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
+		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO("3", "主胜", null);
+		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
+		dto.setHomeCell(homeCell);
+		DlJcZqMatchCellDTO flatCell = new DlJcZqMatchCellDTO("1", "平局", null);
+		flatCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
+		dto.setFlatCell(flatCell);
+		DlJcZqMatchCellDTO visitingCell = new DlJcZqMatchCellDTO("0", "客胜", null);
+		visitingCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
+		dto.setVisitingCell(visitingCell);
+		//List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
 		String regex = "^0\\d{3}$";
 		for(String key: keySet) {
 			if(Pattern.matches(regex, key)) {
@@ -202,10 +211,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}else {
 					name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
 				}
-				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
+				if(key.charAt(1) > key.charAt(3)) {
+					homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
+				} else if(key.charAt(1) < key.charAt(3)) {
+					visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
+				}else {
+					flatCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
+				}
+				//matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
-		dto.setMatchCells(matchCells);
+		//dto.setMatchCells(matchCells);
 	}
 	/**
 	 * 总进球数
