@@ -26,5 +26,5 @@ public class DlQueryAccountDTO implements Serializable{
     private String retDesc;
 	
 	@ApiModelProperty(value = "余额", required = true)
-    private Integer balance;
+    private Integer money;
 }
