@@ -1,8 +1,18 @@
 package com.dl.shop.lottery.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import com.dl.base.configurer.RestTemplateConfig;
+import com.dl.base.util.DateUtil;
+import com.dl.base.util.MD5Utils;
 import com.dl.dto.DlQueryAccountDTO;
 import com.dl.dto.DlQueryIssueDTO;
 import com.dl.dto.DlQueryPrizeFileDTO;
@@ -16,18 +26,36 @@ import com.dl.param.DlQueryStakeFileParam;
 import com.dl.param.DlQueryStakeParam;
 import com.dl.param.DlToStakeParam;
 
+import net.sf.json.JSONObject;
+
 @Service
 public class LotteryPrintService {
+	
+	@Resource
+	private RestTemplateConfig restTemplateConfig;
+	
+	@Resource
+	private RestTemplate restTemplate;  
 
 	@Value("${print.ticket.url}")
 	private String printTicketUrl;
 	
+	@Value("${print.ticket.merchant}")
+	private String merchant;
+	
+	@Value("${print.ticket.merchantPassword}")
+	private String merchantPassword;
+	
 	/**
-	 * 投注接口
+	 * 投注接口（竞彩足球，game参数都是t51）
 	 * @return
 	 */
 	public DlToStakeDTO toStake(DlToStakeParam param) {
-		DlToStakeDTO dlToStakeDTO = new DlToStakeDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/stake");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlToStakeDTO dlToStakeDTO = (DlToStakeDTO) JSONObject.toBean(backJo, DlToStakeDTO.class); 
 		return dlToStakeDTO;
 	}
 	
@@ -36,16 +64,24 @@ public class LotteryPrintService {
 	 * @return
 	 */
 	public DlQueryStakeDTO queryStake(DlQueryStakeParam param) {
-		DlQueryStakeDTO dlQueryStakeDTO = new DlQueryStakeDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/stake_query");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlQueryStakeDTO dlQueryStakeDTO = (DlQueryStakeDTO) JSONObject.toBean(backJo, DlQueryStakeDTO.class); 
 		return dlQueryStakeDTO;
 	}
 	
 	/**
-	 * 期次查询
+	 * 期次查询（暂时不支持）
 	 * @return
 	 */
 	public DlQueryIssueDTO queryIssue(DlQueryIssueParam param) {
-		DlQueryIssueDTO dlQueryIssueDTO = new DlQueryIssueDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/issue_query");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlQueryIssueDTO dlQueryIssueDTO = (DlQueryIssueDTO) JSONObject.toBean(backJo, DlQueryIssueDTO.class); 
 		return dlQueryIssueDTO;
 	}
 	
@@ -54,7 +90,11 @@ public class LotteryPrintService {
 	 * @return
 	 */
 	public DlQueryAccountDTO queryAccount(DlQueryAccountParam param) {
-		DlQueryAccountDTO dlQueryAccountDTO = new DlQueryAccountDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/account");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlQueryAccountDTO dlQueryAccountDTO = (DlQueryAccountDTO) JSONObject.toBean(backJo, DlQueryAccountDTO.class); 
 		return dlQueryAccountDTO;
 	}
 	
@@ -63,7 +103,11 @@ public class LotteryPrintService {
 	 * @return
 	 */
 	public DlQueryStakeFileDTO queryStakeFile(DlQueryStakeFileParam param) {
-		DlQueryStakeFileDTO dlQueryStakeFileDTO = new DlQueryStakeFileDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/ticket_file");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlQueryStakeFileDTO dlQueryStakeFileDTO = (DlQueryStakeFileDTO) JSONObject.toBean(backJo, DlQueryStakeFileDTO.class); 
 		return dlQueryStakeFileDTO;
 	}
 	
@@ -72,7 +116,29 @@ public class LotteryPrintService {
 	 * @return
 	 */
 	public DlQueryPrizeFileDTO queryPrizeFile(DlQueryPrizeFileParam param) {
-		DlQueryPrizeFileDTO dlQueryPrizeFileDTO = new DlQueryPrizeFileDTO();
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonData(jo, "/prize_file");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		DlQueryPrizeFileDTO dlQueryPrizeFileDTO = (DlQueryPrizeFileDTO) JSONObject.toBean(backJo, DlQueryPrizeFileDTO.class); 
 		return dlQueryPrizeFileDTO;
+	}
+	
+	/**
+	 * 获取返回信息
+	 * @param jo
+	 * @return
+	 */
+	private String getBackDateByJsonData(JSONObject jo, String inter) {
+		String authStr = merchant + merchantPassword + jo.toString();
+		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
+		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
+		HttpHeaders headers = new HttpHeaders();
+		MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+		headers.setContentType(type);
+		String authorization = MD5Utils.MD5(authStr);
+		headers.add("Authorization", authorization);
+		HttpEntity<JSONObject> requestEntity = new HttpEntity<JSONObject>(jo, headers);
+        return rest.postForObject(printTicketUrl + inter, requestEntity, String.class);
 	}
 }
