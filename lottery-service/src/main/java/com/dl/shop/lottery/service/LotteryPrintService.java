@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.dl.base.configurer.RestTemplateConfig;
+import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
 import com.dl.dto.DlQueryAccountDTO;
@@ -21,21 +22,26 @@ import com.dl.dto.DlQueryIssueDTO;
 import com.dl.dto.DlQueryIssueDTO.QueryIssue;
 import com.dl.dto.DlQueryPrizeFileDTO;
 import com.dl.dto.DlQueryStakeDTO;
+import com.dl.dto.DlQueryStakeDTO.BackQueryStake;
 import com.dl.dto.DlQueryStakeFileDTO;
 import com.dl.dto.DlToStakeDTO;
 import com.dl.dto.DlToStakeDTO.BackOrderDetail;
-import com.dl.dto.DlQueryStakeDTO.BackQueryStake;
 import com.dl.param.DlQueryAccountParam;
 import com.dl.param.DlQueryIssueParam;
 import com.dl.param.DlQueryPrizeFileParam;
 import com.dl.param.DlQueryStakeFileParam;
 import com.dl.param.DlQueryStakeParam;
 import com.dl.param.DlToStakeParam;
+import com.dl.shop.lottery.dao.LotteryPrintMapper;
+import com.dl.shop.lottery.model.LotteryPrint;
 
 import net.sf.json.JSONObject;
 
 @Service
-public class LotteryPrintService {
+public class LotteryPrintService extends AbstractService<LotteryPrint> {
+	
+	@Resource
+	private LotteryPrintMapper lotteryPrintMapper;
 	
 	@Resource
 	private RestTemplateConfig restTemplateConfig;
@@ -53,7 +59,7 @@ public class LotteryPrintService {
 	private String merchantPassword;
 	
 	/**
-	 * 投注接口（竞彩足球，game参数都是t51）
+	 * 投注接口（竞彩足球，game参数都是T51）
 	 * @return
 	 */
 	public DlToStakeDTO toStake(DlToStakeParam param) {

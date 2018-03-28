@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.LotteryPrintMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryPrint">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="print_lottery_id" jdbcType="INTEGER" property="printLotteryId" />
+    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="accept_time" jdbcType="INTEGER" property="acceptTime" />
+    <result column="merchant" jdbcType="VARCHAR" property="merchant" />
+    <result column="game" jdbcType="VARCHAR" property="game" />
+    <result column="issue" jdbcType="VARCHAR" property="issue" />
+    <result column="playType" jdbcType="VARCHAR" property="playtype" />
+    <result column="betType" jdbcType="VARCHAR" property="bettype" />
+    <result column="times" jdbcType="INTEGER" property="times" />
+    <result column="money" jdbcType="DECIMAL" property="money" />
+    <result column="stakes" jdbcType="VARCHAR" property="stakes" />
+    <result column="ticket_time" jdbcType="INTEGER" property="ticketTime" />
+    <result column="ret_code" jdbcType="VARCHAR" property="retCode" />
+    <result column="ret_desc" jdbcType="VARCHAR" property="retDesc" />
+    <result column="error_code" jdbcType="VARCHAR" property="errorCode" />
+    <result column="platform_id" jdbcType="VARCHAR" property="platformId" />
+  </resultMap>
+</mapper>
