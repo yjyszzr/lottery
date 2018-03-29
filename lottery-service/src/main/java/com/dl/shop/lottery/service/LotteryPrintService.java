@@ -26,6 +26,7 @@ import com.dl.dto.DlQueryStakeDTO.BackQueryStake;
 import com.dl.dto.DlQueryStakeFileDTO;
 import com.dl.dto.DlToStakeDTO;
 import com.dl.dto.DlToStakeDTO.BackOrderDetail;
+import com.dl.param.DlCallbackStakeParam;
 import com.dl.param.DlQueryAccountParam;
 import com.dl.param.DlQueryIssueParam;
 import com.dl.param.DlQueryPrizeFileParam;
@@ -72,6 +73,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		mapClass.put("orders", BackOrderDetail.class);
 		DlToStakeDTO dlToStakeDTO = (DlToStakeDTO) JSONObject.toBean(backJo, DlToStakeDTO.class, mapClass); 
 		return dlToStakeDTO;
+	}
+	
+	/**
+	 * 回调参数
+	 * @param param
+	 */
+	public void callbackStake(DlCallbackStakeParam param) {
+		
 	}
 	
 	/**

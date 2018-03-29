@@ -16,6 +16,7 @@ import com.dl.dto.DlQueryPrizeFileDTO;
 import com.dl.dto.DlQueryStakeDTO;
 import com.dl.dto.DlQueryStakeFileDTO;
 import com.dl.dto.DlToStakeDTO;
+import com.dl.param.DlCallbackStakeParam;
 import com.dl.param.DlQueryAccountParam;
 import com.dl.param.DlQueryIssueParam;
 import com.dl.param.DlQueryPrizeFileParam;
@@ -38,6 +39,13 @@ public class LotteryPrintController {
     public BaseResult<DlToStakeDTO> toStake(@Valid @RequestBody DlToStakeParam param) {
 		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(param);
     	return ResultGenerator.genSuccessResult("投注成功", dlToStakeDTO);
+    }
+	
+	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
+    @PostMapping("/callbackStake")
+    public BaseResult<String> callbackStake(@Valid @RequestBody DlCallbackStakeParam param) {
+		lotteryPrintService.callbackStake(param);
+    	return ResultGenerator.genSuccessResult("投注结果通知成功");
     }
 	
 	@ApiOperation(value = "投注结果查询", notes = "投注结果查询")
