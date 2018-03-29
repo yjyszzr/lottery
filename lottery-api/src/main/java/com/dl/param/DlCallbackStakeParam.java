@@ -1,12 +1,16 @@
 package com.dl.param;
 
+import java.io.Serializable;
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-public class DlCallbackStakeParam {
+@Data
+public class DlCallbackStakeParam implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	@ApiModelProperty(value = "返回出票详情", required = true)
     private List<CallbackStake> orders;
 	

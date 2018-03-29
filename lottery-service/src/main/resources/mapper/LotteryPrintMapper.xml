@@ -23,4 +23,16 @@
     <result column="print_no" jdbcType="VARCHAR" property="printNo" />
     <result column="print_time" jdbcType="TIMESTAMP" property="printTime" />
   </resultMap>
+  
+  <update id="updateByOrderSn">
+    update dl_print_lottery set
+           status = #{status},
+           platform_id = #{platformId},
+           print_status = #{printStatus},
+           print_sp = #{printSp},
+           print_no = #{printNo},
+           print_time = #{printTime}
+    where 
+           order_sn = #{orderSn}
+  </update>
 </mapper>

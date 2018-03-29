@@ -1,10 +1,15 @@
 package com.dl.shop.lottery.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +32,7 @@ import com.dl.dto.DlQueryStakeFileDTO;
 import com.dl.dto.DlToStakeDTO;
 import com.dl.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.param.DlCallbackStakeParam;
+import com.dl.param.DlCallbackStakeParam.CallbackStake;
 import com.dl.param.DlQueryAccountParam;
 import com.dl.param.DlQueryIssueParam;
 import com.dl.param.DlQueryPrizeFileParam;
@@ -36,8 +42,10 @@ import com.dl.param.DlToStakeParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 
+@Slf4j
 @Service
 public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
@@ -80,7 +88,28 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param param
 	 */
 	public void callbackStake(DlCallbackStakeParam param) {
-		
+		List<CallbackStake> callbackStakes = param.getOrders();
+		if(CollectionUtils.isNotEmpty(callbackStakes)) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			for(CallbackStake callbackStake : callbackStakes) {
+				LotteryPrint lotteryPrint = new LotteryPrint();
+				lotteryPrint.setOrderSn(callbackStake.getTicketId());
+				lotteryPrint.setStatus(1);
+				lotteryPrint.setPlatformId(callbackStake.getPlatformId());
+				lotteryPrint.setPrintNo(callbackStake.getPrintNo());
+				lotteryPrint.setPrintSp(callbackStake.getSp());
+				lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
+				Date printTime;
+				try {
+					printTime = sdf.parse(callbackStake.getPrintTime());
+					lotteryPrint.setPrintTime(printTime);
+				} catch (ParseException e) {
+					log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
+					continue;
+				}
+				lotteryPrintMapper.updateByOrderSn(lotteryPrint);
+			}
+		}
 	}
 	
 	/**
