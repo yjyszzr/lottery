@@ -6,7 +6,7 @@ public enum MatchPlayTypeEnum {
 	PLAY_TYPE_CRS(3,"crs"), //比分
 	PLAY_TYPE_TTG(4,"ttg"), //总进球
 	PLAY_TYPE_HAFU(5,"hafu"), //半全场
-	PLAY_TYPE_MIX(6,"mix"), //半全场
+	PLAY_TYPE_MIX(6,"mix"), //混合过关
 	PLAY_TYPE_TSO(7,"tso"); //2选1
 	
 	private Integer code;
