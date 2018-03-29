@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
+import com.dl.base.service.AbstractService;
+import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.enums.MatchResultCrsEnum;
@@ -23,19 +25,25 @@ import com.dl.enums.MatchResultHadEnum;
 import com.dl.enums.MatchResultHafuEnum;
 import com.dl.param.DlRewardParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
+import com.dl.shop.lottery.dao.LotteryRewardMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
+import com.dl.shop.lottery.model.LotteryReward;
 
 import tk.mybatis.mapper.entity.Condition;
 
 @Service
-public class LotteryRewardService {
-	
-	@Value("${reward.url}")
-	private String rewardUrl;
+public class LotteryRewardService extends AbstractService<LotteryReward> {
 	
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
+	
+	@Resource
+	private LotteryRewardMapper lotteryRewardMapper;
+	
+	@Value("${reward.url}")
+	private String rewardUrl;
 	
 	/**
 	 * 根据场次id拉取中奖数据
@@ -64,7 +72,15 @@ public class LotteryRewardService {
 	 * @param rewardData
 	 */
 	private void insertRewardData(LotteryMatch lotteryMatch, String rewardData) {
-		
+		LotteryReward lotteryReward = new LotteryReward();
+		lotteryReward.setMatchId(lotteryMatch.getMatchId());
+		lotteryReward.setChangciId(lotteryMatch.getChangciId());
+		lotteryReward.setChangci(lotteryMatch.getChangci());
+		lotteryReward.setMatchTime(lotteryMatch.getMatchTime());
+		lotteryReward.setRewardData(rewardData);
+		lotteryReward.setStatus(ProjectConstant.AUDIT_STAY);
+		lotteryReward.setCreateTime(DateUtil.getCurrentTimeLong());
+		lotteryRewardMapper.insert(lotteryReward);
 	}
 	
 	/**

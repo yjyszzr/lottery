@@ -34,6 +34,11 @@ public class ProjectConstant {
     public final static Integer IS_NOT_SHOW = 0;  //不显示
     public final static Integer IS_SHOW= 1;       //显示
     
+    //审核状态： 0-未审核 1-审核通过 2-审核失败
+    public final static Integer AUDIT_STAY = 0;   //待审核
+    public final static Integer AUDIT_SUCCESS= 1; //审核通过
+    public final static Integer AUDIT_FAIL= 2;    //审核失败
+    
     public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖{1}元";
     
     public final static String CONTENTSPLITEFLAG_ShuXian = "|";

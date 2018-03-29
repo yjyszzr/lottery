@@ -26,6 +26,6 @@ public class LotteryRewardController {
     @PostMapping("/saveRewardData")
     public BaseResult<String> saveRewardData(@Valid @RequestBody DlRewardParam param) {
 		lotteryRewardService.saveRewardData(param);
-    	return ResultGenerator.genSuccessResult("拉取中奖数据成功");
+    	return ResultGenerator.genSuccessResult("拉取开奖数据成功");
     }
 }
