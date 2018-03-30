@@ -3,7 +3,7 @@ package com.dl.param;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dl.dto.MatchBetCell;
+import com.dl.dto.MatchBetCellDTO;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,6 +20,6 @@ public class DlJcZqMatchBetParam implements Serializable{
 	@ApiModelProperty(value="该投票玩法")
 	private String playType;
 	@ApiModelProperty(value="投注详细")
-	private List<MatchBetCell> betCells;
+	private List<MatchBetCellDTO> matchBetCells;
 	
 }

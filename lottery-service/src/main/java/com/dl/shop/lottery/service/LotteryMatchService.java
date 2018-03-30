@@ -38,7 +38,7 @@ import com.dl.dto.DlJcZqMatchCellDTO;
 import com.dl.dto.DlJcZqMatchDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.dto.DlJcZqMatchPlayDTO;
-import com.dl.dto.MatchBetCell;
+import com.dl.dto.MatchBetCellDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchBetParam;
 import com.dl.param.DlJcZqMatchListParam;
@@ -553,19 +553,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param list
 	 * @param betList
 	 */
-	private void betNum(DLBetMatchCellDTO str, int num, List<MatchBetCell> list, List<DLBetMatchCellDTO> betList) {
-		LinkedList<MatchBetCell> link = new LinkedList<MatchBetCell>(list);
+	private void betNum(DLBetMatchCellDTO str, int num, List<MatchBetCellDTO> list, List<DLBetMatchCellDTO> betList) {
+		LinkedList<MatchBetCellDTO> link = new LinkedList<MatchBetCellDTO>(list);
 		while(link.size() > 0) {
-			MatchBetCell remove = link.remove(0);
+			MatchBetCellDTO remove = link.remove(0);
 			String changci = remove.getChangci();
-			String[] cellCodes = remove.getCellCode().split(",");
-			String[] cellOdds = remove.getCellOdds().split(",");
-			for(int j=0; j<cellCodes.length; j++) {
+			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
+			for(DlJcZqMatchCellDTO betCell: betCells) {
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setPlayType(remove.getPlayType());
-				Double amount = str.getAmount()*Double.valueOf(cellOdds[j]);
-				dto.setAmount(amount);
-				String betContent = str.getBetContent() + changci + "(" + cellCodes[j] + "@" + cellOdds[j] +")X";
+				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
+				dto.setAmount(Double.valueOf(String.format("%.2f", amount)));
+				String betContent = str.getBetContent() + changci + "(" + betCell.getCellName() + "@" + betCell.getCellOdds() +")X";
 				if(num == 1) {
 					betContent += (str.getTimes() + "倍");
 				}
@@ -605,81 +604,90 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @return
 	 */
 	public DLZQBetInfoDTO getBetInfo(DlJcZqMatchBetParam param) {
-		List<MatchBetCell> betCells = param.getBetCells();
+		List<MatchBetCellDTO> matchBellCellList = param.getMatchBetCells();
 		//读取设胆的索引
-		List<String> indexList = new ArrayList<String>(betCells.size());
+		List<String> indexList = new ArrayList<String>(matchBellCellList.size());
 		List<String> danIndexList = new ArrayList<String>(3);
-		for(int i=0; i< betCells.size(); i++) {
+		for(int i=0; i< matchBellCellList.size(); i++) {
 			indexList.add(i+"");
-			int isDan = betCells.get(i).getIsDan();
+			int isDan = matchBellCellList.get(i).getIsDan();
 			if(isDan != 0) {
 				danIndexList.add(i+"");
 			}
 		}
-		List<DLBetMatchCellDTO> betList = new ArrayList<DLBetMatchCellDTO>();
-		List<DLBetMatchCellDTO> maxBetList = new ArrayList<DLBetMatchCellDTO>();
-		List<DLBetMatchCellDTO> minBetList = new ArrayList<DLBetMatchCellDTO>();
-		String betType = param.getBetType();
-		char[] charArray = betType.toCharArray();
-		if(charArray.length == 2 && charArray[1] == '1') {
-			int num = Integer.valueOf(String.valueOf(charArray[0]));
-			List<String> betIndexList = new ArrayList<String>();
-			betNum1("", num, indexList, betIndexList);
-			if(danIndexList.size() > 0) {
-				betIndexList = betIndexList.stream().filter(item->{
-					for(String str: danIndexList) {
-						if(item.contains(str)) {
-							return true;
+		List<List<MatchBetCellDTO>>  matchBetList = new ArrayList<List<MatchBetCellDTO>>();
+		List<DLBetMatchCellDTO> betCellList = new ArrayList<DLBetMatchCellDTO>();
+		List<DLBetMatchCellDTO> maxBetCellList = new ArrayList<DLBetMatchCellDTO>();
+		List<DLBetMatchCellDTO> minBetCellList = new ArrayList<DLBetMatchCellDTO>();
+		String betTypes = param.getBetType();
+		String[] split = betTypes.split(",");
+		for(String betType: split) {
+			char[] charArray = betType.toCharArray();
+			if(charArray.length == 2 && charArray[1] == '1') {
+				int num = Integer.valueOf(String.valueOf(charArray[0]));
+				//
+				List<String> betIndexList = new ArrayList<String>();
+				betNum1("", num, indexList, betIndexList);
+				if(danIndexList.size() > 0) {
+					betIndexList = betIndexList.stream().filter(item->{
+						for(String str: danIndexList) {
+							if(item.contains(str)) {
+								return true;
+							}
 						}
-					}
-					return false;
-				}).collect(Collectors.toList());
-			}
-			for(String str: betIndexList) {
-				String[] strArr = str.split("");
-				List<MatchBetCell> maxList = new ArrayList<MatchBetCell>(strArr.length);
-				List<MatchBetCell> minList = new ArrayList<MatchBetCell>(strArr.length);
-				List<MatchBetCell> subList = new ArrayList<MatchBetCell>(strArr.length);
-				Arrays.asList(strArr).stream().forEach(item->{
-					MatchBetCell matchBetCell = betCells.get(Integer.valueOf(item));
-					subList.add(matchBetCell);
-					MatchBetCell maxBetCell = maxOrMinOddsCell(matchBetCell, true);
-					MatchBetCell minBetCell = maxOrMinOddsCell(matchBetCell, false);
-					maxList.add(maxBetCell);
-					minList.add(minBetCell);
-				});
-				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setBetType(param.getBetType());
-				dto.setTimes(param.getTimes());
-				dto.setBetContent("");
-				dto.setAmount(2.0*param.getTimes());
-				betNum(dto, num, subList, betList);
-				betNum(dto, num, maxList, maxBetList);
-				betNum(dto, num, minList, minBetList);
+						return false;
+					}).collect(Collectors.toList());
+				}
+				//
+				for(String str: betIndexList) {
+					String[] strArr = str.split("");
+					List<MatchBetCellDTO> maxList = new ArrayList<MatchBetCellDTO>(strArr.length);
+					List<MatchBetCellDTO> minList = new ArrayList<MatchBetCellDTO>(strArr.length);
+					List<MatchBetCellDTO> subList = new ArrayList<MatchBetCellDTO>(strArr.length);
+					Arrays.asList(strArr).stream().forEach(item->{
+						MatchBetCellDTO matchBetCell = matchBellCellList.get(Integer.valueOf(item));
+						subList.add(matchBetCell);
+						MatchBetCellDTO maxBetCell = maxOrMinOddsCell(matchBetCell, true);
+						MatchBetCellDTO minBetCell = maxOrMinOddsCell(matchBetCell, false);
+						maxList.add(maxBetCell);
+						minList.add(minBetCell);
+					});
+					DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+					dto.setBetType(param.getBetType());
+					dto.setTimes(param.getTimes());
+					dto.setBetContent("");
+					dto.setAmount(2.0*param.getTimes());
+					betNum(dto, num, subList, betCellList);
+					betNum(dto, num, maxList, maxBetCellList);
+					betNum(dto, num, minList, minBetCellList);
+					matchBetList.add(subList);
+				}
 			}
 		}
-		Double maxBonus = maxBetList.stream().map(item->{
+		Double maxBonus = maxBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
-		Double minBonus = minBetList.stream().map(item->{
+		Double minBonus = minBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
 		betInfoDTO.setPlayType(param.getPlayType());
-		betInfoDTO.setBetCells(betList);
-		betInfoDTO.setBetNum(betList.size());
-		betInfoDTO.setMaxBonus(maxBonus);
-		betInfoDTO.setMinBonus(minBonus);
+		betInfoDTO.setBetCells(betCellList);
+		betInfoDTO.setBetNum(betCellList.size());
+		betInfoDTO.setMaxBonus(Double.valueOf(String.format("%.2f", maxBonus)));
+		betInfoDTO.setMinBonus(Double.valueOf(String.format("%.2f", minBonus)));
 		betInfoDTO.setTimes(param.getTimes());
-		Double money = betList.size()*param.getTimes()*2.0;
-		betInfoDTO.setMoney(money);
+		Double money = betCellList.size()*param.getTimes()*2.0;
+		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
-		String stakes = betCells.stream().map(item->{
-			return item.getPlayType() +"|" + item.getPlayCode() + "|" + item.getCellCode();
+		String stakes = matchBellCellList.stream().map(item->{
+			String cellCodes = item.getBetCells().stream().map(cell->cell.getCellCode()).collect(Collectors.joining(","));
+			return item.getPlayType() +"|" + item.getPlayCode() + "|" + cellCodes;
 		}).collect(Collectors.joining(";"));
 		betInfoDTO.setStakes(stakes);
-		String issue = betCells.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+		String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
 		betInfoDTO.setIssue(issue);
+//		betInfoDTO.setMatchBetList(matchBetList);
 		return betInfoDTO;
 	}
 	/**
@@ -688,30 +696,26 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param maxFlag
 	 * @return
 	 */
-	private MatchBetCell maxOrMinOddsCell(MatchBetCell matchBetCell, boolean maxFlag) {
-		String[] codeArr = matchBetCell.getCellCode().split(",");
-		String[] oddsArr = matchBetCell.getCellOdds().split(",");
-		Optional<String> maxOptional = null;
+	private MatchBetCellDTO maxOrMinOddsCell(MatchBetCellDTO matchBetCell, boolean maxFlag) {
+		List<DlJcZqMatchCellDTO> betCells = matchBetCell.getBetCells();
+		Optional<DlJcZqMatchCellDTO> maxOptional = null;
 		if(maxFlag) {
-			maxOptional = Arrays.asList(oddsArr).stream().max((item1, item2)->{return Double.valueOf(item1).compareTo(Double.valueOf(item2));});
+			maxOptional = betCells.stream().max((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));});
 		}else {
-			maxOptional = Arrays.asList(oddsArr).stream().min((item1, item2)->{return Double.valueOf(item1).compareTo(Double.valueOf(item2));});
+			maxOptional = betCells.stream().min((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));});
 		}
-		String maxOdds = maxOptional.get();
-		String newOdds = "";
-		String newCode = "";
-		for(int i = 0; i< oddsArr.length; i++) {
-			if(oddsArr[i].equals(maxOdds)) {
-				newOdds += (","+oddsArr[i]);
-				newCode += (","+codeArr[i]);
+		List<DlJcZqMatchCellDTO> subList = new ArrayList<DlJcZqMatchCellDTO>(3);
+		String maxOdds = maxOptional.get().getCellOdds();
+		for(DlJcZqMatchCellDTO dto: betCells) {
+			if(dto.getCellOdds().equals(maxOdds)) {
+				subList.add(dto);
 			}
 		}
-		MatchBetCell maxBetCell = new MatchBetCell();
+		MatchBetCellDTO maxBetCell = new MatchBetCellDTO();
 		maxBetCell.setChangci(matchBetCell.getChangci());
 		maxBetCell.setIsDan(matchBetCell.getIsDan());
 		maxBetCell.setPlayCode(matchBetCell.getPlayCode());
-		maxBetCell.setCellCode(newCode.substring(1));
-		maxBetCell.setCellOdds(newOdds.substring(1));
+		maxBetCell.setBetCells(subList);
 		maxBetCell.setPlayType(matchBetCell.getPlayType());
 		return maxBetCell;
 	}
