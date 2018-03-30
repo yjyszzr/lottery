@@ -16,10 +16,23 @@
     <result column="times" jdbcType="INTEGER" property="times" />
     <result column="money" jdbcType="DECIMAL" property="money" />
     <result column="stakes" jdbcType="VARCHAR" property="stakes" />
-    <result column="ticket_time" jdbcType="INTEGER" property="ticketTime" />
-    <result column="ret_code" jdbcType="VARCHAR" property="retCode" />
-    <result column="ret_desc" jdbcType="VARCHAR" property="retDesc" />
-    <result column="error_code" jdbcType="VARCHAR" property="errorCode" />
+    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="platform_id" jdbcType="VARCHAR" property="platformId" />
+    <result column="print_status" jdbcType="INTEGER" property="printStatus" />
+    <result column="print_sp" jdbcType="VARCHAR" property="printSp" />
+    <result column="print_no" jdbcType="VARCHAR" property="printNo" />
+    <result column="print_time" jdbcType="TIMESTAMP" property="printTime" />
   </resultMap>
+  
+  <update id="updateByOrderSn">
+    update dl_print_lottery set
+           status = #{status},
+           platform_id = #{platformId},
+           print_status = #{printStatus},
+           print_sp = #{printSp},
+           print_no = #{printNo},
+           print_time = #{printTime}
+    where 
+           order_sn = #{orderSn}
+  </update>
 </mapper>

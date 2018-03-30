@@ -1,6 +1,8 @@
 package com.dl.shop.lottery.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Table(name = "dl_print_lottery")
@@ -27,16 +29,19 @@ public class LotteryPrint {
     /**
      * 代理商编号
      */
+    @Column(name = "merchant")
     private String merchant;
 
     /**
      * 游戏编号
      */
+    @Column(name = "game")
     private String game;
 
     /**
      * 期次
      */
+    @Column(name = "issue")
     private String issue;
 
     /**
@@ -54,47 +59,56 @@ public class LotteryPrint {
     /**
      * 倍数
      */
+    @Column(name = "times")
     private Integer times;
 
     /**
      * 彩票金额
      */
+    @Column(name = "money")
     private BigDecimal money;
 
     /**
      * 投注号码
      */
+    @Column(name = "stakes")
     private String stakes;
-
+    
     /**
-     * 出票时间
+     * 出票状态 0-出票中 1-已出票
      */
-    @Column(name = "ticket_time")
-    private Integer ticketTime;
-
-    /**
-     * 返回码
-     */
-    @Column(name = "ret_code")
-    private String retCode;
-
-    /**
-     * 返回码描述信息
-     */
-    @Column(name = "ret_desc")
-    private String retDesc;
-
-    /**
-     * 处理结果
-     */
-    @Column(name = "error_code")
-    private String errorCode;
+    @Column(name = "status")
+    private Integer status;
 
     /**
      * 中心平台订单编号
      */
     @Column(name = "platform_id")
     private String platformId;
+    
+    /**
+     * 出票返回的状态
+     */
+    @Column(name = "print_status")
+    private Integer printStatus;
+    
+    /**
+     * 出票返回的赔率
+     */
+    @Column(name = "print_sp")
+    private String printSp;
+    
+    /**
+     * 出票返回的票号
+     */
+    @Column(name = "print_no")
+    private String printNo;
+    
+    /**
+     * 返回的出票时间
+     */
+    @Column(name = "print_time")
+    private Date printTime;
 
     /**
      * 获取出票流水id
@@ -294,79 +308,47 @@ public class LotteryPrint {
         this.stakes = stakes;
     }
 
-    /**
-     * 获取出票时间
-     *
-     * @return ticket_time - 出票时间
-     */
-    public Integer getTicketTime() {
-        return ticketTime;
-    }
+    public Integer getStatus() {
+		return status;
+	}
 
-    /**
-     * 设置出票时间
-     *
-     * @param ticketTime 出票时间
-     */
-    public void setTicketTime(Integer ticketTime) {
-        this.ticketTime = ticketTime;
-    }
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
 
-    /**
-     * 获取返回码
-     *
-     * @return ret_code - 返回码
-     */
-    public String getRetCode() {
-        return retCode;
-    }
+	public Integer getPrintStatus() {
+		return printStatus;
+	}
 
-    /**
-     * 设置返回码
-     *
-     * @param retCode 返回码
-     */
-    public void setRetCode(String retCode) {
-        this.retCode = retCode;
-    }
+	public void setPrintStatus(Integer printStatus) {
+		this.printStatus = printStatus;
+	}
 
-    /**
-     * 获取返回码描述信息
-     *
-     * @return ret_desc - 返回码描述信息
-     */
-    public String getRetDesc() {
-        return retDesc;
-    }
+	public String getPrintSp() {
+		return printSp;
+	}
 
-    /**
-     * 设置返回码描述信息
-     *
-     * @param retDesc 返回码描述信息
-     */
-    public void setRetDesc(String retDesc) {
-        this.retDesc = retDesc;
-    }
+	public void setPrintSp(String printSp) {
+		this.printSp = printSp;
+	}
 
-    /**
-     * 获取处理结果
-     *
-     * @return error_code - 处理结果
-     */
-    public String getErrorCode() {
-        return errorCode;
-    }
+	public String getPrintNo() {
+		return printNo;
+	}
 
-    /**
-     * 设置处理结果
-     *
-     * @param errorCode 处理结果
-     */
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
+	public void setPrintNo(String printNo) {
+		this.printNo = printNo;
+	}
 
-    /**
+	public Date getPrintTime() {
+		return printTime;
+	}
+
+	public void setPrintTime(Date printTime) {
+		this.printTime = printTime;
+	}
+
+	/**
      * 获取中心平台订单编号
      *
      * @return platform_id - 中心平台订单编号
