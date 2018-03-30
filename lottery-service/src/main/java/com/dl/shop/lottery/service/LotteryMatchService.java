@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.service;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -79,11 +80,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			//页面展示日期
 			Date matchTime = dto.getMatchTime();
 			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 			int value = dayOfWeek.getValue();
 			String name = LocalWeekDate.getName(value);
-			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			String matchDay = name + matchDate;
+			if(LocalDate.now().isEqual(localDate)) {
+				matchDay = "今日 " + matchDate;
+			}
 			dto.setMatchDay(matchDay);
 			//赛事编码
 			String changci = dto.getChangci();
