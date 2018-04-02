@@ -9,6 +9,7 @@
     <result column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
     <result column="play_name" jdbcType="VARCHAR" property="playName" />
     <result column="play_img" jdbcType="VARCHAR" property="playImg" />
+    <result column="play_type" jdbcType="INTEGER" property="playType" />
     <result column="play_label_id" jdbcType="INTEGER" property="playLabelId" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="status" jdbcType="INTEGER" property="status" />
@@ -22,6 +23,7 @@
            dl.play_img playClassifyImg,
            dl.lottery_play_classify_id playClassifyId,
            dl.play_label_id playClassifyLabelId,
+           dl.play_type playType
            dpl.label_name playClassifyLabelName
         from
             dl_lottery_play_classify dl 

@@ -28,6 +28,12 @@ public class LotteryPlayClassify {
      */
     @Column(name = "play_img")
     private String playImg;
+    
+    /**
+     * 投注类型
+     */
+    @Column(name = "play_type")
+    private String playType;
 
     /**
      * 玩法标签id
@@ -128,8 +134,16 @@ public class LotteryPlayClassify {
     public void setPlayImg(String playImg) {
         this.playImg = playImg;
     }
+    
+    public String getPlayType() {
+		return playType;
+	}
 
-    /**
+	public void setPlayType(String playType) {
+		this.playType = playType;
+	}
+
+	/**
      * 获取玩法标签id
      *
      * @return play_label_id - 玩法标签id
