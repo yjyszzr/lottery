@@ -799,16 +799,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public List<LotteryMatchDTO> queryMatchResult(String dateStr){
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByDate(dateStr);
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-		if(CollectionUtils.isEmpty(lotteryMatchList)) {
-			return lotteryMatchDTOList;
-		}
-		
-		lotteryMatchList.forEach(s->{
-			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
-			BeanUtils.copyProperties(s, lotteryMatchDTO);
-			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
-			lotteryMatchDTOList.add(lotteryMatchDTO);
-		});
+//		if(CollectionUtils.isEmpty(lotteryMatchList)) {
+//			return lotteryMatchDTOList;
+//		}
+//		
+//		lotteryMatchList.forEach(s->{
+//			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
+//			BeanUtils.copyProperties(s, lotteryMatchDTO);
+//			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+//			lotteryMatchDTOList.add(lotteryMatchDTO);
+//		});
 		
 		return lotteryMatchDTOList;
 	}
