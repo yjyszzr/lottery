@@ -19,6 +19,12 @@ public class LotteryPrint {
      */
     @Column(name = "order_sn")
     private String orderSn;
+    
+    /**
+     * 出票单编号
+     */
+    @Column(name = "ticket_id")
+    private String ticketId;
 
     /**
      * 请求时间
@@ -346,6 +352,14 @@ public class LotteryPrint {
 
 	public void setPrintTime(Date printTime) {
 		this.printTime = printTime;
+	}
+
+	public String getTicketId() {
+		return ticketId;
+	}
+
+	public void setTicketId(String ticketId) {
+		this.ticketId = ticketId;
 	}
 
 	/**

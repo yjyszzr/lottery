@@ -93,7 +93,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			for(CallbackStake callbackStake : callbackStakes) {
 				LotteryPrint lotteryPrint = new LotteryPrint();
-				lotteryPrint.setOrderSn(callbackStake.getTicketId());
+				lotteryPrint.setTicketId(callbackStake.getTicketId());
 				lotteryPrint.setStatus(1);
 				lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 				lotteryPrint.setPrintNo(callbackStake.getPrintNo());
@@ -107,7 +107,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
 					continue;
 				}
-				lotteryPrintMapper.updateByOrderSn(lotteryPrint);
+				lotteryPrintMapper.updateByTicketId(lotteryPrint);
 			}
 		}
 	}
