@@ -16,6 +16,9 @@ public class DlPlayClassifyDetailDTO implements Serializable{
 	@ApiModelProperty(value = "玩法图片")
 	public String playClassifyImg;
 	
+	@ApiModelProperty(value = "投注类型")
+	public String playType;
+	
 	@ApiModelProperty(value = "玩法id")
 	public String playClassifyId;
 	

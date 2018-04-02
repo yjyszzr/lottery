@@ -21,6 +21,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+//import org.jsoup.Jsoup;
+//import org.jsoup.nodes.Document;
+//import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +44,7 @@ import com.dl.dto.DlJcZqMatchCellDTO;
 import com.dl.dto.DlJcZqMatchDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.dto.DlJcZqMatchPlayDTO;
+import com.dl.dto.LotteryMatchDTO;
 import com.dl.dto.MatchBetCellDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchBetParam;
@@ -727,4 +733,89 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		maxBetCell.setPlayType(matchBetCell.getPlayType());
 		return maxBetCell;
 	}
+	
+	/**
+	 * 抓取当天和前两天的中国体育彩票足球竞猜网 开赛结果 并更新赛事结果  -- 定时任务
+	 * @return
+	 */
+//	public int pullMatchResult() {
+//        Document doc = null;
+//        List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>();
+//        try {
+//            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
+//            Elements elements =  doc.getElementsByClass("m-tab");
+//            Elements trs = elements.select("tbody tr");
+//            for (int i = 0; i < trs.size(); i++) {
+//            	Elements tds = trs.get(i).select("td");
+//            	LotteryMatch lotteryMatch = new  LotteryMatch();
+//            	for(int j = 0,tdsLen = tds.size();j < tdsLen;j++) {
+//            		if(j <= 1) {
+//            			String str = getMatchSnStr(tds);
+//            			if(StringUtils.isEmpty(str)) {
+//            				break;
+//            			}
+//            			lotteryMatch.setMatchSn(str);
+//            		}
+//            		lotteryMatch.setFirstHalf(String.valueOf(tds.get(4).text()));
+//            		lotteryMatch.setWhole(String.valueOf(tds.get(5).text()));
+//            		matchResult.add(lotteryMatch);
+//            		break;
+//            	}
+//            }
+//        } catch (Exception e) {
+//        	log.error(e.getMessage());
+//        }
+//        
+//        int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
+//        
+//		return rst;
+//	}
+	
+	/** 
+	 * 对抓取的数据构造赛事编号
+	 * @param tds
+	 * @return
+	 */
+//	public String getMatchSnStr(Elements tds) {
+//		String now = DateUtil.getCurrentDate(DateUtil.date_sdf);
+//		String str1 = tds.get(0).text();
+//		if(!now.equals(str1)) {
+//			return "";
+//		}
+//		Boolean goOn = str1.contains("-");
+//		if(goOn == false) {
+//			return "";
+//		}
+//		str1 = str1.replaceAll("-", "");
+//		String str2 = tds.get(1).text();
+//		String str3 = str2.substring(str2.length() - 3);
+//		str2 = str2.substring(0,str2.length() - 3);
+//		str2 = String.valueOf(LocalWeekDate.getCode(str2));
+//		
+//		return  str1+str2+str3;
+//	}
+	
+	/**
+	 * 根据日期查询比赛结果
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LotteryMatchDTO> queryMatchResult(String dateStr){
+		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByDate(dateStr);
+		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
+//		if(CollectionUtils.isEmpty(lotteryMatchList)) {
+//			return lotteryMatchDTOList;
+//		}
+//		
+//		lotteryMatchList.forEach(s->{
+//			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
+//			BeanUtils.copyProperties(s, lotteryMatchDTO);
+//			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+//			lotteryMatchDTOList.add(lotteryMatchDTO);
+//		});
+		
+		return lotteryMatchDTOList;
+	}
+	
+	
 }

@@ -9,5 +9,5 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * 根据订单
 	 * @param lotteryPrint
 	 */
-	public void updateByOrderSn(LotteryPrint lotteryPrint);
+	public void updateByTicketId(LotteryPrint lotteryPrint);
 }
