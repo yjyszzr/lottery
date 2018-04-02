@@ -23,7 +23,7 @@
            dl.play_img playClassifyImg,
            dl.lottery_play_classify_id playClassifyId,
            dl.play_label_id playClassifyLabelId,
-           dl.play_type playType
+           dl.play_type playType,
            dpl.label_name playClassifyLabelName
         from
             dl_lottery_play_classify dl 
