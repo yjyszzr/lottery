@@ -23,6 +23,7 @@
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
   </resultMap>
   <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchPlayDTO">
+    <result column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
     <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
@@ -43,7 +44,7 @@
   </resultMap>
   
   <sql id="matchFields">
-  	m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci,
+  	m.match_id, m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci,
   	m.home_team_id, m.home_team_name, m.home_team_abbr, m.home_team_rank, m.visiting_team_id, 
   	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, m.match_time
   </sql>

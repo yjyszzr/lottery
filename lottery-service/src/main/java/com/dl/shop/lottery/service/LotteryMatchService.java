@@ -1,5 +1,4 @@
 package com.dl.shop.lottery.service;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -33,6 +32,7 @@ import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.dto.DIZQUserBetCellInfoDTO;
 import com.dl.dto.DLBetMatchCellDTO;
 import com.dl.dto.DLZQBetInfoDTO;
 import com.dl.dto.DlJcZqMatchCellDTO;
@@ -260,6 +260,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dto.setMatchCells(matchCells);
 	}
 	/**
+	 * 半全场
 	 * {"aa":"1.92","dd":"5.60","hh":"10.50","p_status":"Selling","d_trend":"0","fixedodds":"",
 		"ad":"16.00","dh":"12.00","ah":"50.00","vbt":"0","int":"1","a_trend":"0","single":"1",
 		"goalline":"","o_type":"F","p_code":"HAFU","cbt":"1","allup":"1","ha":"25.00","h_trend":"0",
@@ -675,23 +676,25 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Double minBonus = minBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
+		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
-		betInfoDTO.setPlayType(param.getPlayType());
-		betInfoDTO.setBetCells(betCellList);
-		betInfoDTO.setBetNum(betCellList.size());
 		betInfoDTO.setMaxBonus(Double.valueOf(String.format("%.2f", maxBonus)));
 		betInfoDTO.setMinBonus(Double.valueOf(String.format("%.2f", minBonus)));
 		betInfoDTO.setTimes(param.getTimes());
+		betInfoDTO.setBetNum(betCellList.size());
 		Double money = betCellList.size()*param.getTimes()*2.0;
 		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
-		String stakes = matchBellCellList.stream().map(item->{
+		betInfoDTO.setPlayType(param.getPlayType());
+		//betInfoDTO.setBetCells(betCellList);//投注方案
+		/*String stakes = matchBellCellList.stream().map(item->{
 			String cellCodes = item.getBetCells().stream().map(cell->cell.getCellCode()).collect(Collectors.joining(","));
 			return item.getPlayType() +"|" + item.getPlayCode() + "|" + cellCodes;
 		}).collect(Collectors.joining(";"));
-		betInfoDTO.setStakes(stakes);
-		String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
-		betInfoDTO.setIssue(issue);
+		betInfoDTO.setStakes(stakes);*/
+		//所有选项的最后一个场次编码
+		/*String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+		betInfoDTO.setIssue(issue);*/
 //		betInfoDTO.setMatchBetList(matchBetList);
 		return betInfoDTO;
 	}

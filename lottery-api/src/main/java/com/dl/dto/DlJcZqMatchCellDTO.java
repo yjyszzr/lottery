@@ -22,7 +22,7 @@ public class DlJcZqMatchCellDTO implements Serializable{
 	@ApiModelProperty(value = "选项赔率", required = true)
 	public String cellOdds;
 	
-	@ApiModelProperty(value = "子选项", required = true)
+	@ApiModelProperty(value = "子选项,比分类型用到该属性", required = true)
 	public List<DlJcZqMatchCellDTO> cellSons;
 	
 	public DlJcZqMatchCellDTO(String cellCode, String cellName, String cellOdds){
