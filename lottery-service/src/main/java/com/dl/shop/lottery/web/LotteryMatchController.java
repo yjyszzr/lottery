@@ -19,6 +19,8 @@ import com.dl.dto.BetPayInfoDTO;
 import com.dl.dto.DIZQUserBetInfoDTO;
 import com.dl.dto.DLZQBetInfoDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
+import com.dl.dto.LotteryMatchDTO;
+import com.dl.param.DateStrParam;
 import com.dl.param.DlJcZqMatchBetParam;
 import com.dl.param.DlJcZqMatchListParam;
 import com.dl.param.DlJcZqSaveBetInfoParam;
@@ -97,6 +99,13 @@ public class LotteryMatchController {
     public BaseResult<String> saveMatchList() {
 		lotteryMatchService.saveMatchList();
     	return ResultGenerator.genSuccessResult("抓取赛事列表保存成功");
+    }
+	
+	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")
+    @PostMapping("/queryMatchResult")
+    public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody DateStrParam dateStrParam) {
+		List<LotteryMatchDTO> lotteryMatchDTOList = lotteryMatchService.queryMatchResult(dateStrParam.getDateStr());
+    	return ResultGenerator.genSuccessResult("查询比赛结果成功",lotteryMatchDTOList);
     }
 	
 }

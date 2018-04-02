@@ -1,6 +1,7 @@
 package com.dl.shop.lottery.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -22,4 +23,17 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public List<DlJcZqMatchPlayDTO> getMatchList(@Param("playType")String playType);
+	
+	
+	
+	public int updateMatchBatch(@Param("list") List<LotteryMatch> matchList);
+	
+	
+	/**
+	 * 根据日期查询赛事结果
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LotteryMatch> queryMatchByDate(@Param("dateStr") String dateStr);
+	
 }

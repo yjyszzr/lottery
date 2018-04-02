@@ -21,6 +21,9 @@
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="match_sn" jdbcType="VARCHAR" property="matchSn" />
+    <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
+    <result column="whole" jdbcType="VARCHAR" property="whole" />
   </resultMap>
   <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchPlayDTO">
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
@@ -71,4 +74,36 @@
   	 and mp.is_del = 0 
   	 and mp.status=0
   </select>
+  
+  <select id="queryMatchByDate" parameterType ="java.lang.String" resultMap="BaseResultMap">
+  	select * from dl_match
+  	 where is_del = 0 
+     and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d' )  = #{dateStr} 
+  </select>
+
+  <update id="updateMatchBatch" parameterType="java.util.List">
+        update dl_match
+            <trim prefix="set" suffixOverrides=",">
+	             <trim prefix="first_half =case" suffix="end,">
+	                 <foreach collection="list" item="i" index="index">
+	                         <if test="i.firstHalf!=null">
+	                          when match_sn=#{i.matchSn} then #{i.firstHalf}
+	                         </if>
+	                 </foreach>
+	              </trim>
+	              <trim prefix="whole =case" suffix="end,">
+	                 <foreach collection="list" item="i" index="index">
+	                         <if test="i.whole!=null">
+	                          when match_sn=#{i.matchSn} then #{i.whole}
+	                         </if>
+	                 </foreach>
+	              </trim>
+             </trim>
+              where
+            <foreach collection="list" separator="or" item="i" index="index" >
+              match_sn = #{i.matchSn}
+            </foreach>
+            
+	</update>
 </mapper>
