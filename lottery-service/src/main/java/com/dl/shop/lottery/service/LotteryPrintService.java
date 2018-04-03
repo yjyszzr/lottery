@@ -108,6 +108,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					continue;
 				}
 				lotteryPrintMapper.updateByTicketId(lotteryPrint);
+				log.info(callbackStake.getTicketId() + "，回调成功");
 			}
 		}
 	}
