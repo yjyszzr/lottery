@@ -160,6 +160,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String hOdds = jsonObj.getString("h");
 		String dOdds = jsonObj.getString("d");
 		String aOdds = jsonObj.getString("a");
+		String fixedOdds = jsonObj.getString("fixedodds");
+		dto.setFixedOdds(fixedOdds);
+		Integer single = jsonObj.getInteger("single");
+		dto.setSingle(single);
 		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
 		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
 		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
@@ -177,6 +181,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String hOdds = jsonObj.getString("h");
 		String dOdds = jsonObj.getString("d");
 		String aOdds = jsonObj.getString("a");
+		Integer single = jsonObj.getInteger("single");
+		dto.setSingle(single);
 		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
 		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
 		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
@@ -196,6 +202,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private void initDlJcZqMatchCell3(DlJcZqMatchPlayDTO dto) {
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
+		Integer single = jsonObj.getInteger("single");
+		dto.setSingle(single);
 		Set<String> keySet = jsonObj.keySet();
 		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO("3", "主胜", null);
 		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
@@ -245,6 +253,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private void initDlJcZqMatchCell4(DlJcZqMatchPlayDTO dto) {
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
+		Integer single = jsonObj.getInteger("single");
+		dto.setSingle(single);
 		Set<String> keySet = jsonObj.keySet();
 		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
 		String regex = "^s\\d$";
@@ -273,6 +283,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String playContent = dto.getPlayContent();
 		List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
 		JSONObject jsonObj = JSON.parseObject(playContent);
+		Integer single = jsonObj.getInteger("single");
+		dto.setSingle(single);
 		String hhOdds = jsonObj.getString("hh");
 		matchCells.add(new DlJcZqMatchCellDTO("33", "胜-胜", hhOdds));
 		String hdOdds = jsonObj.getString("hd");

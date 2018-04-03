@@ -86,4 +86,9 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	@ApiModelProperty(value = "比赛所有选项，半全场，总进球数只使用这个属性，不使用homeCell，visitingCell，flatCell", required = true)
 	private List<DlJcZqMatchCellDTO> matchCells;
 	
+	@ApiModelProperty(value = "让球数", required = true)
+	private String fixedOdds;
+	
+	@ApiModelProperty(value = "单场，1可以单场，0不可以", required = true)
+	private Integer single;
 }
