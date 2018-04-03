@@ -18,6 +18,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.dl.api.IOrderService;
 import com.dl.base.configurer.RestTemplateConfig;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
@@ -39,6 +40,7 @@ import com.dl.param.DlQueryPrizeFileParam;
 import com.dl.param.DlQueryStakeFileParam;
 import com.dl.param.DlQueryStakeParam;
 import com.dl.param.DlToStakeParam;
+import com.dl.param.LotteryPrintParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 
@@ -54,6 +56,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
 	@Resource
 	private RestTemplateConfig restTemplateConfig;
+	
+	@Resource
+	private IOrderService orderService;
 	
 	@Resource
 	private RestTemplate restTemplate;  
@@ -94,6 +99,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			for(CallbackStake callbackStake : callbackStakes) {
 				LotteryPrint lotteryPrint = new LotteryPrint();
 				lotteryPrint.setTicketId(callbackStake.getTicketId());
+				lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
 				lotteryPrint.setStatus(1);
 				lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 				lotteryPrint.setPrintNo(callbackStake.getPrintNo());
@@ -110,8 +116,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
 					continue;
 				}
-				lotteryPrintMapper.updateByTicketId(lotteryPrint);
+				lotteryPrintMapper.updateByPrimaryKey(lotteryPrint);
 				log.info(callbackStake.getTicketId() + "，回调成功");
+				LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+				lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+				lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+				lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+				orderService.updateOrderInfoByPrint(lotteryPrintParam);
 			}
 		}
 	}
