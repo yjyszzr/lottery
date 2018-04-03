@@ -37,8 +37,18 @@
            ticket_id = #{ticketId}
   </update>
   
-  <select id="getPrintLotteryList">
-    select * from dl_print_lottery
+  <select id="getPrintLotteryList" resultType="com.dl.shop.lottery.model.LotteryPrint">
+    select 
+        ticket_id ticketId,
+        merchant,
+        game,
+        issue,
+        playType playtype,
+        betType bettype,
+        times,
+        money,
+        stakes
+    from dl_print_lottery
     where status = 0
     order by accept_time asc
     limit 50
