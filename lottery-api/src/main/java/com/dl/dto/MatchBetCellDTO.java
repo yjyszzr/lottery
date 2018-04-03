@@ -12,7 +12,7 @@ public class MatchBetCellDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@ApiModelProperty(value="赛事id")
-	private String matchId;
+	private Integer matchId;
 	@ApiModelProperty(value = "场次:周三001", required = true)
 	public String changci;
 	@ApiModelProperty(value="是否设胆，0：否，1是")

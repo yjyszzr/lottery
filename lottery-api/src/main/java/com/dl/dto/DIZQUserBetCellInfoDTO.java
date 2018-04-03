@@ -12,7 +12,7 @@ import lombok.Data;
 public class DIZQUserBetCellInfoDTO implements Serializable{
 
 	@ApiModelProperty(value="赛事id")
-	private String matchId;
+	private Integer matchId;
 	@ApiModelProperty(value = "场次:周三001", required = true)
 	public String changci;
 	@ApiModelProperty(value="是否设胆，0：否，1是")

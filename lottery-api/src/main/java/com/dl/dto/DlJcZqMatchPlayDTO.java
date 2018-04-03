@@ -15,7 +15,7 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value="赛事id")
-	private String matchId;
+	private Integer matchId;
 	
 	@ApiModelProperty(value = "联赛id", required = true)
 	public String leagueId;
