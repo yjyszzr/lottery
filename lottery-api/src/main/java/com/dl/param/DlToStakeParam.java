@@ -21,10 +21,10 @@ public class DlToStakeParam implements Serializable{
     private String timestamp;
 	
 	@ApiModelProperty(value = "订单详情", required = true)
-    private List<PrintTicketOrderDTO> orders;
+    private List<PrintTicketOrderParam> orders;
 	
 	@Data
-	public static class PrintTicketOrderDTO {
+	public static class PrintTicketOrderParam {
 		
 		@ApiModelProperty(value = "商户订单号", required = true)
 	    private String ticketId;

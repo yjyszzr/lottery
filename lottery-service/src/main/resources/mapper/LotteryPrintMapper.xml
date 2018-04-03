@@ -25,7 +25,7 @@
     <result column="print_time" jdbcType="TIMESTAMP" property="printTime" />
   </resultMap>
   
-  <update id="updateByOrderSn">
+  <update id="updateByTicketId">
     update dl_print_lottery set
            status = #{status},
            platform_id = #{platformId},
@@ -36,4 +36,21 @@
     where 
            ticket_id = #{ticketId}
   </update>
+  
+  <select id="getPrintLotteryList" resultType="com.dl.shop.lottery.model.LotteryPrint">
+    select 
+        ticket_id ticketId,
+        merchant,
+        game,
+        issue,
+        playType playtype,
+        betType bettype,
+        times,
+        money,
+        stakes
+    from dl_print_lottery
+    where status = 0
+    order by accept_time asc
+    limit 50
+  </select>
 </mapper>

@@ -43,7 +43,7 @@ public class LotteryPrintController {
 	
 	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
     @PostMapping("/callbackStake")
-    public BaseResult<String> callbackStake(@Valid @RequestBody DlCallbackStakeParam param) {
+    public BaseResult<String> callbackStake(@RequestBody DlCallbackStakeParam param) {
 		lotteryPrintService.callbackStake(param);
     	return ResultGenerator.genSuccessResult("投注结果通知成功");
     }
