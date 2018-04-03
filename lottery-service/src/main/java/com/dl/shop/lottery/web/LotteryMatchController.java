@@ -22,6 +22,7 @@ import com.dl.dto.DIZQUserBetCellInfoDTO;
 import com.dl.dto.DIZQUserBetInfoDTO;
 import com.dl.dto.DLZQBetInfoDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
+import com.dl.dto.LeagueInfoDTO;
 import com.dl.dto.LotteryMatchDTO;
 import com.dl.dto.MatchBetCellDTO;
 import com.dl.member.api.IUserBonusService;
@@ -32,6 +33,8 @@ import com.dl.member.param.StrParam;
 import com.dl.param.DateStrParam;
 import com.dl.param.DlJcZqMatchBetParam;
 import com.dl.param.DlJcZqMatchListParam;
+import com.dl.param.GetFilterConditionsParam;
+import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 
@@ -52,7 +55,16 @@ public class LotteryMatchController {
     private IUserBonusService userBonusService;
     @Resource
     private IUserService userService;
+    @Resource
+    private DlLeagueInfoService dlLeagueInfoService;
 	
+    @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
+    @PostMapping("/filterConditions")
+    public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
+    	List<LeagueInfoDTO> leagueInfos = dlLeagueInfoService.getFilterConditions();
+    	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
+    }
+    
 	@ApiOperation(value = "获取赛事列表", notes = "获取赛事列表")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueInfoMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
+  </resultMap>
+  
+  <select id="getFilterConditions" resultMap="BaseResultMap">
+  	select id, league_id, league_name, league_addr
+  	from dl_league_info
+  	where id &lt; 10
+  </select>
+</mapper>

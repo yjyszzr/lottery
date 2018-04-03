@@ -80,7 +80,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      */
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		List<DlJcZqMatchPlayDTO> matchPlayDTOList = lotteryMatchMapper.getMatchList(param.getPlayType());
+		List<DlJcZqMatchPlayDTO> matchPlayDTOList = lotteryMatchMapper.getMatchList(param.getPlayType(), param.getLeagueId());
 		Map<String, DlJcZqMatchDTO> map = new HashMap<String, DlJcZqMatchDTO>();
 		matchPlayDTOList.forEach(dto->{
 			//页面展示日期
