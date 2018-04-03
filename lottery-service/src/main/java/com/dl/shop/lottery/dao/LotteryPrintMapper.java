@@ -24,4 +24,18 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * @param lotteryPrints
 	 */
 	public void updateBatchByTicketId(List<LotteryPrint> lotteryPrints);
+	
+	/**
+	 * 查询期次相等的出票订单
+	 * @param lotteryPrint
+	 * @return
+	 */
+	public List<LotteryPrint> selectEqualsIssuePrint(LotteryPrint lotteryPrint);
+	
+	/**
+	 * 查询当前期次小于数据库期次的出票订单
+	 * @param lotteryPrint
+	 * @return
+	 */
+	public List<LotteryPrint> selectLessThanIssuePrint(LotteryPrint lotteryPrint);
 }

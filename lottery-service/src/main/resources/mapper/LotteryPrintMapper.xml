@@ -63,4 +63,17 @@
     order by accept_time asc
     limit 50
   </select>
+  
+  <select id="selectEqualsIssuePrint" resultType="com.dl.shop.lottery.model.LotteryPrint">
+    select * 
+    from dl_print_lottery
+    where issue = #{issue}
+  </select>
+  
+  <select id="selectLessThanIssuePrint" resultType="com.dl.shop.lottery.model.LotteryPrint">
+    select * 
+    from dl_print_lottery
+    where issue &gt; #{issue}
+  </select>
+  
 </mapper>

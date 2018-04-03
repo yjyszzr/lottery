@@ -24,11 +24,14 @@ import com.dl.enums.MatchResultCrsEnum;
 import com.dl.enums.MatchResultHadEnum;
 import com.dl.enums.MatchResultHafuEnum;
 import com.dl.param.DlRewardParam;
+import com.dl.param.DlToAwardingParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
+import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.LotteryRewardMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
+import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryReward;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -41,6 +44,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	
 	@Resource
 	private LotteryRewardMapper lotteryRewardMapper;
+	
+	@Resource
+	private LotteryPrintMapper lotteryPrintMapper;
 	
 	@Value("${reward.url}")
 	private String rewardUrl;
@@ -63,6 +69,28 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					insertRewardData(lotteryMatch, rewardData);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * 兑奖接口
+	 * @param param
+	 */
+	public void toAwarding(DlToAwardingParam param) {
+		//根据兑奖期次，查询符合条件的出票订单
+		//① 查询期次相等的出票订单，组装中奖数据，并可以进行派奖
+		LotteryPrint lotteryPrintEqual = new LotteryPrint();
+		lotteryPrintEqual.setIssue(param.getIssue());
+		List<LotteryPrint> lotteryPrintEquals = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
+		if(CollectionUtils.isNotEmpty(lotteryPrintEquals)) {
+			
+		}
+		//② 查询当前期次小于数据库期次的出票订单，只组装中奖数据
+		LotteryPrint lotteryPrintLessThan = new LotteryPrint();
+		lotteryPrintLessThan.setIssue(param.getIssue());
+		List<LotteryPrint> lotteryPrintLessThans = lotteryPrintMapper.selectLessThanIssuePrint(lotteryPrintLessThan);
+		if(CollectionUtils.isNotEmpty(lotteryPrintLessThans)) {
+			
 		}
 	}
 	

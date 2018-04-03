@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.param.DlRewardParam;
+import com.dl.param.DlToAwardingParam;
 import com.dl.shop.lottery.service.LotteryRewardService;
 
 import io.swagger.annotations.ApiOperation;
@@ -27,5 +28,12 @@ public class LotteryRewardController {
     public BaseResult<String> saveRewardData(@Valid @RequestBody DlRewardParam param) {
 		lotteryRewardService.saveRewardData(param);
     	return ResultGenerator.genSuccessResult("拉取开奖数据成功");
+    }
+	
+	@ApiOperation(value = "兑奖接口", notes = "兑奖接口")
+    @PostMapping("/toAwarding")
+    public BaseResult<String> toAwarding(@Valid @RequestBody DlToAwardingParam param) {
+		lotteryRewardService.toAwarding(param);
+    	return ResultGenerator.genSuccessResult("兑奖成功");
     }
 }
