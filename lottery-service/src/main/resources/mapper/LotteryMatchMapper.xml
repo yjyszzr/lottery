@@ -78,6 +78,10 @@
   	 and mp.is_del = 0 
   	 and mp.status=0
   </select>
+
+  <select id="getMatchListToday" resultMap="BaseResultMap">
+  	select * from dl_match where DATEDIFF(match_time,NOW())=0 and m.is_del = 0 and m.is_show=1 
+  </select>
   
   <select id="queryMatchByDate" parameterType ="java.lang.String" resultMap="BaseResultMap">
   	select * from dl_match

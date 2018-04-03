@@ -190,7 +190,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @return
 	 */
 	public DlQueryPrizeFileDTO queryPrizeFile(DlQueryPrizeFileParam param) {
-		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+//		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
 		String backStr = getBackDateByJsonData(jo, "/prize_file");
 		JSONObject backJo = JSONObject.fromObject(backStr);

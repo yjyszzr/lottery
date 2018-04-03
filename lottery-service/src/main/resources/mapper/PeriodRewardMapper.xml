@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.PeriodRewardMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.PeriodReward">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="period_id" jdbcType="INTEGER" property="periodId" />
+    <result column="merchant" jdbcType="VARCHAR" property="merchant" />
+    <result column="game" jdbcType="VARCHAR" property="game" />
+    <result column="issue" jdbcType="VARCHAR" property="issue" />
+    <result column="small_reward_num" jdbcType="INTEGER" property="smallRewardNum" />
+    <result column="small_reward" jdbcType="INTEGER" property="smallReward" />
+    <result column="big_reward_num" jdbcType="INTEGER" property="bigRewardNum" />
+    <result column="big_reward" jdbcType="INTEGER" property="bigReward" />
+    <result column="un_reward_num" jdbcType="INTEGER" property="unRewardNum" />
+    <result column="un_reward" jdbcType="INTEGER" property="unReward" />
+    <result column="prize_url" jdbcType="VARCHAR" property="prizeUrl" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="add_time" jdbcType="INTEGER" property="addTime" />
+  </resultMap>
+  
+  <insert id="insertPeriodReward" parameterType="com.dl.shop.lottery.model.PeriodReward">
+  	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="periodId">    
+      	 SELECT LAST_INSERT_ID() AS PERIODID  
+      </selectKey>   
+      INSERT INTO dl_period_reward(merchant,game,issue,small_reward_num,small_reward,big_reward_num,big_reward,un_reward_num,un_reward,prize_url,add_time) 
+      VALUES(#{merchant},#{game},#{issue},#{smallRewardNum},#{smallReward},#{bigRewardNum},#{bigReward},#{unRewardNum},#{unReward},#{prizeUrl},#{addTime});
+  </insert>
+  
+  <select id="queryPeriodRewardByIssues" parameterType="com.dl.shop.lottery.model.PeriodReward" resultMap="BaseResultMap">
+  	  SELECT issue FROM dl_period_reward  where  issue in
+  	  <foreach item="item" index="index" collection="list"   open="(" separator="," close=")">  
+          #{item}   
+      </foreach>
+  </select>
+  
+</mapper>
