@@ -71,6 +71,9 @@
   		dl_match m, dl_match_play mp
   	where DATEDIFF(show_time,NOW())=0 and m.is_del = 0 and m.is_show=1 
   	 and m.match_id=mp.match_id 
+  	 <if test="leagueId!=null and leagueId != ''">
+  	 	and m.league_id=#{leagueId}
+  	 </if>
   	 and mp.play_type=#{playType} 
   	 and mp.is_del = 0 
   	 and mp.status=0
