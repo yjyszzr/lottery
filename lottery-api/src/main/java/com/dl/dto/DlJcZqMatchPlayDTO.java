@@ -4,14 +4,19 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+@ApiModel("每场赛事信息")
 @Data
 public class DlJcZqMatchPlayDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
+	@ApiModelProperty(value="赛事id")
+	private Integer matchId;
+	
 	@ApiModelProperty(value = "联赛id", required = true)
 	public String leagueId;
 	
@@ -69,7 +74,7 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	@ApiModelProperty(value = "赛事编码", required = true)
 	private String playCode;
 	
-	@ApiModelProperty(value = "主队选项", required = true)
+	@ApiModelProperty(value = "主队选项，胜平负，让球胜平负使用主客平三选项，比分也使用三选项（三个选项只有名称，没有赔率）", required = true)
 	private DlJcZqMatchCellDTO homeCell;
 	
 	@ApiModelProperty(value = "客队选项", required = true)
@@ -78,7 +83,7 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	@ApiModelProperty(value = "平局选项", required = true)
 	private DlJcZqMatchCellDTO flatCell;
 	
-	@ApiModelProperty(value = "比赛所有选项", required = true)
+	@ApiModelProperty(value = "比赛所有选项，半全场，总进球数只使用这个属性，不使用homeCell，visitingCell，flatCell", required = true)
 	private List<DlJcZqMatchCellDTO> matchCells;
 	
 }

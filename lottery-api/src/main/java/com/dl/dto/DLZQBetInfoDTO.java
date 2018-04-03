@@ -13,8 +13,8 @@ public class DLZQBetInfoDTO implements Serializable{
 	private Double maxBonus;
 	@ApiModelProperty("最小奖金")
 	private Double minBonus;
-	@ApiModelProperty("投注彩票列表,投注方案展示")
-	private List<DLBetMatchCellDTO> betCells;
+	/*@ApiModelProperty("投注彩票列表,投注方案展示")
+	private List<DLBetMatchCellDTO> betCells;*/
 	@ApiModelProperty("倍数")
 	private int times;
 	@ApiModelProperty("投注数目")
@@ -25,10 +25,10 @@ public class DLZQBetInfoDTO implements Serializable{
 	private String betType;
 	@ApiModelProperty("玩法")
 	private String playType;
-	@ApiModelProperty("彩票")
-	private String stakes;
-	@ApiModelProperty("期次")
-	private String issue;
-/*	@ApiModelProperty("实际的投注组合信息（包括加胆后的拆分，该值前端不使用，转给后端下单使用）")
-	private List<List<MatchBetCellDTO>>  matchBetList;*/
+	/*@ApiModelProperty("彩票")
+	private String stakes;*/
+	/*@ApiModelProperty("期次")
+	private String issue;*/
+	@ApiModelProperty("实际的投注场次信息")
+	private List<DIZQUserBetCellInfoDTO>  userBetCellInfos;
 }

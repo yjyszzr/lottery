@@ -19,6 +19,10 @@ public class DlJcZqMatchBetParam implements Serializable{
 	private String betType;
 	@ApiModelProperty(value="该投票玩法")
 	private String playType;
+	@ApiModelProperty(value="彩票种类")
+	private int lotteryClassifyId;
+	@ApiModelProperty(value="彩票玩法类别")
+	private int lotteryPlayClassifyId;
 	@ApiModelProperty(value="投注详细")
 	private List<MatchBetCellDTO> matchBetCells;
 	

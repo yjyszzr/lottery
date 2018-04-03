@@ -2,6 +2,8 @@ package com.dl.dto;
 
 import java.util.List;
 
+import com.dl.member.dto.UserBonusDTO;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,5 +23,5 @@ public class BetPayInfoDTO {
 	@ApiModelProperty(value="需第三方支付")
 	private Double thirdPartyPaid;
 	@ApiModelProperty(value="用户可用优惠卷列表")
-	private List bonusList;
+	private List<UserBonusDTO> bonusList;
 }
