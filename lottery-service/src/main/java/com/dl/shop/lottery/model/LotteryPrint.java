@@ -81,6 +81,12 @@ public class LotteryPrint {
     private String stakes;
     
     /**
+     * 出票返回错误码
+     */
+    @Column(name = "error_code")
+    private Integer errorCode;
+    
+    /**
      * 出票状态 0-出票中 1-已出票
      */
     @Column(name = "status")
@@ -360,6 +366,14 @@ public class LotteryPrint {
 
 	public void setTicketId(String ticketId) {
 		this.ticketId = ticketId;
+	}
+	
+	public Integer getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(Integer errorCode) {
+		this.errorCode = errorCode;
 	}
 
 	/**

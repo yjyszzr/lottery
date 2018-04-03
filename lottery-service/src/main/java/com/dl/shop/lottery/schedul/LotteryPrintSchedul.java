@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.dl.dto.DlToStakeDTO;
+import com.dl.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.param.DlToStakeParam;
 import com.dl.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
@@ -58,7 +60,22 @@ public class LotteryPrintSchedul {
         		printTicketOrderParams.add(printTicketOrderParam);
         	});
         	dlToStakeParam.setOrders(printTicketOrderParams);
-        	lotteryPrintService.toStake(dlToStakeParam);
+        	DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(dlToStakeParam);
+        	if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
+        		List<LotteryPrint> lotteryPrintList = new LinkedList<LotteryPrint>();
+        		for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
+        			if(backOrderDetail.getErrorCode() != 0) {
+        				LotteryPrint lotteryPrint = new LotteryPrint();
+        				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
+        				lotteryPrint.setErrorCode(backOrderDetail.getErrorCode());
+        				lotteryPrint.setStatus(2);
+        				lotteryPrintList.add(lotteryPrint);
+        			}
+        		}
+        		if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
+        			lotteryPrintMapper.updateBatchByTicketId(lotteryPrintList);
+        		}
+        	}
         }
     }
 }
