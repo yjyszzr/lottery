@@ -21,11 +21,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-//import org.jsoup.Jsoup;
-//import org.jsoup.nodes.Document;
-//import org.jsoup.select.Elements;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +32,6 @@ import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
-import com.dl.dto.DIZQUserBetCellInfoDTO;
 import com.dl.dto.DLBetMatchCellDTO;
 import com.dl.dto.DLZQBetInfoDTO;
 import com.dl.dto.DlJcZqMatchCellDTO;
@@ -45,6 +39,7 @@ import com.dl.dto.DlJcZqMatchDTO;
 import com.dl.dto.DlJcZqMatchListDTO;
 import com.dl.dto.DlJcZqMatchPlayDTO;
 import com.dl.dto.LotteryMatchDTO;
+import com.dl.dto.LotteryPrintDTO;
 import com.dl.dto.MatchBetCellDTO;
 import com.dl.enums.MatchPlayTypeEnum;
 import com.dl.param.DlJcZqMatchBetParam;
@@ -603,9 +598,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		LinkedList<String> link = new LinkedList<String>(list);
 		while(link.size() > 0) {
 			String remove = link.remove(0);
-			String item = str+remove;
+			String item = str+remove+",";
 			if(num == 1) {
-				betList.add(item);
+				betList.add(item.substring(0,item.length()-1));
 			} else {
 				betNum1(item,num-1,link, betList);
 			}
@@ -628,6 +623,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				danIndexList.add(i+"");
 			}
 		}
+		List<LotteryPrintDTO> lotteryPrints = new ArrayList<LotteryPrintDTO>();
 		List<List<MatchBetCellDTO>>  matchBetList = new ArrayList<List<MatchBetCellDTO>>();
 		List<DLBetMatchCellDTO> betCellList = new ArrayList<DLBetMatchCellDTO>();
 		List<DLBetMatchCellDTO> maxBetCellList = new ArrayList<DLBetMatchCellDTO>();
@@ -653,7 +649,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				//
 				for(String str: betIndexList) {
-					String[] strArr = str.split("");
+					String[] strArr = str.split(",");
 					List<MatchBetCellDTO> maxList = new ArrayList<MatchBetCellDTO>(strArr.length);
 					List<MatchBetCellDTO> minList = new ArrayList<MatchBetCellDTO>(strArr.length);
 					List<MatchBetCellDTO> subList = new ArrayList<MatchBetCellDTO>(strArr.length);
@@ -670,10 +666,35 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					dto.setTimes(param.getTimes());
 					dto.setBetContent("");
 					dto.setAmount(2.0*param.getTimes());
-					betNum(dto, num, subList, betCellList);
-					betNum(dto, num, maxList, maxBetCellList);
-					betNum(dto, num, minList, minBetCellList);
+					List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
+					List<DLBetMatchCellDTO> maxBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
+					List<DLBetMatchCellDTO> minBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
+					betNum(dto, num, subList, betCellList1);
+					betNum(dto, num, maxList, maxBetCellList1);
+					betNum(dto, num, minList, minBetCellList1);
 					matchBetList.add(subList);
+					betCellList.addAll(betCellList1);
+					maxBetCellList.addAll(maxBetCellList1);
+					minBetCellList.addAll(minBetCellList1);
+					String stakes = subList.stream().map(cdto->{
+						String playCode = cdto.getPlayCode();
+						String playType = cdto.getPlayType();
+						String cellCodes = cdto.getBetCells().stream().map(cell->{
+							return cell.getCellCode();
+						}).collect(Collectors.joining(","));
+						return playType + "|" + playCode + "|" + cellCodes;
+					}).collect(Collectors.joining(";"));
+					String issue = subList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+					int times = param.getTimes();
+					Double money = betCellList1.size()*times*2.0;
+					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
+					lotteryPrintDTO.setBetType(betType);
+					lotteryPrintDTO.setIssue(issue);
+					lotteryPrintDTO.setMoney(money);
+					lotteryPrintDTO.setPlayType(param.getPlayType());
+					lotteryPrintDTO.setStakes(stakes);
+					lotteryPrintDTO.setTimes(times);
+					lotteryPrints.add(lotteryPrintDTO);
 				}
 			}
 		}
@@ -693,7 +714,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
-		//betInfoDTO.setBetCells(betCellList);//投注方案
+		betInfoDTO.setBetCells(betCellList);//投注方案
+		betInfoDTO.setLotteryPrints(lotteryPrints);
 		/*String stakes = matchBellCellList.stream().map(item->{
 			String cellCodes = item.getBetCells().stream().map(cell->cell.getCellCode()).collect(Collectors.joining(","));
 			return item.getPlayType() +"|" + item.getPlayCode() + "|" + cellCodes;

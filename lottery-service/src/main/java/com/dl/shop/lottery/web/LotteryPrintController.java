@@ -23,6 +23,7 @@ import com.dl.param.DlQueryPrizeFileParam;
 import com.dl.param.DlQueryStakeFileParam;
 import com.dl.param.DlQueryStakeParam;
 import com.dl.param.DlToStakeParam;
+import com.dl.param.SaveLotteryPrintInfoParam;
 import com.dl.shop.lottery.service.LotteryPrintService;
 
 import io.swagger.annotations.ApiOperation;
@@ -81,5 +82,11 @@ public class LotteryPrintController {
     public BaseResult<DlQueryPrizeFileDTO> queryPrizeFile(@Valid @RequestBody DlQueryPrizeFileParam param) {
 		DlQueryPrizeFileDTO dlQueryPrizeFileDTO = lotteryPrintService.queryPrizeFile(param);
     	return ResultGenerator.genSuccessResult("期次中奖文件查询成功", dlQueryPrizeFileDTO);
+    }
+	
+	@ApiOperation(value = "生成预出票信息", notes = "生成预出票信息")
+    @PostMapping("/save")
+    public BaseResult<String> saveLotteryPrintInfo(@Valid @RequestBody SaveLotteryPrintInfoParam param) {
+		return lotteryPrintService.saveLotteryPrintInfo(param);
     }
 }

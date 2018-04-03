@@ -1,11 +1,13 @@
 package com.dl.shop.lottery.service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -16,13 +18,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.dl.api.IOrderService;
 import com.dl.base.configurer.RestTemplateConfig;
+import com.dl.base.enums.SNBusinessCodeEnum;
+import com.dl.base.result.BaseResult;
+import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
+import com.dl.base.util.SNGenerator;
 import com.dl.dto.DlQueryAccountDTO;
 import com.dl.dto.DlQueryIssueDTO;
 import com.dl.dto.DlQueryIssueDTO.QueryIssue;
@@ -41,6 +48,7 @@ import com.dl.param.DlQueryStakeFileParam;
 import com.dl.param.DlQueryStakeParam;
 import com.dl.param.DlToStakeParam;
 import com.dl.param.LotteryPrintParam;
+import com.dl.param.SaveLotteryPrintInfoParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 
@@ -214,5 +222,31 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		headers.add("Authorization", authorization);
 		HttpEntity<JSONObject> requestEntity = new HttpEntity<JSONObject>(jo, headers);
         return rest.postForObject(printTicketUrl + inter, requestEntity, String.class);
+	}
+
+	/**
+	 * 保存预出票信息
+	 * @param param
+	 * @return
+	 */
+	@Transactional
+	public BaseResult<String> saveLotteryPrintInfo(SaveLotteryPrintInfoParam param) {
+		List<LotteryPrint> models = param.getLotteryPrints().stream().map(dto->{
+			LotteryPrint lotteryPrint = new LotteryPrint();
+			lotteryPrint.setGame("T51");
+			lotteryPrint.setMerchant(merchant);
+			lotteryPrint.setTicketId(SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode()));
+			lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
+			lotteryPrint.setBettype(dto.getBetType());
+			lotteryPrint.setMoney(BigDecimal.valueOf(dto.getMoney()));
+			lotteryPrint.setIssue(dto.getIssue());
+			lotteryPrint.setPlaytype(dto.getPlayType());
+			lotteryPrint.setTimes(dto.getTimes());
+			lotteryPrint.setStakes(dto.getStakes());
+			lotteryPrint.setOrderSn(param.getOrderSn());
+			return lotteryPrint;
+		}).collect(Collectors.toList());
+		super.save(models);
+		return ResultGenerator.genSuccessResult();
 	}
 }

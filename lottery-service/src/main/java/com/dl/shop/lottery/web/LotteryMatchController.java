@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
@@ -133,6 +134,8 @@ public class LotteryMatchController {
 		dto.setBonusId(bonusId);
 		dto.setSurplus(surplus);
 		dto.setThirdPartyPaid(thirdPartyPaid);
+		int requestFrom = 0;
+		dto.setRequestFrom(requestFrom);
 		String dtoJson = JSONHelper.bean2json(dto);
 		String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
 		String key = MD5.crypt(keyStr);

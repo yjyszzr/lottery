@@ -1,6 +1,7 @@
 package com.dl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiModel;
@@ -25,6 +26,8 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	private String ticketData;
 	@ApiModelProperty(value="投注场次队名")
 	private String matchTeam;
+	@ApiModelProperty(value = "比赛时间")
+	public Date matchTime;
 	
 	public DIZQUserBetCellInfoDTO(MatchBetCellDTO matchCell){
 		this.matchId = matchCell.getMatchId();
@@ -33,6 +36,7 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 		this.lotteryClassifyId = matchCell.getLotteryClassifyId();
 		this.lotteryPlayClassifyId = matchCell.getLotteryPlayClassifyId();
 		this.matchTeam = matchCell.getMatchTeam();
+		this.matchTime = matchCell.getMatchTime();
 		String ticketData = matchCell.getPlayType() + "|" + matchCell.getPlayCode() + "|";
 		this.ticketData = ticketData + matchCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
 		.collect(Collectors.joining(";"));

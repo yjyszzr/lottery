@@ -1,6 +1,7 @@
 package com.dl.dto;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -21,8 +22,10 @@ public class MatchBetCellDTO implements Serializable{
 	private int lotteryClassifyId;
 	@ApiModelProperty(value="彩票玩法类别")
 	private int lotteryPlayClassifyId;
-	@ApiModelProperty(value="投注场次队名")
+	@ApiModelProperty(value="投注场次队名,如：中国VS日本")
 	private String matchTeam;
+	@ApiModelProperty(value = "比赛时间")
+	public Date matchTime;
 	@ApiModelProperty(value="该场次玩法")
 	private String playType;
 	@ApiModelProperty(value="投注赛事编码")
