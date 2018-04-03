@@ -110,9 +110,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			//初始化投注选项
 			initDlJcZqMatchCell(dto);
 			dto.setPlayContent(null);
-			dlJcZqMatchDTO.getPlayList().add(dto);
 			if(dto.getIsHot() == 1) {
 				dlJcZqMatchListDTO.getHotPlayList().add(dto);
+			} else {
+				dlJcZqMatchDTO.getPlayList().add(dto);
 			}
 		});
 		map.forEach((key, value) ->{
