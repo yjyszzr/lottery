@@ -99,11 +99,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				lotteryPrint.setPrintNo(callbackStake.getPrintNo());
 				lotteryPrint.setPrintSp(callbackStake.getSp());
 				lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
-				Date printTime;
+				Date printTime = null;
 				try {
-					printTime = sdf.parse(callbackStake.getPrintTime());
+					String printTimeStr = callbackStake.getPrintTime();
+					printTimeStr = printTimeStr.replaceAll("/", "-");
+					printTime = sdf.parse(printTimeStr);
 					lotteryPrint.setPrintTime(printTime);
 				} catch (ParseException e) {
+					e.printStackTrace();
 					log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
 					continue;
 				}
