@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.PeriodRewardDetailMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.PeriodRewardDetail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="peroid_id" jdbcType="VARCHAR" property="peroidId" />
+    <result column="platform_id" jdbcType="VARCHAR" property="platformId" />
+    <result column="ticket_id" jdbcType="VARCHAR" property="ticketId" />
+    <result column="reward" jdbcType="INTEGER" property="reward" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  
+  <insert id="insertPeriodRewardDetail" parameterType="com.dl.shop.lottery.model.PeriodRewardDetail">
+  	  <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">    
+      	 SELECT LAST_INSERT_ID() AS id  
+      </selectKey>   
+      INSERT INTO dl_period_reward_detail(peroidId,platformId,orderSn,reward,status) 
+      VALUES(#{peroidId},#{platformId},#{orderSn},#{reward},#{status});
+  </insert>
+  
+  
+</mapper>

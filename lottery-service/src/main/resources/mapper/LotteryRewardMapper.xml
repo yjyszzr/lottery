@@ -14,4 +14,12 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
   </resultMap>
+  
+  
+  <insert id="insertReward">
+  
+  
+  </insert>
+  
+  
 </mapper>

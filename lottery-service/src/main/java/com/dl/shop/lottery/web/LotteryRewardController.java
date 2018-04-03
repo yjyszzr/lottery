@@ -36,4 +36,11 @@ public class LotteryRewardController {
 		lotteryRewardService.toAwarding(param);
     	return ResultGenerator.genSuccessResult("兑奖成功");
     }
+	
+	@ApiOperation(value = "解析中奖文件", notes = "解析中奖文件")
+    @PostMapping("/resolveTxt")
+    public BaseResult<String> resolveTxt(@Valid @RequestBody DlRewardParam param) {
+		lotteryRewardService.resovleRewardTxt();
+    	return ResultGenerator.genSuccessResult("拉取开奖数据成功","");
+    }
 }

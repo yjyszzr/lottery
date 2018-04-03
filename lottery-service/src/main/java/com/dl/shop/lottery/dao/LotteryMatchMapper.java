@@ -25,6 +25,12 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public List<DlJcZqMatchPlayDTO> getMatchList(@Param("playType")String playType, @Param("leagueId")Integer leagueId);
 	
+	/**
+	 * 获取当天的所有比赛
+	 * @return
+	 */
+	List<LotteryMatch> getMatchListToday();
+	
 	
 	
 	public int updateMatchBatch(@Param("list") List<LotteryMatch> matchList);
