@@ -28,7 +28,7 @@
       VALUES(#{merchant},#{game},#{issue},#{smallRewardNum},#{smallReward},#{bigRewardNum},#{bigReward},#{unRewardNum},#{unReward},#{prizeUrl},#{addTime});
   </insert>
   
-  <select id="queryPeriodRewardByIssues" parameterType="com.dl.shop.lottery.model.PeriodReward" resultMap="BaseResultMap">
+  <select id="queryPeriodRewardByIssues" parameterType="java.util.List" resultMap="BaseResultMap">
   	  SELECT issue FROM dl_period_reward  where  issue in
   	  <foreach item="item" index="index" collection="list"   open="(" separator="," close=")">  
           #{item}   

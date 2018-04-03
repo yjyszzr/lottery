@@ -247,7 +247,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		
 		List<String> matchSnList = lotteryMatchList.stream().map(s->s.getMatchSn()).collect(Collectors.toList());
 		List<String> periodRewardIssueList = periodRewardMapper.queryPeriodRewardByIssues(matchSnList);
-		if(matchSnList.contains(periodRewardIssueList)) {
+		if(matchSnList.containsAll(periodRewardIssueList)) {
 			log.info(new Date()+"没有要更新的期次中奖文件");
 		}
 		
@@ -274,7 +274,8 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			Integer periodId = null;
 			try {
 				//String prizeUrl = "http://1.192.90.178:9085/files/180326/prize/issue/T51/T51_201803283002_180326_prize.txt";
-		        URL url = new URL(prizeUrl);
+				//String prizeUrl = "http://1.192.90.178:9085/files/180326/prize/issue/T51/T51_201804021002_180326_prize.txt";
+				URL url = new URL(prizeUrl);
 		        HttpURLConnection conn;
 				conn = (HttpURLConnection)url.openConnection();
 				conn.setConnectTimeout(50000);  
@@ -303,7 +304,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		        		PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
 		        		periodRewardDetail.setPlatformId(segments[0]);
 		        		periodRewardDetail.setPeroidId(String.valueOf(periodId));
-		        		periodRewardDetail.setOrderSn(segments[1]);
+		        		periodRewardDetail.setTicketId(segments[1]);
 		        		periodRewardDetail.setReward(Integer.valueOf(segments[2]));
 		        		periodRewardDetail.setStatus(segments[3]);
 		        		detailList.add(periodRewardDetail);
@@ -318,7 +319,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		}
 		
 		log.info(new Date()+"更新期次中奖文件完成");
-
 	}
 	
 	
@@ -332,13 +332,13 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
 			conn.setAutoCommit(false);
-			String sql = "INSERT INTO dl_period_reward_detail(peroid_id,platform_id,order_sn,reward,status) VALUES(?,?,?,?,?)";
+			String sql = "INSERT INTO dl_period_reward_detail(peroid_id,platform_id,ticket_id,reward,status) VALUES(?,?,?,?,?)";
 			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
 			for (int x = 0, size = list.size(); x < size; x++) {
 				prest.setString(1, peroidId);
 				prest.setString(2, list.get(x).getPlatformId());
-				prest.setString(3, list.get(x).getOrderSn());
+				prest.setString(3, list.get(x).getTicketId());
 				prest.setString(4, list.get(x).getStatus());
 				prest.setInt(5, list.get(x).getReward());
 				prest.addBatch();

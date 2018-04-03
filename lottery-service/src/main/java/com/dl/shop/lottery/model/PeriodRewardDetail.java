@@ -21,10 +21,10 @@ public class PeriodRewardDetail {
     private String platformId;
 
     /**
-     * 订单号
+     * 商品订单号，即彩票id
      */
-    @Column(name = "order_sn")
-    private String orderSn;
+    @Column(name = "ticket_id")
+    private String ticketId;
 
     /**
      * 中奖金额,单位分
@@ -89,10 +89,10 @@ public class PeriodRewardDetail {
     /**
      * 获取订单号
      *
-     * @return order_sn - 订单号
+     * @return ticketId - 订单号
      */
-    public String getOrderSn() {
-        return orderSn;
+    public String getTicketId() {
+        return ticketId;
     }
 
     /**
@@ -100,8 +100,8 @@ public class PeriodRewardDetail {
      *
      * @param orderSn 订单号
      */
-    public void setOrderSn(String orderSn) {
-        this.orderSn = orderSn;
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     /**
