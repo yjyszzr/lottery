@@ -12,6 +12,6 @@ public class DlJcZqMatchListParam implements Serializable{
 
 	@ApiModelProperty(value = "赛事玩法类型", required = true)
     private String playType;
-	@ApiModelProperty(value = "筛选条件id")
-	private Integer leagueId;
+	@ApiModelProperty(value = "筛选条件id,e用‘,’分隔")
+	private String leagueId;
 }
