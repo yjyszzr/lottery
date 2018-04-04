@@ -1,7 +1,6 @@
 package com.dl.lottery.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import io.swagger.annotations.ApiModel;
@@ -60,7 +59,7 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	public String matchDay;
 	
 	@ApiModelProperty(value = "比赛时间", required = true)
-	public Date matchTime;
+	public int matchTime;
 	
 	@ApiModelProperty(value = "玩法内容", required = true)
 	public String playContent;

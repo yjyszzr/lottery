@@ -40,7 +40,7 @@
     <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
     <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
     <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
-    <result column="match_time" jdbcType="DATE" property="matchTime" />
+    <result column="match_time" jdbcType="INTEGER" property="matchTime" />
     <result column="play_content" jdbcType="VARCHAR" property="playContent" />
     <result column="play_type" jdbcType="INTEGER" property="playType" />
     <result column="is_hot" jdbcType="INTEGER" property="isHot" />
@@ -49,7 +49,7 @@
   <sql id="matchFields">
   	m.match_id, m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci,
   	m.home_team_id, m.home_team_name, m.home_team_abbr, m.home_team_rank, m.visiting_team_id, 
-  	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, m.match_time
+  	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, UNIX_TIMESTAMP(m.match_time) as match_time
   </sql>
   <sql id="tableName">
   	dl_match m

@@ -25,7 +25,7 @@ public class MatchBetCellDTO implements Serializable{
 	@ApiModelProperty(value="投注场次队名,如：中国VS日本")
 	private String matchTeam;
 	@ApiModelProperty(value = "比赛时间")
-	public Date matchTime;
+	public int matchTime;
 	@ApiModelProperty(value="该场次玩法")
 	private String playType;
 	@ApiModelProperty(value="投注赛事编码")

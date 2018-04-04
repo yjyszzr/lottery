@@ -27,7 +27,7 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	@ApiModelProperty(value="投注场次队名")
 	private String matchTeam;
 	@ApiModelProperty(value = "比赛时间")
-	public Date matchTime;
+	public int matchTime;
 	
 	public DIZQUserBetCellInfoDTO(MatchBetCellDTO matchCell){
 		this.matchId = matchCell.getMatchId();

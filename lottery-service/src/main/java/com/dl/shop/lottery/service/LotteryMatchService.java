@@ -5,6 +5,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,8 +80,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<String, DlJcZqMatchDTO> map = new HashMap<String, DlJcZqMatchDTO>();
 		matchPlayDTOList.forEach(dto->{
 			//页面展示日期
-			Date matchTime = dto.getMatchTime();
-			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+			int matchTime = dto.getMatchTime();
+			LocalDate localDate = LocalDateTime.ofEpochSecond(matchTime, 0, ZoneOffset.UTC).toLocalDate();
 			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 			int value = dayOfWeek.getValue();
@@ -117,6 +118,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dlJcZqMatchListDTO.setAllMatchCount(matchPlayDTOList.size()+"");
 	    return dlJcZqMatchListDTO;
 	}
+	
 	/**
 	 * 初始化球赛类型投注选项
 	 * @param dto
