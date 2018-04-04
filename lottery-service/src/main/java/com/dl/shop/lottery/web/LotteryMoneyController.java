@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.param.LotterySelectBallParam;
-import com.dl.param.LotterySelectBallParam.SelectData;
+import com.dl.lottery.param.LotterySelectBallParam;
+import com.dl.lottery.param.LotterySelectBallParam.SelectData;
 import com.dl.shop.lottery.utils.LotteryUtil;
 
 import io.swagger.annotations.Api;

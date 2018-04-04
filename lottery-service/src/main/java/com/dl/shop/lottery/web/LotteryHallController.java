@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.dto.DlHallDTO;
-import com.dl.dto.DlPlayClassifyDTO;
-import com.dl.param.DlPlayClassifyParam;
+import com.dl.lottery.dto.DlHallDTO;
+import com.dl.lottery.dto.DlPlayClassifyDTO;
+import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.shop.lottery.service.LotteryHallService;
 
 import io.swagger.annotations.ApiOperation;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
-import com.dl.dto.LeagueInfoDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.dao.DlLeagueInfoMapper;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 

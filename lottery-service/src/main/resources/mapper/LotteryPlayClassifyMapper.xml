@@ -17,7 +17,7 @@
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
   </resultMap>
   
-  <select id="selectAllData" resultType="com.dl.dto.DlPlayClassifyDetailDTO">
+  <select id="selectAllData" resultType="com.dl.lottery.dto.DlPlayClassifyDetailDTO">
         select
            dl.play_name playClassifyName,
            dl.play_img playClassifyImg,

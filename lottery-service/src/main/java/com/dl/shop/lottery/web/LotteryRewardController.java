@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.param.DlRewardParam;
-import com.dl.param.DlToAwardingParam;
+import com.dl.lottery.param.DlRewardParam;
+import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.shop.lottery.service.LotteryRewardService;
 
 import io.swagger.annotations.ApiOperation;

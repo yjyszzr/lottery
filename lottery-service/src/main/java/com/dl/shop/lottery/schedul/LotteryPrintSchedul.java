@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.dl.dto.DlToStakeDTO;
-import com.dl.dto.DlToStakeDTO.BackOrderDetail;
-import com.dl.param.DlToStakeParam;
-import com.dl.param.DlToStakeParam.PrintTicketOrderParam;
+import com.dl.lottery.dto.DlToStakeDTO;
+import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
+import com.dl.lottery.param.DlToStakeParam;
+import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.LotteryPrintService;

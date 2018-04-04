@@ -25,7 +25,7 @@
     <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
     <result column="whole" jdbcType="VARCHAR" property="whole" />
   </resultMap>
-  <resultMap id="matchDtoResultMap" type="com.dl.dto.DlJcZqMatchPlayDTO">
+  <resultMap id="matchDtoResultMap" type="com.dl.lottery.dto.DlJcZqMatchPlayDTO">
     <result column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
