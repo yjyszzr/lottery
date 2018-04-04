@@ -38,4 +38,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * @return
 	 */
 	public List<LotteryPrint> selectLessThanIssuePrint(LotteryPrint lotteryPrint);
+	
+	List<LotteryPrint> selectTodayPrints();
 }

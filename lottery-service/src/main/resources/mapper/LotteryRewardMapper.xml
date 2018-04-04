@@ -15,11 +15,8 @@
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
   </resultMap>
   
-  
-  <insert id="insertReward">
-  
-  
-  </insert>
-  
+  <select id="queryRewardToday" resultMap="BaseResultMap">
+  	select * from dl_reward where DATEDIFF(match_time,NOW())= 0 
+  </select>
   
 </mapper>

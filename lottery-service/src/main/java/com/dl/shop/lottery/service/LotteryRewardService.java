@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,26 +12,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.annotation.Resource;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.base.util.NuclearUtil;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.enums.MatchPlayTypeEnum;
 import com.dl.lottery.enums.MatchResultCrsEnum;
@@ -53,7 +53,6 @@ import com.dl.shop.lottery.model.PeriodReward;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
-
 import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -236,6 +235,115 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	}
 	
 	/**
+	 * 匹配中奖的内容 -- 采用定时任务
+	 */
+	public void compareReward() {
+		//查询当天的所有开奖期次
+		List<LotteryReward> todayRewards = lotteryRewardMapper.queryRewardToday();
+		if(CollectionUtils.isEmpty(todayRewards)) {
+			log.info(new Date()+"没有开奖信息");
+		}
+		
+		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
+		for(LotteryReward lr:todayRewards) {
+			LotteryPrint queryIssue = new LotteryPrint();
+			queryIssue.setIssue(lr.getIssue());
+			//查询当天出的奖票
+			List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectTodayPrints();
+			for(LotteryPrint lp:lotteryPrintList) {
+				List<String> list1 = this.createStakesList1(lp.getStakes());
+				List<String> list2 =this.createRewardStakesList2(lr.getRewardData());
+			    List<String> same = NuclearUtil.getSame(list1, list2);
+			    
+			    String rewardStakesWithSp = this.createRewardStakesWithSp(same,lp.getPrintSp());
+			    
+			    LotteryPrint updatePrint = new LotteryPrint();
+			    if(lr.getRewardData().contains(lp.getIssue())) {//最后一期已经开奖,才计算这张彩票的中奖金额
+			    	//调用草原狼的价格计算服务，传递rewardStakesWithSp,betType,playType等
+			    	BigDecimal realRewardMoney = new BigDecimal(100);
+			    	lp.setRealRewardMoney(realRewardMoney);
+			    }
+			    
+			    lp.setRewardStakes(rewardStakesWithSp);
+			    lp.setPrintLotteryId(lp.getPrintLotteryId());
+			    updatelotteryPrintList.add(lp);
+			}
+		}
+		
+		//更新结果：中奖号和中奖金额
+		this.updateBatchLotteryPrint(updatelotteryPrintList);
+	}
+	
+	/**
+	 * 匹配了真实赔率的中奖号
+	 * @param printSp
+	 * @return
+	 */
+	public String createRewardStakesWithSp(List<String> same,String printSp){
+		List<String> rewardSpList = new ArrayList<String>();
+	    List<String> spList = Arrays.asList(printSp.split(";"));
+	    Map<String,String> spMap = new HashMap<String,String>();
+	    for(String temp:spList) {
+	    	if(temp.contains(",")) {
+				String temp1 = temp.substring(0, temp.lastIndexOf("|"));
+				String temp2 =  temp.substring(temp.lastIndexOf("|"));
+				String[] tempArr = temp2.split(",");
+				for(int j = 0;j < tempArr.length;j++) {
+					String temp3 = temp1 + tempArr[j];
+					spMap.put(temp3.substring(0,temp3.indexOf("@")), temp3.substring(temp3.indexOf("@")));
+				}
+	    	}
+	    	spMap.put(temp.substring(0,temp.indexOf("@")), temp.substring(temp.indexOf("@")));
+	    }
+	    
+        for (String string : same) {
+            String cc = spMap.get(string.substring(string.indexOf("|"),string.lastIndexOf("|")));
+            if(cc!=null)
+            {   
+            	rewardSpList.add(string+spMap.get(cc));
+                continue;
+            }
+        }
+        
+        return String.join(";", (String [])rewardSpList.toArray());
+	}
+	
+	/**
+	 * 把出票信息解析成List<String>
+	 * @param stakes
+	 * @return
+	 */
+	public List<String> createStakesList1(String stakes){
+		List<String> list1 = new ArrayList<>();
+		String[] stakesArr = stakes.split(";");
+		for(int i= 0 ;i < stakesArr.length;i++) {
+			if(stakesArr[i].contains(",")) {
+				String temp1 = stakesArr[i].substring(0, stakesArr[i].lastIndexOf("|"));
+				String temp2 =  stakesArr[i].substring(stakesArr[i].lastIndexOf("|"));
+				String[] tempArr = temp2.split(",");
+				for(int j = 0;j < tempArr.length;j++) {
+					tempArr[j] = temp1 + tempArr[j];
+				}
+				List<String> tempList = Arrays.asList(tempArr);
+				list1.addAll(tempList);
+			}
+			list1.add(stakesArr[i]);
+		} 
+		return list1;
+	}
+	
+	/**
+	 * 把开奖信息解析成List<String>
+	 * @param rewardsTakes
+	 * @return
+	 */
+	public List<String> createRewardStakesList2(String rewardsTakes) {
+		String[] arr = rewardsTakes.split(";");
+	    List<String> list2 = java.util.Arrays.asList(arr);
+	    return list2;
+	}
+	
+	/**
 	 * 解析期次中奖文件:要采取定时任务
 	 * @throws MalformedURLException 
 	 */
@@ -312,7 +420,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		        	}
 		        }
 		        
-		        this.insertBatch(detailList, String.valueOf(periodId));
+		        this.insertBatchRewardDetail(detailList, String.valueOf(periodId));
 		        
 			} catch (Exception e) {
 				log.error(e.getMessage());
@@ -328,7 +436,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param list
 	 * @param peroidId
 	 */
-	public void insertBatch(List<PeriodRewardDetail> list, String peroidId) {
+	public void insertBatchRewardDetail(List<PeriodRewardDetail> list, String peroidId) {
 		try {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
@@ -342,6 +450,34 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				prest.setString(3, list.get(x).getTicketId());
 				prest.setString(4, list.get(x).getStatus());
 				prest.setInt(5, list.get(x).getReward());
+				prest.addBatch();
+			}
+			prest.executeBatch();
+			conn.commit();
+			conn.close();
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+		} catch (ClassNotFoundException ex) {
+			log.error(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * 高速批量更新LotteryPrint 10万条数据 18s
+	 * @param list
+	 */
+	public void updateBatchLotteryPrint(List<LotteryPrint> list) {
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ? where print_lottery_id = ?";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (int x = 0, size = list.size(); x < size; x++) {
+				prest.setString(1, list.get(x).getRewardStakes());
+				prest.setBigDecimal(2, list.get(x).getRealRewardMoney() == null?BigDecimal.ZERO:list.get(x).getRealRewardMoney());
+				prest.setInt(3, list.get(x).getPrintLotteryId());
 				prest.addBatch();
 			}
 			prest.executeBatch();
