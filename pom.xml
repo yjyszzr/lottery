@@ -21,19 +21,19 @@
         <spring-cloud.version>Dalston.SR4</spring-cloud.version>
     </properties>
 
-    <!-- <distributionManagement>
+    <distributionManagement>
         <repository>
-            <id>nexus</id>
+            <id>deployRelease</id>
             <name>pugutang Internal Repository</name>
-            <url>http://172.16.15.223:8081/repository/maven-releases/</url>
+            <url>http://39.107.121.76:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>deploySnapshot</id>
             <name>pugutang Internal Repository</name>
-            <url>http://172.16.15.223:8081/repository/maven-snapshots/</url>
+            <url>http://39.107.121.76:8081/repository/maven-snapshots/</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
-    </distributionManagement> -->
+    </distributionManagement>
     <modules>
         <module>lottery-api</module>
         <module>lottery-service</module>
