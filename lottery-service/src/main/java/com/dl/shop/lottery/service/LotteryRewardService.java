@@ -126,21 +126,13 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void toAwarding(DlToAwardingParam param) {
-		//根据兑奖期次，查询符合条件的出票订单
-		//① 查询期次相等的出票订单，组装中奖数据，并可以进行派奖
-		LotteryPrint lotteryPrintEqual = new LotteryPrint();
-		lotteryPrintEqual.setIssue(param.getIssue());
-		List<LotteryPrint> lotteryPrintEquals = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
-		if(CollectionUtils.isNotEmpty(lotteryPrintEquals)) {
-			
-		}
-		//② 查询当前期次小于数据库期次的出票订单，只组装中奖数据
-		LotteryPrint lotteryPrintLessThan = new LotteryPrint();
-		lotteryPrintLessThan.setIssue(param.getIssue());
-		List<LotteryPrint> lotteryPrintLessThans = lotteryPrintMapper.selectLessThanIssuePrint(lotteryPrintLessThan);
-		if(CollectionUtils.isNotEmpty(lotteryPrintLessThans)) {
-			
-		}
+		//匹配中奖信息
+		compareReward(param.getIssue());
+		//更新订单及订单详情
+		
+		//更新用户账户，大于5000元的需要派奖
+		
+		
 	}
 	
 	/**
@@ -238,10 +230,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	/**
 	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或 提供给后台管理调用
 	 */
-	public void compareReward(DlToAwardingParam param) {
+	public void compareReward(String issue) {
 		//获取某个期次的获奖信息
 		LotteryReward lr = new LotteryReward();
-		lr.setIssue(param.getIssue());
+		lr.setIssue(issue);
 		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(lr);
 		if(CollectionUtils.isEmpty(rewards)) {
 			log.info(new Date()+"没有开奖信息");
@@ -250,10 +242,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		
 		//获取该期次的出票信息
 		LotteryPrint lotteryPrintEqual = new LotteryPrint();
-		lotteryPrintEqual.setIssue(param.getIssue());
+		lotteryPrintEqual.setIssue(issue);
 		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
 		if(CollectionUtils.isEmpty(lotteryPrintList)) {
-			log.info("没有期次为"+param.getIssue()+"的出票信息");
+			log.info("没有期次为"+issue+"的出票信息");
 		}
 		
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
