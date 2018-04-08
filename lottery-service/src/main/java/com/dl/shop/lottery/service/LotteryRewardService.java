@@ -19,11 +19,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.annotation.Resource;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
@@ -31,6 +34,8 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.NuclearUtil;
+import com.dl.lottery.dto.DlLotteryPrintMoneyDTO;
+import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
 import com.dl.lottery.enums.MatchPlayTypeEnum;
@@ -40,6 +45,7 @@ import com.dl.lottery.enums.MatchResultHafuEnum;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
+import com.dl.order.api.IOrderService;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -54,6 +60,7 @@ import com.dl.shop.lottery.model.PeriodReward;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+
 import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -84,6 +91,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	
 	@Resource
 	private PeriodRewardMapper periodRewardMapper;
+	
+	@Resource
+	private IOrderService orderService;
 	
 	@Value("${reward.url}")
 	private String rewardUrl;
@@ -126,21 +136,27 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void toAwarding(DlToAwardingParam param) {
-		//根据兑奖期次，查询符合条件的出票订单
-		//① 查询期次相等的出票订单，组装中奖数据，并可以进行派奖
-		LotteryPrint lotteryPrintEqual = new LotteryPrint();
-		lotteryPrintEqual.setIssue(param.getIssue());
-		List<LotteryPrint> lotteryPrintEquals = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
-		if(CollectionUtils.isNotEmpty(lotteryPrintEquals)) {
-			
+		//获取某个期次的获奖信息
+		LotteryReward lr = new LotteryReward();
+		lr.setIssue(param.getIssue());
+		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(lr);
+		if(CollectionUtils.isEmpty(rewards)) {
+			log.info(new Date()+"没有开奖信息");
 		}
-		//② 查询当前期次小于数据库期次的出票订单，只组装中奖数据
-		LotteryPrint lotteryPrintLessThan = new LotteryPrint();
-		lotteryPrintLessThan.setIssue(param.getIssue());
-		List<LotteryPrint> lotteryPrintLessThans = lotteryPrintMapper.selectLessThanIssuePrint(lotteryPrintLessThan);
-		if(CollectionUtils.isNotEmpty(lotteryPrintLessThans)) {
-			
+		LotteryReward lotteryReward = rewards.get(0);
+		//匹配中奖信息
+		compareReward(lotteryReward);
+		//更新订单及订单详情
+		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
+		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+			DlLotteryPrintMoneyDTO dlLotteryPrintMoneyDTO = new DlLotteryPrintMoneyDTO();
+			dlLotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+			dlLotteryPrintMoneyDTO.setOrderDataDTOs(dlOrderDataDTOs);
+			orderService.updateOrderInfoByReward(dlLotteryPrintMoneyDTO);
 		}
+		//更新用户账户，大于5000元的需要派奖
+		
+		
 	}
 	
 	/**
@@ -238,22 +254,15 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	/**
 	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或 提供给后台管理调用
 	 */
-	public void compareReward(DlToAwardingParam param) {
-		//获取某个期次的获奖信息
-		LotteryReward lr = new LotteryReward();
-		lr.setIssue(param.getIssue());
-		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(lr);
-		if(CollectionUtils.isEmpty(rewards)) {
-			log.info(new Date()+"没有开奖信息");
-		}
-		String rewardStakes = rewards.get(0).getRewardData();//该期次的中奖号码
+	public void compareReward(LotteryReward lotteryReward) {
+		String rewardStakes = lotteryReward.getRewardData();//该期次的中奖号码
 		
 		//获取该期次的出票信息
 		LotteryPrint lotteryPrintEqual = new LotteryPrint();
-		lotteryPrintEqual.setIssue(param.getIssue());
+		lotteryPrintEqual.setIssue(lotteryReward.getIssue());
 		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
 		if(CollectionUtils.isEmpty(lotteryPrintList)) {
-			log.info("没有期次为"+param.getIssue()+"的出票信息");
+			log.info("没有期次为"+lotteryReward.getIssue()+"的出票信息");
 		}
 		
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();

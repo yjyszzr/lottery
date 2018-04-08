@@ -13,6 +13,7 @@
     <result column="match_time" jdbcType="TIMESTAMP" property="matchTime" />
     <result column="reward_data" jdbcType="VARCHAR" property="rewardData" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="reward_limit" jdbcType="DECIMAL" property="rewardLimit" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
   </resultMap>
   
@@ -23,6 +24,7 @@
   <select id="queryRewardByIssueBySelective" parameterType="com.dl.shop.lottery.model.LotteryReward" resultMap="BaseResultMap">
       	select * from dl_reward 
 	  	<where>
+	  	    status = 1 
 		  	<if test="rewardId != null">
 		        AND reward_id = #{rewardId}
 		    </if>

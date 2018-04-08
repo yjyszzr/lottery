@@ -1,5 +1,6 @@
 package com.dl.shop.lottery.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -45,6 +46,12 @@ public class LotteryReward {
      * 审核状态： 0-未审核 1-审核通过
      */
     private Integer status;
+    
+    /**
+     * 兑奖金额（超过该金额，需要审核后兑奖）
+     */
+    @Column(name = "reward_limit")
+    private BigDecimal rewardLimit;
 
     /**
      * 创建时间
@@ -193,8 +200,16 @@ public class LotteryReward {
     public void setStatus(Integer status) {
         this.status = status;
     }
+    
+    public BigDecimal getRewardLimit() {
+		return rewardLimit;
+	}
 
-    /**
+	public void setRewardLimit(BigDecimal rewardLimit) {
+		this.rewardLimit = rewardLimit;
+	}
+
+	/**
      * 获取创建时间
      *
      * @return create_time - 创建时间
