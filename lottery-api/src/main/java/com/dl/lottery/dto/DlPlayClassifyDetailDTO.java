@@ -10,6 +10,9 @@ public class DlPlayClassifyDetailDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
+	@ApiModelProperty(value = "彩票分类id")
+	public String lotteryId;
+	
 	@ApiModelProperty(value = "玩法名称")
 	public String playClassifyName;
 	
