@@ -1,6 +1,8 @@
 package com.dl.shop.lottery.web;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -47,6 +49,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/lottery/match")
 public class LotteryMatchController {
 	
+	private final static long BET_INFO_EXPIRE_TIME = 10;//彩票信息的缓存时长
     @Resource
     private LotteryMatchService lotteryMatchService;
     @Resource
@@ -110,12 +113,16 @@ public class LotteryMatchController {
 			return orderMoney < minGoodsAmount ? false : true;
 		}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
 		.collect(Collectors.toList());
-		String bonusId = null;
-		Double bonusAmount = 0.0;
+		UserBonusDTO userBonusDto = null;
 		if(userBonuses.size() > 0) {
-			bonusId = userBonuses.get(0).getBonusId()+"";
-			bonusAmount = userBonuses.get(0).getBonusPrice().doubleValue();
+			if(null != param.getBonusId()) {
+				Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getBonusId()==param.getBonusId()).findFirst();
+				userBonusDto = findFirst.isPresent()?findFirst.get():null;
+			}
+			userBonusDto = userBonusDto == null?userBonuses.get(0):userBonusDto;
 		}
+		String bonusId = userBonusDto != null?userBonusDto.getBonusId().toString():null;
+		Double bonusAmount = userBonusDto!=null?userBonusDto.getBonusPrice().doubleValue():0.0;
 		Double surplus = userTotalMoney>orderMoney?orderMoney:userTotalMoney;
 		Double thirdPartyPaid = orderMoney - surplus - bonusAmount;
 		List<MatchBetCellDTO> matchBetCells = param.getMatchBetCells();
@@ -135,10 +142,11 @@ public class LotteryMatchController {
 		dto.setThirdPartyPaid(thirdPartyPaid);
 		int requestFrom = 0;
 		dto.setRequestFrom(requestFrom);
+		dto.setUserId(SessionUtil.getUserId());
 		String dtoJson = JSONHelper.bean2json(dto);
 		String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
 		String key = MD5.crypt(keyStr);
-		stringRedisTemplate.opsForValue().set(key, dtoJson);
+		stringRedisTemplate.opsForValue().set(key, dtoJson, BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
 		//返回页面信息
 		BetPayInfoDTO betPlayInfoDTO = new BetPayInfoDTO();
 		betPlayInfoDTO.setPayToken(key);

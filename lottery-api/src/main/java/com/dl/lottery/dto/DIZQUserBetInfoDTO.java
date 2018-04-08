@@ -41,6 +41,8 @@ public class DIZQUserBetInfoDTO implements Serializable{
 	private Double thirdPartyPaid;
 	@ApiModelProperty(value="1:android,2:ios")
 	private int requestFrom;
+	@ApiModelProperty(value="用户id")
+	private Integer userId;
 	
 	public DIZQUserBetInfoDTO(DlJcZqMatchBetParam param){
 		this.times = param.getTimes();
