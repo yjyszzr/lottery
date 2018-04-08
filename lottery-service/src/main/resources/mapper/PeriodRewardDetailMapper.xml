@@ -21,5 +21,23 @@
       VALUES(#{peroidId},#{platformId},#{orderSn},#{reward},#{status});
   </insert>
   
+  <select id="queryPeriodRewardDetailBySelective" parameterType="com.dl.shop.lottery.model.PeriodRewardDetail" resultMap="BaseResultMap">
+      	select * from dl_period_reward_detail 
+	  	<where>
+		  	<if test="peroidId != null">
+		        AND peroid_id = #{peroidId}
+		    </if>
+		    <if test="platformId != null">
+		        AND platform_id = #{platformId}
+		    </if>
+		    <if test="ticketId != null">
+		        AND ticket_id = #{ticketId}
+		    </if>
+		    <if test="status != null">
+		        AND status = #{status}
+		    </if>
+	    </where>
+  </select>
+  
   
 </mapper>

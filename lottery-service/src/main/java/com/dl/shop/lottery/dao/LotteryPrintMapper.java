@@ -20,6 +20,13 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> getPrintLotteryList();
 	
 	/**
+	 * 根据条件查询出票集合
+	 * @param lp
+	 * @return
+	 */
+	List<LotteryPrint> selectPrintLotteryBySelective(LotteryPrint lp);
+	
+	/**
 	 * 批量更新出票返回状态
 	 * @param lotteryPrints
 	 */

@@ -53,14 +53,14 @@ public class LotteryPrint {
     /**
      * 玩法
      */
-    @Column(name = "playType")
-    private String playtype;
+    @Column(name = "play_type")
+    private String playType;
 
     /**
      * 投注方式
      */
-    @Column(name = "betType")
-    private String bettype;
+    @Column(name = "bet_type")
+    private String betType;
 
     /**
      * 倍数
@@ -295,8 +295,8 @@ public class LotteryPrint {
      *
      * @return playType - 玩法
      */
-    public String getPlaytype() {
-        return playtype;
+    public String getPlayType() {
+        return playType;
     }
 
     /**
@@ -304,8 +304,8 @@ public class LotteryPrint {
      *
      * @param playtype 玩法
      */
-    public void setPlaytype(String playtype) {
-        this.playtype = playtype;
+    public void setPlaytype(String playType) {
+        this.playType = playType;
     }
 
     /**
@@ -313,8 +313,8 @@ public class LotteryPrint {
      *
      * @return betType - 投注方式
      */
-    public String getBettype() {
-        return bettype;
+    public String getBetType() {
+        return betType;
     }
 
     /**
@@ -322,8 +322,8 @@ public class LotteryPrint {
      *
      * @param bettype 投注方式
      */
-    public void setBettype(String bettype) {
-        this.bettype = bettype;
+    public void setBettype(String betType) {
+        this.betType = betType;
     }
 
     /**

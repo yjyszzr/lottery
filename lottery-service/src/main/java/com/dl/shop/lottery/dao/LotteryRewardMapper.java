@@ -9,4 +9,6 @@ public interface LotteryRewardMapper extends Mapper<LotteryReward> {
 	
 	List<LotteryReward> queryRewardToday();
 	
+	List<LotteryReward> queryRewardByIssue(LotteryReward lr);
+	
 }

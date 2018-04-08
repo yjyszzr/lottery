@@ -12,8 +12,8 @@
     <result column="merchant" jdbcType="VARCHAR" property="merchant" />
     <result column="game" jdbcType="VARCHAR" property="game" />
     <result column="issue" jdbcType="VARCHAR" property="issue" />
-    <result column="playType" jdbcType="VARCHAR" property="playtype" />
-    <result column="betType" jdbcType="VARCHAR" property="bettype" />
+    <result column="play_type" jdbcType="VARCHAR" property="playType" />
+    <result column="bet_type" jdbcType="VARCHAR" property="betType" />
     <result column="times" jdbcType="INTEGER" property="times" />
     <result column="money" jdbcType="DECIMAL" property="money" />
     <result column="stakes" jdbcType="VARCHAR" property="stakes" />
@@ -53,8 +53,8 @@
         merchant,
         game,
         issue,
-        playType playtype,
-        betType bettype,
+        play_type playType,
+        bet_type betType,
         times,
         money,
         stakes
@@ -62,6 +62,29 @@
     where status = 0
     order by accept_time asc
     limit 50
+  </select>
+  
+  
+  <select id="selectPrintLotteryBySelective" parameterType="com.dl.shop.lottery.model.LotteryPrint" resultMap="BaseResultMap">
+    select * 
+    from dl_print_lottery
+    <where>
+	  	<if test="orderSn != null">
+	        AND order_sn = #{orderSn}
+	    </if>
+	    <if test="ticketId != null">
+	        AND ticket_id = #{ticketId}
+	    </if>
+	    <if test="issue != null">
+	        AND issue = #{issue}
+	    </if>
+	    <if test="playType != null">
+	        AND play_type = #{playType}
+	    </if>
+	    <if test="status != null">
+	        AND status = #{status}
+	    </if>
+    </where>
   </select>
   
   <select id="selectEqualsIssuePrint" resultType="com.dl.shop.lottery.model.LotteryPrint">

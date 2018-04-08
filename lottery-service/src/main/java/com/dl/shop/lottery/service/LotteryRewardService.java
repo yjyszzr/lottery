@@ -235,43 +235,89 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	}
 	
 	/**
-	 * 匹配中奖的内容 -- 采用定时任务
+	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或提供给后台管理调用
 	 */
-	public void compareReward() {
-		//查询当天的所有开奖期次
-		List<LotteryReward> todayRewards = lotteryRewardMapper.queryRewardToday();
-		if(CollectionUtils.isEmpty(todayRewards)) {
+	public void compareReward(DlToAwardingParam param) {
+		LotteryReward lr = new LotteryReward();
+		lr.setIssue(param.getIssue());
+		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssue(lr);
+		if(CollectionUtils.isEmpty(rewards)) {
 			log.info(new Date()+"没有开奖信息");
 		}
+
+		LotteryPrint lotteryPrintEqual = new LotteryPrint();
+		lotteryPrintEqual.setIssue(param.getIssue());
+		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
+		if(CollectionUtils.isEmpty(lotteryPrintList)) {
+			log.info("没有期次为"+param.getIssue()+"的出票信息");
+		}
+		
 		
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
-		for(LotteryReward lr:todayRewards) {
-			LotteryPrint queryIssue = new LotteryPrint();
-			queryIssue.setIssue(lr.getIssue());
-			//查询当天出的奖票
-			List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectTodayPrints();
-			for(LotteryPrint lp:lotteryPrintList) {
-				List<String> list1 = this.createStakesList1(lp.getStakes());
-				List<String> list2 =this.createRewardStakesList2(lr.getRewardData());
-			    List<String> same = NuclearUtil.getSame(list1, list2);
-			    
-			    String rewardStakesWithSp = this.createRewardStakesWithSp(same,lp.getPrintSp());
-			    
-			    LotteryPrint updatePrint = new LotteryPrint();
-			    if(lr.getRewardData().contains(lp.getIssue())) {//最后一期已经开奖,才计算这张彩票的中奖金额
-			    	//调用草原狼的价格计算服务，传递rewardStakesWithSp,betType,playType等
-			    	BigDecimal realRewardMoney = new BigDecimal(100);
-			    	lp.setRealRewardMoney(realRewardMoney);
-			    }
-			    
-			    lp.setRewardStakes(rewardStakesWithSp);
-			    lp.setPrintLotteryId(lp.getPrintLotteryId());
-			    updatelotteryPrintList.add(lp);
-			}
+		String rewardStakes = lotteryPrintList.get(0).getRewardStakes();
+		
+		for(LotteryPrint lp:lotteryPrintList) {
+			List<String> list1 = this.createStakesList1(lp.getStakes());
+			List<String> list2 = this.createRewardStakesList2(rewardStakes);
+		    List<String> same = NuclearUtil.getSame(list1, list2);
+		    
+		    String rewardStakesWithSp = this.createRewardStakesWithSp(same,lp.getPrintSp());
+		    
+		    LotteryPrint updatePrint = new LotteryPrint();
+		    if(rewardStakes.contains(lp.getIssue())) {//最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
+		    	
+		    	LotteryPrint queryCondition = new LotteryPrint();
+		    	queryCondition.setOrderSn(lp.getOrderSn());
+		    	List<LotteryPrint> sameOrderSnLPList = lotteryPrintMapper.selectPrintLotteryBySelective(queryCondition);
+		    	//中奖号码有几个
+		    	Integer rewardSize = same.size();
+		    	if(rewardSize > 1) {
+			    	//betType 选了几种方式
+			    	List<Integer> betTypeList = sameOrderSnLPList.stream().map(s->Integer.valueOf(s.getBetType().substring(0, 1)))
+			    			.filter(s->s <= rewardSize ).collect(Collectors.toList());
+			    	
+		    	}
+
+		    	BigDecimal realRewardMoney = new BigDecimal(100);
+		    	updatePrint.setRealRewardMoney(realRewardMoney);
+		    	
+		    	
+		    	//保存第三方给计算的单张彩票的价格，对账用
+		    	PeriodRewardDetail periodRewardDetail =  new PeriodRewardDetail();
+		    	periodRewardDetail.setTicketId(lp.getTicketId());
+		    	List<PeriodRewardDetail> tickets = periodRewardDetailMapper.queryPeriodRewardDetailBySelective(periodRewardDetail);
+		    	if(CollectionUtils.isEmpty(tickets)) {
+		    		updatePrint.setThirdPartRewardMoney(new BigDecimal(tickets.get(0).getReward()));
+		    	}
+		    }
+		    
+		    updatePrint.setRewardStakes(rewardStakesWithSp);
+		    updatePrint.setPrintLotteryId(lp.getPrintLotteryId());
+		    updatelotteryPrintList.add(updatePrint);
 		}
 		
 		//更新结果：中奖号和中奖金额
 		this.updateBatchLotteryPrint(updatelotteryPrintList);
+	}
+
+	/**
+	 * 组合中奖集合
+	 * @param amount:初始值2*times
+	 * @param num:几串几
+	 * @param list:赔率
+	 * @param rewardList:组合后的中奖金额list
+	 */
+	private void groupByRewardList(Double amount, int num, List<Double> list, List<Double> rewardList) {
+		LinkedList<Double> link = new LinkedList<Double>(list);
+		while(link.size() > 0) {
+			Double remove = link.remove(0);
+			Double item = amount*remove;
+			if(num == 1) {
+				rewardList.add(item);
+			} else {
+				groupByRewardList(item,num-1,link, rewardList);
+			}
+		}		
 	}
 	
 	/**

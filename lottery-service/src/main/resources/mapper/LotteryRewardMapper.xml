@@ -8,6 +8,7 @@
     <id column="reward_id" jdbcType="INTEGER" property="rewardId" />
     <result column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="issue" jdbcType="VARCHAR" property="issue" />
     <result column="changci" jdbcType="VARCHAR" property="changci" />
     <result column="match_time" jdbcType="TIMESTAMP" property="matchTime" />
     <result column="reward_data" jdbcType="VARCHAR" property="rewardData" />
@@ -17,6 +18,24 @@
   
   <select id="queryRewardToday" resultMap="BaseResultMap">
   	select * from dl_reward where DATEDIFF(match_time,NOW())= 0 
+  </select>
+  
+  <select id="queryRewardByIssue" parameterType="com.dl.shop.lottery.model.LotteryReward" resultMap="BaseResultMap">
+      	select * from dl_reward 
+	  	<where>
+		  	<if test="rewardId != null">
+		        AND reward_id = #{rewardId}
+		    </if>
+		    <if test="matchId != null">
+		        AND match_id = #{matchId}
+		    </if>
+		    <if test="changciId != null">
+		        AND changci_id = #{changciId}
+		    </if>
+		    <if test="issue != null">
+		        AND issue = #{issue}
+		    </if>
+	    </where>
   </select>
   
 </mapper>

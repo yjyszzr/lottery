@@ -273,6 +273,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		dto.setMatchCells(matchCells);
 	}
+	
 	/**
 	 * 半全场
 	 * {"aa":"1.92","dd":"5.60","hh":"10.50","p_status":"Selling","d_trend":"0","fixedodds":"",
@@ -620,6 +621,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
+	
+	
 	/**
 	 * 投注信息获取
 	 * @param param
