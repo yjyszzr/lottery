@@ -2,7 +2,10 @@ package com.dl.shop.lottery.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.dl.base.mapper.Mapper;
+import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.shop.lottery.model.LotteryPrint;
 
 public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
@@ -47,4 +50,11 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> selectLessThanIssuePrint(LotteryPrint lotteryPrint);
 	
 	List<LotteryPrint> selectTodayPrints();
+	
+	/**
+	 * 查询中奖金额
+	 * @param issue
+	 * @return
+	 */
+	public List<DlOrderDataDTO> getRealRewardMoney(@Param("issue") String issue);
 }
