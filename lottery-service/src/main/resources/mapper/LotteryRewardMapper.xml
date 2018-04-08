@@ -20,7 +20,7 @@
   	select * from dl_reward where DATEDIFF(match_time,NOW())= 0 
   </select>
   
-  <select id="queryRewardByIssue" parameterType="com.dl.shop.lottery.model.LotteryReward" resultMap="BaseResultMap">
+  <select id="queryRewardByIssueBySelective" parameterType="com.dl.shop.lottery.model.LotteryReward" resultMap="BaseResultMap">
       	select * from dl_reward 
 	  	<where>
 		  	<if test="rewardId != null">

@@ -387,4 +387,9 @@ public class ProjectConstant {
     public static int SFC14_Item_MIN = 1;// 每个对阵至少一个结果
     
     public static int PRICE = 2;
+    
+    
+    public static final String SAME_MONEY = "1";
+    public static final String NOT_SAME_MONEY ="2";
+    public static final String NOT_COMPARE ="3";
 }
