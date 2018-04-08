@@ -1,10 +1,14 @@
 package com.dl.shop.lottery.service;
 
 import java.math.BigDecimal;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,6 +55,8 @@ import com.dl.order.api.IOrderService;
 import com.dl.order.param.LotteryPrintParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
@@ -80,6 +86,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	@Value("${print.ticket.merchantPassword}")
 	private String merchantPassword;
 	
+	@Value("${spring.datasource.druid.url}")
+	private String dbUrl;
+	
+	@Value("${spring.datasource.druid.username}")
+	private String dbUserName;
+	
+	@Value("${spring.datasource.druid.password}")
+	private String dbPass;
+	
+	@Value("${spring.datasource.druid.driver-class-name}")
+	private String dbDriver;
+	
 	/**
 	 * 投注接口（竞彩足球，game参数都是T51）
 	 * @return
@@ -104,34 +122,78 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		List<CallbackStake> callbackStakes = param.getOrders();
 		if(CollectionUtils.isNotEmpty(callbackStakes)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			List<LotteryPrintParam> lotteryPrintParams = new LinkedList<LotteryPrintParam>();
+			List<LotteryPrint> lotteryPrints = new LinkedList<>();
 			for(CallbackStake callbackStake : callbackStakes) {
 				LotteryPrint lotteryPrint = new LotteryPrint();
 				lotteryPrint.setTicketId(callbackStake.getTicketId());
 				lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-				lotteryPrint.setStatus(1);
-				lotteryPrint.setPlatformId(callbackStake.getPlatformId());
-				lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-				lotteryPrint.setPrintSp(callbackStake.getSp());
-				lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
-				Date printTime = null;
-				try {
-					String printTimeStr = callbackStake.getPrintTime();
-					printTimeStr = printTimeStr.replaceAll("/", "-");
-					printTime = sdf.parse(printTimeStr);
-					lotteryPrint.setPrintTime(printTime);
-				} catch (ParseException e) {
-					e.printStackTrace();
-					log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
-					continue;
+				if(null != lotteryPrint) {
+					lotteryPrint.setStatus(1);
+					lotteryPrint.setPlatformId(callbackStake.getPlatformId());
+					lotteryPrint.setPrintNo(callbackStake.getPrintNo());
+					lotteryPrint.setPrintSp(callbackStake.getSp());
+					lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
+					Date printTime = null;
+					try {
+						String printTimeStr = callbackStake.getPrintTime();
+						printTimeStr = printTimeStr.replaceAll("/", "-");
+						printTime = sdf.parse(printTimeStr);
+						lotteryPrint.setPrintTime(printTime);
+					} catch (ParseException e) {
+						e.printStackTrace();
+						log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
+						continue;
+					}
+					lotteryPrints.add(lotteryPrint);
+					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+					lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+					lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+					lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+					lotteryPrintParam.setPrintSp(lotteryPrint.getPrintSp());
+					lotteryPrintParams.add(lotteryPrintParam);
 				}
-				lotteryPrintMapper.updateByPrimaryKey(lotteryPrint);
-				log.info(callbackStake.getTicketId() + "，回调成功");
-				LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
-				lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
-				lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-				lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
-				orderService.updateOrderInfoByPrint(lotteryPrintParam);
 			}
+			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
+				updateLotteryPrintByCallBack(lotteryPrints);
+			}
+			if(CollectionUtils.isNotEmpty(lotteryPrintParams)) {
+				orderService.updateOrderInfoByPrint(lotteryPrintParams);
+			}
+		}
+	}
+	
+	/**
+	 * 高速批量更新LotteryPrint
+	 * @param list
+	 */
+	public void updateLotteryPrintByCallBack(List<LotteryPrint> list) {
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "update dl_print_lottery set status = ?,platform_id = ?,print_status = ?,"
+					   + "print_sp = ?,print_no = ?,print_time = ? "
+					   + "where ticket_id = ?";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (int i = 0, size = list.size(); i < size; i++) {
+				prest.setInt(1, list.get(i).getStatus());
+				prest.setString(2, list.get(i).getPlatformId());
+				prest.setInt(3, list.get(i).getPrintStatus());
+				prest.setString(4, list.get(i).getPrintSp());
+				prest.setString(5, list.get(i).getPrintNo());
+				prest.setDate(6, new java.sql.Date(list.get(i).getPrintTime().getTime()));
+				prest.setString(7, list.get(i).getTicketId());
+				prest.addBatch();
+			}
+			prest.executeBatch();
+			conn.commit();
+			conn.close();
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+		} catch (ClassNotFoundException ex) {
+			log.error(ex.getMessage());
 		}
 	}
 	

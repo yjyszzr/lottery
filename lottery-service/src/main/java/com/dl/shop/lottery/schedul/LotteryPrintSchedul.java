@@ -52,8 +52,8 @@ public class LotteryPrintSchedul {
         		printTicketOrderParam.setTicketId(lp.getTicketId());
         		printTicketOrderParam.setGame(lp.getGame());
         		printTicketOrderParam.setIssue(lp.getIssue());
-        		printTicketOrderParam.setPlayType(lp.getPlaytype());
-        		printTicketOrderParam.setBetType(lp.getBettype());
+        		printTicketOrderParam.setPlayType(lp.getPlayType());
+        		printTicketOrderParam.setBetType(lp.getBetType());
         		printTicketOrderParam.setTimes(lp.getTimes());
         		printTicketOrderParam.setMoney(lp.getMoney().intValue());
         		printTicketOrderParam.setStakes(lp.getStakes());
