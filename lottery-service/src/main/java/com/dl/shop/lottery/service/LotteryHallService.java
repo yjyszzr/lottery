@@ -66,6 +66,11 @@ public class LotteryHallService {
 		//获取彩票分类列表
 		//dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs()); //第一版只显示竞彩足球的子列表
 		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
+		if(CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
+			for(DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
+				dto.setLotteryId("1");
+			}
+		}
 		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
         return dlHallDTO;		
 	}

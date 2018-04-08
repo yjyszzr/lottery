@@ -51,8 +51,24 @@ public class LotteryReward {
      */
     @Column(name = "create_time")
     private Integer createTime;
-
+    
     /**
+     * 期次，对于竞彩即赛事编号
+     */
+    @Column(name = "issue")
+    private String issue;
+    
+    
+
+    public String getIssue() {
+		return issue;
+	}
+
+	public void setIssue(String issue) {
+		this.issue = issue;
+	}
+
+	/**
      * 获取开奖信息表id
      *
      * @return reward_id - 开奖信息表id

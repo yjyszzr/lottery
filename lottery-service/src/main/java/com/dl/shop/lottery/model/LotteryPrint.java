@@ -81,6 +81,12 @@ public class LotteryPrint {
     private String stakes;
     
     /**
+     * 中奖号码
+     */
+    @Column(name = "reward_stakes")
+    private String rewardStakes;
+    
+    /**
      * 出票返回错误码
      */
     @Column(name = "error_code")
@@ -121,8 +127,62 @@ public class LotteryPrint {
      */
     @Column(name = "print_time")
     private Date printTime;
-
+    
     /**
+     * real_reward_money
+     */
+    @Column(name = "real_reward_money")
+    private BigDecimal realRewardMoney;
+    
+    
+    /**
+     * third_part_reward_money
+     */
+    @Column(name = "third_part_reward_money")
+    private BigDecimal thirdPartRewardMoney;
+    
+    
+    /**
+     * compare_status
+     */
+    @Column(name = "compare_status")
+    private String compareStatus;
+    
+    
+    
+    public BigDecimal getRealRewardMoney() {
+		return realRewardMoney;
+	}
+
+	public void setRealRewardMoney(BigDecimal realRewardMoney) {
+		this.realRewardMoney = realRewardMoney;
+	}
+
+	public BigDecimal getThirdPartRewardMoney() {
+		return thirdPartRewardMoney;
+	}
+
+	public void setThirdPartRewardMoney(BigDecimal thirdPartRewardMoney) {
+		this.thirdPartRewardMoney = thirdPartRewardMoney;
+	}
+
+	public String getCompareStatus() {
+		return compareStatus;
+	}
+
+	public void setCompareStatus(String compareStatus) {
+		this.compareStatus = compareStatus;
+	}
+
+	public String getRewardStakes() {
+		return rewardStakes;
+	}
+
+	public void setRewardStakes(String rewardStakes) {
+		this.rewardStakes = rewardStakes;
+	}
+
+	/**
      * 获取出票流水id
      *
      * @return print_lottery_id - 出票流水id

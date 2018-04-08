@@ -83,8 +83,9 @@
   </select>
 
   <select id="getMatchListToday" resultMap="BaseResultMap">
-  	select * from dl_match where DATEDIFF(match_time,NOW())= -1 and is_del = 0 and is_show=1 
+  	select * from dl_match where DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 
   </select>
+
   
   <select id="queryMatchByDate" parameterType ="java.lang.String" resultMap="BaseResultMap">
   	select * from dl_match

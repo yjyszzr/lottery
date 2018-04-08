@@ -70,6 +70,11 @@
     where issue = #{issue}
   </select>
   
+  <select id="selectTodayPrints" resultType="com.dl.shop.lottery.model.LotteryPrint">
+    select * from dl_print_lottery
+    where  DATEDIFF(from_unixtime(accept_time,'%Y-%m-%d'),NOW()) = 0 and status = 1
+  </select>
+  
   <select id="selectLessThanIssuePrint" resultType="com.dl.shop.lottery.model.LotteryPrint">
     select * 
     from dl_print_lottery
