@@ -28,6 +28,8 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	private String matchTeam;
 	@ApiModelProperty(value = "比赛时间")
 	public int matchTime;
+	@ApiModelProperty(value = "赛事编码")
+	public String playCode;
 	
 	public DIZQUserBetCellInfoDTO(MatchBetCellDTO matchCell){
 		this.matchId = matchCell.getMatchId();
@@ -37,6 +39,7 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 		this.lotteryPlayClassifyId = matchCell.getLotteryPlayClassifyId();
 		this.matchTeam = matchCell.getMatchTeam();
 		this.matchTime = matchCell.getMatchTime();
+		this.playCode = matchCell.getPlayCode();
 		String ticketData = matchCell.getPlayType() + "|" + matchCell.getPlayCode() + "|";
 		this.ticketData = ticketData + matchCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
 		.collect(Collectors.joining(";"));
