@@ -145,7 +145,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		}
 		LotteryReward lotteryReward = rewards.get(0);
 		//匹配中奖信息
-		compareReward(lotteryReward);
+		this.compareReward(lotteryReward);
 		//更新订单及订单详情
 		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
@@ -252,17 +252,42 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	}
 	
 	/**
+	 * 拉取开奖信息
+	 * @return
+	 */
+	private JSONObject queryRewardData(String changCiId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mid", changCiId);
+		String json = NetWorkUtil.doGet(rewardUrl, map, "UTF-8");
+	    if (json.contains("error")) {
+	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), changCiId + "，中奖信息查询失败");
+	    }
+	    JSONObject jsonObject = JSONObject.parseObject(json);
+	    JSONObject jo = jsonObject.getJSONObject("result");
+	    jo = jo.getJSONObject("pool_rs");
+	    return jo;
+	}
+	
+	/**
 	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或 提供给后台管理调用
 	 */
-	public void compareReward(LotteryReward lotteryReward) {
-		String rewardStakes = lotteryReward.getRewardData();//该期次的中奖号码
+	public void compareReward(LotteryReward rewards) {
+//		//获取某个期次的获奖信息
+//		LotteryReward lr = new LotteryReward();
+//		lr.setIssue(param.getIssue());
+//		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(lr);
+//		if(CollectionUtils.isEmpty(rewards)) {
+//			log.info(new Date()+"没有开奖信息");
+//		}
+		//该期次的中奖号码
+		String rewardStakes = rewards.getRewardData();
 		
 		//获取该期次的出票信息
-		LotteryPrint lotteryPrintEqual = new LotteryPrint();
-		lotteryPrintEqual.setIssue(lotteryReward.getIssue());
-		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectEqualsIssuePrint(lotteryPrintEqual);
+		LotteryPrint lotteryPrintLessEqual = new LotteryPrint();
+		lotteryPrintLessEqual.setIssue(rewards.getIssue());
+		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectLessThanIssuePrint(lotteryPrintLessEqual);
 		if(CollectionUtils.isEmpty(lotteryPrintList)) {
-			log.info("没有期次为"+lotteryReward.getIssue()+"的出票信息");
+			log.info("没有期次为"+rewards.getIssue()+"的出票信息");
 		}
 		
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
@@ -275,6 +300,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		    	continue;
 		    }
 		    
+		    List<String> spList = Arrays.asList(lp.getRewardStakes().split(","));
+		    List<String> alReadySp = spList.stream().map(s->s.substring(s.indexOf("@"))).collect(Collectors.toList());
+		    same.addAll(alReadySp);
 		    //构造获胜期次的赔率集合和带有期次@赔率的字符串
 		    RewardStakesWithSpDTO rewardStakesWithSpDTO = this.createRewardStakesWithSp(same,lp.getPrintSp());
 		    

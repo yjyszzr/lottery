@@ -101,7 +101,7 @@
   <select id="selectLessThanIssuePrint" resultType="com.dl.shop.lottery.model.LotteryPrint">
     select * 
     from dl_print_lottery
-    where issue &gt; #{issue}
+    where issue &gt;= #{issue}
   </select>
   
   <select id="getRealRewardMoney" resultType="com.dl.lottery.dto.DlOrderDataDTO">
