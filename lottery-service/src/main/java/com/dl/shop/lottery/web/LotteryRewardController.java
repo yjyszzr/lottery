@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.dto.LotteryRewardByIssueDTO;
+import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.shop.lottery.service.LotteryRewardService;
@@ -42,5 +44,12 @@ public class LotteryRewardController {
     public BaseResult<String> resolveTxt(@Valid @RequestBody DlRewardParam param) {
 		lotteryRewardService.resovleRewardTxt();
     	return ResultGenerator.genSuccessResult("拉取开奖数据成功","");
+    }
+	
+	@ApiOperation(value = "根据期次，查询审核通过的开奖数据", notes = "根据期次，查询审核通过的开奖数据")
+    @PostMapping("/queryRewardByIssue")
+    public BaseResult<LotteryRewardByIssueDTO> queryRewardByIssue(@Valid @RequestBody DlLotteryRewardByIssueParam param) {
+		LotteryRewardByIssueDTO lotteryRewardByIssueDTO = lotteryRewardService.queryRewardByIssue(param);
+    	return ResultGenerator.genSuccessResult("根据期次，查询审核通过的开奖数据成功", lotteryRewardByIssueDTO);
     }
 }

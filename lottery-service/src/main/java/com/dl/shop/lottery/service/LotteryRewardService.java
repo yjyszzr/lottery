@@ -38,11 +38,13 @@ import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.NuclearUtil;
 import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
+import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
 import com.dl.lottery.enums.MatchPlayTypeEnum;
 import com.dl.lottery.enums.MatchResultCrsEnum;
 import com.dl.lottery.enums.MatchResultHadEnum;
 import com.dl.lottery.enums.MatchResultHafuEnum;
+import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
@@ -171,6 +173,26 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//更新用户账户，大于5000元的需要派奖
 		
 		
+	}
+	
+	/**
+	 * 根据期次，查询审核通过的开奖数据
+	 * @param param
+	 * @return
+	 */
+	public LotteryRewardByIssueDTO queryRewardByIssue(DlLotteryRewardByIssueParam param) {
+		LotteryRewardByIssueDTO lotteryRewardByIssueDTO = new LotteryRewardByIssueDTO();
+		LotteryReward lr = new LotteryReward();
+		lr.setIssue(param.getIssue());
+		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(lr);
+		if(CollectionUtils.isEmpty(rewards)) {
+			log.info(new Date()+"没有开奖信息");
+			return null;
+		}
+		LotteryReward lotteryReward = rewards.get(0);
+		lotteryRewardByIssueDTO.setIssue(lotteryReward.getIssue());
+		lotteryRewardByIssueDTO.setRewardData(lotteryReward.getRewardData());
+		return lotteryRewardByIssueDTO;
 	}
 	
 	/**
