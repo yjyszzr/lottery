@@ -53,7 +53,6 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/lottery/match")
 public class LotteryMatchController {
 	
-	private final static long BET_INFO_EXPIRE_TIME = 10;//彩票信息的缓存时长
     @Resource
     private LotteryMatchService lotteryMatchService;
     @Resource
@@ -179,7 +178,7 @@ public class LotteryMatchController {
 		String dtoJson = JSONHelper.bean2json(dto);
 		String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
 		String key = MD5.crypt(keyStr);
-		stringRedisTemplate.opsForValue().set(key, dtoJson, BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
+		stringRedisTemplate.opsForValue().set(key, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
 		//返回页面信息
 		BetPayInfoDTO betPlayInfoDTO = new BetPayInfoDTO();
 		betPlayInfoDTO.setPayToken(key);

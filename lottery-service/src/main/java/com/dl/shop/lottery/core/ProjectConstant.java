@@ -394,4 +394,6 @@ public class ProjectConstant {
     public static final String NOT_COMPARE ="3";
     //投注提前时间，单位为秒
     public static final int BET_PRESET_TIME = 780;
+  //彩票信息的缓存时长,单位分
+    public final static long BET_INFO_EXPIRE_TIME = 10;
 }
