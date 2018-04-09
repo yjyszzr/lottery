@@ -124,7 +124,7 @@ public class LotteryMatch {
     private Integer isDel;
     
     /**
-     * 赛事编号
+     * 赛事编号，足球竞猜中就是期次
      */
     @Column(name = "match_sn")
     private String matchSn;
@@ -141,9 +141,22 @@ public class LotteryMatch {
     @Column(name = "whole")
     private String whole;
     
+    /**
+     * 比赛状态：0-未拉取 1-已拉取
+     */
+    @Column(name = "status")
+    private String status;
     
 
-    public String getMatchSn() {
+    public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getMatchSn() {
 		return matchSn;
 	}
 

@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +46,7 @@ import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
-import com.dl.lottery.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
@@ -515,6 +519,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					sdf.applyPattern("yyyy-MM-dd");
 					Date showTime = sdf.parse(jo.getString("b_date"));
 					lotteryMatch.setShowTime(showTime);
+					lotteryMatch.setMatchSn(this.commonCreateIssue(jo.getString("date"), lotteryMatch.getChangci()));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -525,6 +530,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}   
 		}
 		return lotteryMatchs;
+	}
+	
+	/**
+	 * 构造场次的公共方法
+	 */
+	public String commonCreateIssue(String dateStr,String changci ) {
+		String dateItem = dateStr.replaceAll("-", "");
+		int weekDay = LocalWeekDate.getCode(changci.substring(0, 2));
+		return dateItem + weekDay + changci.substring(2);
 	}
 	
 	/**
@@ -792,62 +806,68 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * 抓取当天和前两天的中国体育彩票足球竞猜网 开赛结果 并更新赛事结果  -- 定时任务
 	 * @return
 	 */
-//	public int pullMatchResult() {
-//        Document doc = null;
-//        List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>();
-//        try {
-//            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
-//            Elements elements =  doc.getElementsByClass("m-tab");
-//            Elements trs = elements.select("tbody tr");
-//            for (int i = 0; i < trs.size(); i++) {
-//            	Elements tds = trs.get(i).select("td");
-//            	LotteryMatch lotteryMatch = new  LotteryMatch();
-//            	for(int j = 0,tdsLen = tds.size();j < tdsLen;j++) {
-//            		if(j <= 1) {
-//            			String str = getMatchSnStr(tds);
-//            			if(StringUtils.isEmpty(str)) {
-//            				break;
-//            			}
-//            			lotteryMatch.setMatchSn(str);
-//            		}
-//            		lotteryMatch.setFirstHalf(String.valueOf(tds.get(4).text()));
-//            		lotteryMatch.setWhole(String.valueOf(tds.get(5).text()));
-//            		matchResult.add(lotteryMatch);
-//            		break;
-//            	}
-//            }
-//        } catch (Exception e) {
-//        	log.error(e.getMessage());
-//        }
-//        
-//        int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
-//        
-//		return rst;
-//	}
+	public int pullMatchResult() {
+		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListUnknowScoreToday();
+		if(CollectionUtils.isEmpty(matchList)) {
+			return -1;
+		}
+		
+        Document doc = null;
+        List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>();
+        try {
+            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
+            Elements elements =  doc.getElementsByClass("m-tab");
+            Elements trs = elements.select("tbody tr");
+            for (int i = 0; i < trs.size(); i++) {
+            	Elements tds = trs.get(i).select("td");
+            	LotteryMatch lotteryMatch = new  LotteryMatch();
+            	for(int j = 0,tdsLen = tds.size();j < tdsLen;j++) {
+            		if(j <= 1) {
+            			String str = getMatchSnStr(tds);
+            			if(StringUtils.isEmpty(str)) {
+            				break;
+            			}
+            			lotteryMatch.setMatchSn(str);
+            		}
+            		lotteryMatch.setFirstHalf(String.valueOf(tds.get(4).text()));
+            		lotteryMatch.setWhole(String.valueOf(tds.get(5).text()));
+            		lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
+            		matchResult.add(lotteryMatch);
+            		break;
+            	}
+            }
+        } catch (Exception e) {
+        	log.error(e.getMessage());
+        }
+        
+        int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
+        
+		return rst;
+	}
 	
 	/** 
 	 * 对抓取的数据构造赛事编号
 	 * @param tds
 	 * @return
 	 */
-//	public String getMatchSnStr(Elements tds) {
-//		String now = DateUtil.getCurrentDate(DateUtil.date_sdf);
-//		String str1 = tds.get(0).text();
-//		if(!now.equals(str1)) {
-//			return "";
-//		}
-//		Boolean goOn = str1.contains("-");
-//		if(goOn == false) {
-//			return "";
-//		}
-//		str1 = str1.replaceAll("-", "");
-//		String str2 = tds.get(1).text();
-//		String str3 = str2.substring(str2.length() - 3);
-//		str2 = str2.substring(0,str2.length() - 3);
-//		str2 = String.valueOf(LocalWeekDate.getCode(str2));
-//		
-//		return  str1+str2+str3;
-//	}
+	public String getMatchSnStr(Elements tds) {
+		String now = DateUtil.getCurrentDate(DateUtil.date_sdf);
+		String str1 = tds.get(0).text();
+		if(!now.equals(str1)) {
+			return "";
+		}
+		Boolean goOn = str1.contains("-");
+		if(goOn == false) {
+			return "";
+		}
+		str1 = str1.replaceAll("-", "");
+		String str2 = tds.get(1).text();
+		String str3 = str2.substring(str2.length() - 3);
+		str2 = str2.substring(0,str2.length() - 3);
+		str2 = String.valueOf(LocalWeekDate.getCode(str2));
+		
+		return  str1+str2+str3;
+	}
 	
 	/**
 	 * 根据日期查询比赛结果

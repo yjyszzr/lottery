@@ -29,7 +29,7 @@
   </insert>
   
   <select id="queryPeriodRewardByIssues" parameterType="java.util.List" resultMap="BaseResultMap">
-  	  SELECT issue FROM dl_period_reward  where  issue in
+  	  SELECT issue FROM dl_period_reward  where issue in
   	  <foreach item="item" index="index" collection="list"   open="(" separator="," close=")">  
           #{item}   
       </foreach>
