@@ -703,7 +703,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						}).collect(Collectors.joining(","));
 						return playType + "|" + playCode + "|" + cellCodes;
 					}).collect(Collectors.joining(";"));
-					String issue = subList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+					String issue = subList.get(0).getPlayCode();
+					if(subList.size() > 1) {
+						issue = subList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+					}
 					int times = param.getTimes();
 					Double money = betCellList1.size()*times*2.0;
 					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
@@ -754,14 +757,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	private MatchBetCellDTO maxOrMinOddsCell(MatchBetCellDTO matchBetCell, boolean maxFlag) {
 		List<DlJcZqMatchCellDTO> betCells = matchBetCell.getBetCells();
-		Optional<DlJcZqMatchCellDTO> maxOptional = null;
-		if(maxFlag) {
-			maxOptional = betCells.stream().max((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));});
+		DlJcZqMatchCellDTO maxOptional = null;
+		if(betCells.size() > 1) {
+			if(maxFlag) {
+				maxOptional = betCells.stream().max((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));}).get();
+			}else {
+				maxOptional = betCells.stream().min((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));}).get();
+			}
 		}else {
-			maxOptional = betCells.stream().min((item1, item2)->{return Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()));});
+			maxOptional = betCells.get(0);
 		}
 		List<DlJcZqMatchCellDTO> subList = new ArrayList<DlJcZqMatchCellDTO>(3);
-		String maxOdds = maxOptional.get().getCellOdds();
+		String maxOdds = maxOptional.getCellOdds();
 		for(DlJcZqMatchCellDTO dto: betCells) {
 			if(dto.getCellOdds().equals(maxOdds)) {
 				subList.add(dto);
