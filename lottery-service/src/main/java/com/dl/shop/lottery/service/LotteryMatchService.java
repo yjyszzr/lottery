@@ -314,7 +314,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 	}
 	private void initDlJcZqMatchCell7(DlJcZqMatchPlayDTO dto) {
-		
+		String playContent = dto.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String hOdds = jsonObj.getString("zbb");
+		String aOdds = jsonObj.getString("zb");
+		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
 	}
 	/**
 	 * 转换页面展示用的比赛时间
