@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -85,6 +86,17 @@ public class LotteryMatchController {
 		if(matchBetCells.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
+		String betType = param.getBetType();
+		if(StringUtils.isBlank(betType)) {
+			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+		}
+		if((matchBetCells.size() == 1 && !betType.equals("11")) || (matchBetCells.size() > 1 && betType.contains("11"))) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
+		Integer maxBetNum = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().findFirst().get();
+		if(maxBetNum > matchBetCells.size()) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
 		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
 		if(collect.size() > 0) {
 			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
@@ -102,10 +114,6 @@ public class LotteryMatchController {
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
-		}
-		String betType = param.getBetType();
-		if(StringUtils.isBlank(betType)) { 
-			param.setBetType("11");
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
 		return ResultGenerator.genSuccessResult("success", betInfo);
