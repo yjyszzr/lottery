@@ -86,21 +86,7 @@ public class LotteryMatchController {
 		if(matchBetCells.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
-		String betType = param.getBetType();
-		if(StringUtils.isBlank(betType)) {
-			return ResultGenerator.genFailResult("请选择有效的串关！", null);
-		}
-		if((matchBetCells.size() == 1 && !betType.equals("11")) || (matchBetCells.size() > 1 && betType.contains("11"))) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
-		}
-		Integer maxBetNum = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().findFirst().get();
-		if(maxBetNum > matchBetCells.size()) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
-		}
-		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
-		}
+		//校验赛事投注时间
 		MatchBetCellDTO min = matchBetCells.get(0);
 		if(matchBetCells.size() > 1) {
 			min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
@@ -111,6 +97,36 @@ public class LotteryMatchController {
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
+		//校验串关
+		String betType = param.getBetType();
+		if(StringUtils.isBlank(betType)) {
+			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+		}
+		if((matchBetCells.size() == 1 && !betType.equals("11")) || (matchBetCells.size() > 1 && betType.contains("11"))) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
+		List<Integer> betNums = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().collect(Collectors.toList());
+		int maxBetNum = betNums.get(betNums.size()-1);
+		if(maxBetNum > matchBetCells.size()) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
+		//校验投注选项
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		//校验胆的个数设置
+		int minBetNum = betNums.get(0);
+		int danEnableNum = minBetNum -1;
+		if(minBetNum == matchBetCells.size()) {
+			danEnableNum = 0;
+		}
+		long danNum = matchBetCells.stream().filter(dto->dto.getIsDan() == 1).count();
+		if(danNum > danEnableNum) {
+			return ResultGenerator.genFailResult("参赛设胆场次有误，请核对！", null);
+		}
+		
+		//设置投注倍数
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
@@ -126,10 +142,7 @@ public class LotteryMatchController {
 		if(matchBetCells.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
-		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
-		}
+		//校验赛事投注时间
 		MatchBetCellDTO min = matchBetCells.get(0);
 		if(matchBetCells.size() > 1) {
 			min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
@@ -140,14 +153,39 @@ public class LotteryMatchController {
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
-
+		//校验串关
+		String betType = param.getBetType();
+		if(StringUtils.isBlank(betType)) {
+			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+		}
+		if((matchBetCells.size() == 1 && !betType.equals("11")) || (matchBetCells.size() > 1 && betType.contains("11"))) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
+		List<Integer> betNums = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().collect(Collectors.toList());
+		int maxBetNum = betNums.get(betNums.size()-1);
+		if(maxBetNum > matchBetCells.size()) {
+			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		}
+		//校验投注选项
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		//校验胆的个数设置
+		int minBetNum = betNums.get(0);
+		int danEnableNum = minBetNum -1;
+		if(minBetNum == matchBetCells.size()) {
+			danEnableNum = 0;
+		}
+		long danNum = matchBetCells.stream().filter(dto->dto.getIsDan() == 1).count();
+		if(danNum > danEnableNum) {
+			return ResultGenerator.genFailResult("参赛设胆场次有误，请核对！", null);
+		}
+		
+		//设置投注倍数
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
-		}
-		String betType = param.getBetType();
-		if(StringUtils.isBlank(betType)) { 
-			param.setBetType("11");
 		}
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
