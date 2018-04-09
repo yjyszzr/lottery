@@ -92,6 +92,10 @@ public class LotteryMatchController {
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
@@ -118,6 +122,11 @@ public class LotteryMatchController {
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
