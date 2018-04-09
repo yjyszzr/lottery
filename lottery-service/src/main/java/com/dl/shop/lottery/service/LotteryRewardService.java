@@ -49,7 +49,6 @@ import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.order.api.IOrderService;
-import com.dl.order.dto.DlLotteryPrintMoneyDTO;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -151,25 +150,25 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//匹配中奖信息
 		this.compareReward(lotteryReward);
 		//更新订单及订单详情
-		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
-		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
-			DlLotteryPrintMoneyDTO dlLotteryPrintMoneyDTO = new DlLotteryPrintMoneyDTO();
-			dlLotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-			List<com.dl.order.dto.DlOrderDataDTO> dtos = new LinkedList<com.dl.order.dto.DlOrderDataDTO>();
-			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
-				com.dl.order.dto.DlOrderDataDTO dlOrderDataDTO = new com.dl.order.dto.DlOrderDataDTO();
-				try {
-					BeanUtils.copyProperties(dlOrderDataDTO, dto);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-				dtos.add(dlOrderDataDTO);
-			}
-			dlLotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-			orderService.updateOrderInfoByExchangeReward(dlLotteryPrintMoneyDTO);
-		}
+//		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
+//		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+//			DlLotteryPrintMoneyDTO dlLotteryPrintMoneyDTO = new DlLotteryPrintMoneyDTO();
+//			dlLotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+//			List<com.dl.order.dto.DlOrderDataDTO> dtos = new LinkedList<com.dl.order.dto.DlOrderDataDTO>();
+//			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+//				com.dl.order.dto.DlOrderDataDTO dlOrderDataDTO = new com.dl.order.dto.DlOrderDataDTO();
+//				try {
+//					BeanUtils.copyProperties(dlOrderDataDTO, dto);
+//				} catch (IllegalAccessException e) {
+//					e.printStackTrace();
+//				} catch (InvocationTargetException e) {
+//					e.printStackTrace();
+//				}
+//				dtos.add(dlOrderDataDTO);
+//			}
+//			dlLotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+//			orderService.updateOrderInfoByExchangeReward(dlLotteryPrintMoneyDTO);
+//		}
 		//更新用户账户，大于5000元的需要派奖
 		
 		
