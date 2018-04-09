@@ -85,16 +85,19 @@ public class LotteryMatchController {
 		if(matchBetCells.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
-		MatchBetCellDTO min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		MatchBetCellDTO min = matchBetCells.get(0);
+		if(matchBetCells.size() > 1) {
+			min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
 		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
 		LocalDate now = LocalDate.now();
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
-		}
-		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
 		}
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
@@ -115,16 +118,19 @@ public class LotteryMatchController {
 		if(matchBetCells.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
-		MatchBetCellDTO min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
+		if(collect.size() > 0) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		MatchBetCellDTO min = matchBetCells.get(0);
+		if(matchBetCells.size() > 1) {
+			min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
 		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
 		LocalDate now = LocalDate.now();
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
-		}
-		List<MatchBetCellDTO> collect = param.getMatchBetCells().stream().filter(dto->dto.getBetCells()==null || dto.getBetCells().size()==0).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
 		}
 
 		Integer times = param.getTimes();
