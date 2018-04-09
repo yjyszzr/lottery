@@ -389,9 +389,15 @@ public class ProjectConstant {
     public static int PRICE = 2;
     
     
+    public static String MATCH_NOT_FINISH = "0";//比赛未结束
+    public static String MATCH_FINISH = "1";//比赛结束
+    
+    
+    /**计算出的单张中奖彩票金额与第三方计算的金额是否一致*/
     public static final String SAME_MONEY = "1";
     public static final String NOT_SAME_MONEY ="2";
     public static final String NOT_COMPARE ="3";
+    
     //投注提前时间，单位为秒
     public static final int BET_PRESET_TIME = 780;
   //彩票信息的缓存时长,单位分

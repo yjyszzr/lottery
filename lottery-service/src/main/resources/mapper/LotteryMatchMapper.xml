@@ -24,6 +24,7 @@
     <result column="match_sn" jdbcType="VARCHAR" property="matchSn" />
     <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
     <result column="whole" jdbcType="VARCHAR" property="whole" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
   </resultMap>
   <resultMap id="matchDtoResultMap" type="com.dl.lottery.dto.DlJcZqMatchPlayDTO">
     <result column="match_id" jdbcType="INTEGER" property="matchId" />
@@ -57,10 +58,10 @@
   <insert id="insertMatch" useGeneratedKeys="true" keyProperty="matchId">
     insert into dl_match(league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
              home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
-             is_show,is_del)
+             is_show,is_del,match_sn)
     values(#{leagueId},#{leagueName},#{leagueAddr},#{changciId},#{changci},#{homeTeamId},#{homeTeamName},#{homeTeamAbbr},#{homeTeamRank},
              #{visitingTeamId},#{visitingTeamName},#{visitingTeamAbbr},#{visitingTeamRank},#{matchTime},#{showTime},#{createTime},
-             #{isShow},#{isDel})
+             #{isShow},#{isDel},#{matchSn})
   </insert>
   
   <select id="getMatchList" resultMap="matchDtoResultMap">
@@ -83,7 +84,11 @@
   </select>
 
   <select id="getMatchListToday" resultMap="BaseResultMap">
-  	select * from dl_match where DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 
+  	select * from dl_match where DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 and status = 1
+  </select>
+  
+  <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
+  	select * from dl_match where status = '0' and DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 
   </select>
 
   
@@ -108,6 +113,13 @@
 	                 <foreach collection="list" item="i" index="index">
 	                         <if test="i.whole!=null">
 	                          when match_sn=#{i.matchSn} then #{i.whole}
+	                         </if>
+	                 </foreach>
+	              </trim>
+	              <trim prefix="status =case" suffix="end,">
+	                 <foreach collection="list" item="i" index="index">
+	                         <if test="i.status!=null">
+	                          when match_sn=#{i.matchSn} then #{i.status}
 	                         </if>
 	                 </foreach>
 	              </trim>

@@ -30,6 +30,11 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	List<LotteryMatch> getMatchListToday();
 	
+	/**
+	 * 获取当天未知分数的比赛
+	 * @return
+	 */
+	List<LotteryMatch> getMatchListUnknowScoreToday();
 	
 	
 	public int updateMatchBatch(@Param("list") List<LotteryMatch> matchList);

@@ -18,7 +18,9 @@ import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
+import com.dl.shop.lottery.service.LotteryRewardService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +34,12 @@ public class LotteryPrintSchedul {
 	
 	@Resource
 	private LotteryPrintService lotteryPrintService;
+	
+	@Resource
+	private LotteryMatchService lotteryMatchService;
+	
+	@Resource
+	private LotteryRewardService lotteryRewardService;
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）
@@ -78,4 +86,25 @@ public class LotteryPrintSchedul {
         	}
         }
     }
+	
+	
+	
+	 /**
+	  * 获取已完成比赛的比赛分数 （每2分钟执行一次）
+	  */
+	 @Scheduled(cron = "0 0/2 * * * ?")
+	 public void fetchMatchScore() {
+		int rst = lotteryMatchService.pullMatchResult();
+		if(rst == -1) {
+			log.info("当天比赛结果拉取完成");
+		}
+	}
+	
+	/**
+	 * 获取开奖结果的txt （每2分钟执行一次）
+	 */
+	@Scheduled(cron = "0 0/2 * * * ?")
+	public void fetchRewardTxt() {
+		lotteryRewardService.resovleRewardTxt();
+	}
 }

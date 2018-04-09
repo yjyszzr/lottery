@@ -21,23 +21,8 @@
   	select * from dl_reward where DATEDIFF(match_time,NOW())= 0 
   </select>
   
-  <select id="queryRewardByIssueBySelective" parameterType="com.dl.shop.lottery.model.LotteryReward" resultMap="BaseResultMap">
-      	select * from dl_reward 
-	  	<where>
-	  	    status = 1 
-		  	<if test="rewardId != null">
-		        AND reward_id = #{rewardId}
-		    </if>
-		    <if test="matchId != null">
-		        AND match_id = #{matchId}
-		    </if>
-		    <if test="changciId != null">
-		        AND changci_id = #{changciId}
-		    </if>
-		    <if test="issue != null">
-		        AND issue = #{issue}
-		    </if>
-	    </where>
+  <select id="queryRewardByIssueBySelective" parameterType="java.lang.String" resultMap="BaseResultMap">
+      	select * from dl_reward where status = 1 AND issue = #{issue}
   </select>
   
 </mapper>
