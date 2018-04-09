@@ -90,4 +90,7 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	
 	@ApiModelProperty(value = "单场，1可以单场，0不可以", required = true)
 	private Integer single;
+	
+	@ApiModelProperty(value = "投注结束时间", required = true)
+	public int betEndTime;
 }

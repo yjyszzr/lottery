@@ -81,6 +81,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		matchPlayDTOList.forEach(dto->{
 			//页面展示日期
 			int matchTime = dto.getMatchTime();
+			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
+			dto.setBetEndTime(betEndTime);
 			LocalDate localDate = LocalDateTime.ofEpochSecond(matchTime, 0, ZoneOffset.UTC).toLocalDate();
 			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
