@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.NuclearUtil;
+import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
 import com.dl.lottery.enums.MatchPlayTypeEnum;
@@ -45,7 +48,6 @@ import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.DlLotteryPrintMoneyDTO;
-import com.dl.order.dto.DlOrderDataDTO;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -115,7 +117,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void saveRewardData(DlRewardParam param){
-		JSONObject jo = getRewardData(param.getChangCiId());
+		JSONObject jo = queryRewardData(param.getChangCiId());
 		if(null != jo) {
 			List<JSONObject> jos = getRewardListData(jo);
 			Condition condition = new Condition(LotteryMatch.class);
@@ -151,8 +153,20 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
 			DlLotteryPrintMoneyDTO dlLotteryPrintMoneyDTO = new DlLotteryPrintMoneyDTO();
 			dlLotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-			dlLotteryPrintMoneyDTO.setOrderDataDTOs(dlOrderDataDTOs);
-			orderService.updateOrderInfoByReward(dlLotteryPrintMoneyDTO);
+			List<com.dl.order.dto.DlOrderDataDTO> dtos = new LinkedList<com.dl.order.dto.DlOrderDataDTO>();
+			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+				com.dl.order.dto.DlOrderDataDTO dlOrderDataDTO = new com.dl.order.dto.DlOrderDataDTO();
+				try {
+					BeanUtils.copyProperties(dlOrderDataDTO, dto);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				dtos.add(dlOrderDataDTO);
+			}
+			dlLotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+			orderService.updateOrderInfoByExchangeReward(dlLotteryPrintMoneyDTO);
 		}
 		//更新用户账户，大于5000元的需要派奖
 		
@@ -232,23 +246,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		JSONObject hafuJo = jo.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HAFU.getMsg());
 		jos.add(hafuJo);
 		return jos;
-	}
-	
-	/**
-	 * 拉取开奖信息
-	 * @return
-	 */
-	private JSONObject getRewardData(String changCiId) {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("mid", changCiId);
-		String json = NetWorkUtil.doGet(rewardUrl, map, "UTF-8");
-	    if (json.contains("error")) {
-	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), changCiId + "，中奖信息查询失败");
-	    }
-	    JSONObject jsonObject = JSONObject.parseObject(json);
-	    JSONObject jo = jsonObject.getJSONObject("result");
-	    jo = jo.getJSONObject("pool_rs");
-	    return jo;
 	}
 	
 	/**
