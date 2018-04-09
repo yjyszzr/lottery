@@ -42,7 +42,7 @@ import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
-import com.dl.lottery.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;

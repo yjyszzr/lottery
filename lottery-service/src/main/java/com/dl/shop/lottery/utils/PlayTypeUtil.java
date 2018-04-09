@@ -2,7 +2,7 @@ package com.dl.shop.lottery.utils;
 
 import java.util.EnumSet;
 
-import com.dl.lottery.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.MatchPlayTypeEnum;
 
 public class PlayTypeUtil {
 
