@@ -392,4 +392,6 @@ public class ProjectConstant {
     public static final String SAME_MONEY = "1";
     public static final String NOT_SAME_MONEY ="2";
     public static final String NOT_COMPARE ="3";
+    //投注提前时间，单位为秒
+    public static final int BET_PRESET_TIME = 780;
 }

@@ -1,4 +1,7 @@
 package com.dl.shop.lottery.web;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +39,7 @@ import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.StrParam;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
@@ -78,6 +82,17 @@ public class LotteryMatchController {
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+		List<MatchBetCellDTO> matchBetCells = param.getMatchBetCells();
+		if(matchBetCells.size() < 1) {
+			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
+		}
+		MatchBetCellDTO min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
+		LocalDate now = LocalDate.now();
+		if(localDate.isBefore(now)) {
+			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
+		}
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
 			param.setTimes(1);
@@ -93,6 +108,25 @@ public class LotteryMatchController {
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/saveBetInfo")
 	public BaseResult<BetPayInfoDTO> saveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+		List<MatchBetCellDTO> matchBetCells = param.getMatchBetCells();
+		if(matchBetCells.size() < 1) {
+			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
+		}
+		MatchBetCellDTO min = matchBetCells.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
+		LocalDate now = LocalDate.now();
+		if(localDate.isBefore(now)) {
+			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
+		}
+		Integer times = param.getTimes();
+		if(null == times || times < 1) {
+			param.setTimes(1);
+		}
+		String betType = param.getBetType();
+		if(StringUtils.isBlank(betType)) { 
+			param.setBetType("11");
+		}
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
 		if(userInfoExceptPassRst.getCode() != 0) {
@@ -125,7 +159,6 @@ public class LotteryMatchController {
 		Double bonusAmount = userBonusDto!=null?userBonusDto.getBonusPrice().doubleValue():0.0;
 		Double surplus = userTotalMoney>orderMoney?orderMoney:userTotalMoney;
 		Double thirdPartyPaid = orderMoney - surplus - bonusAmount;
-		List<MatchBetCellDTO> matchBetCells = param.getMatchBetCells();
 		List<DIZQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DIZQUserBetCellInfoDTO>(matchBetCells.size());
 		for(MatchBetCellDTO matchCell: matchBetCells) {
 			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
