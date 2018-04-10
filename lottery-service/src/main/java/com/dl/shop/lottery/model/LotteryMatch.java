@@ -147,8 +147,18 @@ public class LotteryMatch {
     @Column(name = "status")
     private String status;
     
+    @Column(name = "is_hot")
+    private Integer isHot;
 
-    public String getStatus() {
+    public Integer getIsHot() {
+		return isHot;
+	}
+
+	public void setIsHot(Integer isHot) {
+		this.isHot = isHot;
+	}
+
+	public String getStatus() {
 		return status;
 	}
 

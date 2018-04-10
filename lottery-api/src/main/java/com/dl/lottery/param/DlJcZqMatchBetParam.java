@@ -3,7 +3,7 @@ package com.dl.lottery.param;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dl.lottery.dto.MatchBetCellDTO;
+import com.dl.lottery.dto.MatchBetPlayDTO;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,8 +23,8 @@ public class DlJcZqMatchBetParam implements Serializable{
 	private int lotteryClassifyId;
 	@ApiModelProperty(value="彩票玩法类别")
 	private int lotteryPlayClassifyId;
-	@ApiModelProperty(value="投注详细")
-	private List<MatchBetCellDTO> matchBetCells;
+	@ApiModelProperty(value="投注赛事详细")
+	private List<MatchBetPlayDTO> matchBetPlays;
 	@ApiModelProperty(value="用户红包id,如果没有不填写，可以为空")
 	private Integer bonusId;
 	

@@ -3,7 +3,7 @@ package com.dl.lottery.param;
 import java.io.Serializable;
 import java.util.List;
 
-import com.dl.lottery.dto.DlJcZqMatchDTO;
+import com.dl.lottery.dto.DlJcZqDateMatchDTO;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,5 +18,5 @@ public class DlJcZqMatchBetNumParam implements Serializable{
 	@ApiModelProperty(value="玩法类型,如：31代表3串1")
 	private String playType;
 	
-	private List<DlJcZqMatchDTO> playList;
+	private List<DlJcZqDateMatchDTO> playList;
 }

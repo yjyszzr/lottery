@@ -2,6 +2,7 @@ package com.dl.lottery.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiModel;
@@ -31,7 +32,7 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	@ApiModelProperty(value = "赛事编码")
 	public String playCode;
 	
-	public DIZQUserBetCellInfoDTO(MatchBetCellDTO matchCell){
+	public DIZQUserBetCellInfoDTO(MatchBetPlayDTO matchCell){
 		this.matchId = matchCell.getMatchId();
 		this.changci = matchCell.getChangci();
 		this.isDan = matchCell.getIsDan();
@@ -40,8 +41,11 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 		this.matchTeam = matchCell.getMatchTeam();
 		this.matchTime = matchCell.getMatchTime();
 		this.playCode = matchCell.getPlayCode();
-		String ticketData = matchCell.getPlayType() + "|" + matchCell.getPlayCode() + "|";
-		this.ticketData = ticketData + matchCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
-		.collect(Collectors.joining(";"));
+		List<MatchBetCellDTO> matchBetCells = matchCell.getMatchBetCells();
+		this.ticketData = matchBetCells.stream().map(betCell->{
+			String ticketData = betCell.getPlayType() + "|" + playCode + "|";
+			return ticketData + betCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
+					.collect(Collectors.joining(","));
+		}).collect(Collectors.joining(";"));
 	}
 }

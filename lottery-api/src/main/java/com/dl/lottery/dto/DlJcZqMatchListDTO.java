@@ -18,8 +18,8 @@ public class DlJcZqMatchListDTO implements Serializable{
 	public String allMatchCount;
 	
 	@ApiModelProperty(value = "热门赛事列表", required = true)
-	public List<DlJcZqMatchPlayDTO> hotPlayList = new ArrayList<DlJcZqMatchPlayDTO>();
+	public List<DlJcZqMatchDTO> hotPlayList = new ArrayList<DlJcZqMatchDTO>();
 
 	@ApiModelProperty(value = "最近几天的赛事列表", required = true)
-	public List<DlJcZqMatchDTO> playList = new ArrayList<DlJcZqMatchDTO>();
+	public List<DlJcZqDateMatchDTO> playList = new ArrayList<DlJcZqDateMatchDTO>();
 }

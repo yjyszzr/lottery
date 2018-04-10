@@ -25,32 +25,13 @@
     <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
     <result column="whole" jdbcType="VARCHAR" property="whole" />
     <result column="status" jdbcType="VARCHAR" property="status" />
-  </resultMap>
-  <resultMap id="matchDtoResultMap" type="com.dl.lottery.dto.DlJcZqMatchPlayDTO">
-    <result column="match_id" jdbcType="INTEGER" property="matchId" />
-    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
-    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
-    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
-    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
-    <result column="changci" jdbcType="VARCHAR" property="changci" />
-    <result column="home_team_id" jdbcType="INTEGER" property="homeTeamId" />
-    <result column="home_team_name" jdbcType="VARCHAR" property="homeTeamName" />
-    <result column="home_team_abbr" jdbcType="VARCHAR" property="homeTeamAbbr" />
-    <result column="home_team_rank" jdbcType="VARCHAR" property="homeTeamRank" />
-    <result column="visiting_team_id" jdbcType="INTEGER" property="visitingTeamId" />
-    <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
-    <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
-    <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
-    <result column="match_time" jdbcType="INTEGER" property="matchTime" />
-    <result column="play_content" jdbcType="VARCHAR" property="playContent" />
-    <result column="play_type" jdbcType="INTEGER" property="playType" />
     <result column="is_hot" jdbcType="INTEGER" property="isHot" />
   </resultMap>
   
   <sql id="matchFields">
-  	m.match_id, m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci,
+  	m.match_id, m.league_id , m.league_name, m.league_addr, m.changci_id, m.changci, m.is_hot,
   	m.home_team_id, m.home_team_name, m.home_team_abbr, m.home_team_rank, m.visiting_team_id, 
-  	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, UNIX_TIMESTAMP(m.match_time) as match_time
+  	m.visiting_team_name, m.visiting_team_abbr, m.visiting_team_rank, m.match_time, m.match_sn
   </sql>
   <sql id="tableName">
   	dl_match m
@@ -64,23 +45,20 @@
              #{isShow},#{isDel},#{matchSn})
   </insert>
   
-  <select id="getMatchList" resultMap="matchDtoResultMap">
-  	select 
-  	  mp.play_content,mp.play_type,mp.is_hot,
-  	 <include refid="matchFields"/>
-  	from 
-  		dl_match m, dl_match_play mp
-  	where DATEDIFF(show_time,NOW())=0 and m.is_del = 0 and m.is_show=1 
-  	 and m.match_id=mp.match_id 
+  <select id="getMatchList" resultMap="BaseResultMap">
+	select
+		match_id,league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
+		home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
+		is_show,is_del,match_sn,is_hot
+	from
+	dl_match 
+	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 
   	 <if test="leagueIds!=null and leagueIds != ''">
-  	 	and m.league_id in
+  	 	and league_id in
   	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
   	 		#{leagueId}
   	 	</foreach>
   	 </if>
-  	 and mp.play_type=#{playType} 
-  	 and mp.is_del = 0 
-  	 and mp.status=0
   </select>
 
   <select id="getMatchListToday" resultMap="BaseResultMap">

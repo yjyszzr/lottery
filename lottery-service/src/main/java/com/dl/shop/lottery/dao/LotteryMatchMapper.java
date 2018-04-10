@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.dl.base.mapper.Mapper;
-import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
@@ -22,7 +21,7 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @param playType获取赛事列表
 	 * @return
 	 */
-	public List<DlJcZqMatchPlayDTO> getMatchList(@Param("playType")String playType, @Param("leagueIds")String leagueId);
+	public List<LotteryMatch> getMatchList(@Param("leagueIds")String leagueId);
 	
 	/**
 	 * 获取当天的所有比赛
