@@ -32,6 +32,8 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	@ApiModelProperty(value = "赛事编码")
 	public String playCode;
 	
+	public DIZQUserBetCellInfoDTO() {}
+	
 	public DIZQUserBetCellInfoDTO(MatchBetPlayDTO matchCell){
 		this.matchId = matchCell.getMatchId();
 		this.changci = matchCell.getChangci();

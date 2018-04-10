@@ -51,4 +51,5 @@ public class DIZQUserBetInfoDTO implements Serializable{
 		this.lotteryClassifyId = param.getLotteryClassifyId();
 		this.lotteryPlayClassifyId = param.getLotteryPlayClassifyId();
 	}
+	public DIZQUserBetInfoDTO() {}
 }

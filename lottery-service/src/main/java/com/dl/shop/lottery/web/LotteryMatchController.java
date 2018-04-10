@@ -210,8 +210,7 @@ public class LotteryMatchController {
 		UserBonusDTO userBonusDto = null;
 		if(userBonusList != null && userBonusList.size() > 0) {
 			List<UserBonusDTO> userBonuses = userBonusList.stream().filter(dto->{
-				String minGoodsAmountStr = dto.getMinGoodsAmount();
-				Double minGoodsAmount = Double.valueOf(minGoodsAmountStr);
+				double minGoodsAmount = dto.getBonusPrice().doubleValue();
 				return orderMoney < minGoodsAmount ? false : true;
 			}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
 					.collect(Collectors.toList());
@@ -225,8 +224,9 @@ public class LotteryMatchController {
 		}
 		String bonusId = userBonusDto != null?userBonusDto.getBonusId().toString():null;
 		Double bonusAmount = userBonusDto!=null?userBonusDto.getBonusPrice().doubleValue():0.0;
-		Double surplus = userTotalMoney>orderMoney?orderMoney:userTotalMoney;
-		Double thirdPartyPaid = orderMoney - surplus - bonusAmount;
+		Double amountTemp = orderMoney - bonusAmount;
+		Double surplus = userTotalMoney>amountTemp?amountTemp:userTotalMoney;
+		Double thirdPartyPaid = amountTemp - surplus;
 		List<DIZQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DIZQUserBetCellInfoDTO>(matchBetPlays.size());
 		for(MatchBetPlayDTO matchCell: matchBetPlays) {
 			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
@@ -240,6 +240,7 @@ public class LotteryMatchController {
 		dto.setBonusAmount(bonusAmount);
 		dto.setBonusId(bonusId);
 		dto.setSurplus(surplus);
+		dto.setMaxBonus(betInfo.getMaxBonus());
 		dto.setThirdPartyPaid(thirdPartyPaid);
 		int requestFrom = 0;
 		dto.setRequestFrom(requestFrom);
