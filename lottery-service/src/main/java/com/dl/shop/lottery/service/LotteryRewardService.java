@@ -49,7 +49,8 @@ import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.order.api.IOrderService;
-import com.dl.order.dto.LotteryPrintMoneyDTO;
+import com.dl.order.param.LotteryPrintMoneyParam;
+import com.dl.order.param.OrderDataParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -153,11 +154,11 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//更新订单及订单详情
 		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
-			LotteryPrintMoneyDTO lotteryPrintMoneyDTO = new LotteryPrintMoneyDTO();
+			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
 			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-			List<com.dl.order.dto.OrderDataDTO> dtos = new LinkedList<com.dl.order.dto.OrderDataDTO>();
+			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
 			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
-				com.dl.order.dto.OrderDataDTO dlOrderDataDTO = new com.dl.order.dto.OrderDataDTO();
+				OrderDataParam dlOrderDataDTO = new OrderDataParam();
 				try {
 					BeanUtils.copyProperties(dlOrderDataDTO, dto);
 				} catch (IllegalAccessException e) {
@@ -498,6 +499,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			DlQueryPrizeFileDTO dlQueryPrizeFileDTO = lotteryPrintService.queryPrizeFile(param);
 			if(null != dlQueryPrizeFileDTO && "0".equals(dlQueryPrizeFileDTO.getRetCode())) {
 				prizeUrl = dlQueryPrizeFileDTO.getUrl();
+				if(StringUtils.isEmpty(prizeUrl)) {
+					continue;
+				}
 			}
 			
 			String sCurrentLine = "";
