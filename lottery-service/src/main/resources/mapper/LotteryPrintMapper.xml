@@ -38,15 +38,6 @@
            ticket_id = #{ticketId}
   </update>
   
-  <update id="updateBatchByTicketId" parameterType="com.dl.shop.lottery.model.LotteryPrint">
-    <foreach collection="list" item="item" index="index" separator=";">  
-    	update dl_print_lottery set 
-    	   status = #{item.status}, error_code = #{item.errorCode} 
-    	where 
-    	   ticket_id = #{item.ticketId}
-    </foreach>  
-  </update>
-  
   <select id="getPrintLotteryList" resultType="com.dl.shop.lottery.model.LotteryPrint">
     select 
         ticket_id ticketId,

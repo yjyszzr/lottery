@@ -198,6 +198,34 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	}
 	
 	/**
+	 * 高速批量更新LotteryPeint
+	 * @param list
+	 */
+	public void updateBatchByTicketId(List<LotteryPrint> list) {
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "update dl_print_lottery set error_code = ?,status = ? where ticket_id = ?";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (int i = 0, size = list.size(); i < size; i++) {
+				prest.setInt(1, list.get(i).getErrorCode());
+				prest.setInt(2, list.get(i).getStatus());
+				prest.setString(3, list.get(i).getTicketId());
+				prest.addBatch();
+			}
+			prest.executeBatch();
+			conn.commit();
+			conn.close();
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+		} catch (ClassNotFoundException ex) {
+			log.error(ex.getMessage());
+		}
+	}
+	
+	/**
 	 * 投注结果查询
 	 * @return
 	 */

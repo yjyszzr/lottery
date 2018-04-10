@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,7 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.NuclearUtil;
+import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
@@ -46,6 +49,8 @@ import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.param.LotteryPrintMoneyParam;
+import com.dl.order.param.OrderDataParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -147,25 +152,25 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//匹配中奖信息
 		this.compareReward(lotteryReward);
 		//更新订单及订单详情
-//		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
-//		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
-//			LotteryPrintMoneyDTO lotteryPrintMoneyDTO = new LotteryPrintMoneyDTO();
-//			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-//			List<com.dl.order.dto.OrderDataDTO> dtos = new LinkedList<com.dl.order.dto.OrderDataDTO>();
-//			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
-//				com.dl.order.dto.OrderDataDTO dlOrderDataDTO = new com.dl.order.dto.OrderDataDTO();
-//				try {
-//					BeanUtils.copyProperties(dlOrderDataDTO, dto);
-//				} catch (IllegalAccessException e) {
-//					e.printStackTrace();
-//				} catch (InvocationTargetException e) {
-//					e.printStackTrace();
-//				}
-//				dtos.add(dlOrderDataDTO);
-//			}
-//			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-//			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
-//		}
+		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
+		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
+			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
+			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+				OrderDataParam dlOrderDataDTO = new OrderDataParam();
+				try {
+					BeanUtils.copyProperties(dlOrderDataDTO, dto);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				dtos.add(dlOrderDataDTO);
+			}
+			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+		}
 		//更新用户账户，大于5000元的需要派奖
 		
 		
@@ -494,6 +499,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			DlQueryPrizeFileDTO dlQueryPrizeFileDTO = lotteryPrintService.queryPrizeFile(param);
 			if(null != dlQueryPrizeFileDTO && "0".equals(dlQueryPrizeFileDTO.getRetCode())) {
 				prizeUrl = dlQueryPrizeFileDTO.getUrl();
+				if(StringUtils.isEmpty(prizeUrl)) {
+					continue;
+				}
 			}
 			
 			String sCurrentLine = "";
