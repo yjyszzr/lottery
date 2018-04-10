@@ -81,7 +81,7 @@ public class LotteryPrintSchedul {
         			}
         		}
         		if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
-        			lotteryPrintMapper.updateBatchByTicketId(lotteryPrintList);
+        			lotteryPrintService.updateBatchByTicketId(lotteryPrintList);
         		}
         	}
         }

@@ -30,12 +30,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	List<LotteryPrint> selectPrintLotteryBySelective(LotteryPrint lp);
 	
 	/**
-	 * 批量更新出票返回状态
-	 * @param lotteryPrints
-	 */
-	public void updateBatchByTicketId(List<LotteryPrint> lotteryPrints);
-	
-	/**
 	 * 查询期次相等的出票订单
 	 * @param lotteryPrint
 	 * @return
