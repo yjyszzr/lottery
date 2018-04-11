@@ -17,6 +17,7 @@
     <result column="times" jdbcType="INTEGER" property="times" />
     <result column="money" jdbcType="DECIMAL" property="money" />
     <result column="stakes" jdbcType="VARCHAR" property="stakes" />
+    <result column="reward_stakes" jdbcType="VARCHAR" property="rewardStakes" />
     <result column="error_code" jdbcType="INTEGER" property="errorCode" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="platform_id" jdbcType="VARCHAR" property="platformId" />
@@ -24,6 +25,9 @@
     <result column="print_sp" jdbcType="VARCHAR" property="printSp" />
     <result column="print_no" jdbcType="VARCHAR" property="printNo" />
     <result column="print_time" jdbcType="TIMESTAMP" property="printTime" />
+    <result column="real_reward_money" jdbcType="DECIMAL" property="realRewardMoney" />
+    <result column="third_part_reward_money" jdbcType="DECIMAL" property="thirdPartRewardMoney" />
+    <result column="compare_status" jdbcType="VARCHAR" property="compareStatus" />
   </resultMap>
   
   <update id="updateByTicketId">
@@ -89,11 +93,12 @@
     where  DATEDIFF(from_unixtime(accept_time,'%Y-%m-%d'),NOW()) = 0 and status = 1
   </select>
   
-  <select id="selectLessThanIssuePrint"  resultMap="BaseResultMap">
-    select * 
-    from dl_print_lottery
-    where issue &gt;= #{issue}
+  <!-- where issue &gt;= #{issue} -->
+  <select id="selectPrintsIncludeCurIssue" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from dl_print_lottery
+    where compare_status = '0' and stakes like CONCAT('%',#{issue},'%')
   </select>
+  
   
   <select id="getRealRewardMoney" resultType="com.dl.lottery.dto.DlOrderDataDTO">
     select 
