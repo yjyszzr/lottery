@@ -245,6 +245,7 @@ public class LotteryMatchController {
 		int requestFrom = 0;
 		dto.setRequestFrom(requestFrom);
 		dto.setUserId(SessionUtil.getUserId());
+		dto.setIssue(betInfo.getIssue());
 		String dtoJson = JSONHelper.bean2json(dto);
 		String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
 		String key = MD5.crypt(keyStr);
