@@ -209,17 +209,22 @@ public class LotteryMatchController {
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
 		if(userBonusList != null && userBonusList.size() > 0) {
-			List<UserBonusDTO> userBonuses = userBonusList.stream().filter(dto->{
-				double minGoodsAmount = dto.getBonusPrice().doubleValue();
-				return orderMoney < minGoodsAmount ? false : true;
-			}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
-					.collect(Collectors.toList());
-			if(userBonuses.size() > 0) {
-				if(null != param.getBonusId()) {
-					Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getBonusId()==param.getBonusId()).findFirst();
-					userBonusDto = findFirst.isPresent()?findFirst.get():null;
+			if(param.getBonusId() != null && param.getBonusId().intValue() != 0) {
+				Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getUserBonusId().equals(param.getBonusId())).findFirst();
+				userBonusDto = findFirst.isPresent()?findFirst.get():null;
+			}else {
+				List<UserBonusDTO> userBonuses = userBonusList.stream().filter(dto->{
+					double minGoodsAmount = dto.getBonusPrice().doubleValue();
+					return orderMoney < minGoodsAmount ? false : true;
+				}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
+						.collect(Collectors.toList());
+				if(userBonuses.size() > 0) {
+					if(null != param.getBonusId()) {
+						Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getBonusId()==param.getBonusId()).findFirst();
+						userBonusDto = findFirst.isPresent()?findFirst.get():null;
+					}
+					userBonusDto = userBonusDto == null?userBonuses.get(0):userBonusDto;
 				}
-				userBonusDto = userBonusDto == null?userBonuses.get(0):userBonusDto;
 			}
 		}
 		String bonusId = userBonusDto != null?userBonusDto.getUserBonusId().toString():null;
