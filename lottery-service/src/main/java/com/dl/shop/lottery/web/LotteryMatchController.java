@@ -222,7 +222,7 @@ public class LotteryMatchController {
 				userBonusDto = userBonusDto == null?userBonuses.get(0):userBonusDto;
 			}
 		}
-		String bonusId = userBonusDto != null?userBonusDto.getBonusId().toString():null;
+		String bonusId = userBonusDto != null?userBonusDto.getUserBonusId().toString():null;
 		Double bonusAmount = userBonusDto!=null?userBonusDto.getBonusPrice().doubleValue():0.0;
 		Double amountTemp = orderMoney - bonusAmount;
 		Double surplus = userTotalMoney>amountTemp?amountTemp:userTotalMoney;
