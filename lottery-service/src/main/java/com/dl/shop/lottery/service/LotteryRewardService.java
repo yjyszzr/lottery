@@ -30,8 +30,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dl.base.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.MatchResultCrsEnum;
+import com.dl.base.enums.MatchResultHadEnum;
+import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
+import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
@@ -40,17 +45,18 @@ import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
-import com.dl.base.enums.MatchPlayTypeEnum;
-import com.dl.base.enums.MatchResultCrsEnum;
-import com.dl.base.enums.MatchResultHadEnum;
-import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
+import com.dl.member.api.IUserAccountService;
+import com.dl.member.dto.UserIdAndRewardDTO;
+import com.dl.member.param.UserIdAndRewardListParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderWithUserDTO;
 import com.dl.order.param.LotteryPrintMoneyParam;
 import com.dl.order.param.OrderDataParam;
+import com.dl.order.param.OrderWithUserParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -100,6 +106,9 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	
 	@Resource
 	private IOrderService orderService;
+	
+	@Resource
+	private IUserAccountService userAccountService;
 	
 	@Value("${reward.url}")
 	private String rewardUrl;
@@ -171,9 +180,25 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
 			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
 		}
-		//更新用户账户，大于5000元的需要派奖
-		
-		
+		//更新用户账户，大于派奖金额的需要派奖
+		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
+		orderWithUserParam.setIssue(param.getIssue());
+		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
+		if(result.getCode() == 0) {
+			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
+			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
+				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
+				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
+				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
+					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
+					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
+					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
+					userIdAndRewardDTOs.add(userIdAndRewardDTO);
+				}
+				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
+			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
+			}
+		}
 	}
 	
 	/**
@@ -431,7 +456,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 */
 	public List<String> createStakesList1(String stakes){
 		List<String> list1 = new ArrayList<>();
-		List<String> list2 = new ArrayList<>();
+//		List<String> list2 = new ArrayList<>();
 		String[] stakesArr = stakes.split(";");
 		for(int i= 0 ;i < stakesArr.length;i++) {
 			if(stakesArr[i].contains(",")) {
