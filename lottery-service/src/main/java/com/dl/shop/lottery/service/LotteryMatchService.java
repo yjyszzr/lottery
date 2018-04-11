@@ -296,6 +296,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				//matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
+		homeCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+		visitingCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+		flatCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		//dto.setMatchCells(matchCells);
 	}
 	/**
@@ -325,6 +328,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
+		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		dto.setMatchCells(matchCells);
 	}
 	
@@ -360,6 +364,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		matchCells.add(new DlJcZqMatchCellDTO("01", "负-平", adOdds));
 		String ahOdds = jsonObj.getString("ah");
 		matchCells.add(new DlJcZqMatchCellDTO("03", "负-胜", ahOdds));
+		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		dto.setMatchCells(matchCells);
 	}
 	private void initDlJcZqMatchCell6(DlJcZqMatchPlayDTO dto) {
