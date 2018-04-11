@@ -756,13 +756,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				List<String> betIndexList = new ArrayList<String>();
 				betNum1("", num, indexList, betIndexList);
 				if(danIndexList.size() > 0) {
+					String danIndexStr = danIndexList.stream().collect(Collectors.joining(","));
 					betIndexList = betIndexList.stream().filter(item->{
-						for(String str: danIndexList) {
-							if(item.contains(str)) {
-								return true;
-							}
-						}
-						return false;
+						return item.contains(danIndexStr);
 					}).collect(Collectors.toList());
 				}
 				indexMap.put(betType, betIndexList);
