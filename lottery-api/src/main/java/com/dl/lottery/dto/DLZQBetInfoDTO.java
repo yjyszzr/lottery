@@ -27,8 +27,8 @@ public class DLZQBetInfoDTO implements Serializable{
 	private String playType;
 	/*@ApiModelProperty("彩票")
 	private String stakes;*/
-	/*@ApiModelProperty("期次")
-	private String issue;*/
+	@ApiModelProperty("期次")
+	private String issue;
 	@ApiModelProperty("实际的投注场次信息")
 	private List<DIZQUserBetCellInfoDTO>  userBetCellInfos;
 	@ApiModelProperty("预出票信息列表")
