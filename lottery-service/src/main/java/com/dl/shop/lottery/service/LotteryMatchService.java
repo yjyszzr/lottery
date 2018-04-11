@@ -831,7 +831,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					String cellCodes = cdto.getBetCells().stream().map(cell->{
 						return cell.getCellCode();
 					}).collect(Collectors.joining(","));
-					return playType + "|" + playCode + "|" + cellCodes;
+					return "0" + playType + "|" + playCode + "|" + cellCodes;
 				}).collect(Collectors.joining(";"));
 				String issue = subList.get(0).getPlayCode();
 				if(subList.size() > 1) {
@@ -843,7 +843,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryPrintDTO.setBetType(betType);
 				lotteryPrintDTO.setIssue(issue);
 				lotteryPrintDTO.setMoney(money);
-				lotteryPrintDTO.setPlayType(param.getPlayType());
+				lotteryPrintDTO.setPlayType("0"+param.getPlayType());
 				lotteryPrintDTO.setStakes(stakes);
 				lotteryPrintDTO.setTimes(times);
 				lotteryPrints.add(lotteryPrintDTO);
