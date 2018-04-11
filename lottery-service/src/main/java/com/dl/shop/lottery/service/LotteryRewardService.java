@@ -252,7 +252,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			}else {
 				sb.append(i + "|");
 			}
-			String pre = sdf.format(lotteryMatch.getMatchTime());
+			String pre = sdf.format(lotteryMatch.getShowTime());
 			int weekDay = LocalWeekDate.getCode(lotteryMatch.getChangci().substring(0, 2));
 			sb.append(pre + weekDay + lotteryMatch.getChangci().substring(2) + "|");
 			if(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode() == i || MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode() == i) {
