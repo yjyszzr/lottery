@@ -45,7 +45,7 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 		this.playCode = matchCell.getPlayCode();
 		List<MatchBetCellDTO> matchBetCells = matchCell.getMatchBetCells();
 		this.ticketData = matchBetCells.stream().map(betCell->{
-			String ticketData = betCell.getPlayType() + "|" + playCode + "|";
+			String ticketData = "0" + betCell.getPlayType() + "|" + playCode + "|";
 			return ticketData + betCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
 					.collect(Collectors.joining(","));
 		}).collect(Collectors.joining(";"));
