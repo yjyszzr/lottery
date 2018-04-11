@@ -330,7 +330,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setBettype(dto.getBetType());
 			lotteryPrint.setMoney(BigDecimal.valueOf(dto.getMoney()*100));
 			lotteryPrint.setIssue(dto.getIssue());
-			lotteryPrint.setPlaytype("0"+dto.getPlayType());
+			lotteryPrint.setPlaytype(dto.getPlayType());
 			lotteryPrint.setTimes(dto.getTimes());
 			lotteryPrint.setStakes(dto.getStakes());
 			lotteryPrint.setOrderSn(param.getOrderSn());
