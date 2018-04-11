@@ -45,6 +45,7 @@ import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.dto.RewardStakesWithSpDTO;
+import com.dl.lottery.dto.TicketRewardDTO;
 import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
@@ -161,44 +162,44 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//匹配中奖信息
 		this.compareReward(lotteryReward);
 		//更新订单及订单详情
-		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
-		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
-			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
-			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
-			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
-				OrderDataParam dlOrderDataDTO = new OrderDataParam();
-				try {
-					BeanUtils.copyProperties(dlOrderDataDTO, dto);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-				dtos.add(dlOrderDataDTO);
-			}
-			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
-		}
-		//更新用户账户，大于派奖金额的需要派奖
-		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
-		orderWithUserParam.setIssue(param.getIssue());
-		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
-		if(result.getCode() == 0) {
-			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
-			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
-				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
-				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
-				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
-					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
-					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
-					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
-					userIdAndRewardDTOs.add(userIdAndRewardDTO);
-				}
-				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
-			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
-			}
-		}
+//		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
+//		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+//			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
+//			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+//			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
+//			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+//				OrderDataParam dlOrderDataDTO = new OrderDataParam();
+//				try {
+//					BeanUtils.copyProperties(dlOrderDataDTO, dto);
+//				} catch (IllegalAccessException e) {
+//					e.printStackTrace();
+//				} catch (InvocationTargetException e) {
+//					e.printStackTrace();
+//				}
+//				dtos.add(dlOrderDataDTO);
+//			}
+//			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+//			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+//		}
+//		//更新用户账户，大于派奖金额的需要派奖
+//		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
+//		orderWithUserParam.setIssue(param.getIssue());
+//		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
+//		if(result.getCode() == 0) {
+//			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
+//			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
+//				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
+//				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
+//				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
+//					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
+//					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
+//					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
+//					userIdAndRewardDTOs.add(userIdAndRewardDTO);
+//				}
+//				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
+//			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
+//			}
+//		}
 	}
 	
 	/**
@@ -311,82 +312,99 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	    return jo;
 	}
 	
-
 	/**
 	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或 提供给后台管理调用
 	 */
 	public void compareReward(LotteryReward rewards) {
 		// 该期次的中奖号码
 		String rewardStakes = rewards.getRewardData();
-
-		// 获取该期次的出票信息
-		LotteryPrint lotteryPrintLessEqual = new LotteryPrint();
-		lotteryPrintLessEqual.setIssue(rewards.getIssue());
-		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectLessThanIssuePrint(lotteryPrintLessEqual);
+		// 获取该期次未与开奖信息比较的出票集合
+		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectPrintsIncludeCurIssue(rewards.getIssue());
 		if (CollectionUtils.isEmpty(lotteryPrintList)) {
-			log.info("没有期次为" + rewards.getIssue() + "的出票信息");
+			return;
 		}
 
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
 		for (LotteryPrint lp : lotteryPrintList) {
-			List<String> list1 = this.createStakesList1(lp.getStakes());
-			List<String> list2 = this.createRewardStakesList2(rewardStakes);
+			List<String> stakesList = this.createStakesList1(lp.getStakes());
+			List<String> rewardStakesList = this.createRewardStakesList2(rewardStakes);
 			// 匹配获奖信息:出票号码和开奖号码相同的 就是中奖号码
-			List<String> same = NuclearUtil.getSame(list1, list2);
+			List<String> same = NuclearUtil.getSame(stakesList, rewardStakesList);
 			if (CollectionUtils.isEmpty(same)) {
 				continue;
 			}
-
-			if (!StringUtils.isEmpty(lp.getRewardStakes())) {
-				List<String> spList = Arrays.asList(lp.getRewardStakes().split(","));
-				List<String> alReadySp = spList.stream().map(s -> s.substring(s.indexOf("@")))
-						.collect(Collectors.toList());
-				same.addAll(alReadySp);
-			}
-
 			// 构造获胜期次的赔率集合和带有期次@赔率的字符串
 			RewardStakesWithSpDTO rewardStakesWithSpDTO = this.createRewardStakesWithSp(same, lp.getPrintSp());
-
 			// 最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
+			TicketRewardDTO ticketRewardDTO = this.createTicketRewardDTO(rewardStakes, lp, rewardStakesWithSpDTO);
+			
 			LotteryPrint updatePrint = new LotteryPrint();
-			Double rewardSum = 0.00;// 该订单的中奖金额
-			if (rewardStakes.contains(lp.getIssue())) {
-				Integer rewardSize = same.size();// 中奖号码有几个
-				if (rewardSize >= 2) {// 比对后的中奖号码 大于等于2 就说明一定中奖，然后计算该张彩票的中奖金额
-					List<Double> rewardList = new ArrayList<Double>();
-					this.groupByRewardList(Double.valueOf(2 * lp.getTimes()), Integer.valueOf(lp.getBetType()),
-							rewardStakesWithSpDTO.getWinSpList(), rewardList);
-					rewardSum = rewardList.stream().reduce(0.0, Double::sum);
-				}
-
-				// 保存第三方给计算的单张彩票的价格，对账用
-				PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
-				periodRewardDetail.setTicketId(lp.getTicketId());
-				List<PeriodRewardDetail> tickets = periodRewardDetailMapper
-						.queryPeriodRewardDetailBySelective(periodRewardDetail);
-				if (!CollectionUtils.isEmpty(tickets)) {
-					updatePrint.setThirdPartRewardMoney(new BigDecimal(tickets.get(0).getReward()));
-					if (rewardSum.equals(Double.valueOf(tickets.get(0).getReward()))) {
-						updatePrint.setCompareStatus(ProjectConstant.SAME_MONEY);
-					} else {
-						updatePrint.setCompareStatus(ProjectConstant.NOT_SAME_MONEY);
-					}
-				}
-			}
-
-			updatePrint.setRealRewardMoney(BigDecimal.valueOf(rewardSum));
-			if (!StringUtils.isEmpty(lp.getRewardStakes())) {
-				updatePrint.setRewardStakes(lp.getRewardStakes() + ";" + rewardStakesWithSpDTO.getWinIssueSpStr());
-			} else {
+			updatePrint.setRealRewardMoney(ticketRewardDTO.getRewardSum());
+			updatePrint.setThirdPartRewardMoney(ticketRewardDTO.getThirdPartRewardMoney());
+			updatePrint.setCompareStatus(ticketRewardDTO.getCompareStatus());
+			if (StringUtils.isEmpty(lp.getRewardStakes())) {
 				updatePrint.setRewardStakes(rewardStakesWithSpDTO.getWinIssueSpStr());
+			} else {
+				updatePrint.setRewardStakes(lp.getRewardStakes() + ";" + rewardStakesWithSpDTO.getWinIssueSpStr());
 			}
 			updatePrint.setPrintLotteryId(lp.getPrintLotteryId());
 			updatelotteryPrintList.add(updatePrint);
 		}
 
+		if(CollectionUtils.isEmpty(updatelotteryPrintList)) {
+			return;
+		}
 		// 更新结果：中奖号和中奖金额
 		this.updateBatchLotteryPrint(updatelotteryPrintList);
 	}
+	
+	
+	/**
+	 *  最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
+	 * @param rewardStakes
+	 * @param lp
+	 * @param rewardStakesWithSpDTO
+	 * @return
+	 */
+	public TicketRewardDTO createTicketRewardDTO(String rewardStakes,LotteryPrint lp,RewardStakesWithSpDTO rewardStakesWithSpDTO) {
+		TicketRewardDTO ticketRewardDTO = new TicketRewardDTO();
+		Double rewardSum = 0.00;
+		String compareStatus = ProjectConstant.NOT_FINISH_COMPARE;
+		BigDecimal thirdPartRewardMoney = BigDecimal.ZERO;
+		
+		if (rewardStakes.contains(lp.getIssue())) {
+			List<Double> winSPList = new ArrayList<>();
+			if (!StringUtils.isEmpty(lp.getRewardStakes())) {// 计算价格要累计上已匹配中奖的号码
+				List<String> spList = Arrays.asList(lp.getRewardStakes().split(";"));
+				List<Double> alReadySp = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
+				winSPList.addAll(alReadySp);
+			}
+			winSPList.addAll(rewardStakesWithSpDTO.getWinSpList());//加上本期中奖号码的赔率
+			
+			Integer rewardSize = winSPList.size();// 中奖号码有几个
+			if (rewardSize >= 2) {// 比对后的中奖号码 大于等于2 就说明一定中奖，然后计算该张彩票的中奖金额
+				List<Double> rewardList = new ArrayList<Double>();
+				this.groupByRewardList(Double.valueOf(2 * lp.getTimes()), Integer.valueOf(lp.getBetType()) / 10,winSPList, rewardList);
+				rewardSum = rewardList.stream().reduce(0.00, Double::sum);
+			}
+			
+			compareStatus = ProjectConstant.FINISH_COMPARE;
+
+			// 保存第三方给计算的单张彩票的价格
+			PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
+			periodRewardDetail.setTicketId(lp.getTicketId());
+			List<PeriodRewardDetail> tickets = periodRewardDetailMapper.queryPeriodRewardDetailBySelective(periodRewardDetail);
+			if (!CollectionUtils.isEmpty(tickets)) {
+				thirdPartRewardMoney = BigDecimal.valueOf(tickets.get(0).getReward());
+			}
+		}
+		
+		ticketRewardDTO.setRewardSum(BigDecimal.valueOf(rewardSum));
+		ticketRewardDTO.setCompareStatus(compareStatus);
+		ticketRewardDTO.setThirdPartRewardMoney(thirdPartRewardMoney);
+		return ticketRewardDTO;
+	}
+	
 	
 	/**
 	 * 组合中奖集合
@@ -623,13 +641,14 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
 			conn.setAutoCommit(false);
-			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ? where print_lottery_id = ?";
+			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ?,compare_status = ? where print_lottery_id = ?";
 			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
 					ResultSet.CONCUR_READ_ONLY);
 			for (int x = 0, size = list.size(); x < size; x++) {
 				prest.setString(1, list.get(x).getRewardStakes());
 				prest.setBigDecimal(2, list.get(x).getRealRewardMoney() == null?BigDecimal.ZERO:list.get(x).getRealRewardMoney());
-				prest.setInt(3, list.get(x).getPrintLotteryId());
+				prest.setString(3, list.get(x).getCompareStatus());
+				prest.setInt(4, list.get(x).getPrintLotteryId());
 				prest.addBatch();
 			}
 			prest.executeBatch();
