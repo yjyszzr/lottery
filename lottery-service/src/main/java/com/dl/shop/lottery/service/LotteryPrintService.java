@@ -328,12 +328,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setTicketId(SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode()));
 			lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
 			lotteryPrint.setBettype(dto.getBetType());
-			lotteryPrint.setMoney(BigDecimal.valueOf(dto.getMoney()));
+			lotteryPrint.setMoney(BigDecimal.valueOf(dto.getMoney()*100));
 			lotteryPrint.setIssue(dto.getIssue());
 			lotteryPrint.setPlaytype(dto.getPlayType());
 			lotteryPrint.setTimes(dto.getTimes());
 			lotteryPrint.setStakes(dto.getStakes());
 			lotteryPrint.setOrderSn(param.getOrderSn());
+			lotteryPrint.setStatus(0);
 			return lotteryPrint;
 		}).collect(Collectors.toList());
 		super.save(models);
