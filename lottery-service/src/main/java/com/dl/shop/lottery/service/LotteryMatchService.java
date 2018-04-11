@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -737,11 +738,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<List<MatchBetPlayCellDTO>>  matchBetList = new ArrayList<List<MatchBetPlayCellDTO>>();
 		List<DLBetMatchCellDTO> betCellList = new ArrayList<DLBetMatchCellDTO>();
 		List<DLBetMatchCellDTO> maxBetCellList = new ArrayList<DLBetMatchCellDTO>();
-		List<DLBetMatchCellDTO> minBetCellList = new ArrayList<DLBetMatchCellDTO>();
+//		List<DLBetMatchCellDTO> minBetCellList = new ArrayList<DLBetMatchCellDTO>();
 		String betTypes = param.getBetType();
 		String[] split = betTypes.split(",");
 		Map<String, List<String>> indexMap = new HashMap<String, List<String>>();
-		int betNums = 0;
+//		int betNums = 0;
 		for(String betType: split) {
 			char[] charArray = betType.toCharArray();
 			if(charArray.length == 2 && charArray[1] == '1') {
@@ -760,7 +761,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					}).collect(Collectors.toList());
 				}
 				indexMap.put(betType, betIndexList);
-				betNums += betIndexList.size();
+//				betNums += betIndexList.size();
 			}
 		}
 		//
@@ -772,7 +773,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String[] strArr = str.split(",");
 				List<String> playCodes = new ArrayList<String>(strArr.length);
 				Map<String, List<MatchBetPlayCellDTO>> playCellMap = new HashMap<String, List<MatchBetPlayCellDTO>>();
-				List<MatchBetPlayDTO> subList = new ArrayList<MatchBetPlayDTO>(strArr.length);
+//				List<MatchBetPlayDTO> subList = new ArrayList<MatchBetPlayDTO>(strArr.length);
 				Arrays.asList(strArr).stream().forEach(item->{
 					MatchBetPlayDTO betPlayDto = matchBellCellList.get(Integer.valueOf(item));
 					String playCode = betPlayDto.getPlayCode();
@@ -801,12 +802,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
 			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
 				List<MatchBetPlayCellDTO> maxList = new ArrayList<MatchBetPlayCellDTO>(subList.size());
-				List<MatchBetPlayCellDTO> minList = new ArrayList<MatchBetPlayCellDTO>(subList.size());
+//				List<MatchBetPlayCellDTO> minList = new ArrayList<MatchBetPlayCellDTO>(subList.size());
 				subList.stream().forEach(matchBetCell->{
 					MatchBetPlayCellDTO maxBetCell = maxOrMinOddsCell(matchBetCell, true);
-					MatchBetPlayCellDTO minBetCell = maxOrMinOddsCell(matchBetCell, false);
+//					MatchBetPlayCellDTO minBetCell = maxOrMinOddsCell(matchBetCell, false);
 					maxList.add(maxBetCell);
-					minList.add(minBetCell);
+//					minList.add(minBetCell);
 				});
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setBetType(param.getBetType());
@@ -815,14 +816,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setAmount(2.0*param.getTimes());
 				List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
 				List<DLBetMatchCellDTO> maxBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
-				List<DLBetMatchCellDTO> minBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
+//				List<DLBetMatchCellDTO> minBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
 				betNum(dto, num, subList, betCellList1);
 				betNum(dto, num, maxList, maxBetCellList1);
-				betNum(dto, num, minList, minBetCellList1);
+//				betNum(dto, num, minList, minBetCellList1);
 				matchBetList.add(subList);
 				betCellList.addAll(betCellList1);
 				maxBetCellList.addAll(maxBetCellList1);
-				minBetCellList.addAll(minBetCellList1);
+//				minBetCellList.addAll(minBetCellList1);
 				String stakes = subList.stream().map(cdto->{
 					String playCode = cdto.getPlayCode();
 					String playType = cdto.getPlayType();
@@ -850,9 +851,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Double maxBonus = maxBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
-		Double minBonus = minBetCellList.stream().map(item->{
+		/*Double minBonus = minBetCellList.stream().map(item->{
 			return item.getAmount();
-		}).reduce(0.0, Double::sum);
+		}).reduce(0.0, Double::sum);*/
+		Double minBonus  = betCellList.get(0).getAmount();
+		if(betCellList.size() > 1) {
+			minBonus  = betCellList.stream().min((item1,item2)->item1.getAmount().compareTo(item2.getAmount())).get().getAmount();
+		}
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
 		betInfoDTO.setMaxBonus(Double.valueOf(String.format("%.2f", maxBonus)));
