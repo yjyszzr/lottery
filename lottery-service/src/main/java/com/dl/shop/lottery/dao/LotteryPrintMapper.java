@@ -37,11 +37,11 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> selectEqualsIssuePrint(LotteryPrint lotteryPrint);
 	
 	/**
-	 * 查询当前期次小于数据库期次的出票订单
-	 * @param lotteryPrint
+	 * 查询当前期在出的彩票中的数据集合
+	 * @param issue
 	 * @return
 	 */
-	public List<LotteryPrint> selectLessThanIssuePrint(LotteryPrint lotteryPrint);
+	public List<LotteryPrint> selectPrintsIncludeCurIssue(@Param("issue") String issue);
 	
 	List<LotteryPrint> selectTodayPrints();
 	
