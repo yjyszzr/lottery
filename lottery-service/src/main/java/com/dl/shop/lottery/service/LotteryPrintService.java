@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,6 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
 import com.dl.base.util.SNGenerator;
-import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO.QueryIssue;
@@ -52,7 +52,6 @@ import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
-import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.param.LotteryPrintParam;
 import com.dl.shop.lottery.core.ProjectConstant;
@@ -132,7 +131,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					LotteryPrint lotteryPrint = new LotteryPrint();
 					lotteryPrint.setTicketId(callbackStake.getTicketId());
 					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-					if(null != lotteryPrint) {
+					if(null != lotteryPrint && lotteryPrint.getStatus() == 0) {
 						lotteryPrint.setStatus(1);
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
@@ -154,7 +153,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
 						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
 						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
-						lotteryPrintParam.setPrintSp(lotteryPrint.getPrintSp());
+						lotteryPrintParam.setPrintSp(getComparePrintSp(callbackStake.getSp(), callbackStake.getTicketId()));
 						lotteryPrintParams.add(lotteryPrintParam);
 					}
 				}
@@ -174,10 +173,38 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param issue
 	 * @return
 	 */
-	private String getComparePrintSp(String callBackSp, String issue) {
-		String querySp = "";
+	private String getComparePrintSp(String callBackSp, String ticketId) {
+		DlQueryStakeParam param = new DlQueryStakeParam();
+		param.setMerchant(merchant);
+		String[] orders = {};
+		orders[0] = ticketId;
+		param.setOrders(orders);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		param.setTimestamp(sdf.format(new Date()));
+		param.setVersion("1.0");
+		DlQueryStakeDTO dlQueryStakeDTO = queryStake(param);
+		if(!dlQueryStakeDTO.getRetCode().equals("0")) {
+			return callBackSp;
+		}
+		List<BackQueryStake> backQueryStakes = dlQueryStakeDTO.getOrders();
+		if(CollectionUtils.isEmpty(backQueryStakes)) {
+			return callBackSp;
+		}
+		BackQueryStake backQueryStake = backQueryStakes.get(0);
+		if(null == backQueryStake || backQueryStake.getPrintStatus() != 16) {
+			return callBackSp;
+		}
+		if(StringUtils.isNotEmpty(callBackSp) && StringUtils.isNotEmpty(backQueryStake.getSp())) {
+			if(callBackSp.equals(backQueryStake.getSp())) {
+				return callBackSp;
+			} else {
+				return backQueryStake.getSp();
+			}
+		} else if(StringUtils.isNotEmpty(callBackSp)) {
+			return callBackSp;
+		}
 		
-		return "";
+		return backQueryStake.getSp();
 	}
 	
 	/**
@@ -239,6 +266,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			log.error(ex.getMessage());
 		} catch (ClassNotFoundException ex) {
 			log.error(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * 出票失败，更新订单状态为出票失败（2），并回滚红包状态为未使用
+	 * @param list
+	 */
+	public void updateOrder(List<LotteryPrint> list){
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(LotteryPrint lotteryPrint : list) {
+				
+			}
 		}
 	}
 	
