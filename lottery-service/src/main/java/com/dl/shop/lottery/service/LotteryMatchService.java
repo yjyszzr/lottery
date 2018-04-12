@@ -33,6 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.MatchResultCrsEnum;
+import com.dl.base.enums.MatchResultHadEnum;
+import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
 import com.dl.base.service.AbstractService;
@@ -129,14 +132,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setLeagueAddr(match.getLeagueAddr());
 			matchDto.setLeagueId(match.getLeagueId().toString());
 			matchDto.setLeagueName(match.getLeagueName());
-			String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			/*String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
 			int value = dayOfWeek.getValue();
 			String name = LocalWeekDate.getName(value);
 			String matchDay = name + matchDate;
 			if(LocalDate.now().isEqual(localDate)) {
 				matchDay = "今日 " + matchDate;
-			}
+			}*/
+			String matchDay =LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 			matchDto.setMatchDay(matchDay);
 			matchDto.setMatchId(match.getMatchId());
 			matchDto.setMatchTime(matchTime);
@@ -220,9 +224,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dto.setFixedOdds(fixedOdds);
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
-		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), hOdds));
+		dto.setFlatCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_D.getCode().toString(), MatchResultHadEnum.HAD_D.getMsg(), dOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), aOdds));
 	}
 	/**
 	 * 胜平负
@@ -239,9 +243,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String aOdds = jsonObj.getString("a");
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
-		dto.setFlatCell(new DlJcZqMatchCellDTO("1", "平局", dOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), hOdds));
+		dto.setFlatCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_D.getCode().toString(), MatchResultHadEnum.HAD_D.getMsg(), dOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), aOdds));
 	}
 	/**
 	 * 比分
@@ -261,13 +265,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
 		Set<String> keySet = jsonObj.keySet();
-		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO("3", "主胜", null);
+		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), null);
 		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
 		dto.setHomeCell(homeCell);
-		DlJcZqMatchCellDTO flatCell = new DlJcZqMatchCellDTO("1", "平局", null);
+		DlJcZqMatchCellDTO flatCell = new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_D.getCode().toString(), MatchResultHadEnum.HAD_D.getMsg(), null);
 		flatCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
 		dto.setFlatCell(flatCell);
-		DlJcZqMatchCellDTO visitingCell = new DlJcZqMatchCellDTO("0", "客胜", null);
+		DlJcZqMatchCellDTO visitingCell = new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), null);
 		visitingCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(10));
 		dto.setVisitingCell(visitingCell);
 		//List<DlJcZqMatchCellDTO> matchCells = new ArrayList<DlJcZqMatchCellDTO>();
@@ -276,15 +280,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(Pattern.matches(regex, key)) {
 				String code = String.valueOf(new char[] {key.charAt(1),key.charAt(3)});
 				String odds = jsonObj.getString(key);
-				String name = "";
-				if("90".equals(code)) {
-					name = "胜其它";
-				} else if("99".equals(code)) {
-					name = "平其它";
-				} else if("09".equals(code)) {
-					name = "负其它";
-				}else {
-					name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
+				String name = MatchResultCrsEnum.getName(code);
+				if(null == name) {
+					if("90".equals(code)) {
+						name = "胜其它";
+					} else if("99".equals(code)) {
+						name = "平其它";
+					} else if("09".equals(code)) {
+						name = "负其它";
+					}else {
+						name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
+					}
 				}
 				if(key.charAt(1) > key.charAt(3)) {
 					homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
@@ -347,23 +353,23 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
 		String hhOdds = jsonObj.getString("hh");
-		matchCells.add(new DlJcZqMatchCellDTO("33", "胜-胜", hhOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_HH.getCode(), MatchResultHafuEnum.HAFU_HH.getMsg(), hhOdds));
 		String hdOdds = jsonObj.getString("hd");
-		matchCells.add(new DlJcZqMatchCellDTO("31", "胜-平", hdOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_HD.getCode(), MatchResultHafuEnum.HAFU_HD.getMsg(), hdOdds));
 		String haOdds = jsonObj.getString("ha");
-		matchCells.add(new DlJcZqMatchCellDTO("30", "胜-负", haOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_HA.getCode(), MatchResultHafuEnum.HAFU_HA.getMsg(), haOdds));
 		String ddOdds = jsonObj.getString("dd");
-		matchCells.add(new DlJcZqMatchCellDTO("11", "平-平", ddOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_DD.getCode(), MatchResultHafuEnum.HAFU_DD.getMsg(), ddOdds));
 		String daOdds = jsonObj.getString("da");
-		matchCells.add(new DlJcZqMatchCellDTO("10", "平-负", daOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_DA.getCode(), MatchResultHafuEnum.HAFU_DA.getMsg(), daOdds));
 		String dhOdds = jsonObj.getString("dh");
-		matchCells.add(new DlJcZqMatchCellDTO("13", "平-胜", dhOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_DH.getCode(), MatchResultHafuEnum.HAFU_DH.getMsg(), dhOdds));
 		String aaOdds = jsonObj.getString("aa");
-		matchCells.add(new DlJcZqMatchCellDTO("00", "负-负", aaOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_AA.getCode(), MatchResultHafuEnum.HAFU_AA.getMsg(), aaOdds));
 		String adOdds = jsonObj.getString("ad");
-		matchCells.add(new DlJcZqMatchCellDTO("01", "负-平", adOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_AD.getCode(), MatchResultHafuEnum.HAFU_AD.getMsg(), adOdds));
 		String ahOdds = jsonObj.getString("ah");
-		matchCells.add(new DlJcZqMatchCellDTO("03", "负-胜", ahOdds));
+		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_AH.getCode(), MatchResultHafuEnum.HAFU_AH.getMsg(), ahOdds));
 		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		dto.setMatchCells(matchCells);
 	}
@@ -373,10 +379,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private void initDlJcZqMatchCell7(DlJcZqMatchPlayDTO dto) {
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
-		String hOdds = jsonObj.getString("zbb");
-		String aOdds = jsonObj.getString("zb");
-		dto.setHomeCell(new DlJcZqMatchCellDTO("3", "主胜", hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO("0", "客胜", aOdds));
+		String zbbOdds = jsonObj.getString("zbb");
+		String zbOdds = jsonObj.getString("zb");
+		String zsOdds = jsonObj.getString("zs");
+		String zbsOdds = jsonObj.getString("zbs");
+		dto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", zbbOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", zbOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", zsOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", zbsOdds));
 	}
 	/**
 	 * 转换页面展示用的比赛时间
