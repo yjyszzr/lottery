@@ -582,7 +582,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					sdf.applyPattern("yyyy-MM-dd");
 					Date showTime = sdf.parse(jo.getString("b_date"));
 					lotteryMatch.setShowTime(showTime);
-					lotteryMatch.setMatchSn(this.commonCreateIssue(jo.getString("date"), lotteryMatch.getChangci()));
+					lotteryMatch.setMatchSn(this.commonCreateIssue(jo.getString("b_date"), lotteryMatch.getChangci()));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
