@@ -53,6 +53,7 @@ import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.param.LotteryPrintParam;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.mysql.jdbc.Connection;
@@ -125,33 +126,35 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			List<LotteryPrintParam> lotteryPrintParams = new LinkedList<LotteryPrintParam>();
 			List<LotteryPrint> lotteryPrints = new LinkedList<>();
 			for(CallbackStake callbackStake : callbackStakes) {
-				LotteryPrint lotteryPrint = new LotteryPrint();
-				lotteryPrint.setTicketId(callbackStake.getTicketId());
-				lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-				if(null != lotteryPrint) {
-					lotteryPrint.setStatus(1);
-					lotteryPrint.setPlatformId(callbackStake.getPlatformId());
-					lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-					lotteryPrint.setPrintSp(callbackStake.getSp());
-					lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
-					Date printTime = null;
-					try {
-						String printTimeStr = callbackStake.getPrintTime();
-						printTimeStr = printTimeStr.replaceAll("/", "-");
-						printTime = sdf.parse(printTimeStr);
-						lotteryPrint.setPrintTime(printTime);
-					} catch (ParseException e) {
-						e.printStackTrace();
-						log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
-						continue;
+				if(ProjectConstant.CALLBACK_STAKE_SUCCESS.equals(callbackStake.getPrintStatus())) {
+					LotteryPrint lotteryPrint = new LotteryPrint();
+					lotteryPrint.setTicketId(callbackStake.getTicketId());
+					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
+					if(null != lotteryPrint) {
+						lotteryPrint.setStatus(1);
+						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
+						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
+						lotteryPrint.setPrintSp(callbackStake.getSp());
+						lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
+						Date printTime = null;
+						try {
+							String printTimeStr = callbackStake.getPrintTime();
+							printTimeStr = printTimeStr.replaceAll("/", "-");
+							printTime = sdf.parse(printTimeStr);
+							lotteryPrint.setPrintTime(printTime);
+						} catch (ParseException e) {
+							e.printStackTrace();
+							log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
+							continue;
+						}
+						lotteryPrints.add(lotteryPrint);
+						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+						lotteryPrintParam.setPrintSp(lotteryPrint.getPrintSp());
+						lotteryPrintParams.add(lotteryPrintParam);
 					}
-					lotteryPrints.add(lotteryPrint);
-					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
-					lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
-					lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-					lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
-					lotteryPrintParam.setPrintSp(lotteryPrint.getPrintSp());
-					lotteryPrintParams.add(lotteryPrintParam);
 				}
 			}
 			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
@@ -161,6 +164,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				orderService.updateOrderInfoByPrint(lotteryPrintParams);
 			}
 		}
+	}
+	
+	/**
+	 * 比较回调和主动查询的赔率是否一致，如果不一致，以主动查询成功的结果为准
+	 * @param callBackSp
+	 * @param issue
+	 * @return
+	 */
+	private String getComparePrintSp(String callBackSp, String issue) {
+		String querySp = "";
+		
+		return "";
 	}
 	
 	/**
