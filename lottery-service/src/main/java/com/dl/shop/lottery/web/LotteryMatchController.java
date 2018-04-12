@@ -90,7 +90,7 @@ public class LotteryMatchController {
 	@PostMapping("/getBetInfo")
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
-		if(matchBetPlays.size() < 1) {
+		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
 		//校验赛事投注时间
@@ -148,7 +148,7 @@ public class LotteryMatchController {
 	@PostMapping("/saveBetInfo")
 	public BaseResult<BetPayInfoDTO> saveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
-		if(matchBetPlays.size() < 1) {
+		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
 		String playType = param.getPlayType();
