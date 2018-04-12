@@ -151,6 +151,18 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
+		String playType = param.getPlayType();
+		if(StringUtils.isBlank(playType)) {
+			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+		}
+		try {
+			int parseInt = Integer.parseInt(playType);
+			if(parseInt < 1 || parseInt > 7) {
+				return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			}
+		} catch (NumberFormatException e) {
+			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+		}
 		//校验赛事投注时间
 		MatchBetPlayDTO min = matchBetPlays.get(0);
 		if(matchBetPlays.size() > 1) {
@@ -165,6 +177,20 @@ public class LotteryMatchController {
 		//校验串关
 		String betType = param.getBetType();
 		if(StringUtils.isBlank(betType)) {
+			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+		}
+		boolean isCheckedBetType = false;
+		try {
+			char[] charArray = betType.toCharArray();
+			if(charArray.length == 2 && charArray[1] == '1') {
+				int num = Integer.valueOf(String.valueOf(charArray[0]));
+				if(num > 0 && num < 9) {
+					isCheckedBetType = true;
+				}
+			}
+		} catch (NumberFormatException e) {
+		}
+		if(!isCheckedBetType) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
 		if((matchBetPlays.size() == 1 && !betType.equals("11")) || (matchBetPlays.size() > 1 && betType.contains("11"))) {

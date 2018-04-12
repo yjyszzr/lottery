@@ -121,7 +121,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-			LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+//			LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
