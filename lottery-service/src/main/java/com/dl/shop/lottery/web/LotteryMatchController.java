@@ -35,12 +35,16 @@ import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.param.DateStrParam;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.StrParam;
+import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderInfoAndDetailDTO;
+import com.dl.order.param.OrderSnParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.LotteryMatchService;
@@ -65,6 +69,8 @@ public class LotteryMatchController {
     private IUserService userService;
     @Resource
     private DlLeagueInfoService dlLeagueInfoService;
+    @Resource
+    private IOrderService orderService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -281,4 +287,19 @@ public class LotteryMatchController {
     	return ResultGenerator.genSuccessResult("查询比赛结果成功",lotteryMatchDTOList);
     }
 	
+	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")
+    @PostMapping("/getBetInfoByOrderSn")
+    public BaseResult<DLZQBetInfoDTO> getBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param) {
+		if(StringUtils.isBlank(param.getOrderSn())) {
+			return ResultGenerator.genFailResult();
+		}
+		OrderSnParam orderSnParam = new OrderSnParam();
+		orderSnParam.setOrderSn(param.getOrderSn());
+		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
+		if(orderWithDetailByOrderSn.getCode() != 0) {
+			return ResultGenerator.genFailResult();
+		}
+		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData());
+    	return ResultGenerator.genSuccessResult("success",dto);
+    }
 }

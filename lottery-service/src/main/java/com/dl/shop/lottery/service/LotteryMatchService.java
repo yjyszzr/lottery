@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -55,6 +54,9 @@ import com.dl.lottery.dto.MatchBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.order.dto.OrderDetailDataDTO;
+import com.dl.order.dto.OrderInfoAndDetailDTO;
+import com.dl.order.dto.OrderInfoDTO;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -281,16 +283,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String code = String.valueOf(new char[] {key.charAt(1),key.charAt(3)});
 				String odds = jsonObj.getString(key);
 				String name = MatchResultCrsEnum.getName(code);
-				if(null == name) {
-					if("90".equals(code)) {
-						name = "胜其它";
-					} else if("99".equals(code)) {
-						name = "平其它";
-					} else if("09".equals(code)) {
-						name = "负其它";
-					}else {
-						name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
-					}
+				if(StringUtils.isBlank(name)) {
+					name = String.valueOf(new char[] {key.charAt(1),':',key.charAt(3)});
 				}
 				if(key.charAt(1) > key.charAt(3)) {
 					homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
@@ -302,6 +296,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				//matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
+		String hOdds = jsonObj.getString("-1-h");
+		homeCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_90.getCode(), MatchResultCrsEnum.CRS_90.getMsg(), hOdds));
+		String aOdds = jsonObj.getString("-1-a");
+		visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_09.getCode(), MatchResultCrsEnum.CRS_09.getMsg(), aOdds));
+		String dOdds = jsonObj.getString("-1-d");
+		flatCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_99.getCode(), MatchResultCrsEnum.CRS_99.getMsg(), dOdds));
 		homeCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		visitingCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		flatCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
@@ -1020,5 +1020,78 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return lotteryMatchDTOList;
 	}
 	
-	
+	@Transactional(readOnly=true)
+	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo) {
+		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
+		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();
+		List<MatchBetPlayDTO> matchBetPlays = selectByOrderId.stream().map(detail->{
+    		String ticketData = detail.getTicketData();
+    		String[] tickets = ticketData.split(";");
+    		String playCode = null;
+    		List<MatchBetCellDTO> matchBetCells = new ArrayList<MatchBetCellDTO>(tickets.length);
+    		for(String tikcket: tickets) {
+    			String[] split = tikcket.split("\\|");
+    			String playType = split[0];
+    			if(null == playCode) {
+    				playCode = split[1];
+    			}
+    			String[] split2 = split[2].split(",");
+    			List<DlJcZqMatchCellDTO> betCells = Arrays.asList(split2).stream().map(str->{
+    				String[] split3 = str.split("@");
+    				String matchResult = getCathecticData(split[0], split3[0]);
+    				DlJcZqMatchCellDTO dto = new DlJcZqMatchCellDTO(split3[0], matchResult, split3[1]);
+    				return dto;
+    			}).collect(Collectors.toList());
+    			MatchBetCellDTO matchBetCell = new MatchBetCellDTO();
+    			matchBetCell.setPlayType(playType);
+    			matchBetCell.setBetCells(betCells);
+    			matchBetCells.add(matchBetCell);
+    		}
+    		MatchBetPlayDTO dto = new MatchBetPlayDTO();
+    		dto.setChangci(detail.getChangci());
+    		dto.setIsDan(detail.getIsDan());
+    		dto.setLotteryClassifyId(detail.getLotteryClassifyId());
+    		dto.setLotteryPlayClassifyId(detail.getLotteryPlayClassifyId());
+    		dto.setMatchId(detail.getMatchId());
+    		dto.setMatchTeam(detail.getMatchTeam());
+    		Date matchTime = detail.getMatchTime();
+    		dto.setMatchTime((int)matchTime.toInstant().getEpochSecond());
+    		dto.setPlayCode(playCode);
+    		dto.setMatchBetCells(matchBetCells);
+    		return dto;
+    	}).collect(Collectors.toList());
+    	Integer times = order.getCathectic();
+    	String betType = order.getPassType();
+    	Integer lotteryClassifyId = order.getLotteryClassifyId();
+    	Integer lotteryPlayClassifyId = order.getLotteryPlayClassifyId();
+    	DlJcZqMatchBetParam param = new DlJcZqMatchBetParam();
+    	param.setBetType(betType);
+    	param.setLotteryClassifyId(lotteryClassifyId);
+    	param.setLotteryPlayClassifyId(lotteryPlayClassifyId);
+    	param.setPlayType(order.getPlayType());
+    	param.setTimes(times);
+    	param.setMatchBetPlays(matchBetPlays);
+    	return this.getBetInfo(param);
+	}
+	/**
+     * 通过玩法code与投注内容，进行转换
+     * @param playCode
+     * @param cathecticStr
+     * @return
+     */
+    private String getCathecticData(String playType, String cathecticStr) {
+    	int playCode = Integer.parseInt(playType);
+    	String cathecticData = "";
+    	if(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode() == playCode
+    		|| MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode() == playCode) {
+    		cathecticData = MatchResultHadEnum.getName(Integer.valueOf(cathecticStr));
+    	} else if(MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode() == playCode) {
+    		cathecticData = MatchResultCrsEnum.getName(cathecticStr);
+    	} else if(MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode() == playCode) {
+    		cathecticData = cathecticStr;
+    	} else if(MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode() == playCode) {
+    		cathecticData = MatchResultHafuEnum.getName(cathecticStr);
+    	}
+    	return cathecticData;
+    }
 }

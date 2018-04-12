@@ -3,6 +3,7 @@ package com.dl.shop.lottery.web;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
@@ -24,6 +26,10 @@ import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.SaveLotteryPrintInfoParam;
+import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderInfoAndDetailDTO;
+import com.dl.order.param.OrderSnParam;
+import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +40,12 @@ public class LotteryPrintController {
 
 	@Resource
 	private LotteryPrintService lotteryPrintService;
+	
+	@Resource
+	private LotteryMatchService lotteryMatchService;
+
+	@Resource
+	private IOrderService orderService;
 	
 	@ApiOperation(value = "投注接口", notes = "投注接口")
     @PostMapping("/toStake")
@@ -87,6 +99,21 @@ public class LotteryPrintController {
 	@ApiOperation(value = "生成预出票信息", notes = "生成预出票信息")
     @PostMapping("/save")
     public BaseResult<String> saveLotteryPrintInfo(@Valid @RequestBody SaveLotteryPrintInfoParam param) {
-		return lotteryPrintService.saveLotteryPrintInfo(param);
+		if(StringUtils.isBlank(param.getOrderSn())) {
+			return ResultGenerator.genFailResult();
+		}
+		OrderSnParam orderSnParam = new OrderSnParam();
+		orderSnParam.setOrderSn(param.getOrderSn());
+		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
+		if(orderWithDetailByOrderSn.getCode() != 0) {
+			return ResultGenerator.genFailResult();
+		}
+		DLZQBetInfoDTO betInfoByOrderSn = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData());
+		if(null == betInfoByOrderSn ) {
+			return ResultGenerator.genFailResult();
+		}
+		return lotteryPrintService.saveLotteryPrintInfo(betInfoByOrderSn.getLotteryPrints(), param.getOrderSn());
     }
+	
+	
 }

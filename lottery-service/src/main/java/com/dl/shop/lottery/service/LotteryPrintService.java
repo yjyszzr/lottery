@@ -33,6 +33,7 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
 import com.dl.base.util.SNGenerator;
+import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO.QueryIssue;
@@ -42,6 +43,7 @@ import com.dl.lottery.dto.DlQueryStakeDTO.BackQueryStake;
 import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
+import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
 import com.dl.lottery.param.DlQueryAccountParam;
@@ -316,12 +318,12 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 
 	/**
 	 * 保存预出票信息
-	 * @param param
+	 * @param list
 	 * @return
 	 */
 	@Transactional
-	public BaseResult<String> saveLotteryPrintInfo(SaveLotteryPrintInfoParam param) {
-		List<LotteryPrint> models = param.getLotteryPrints().stream().map(dto->{
+	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn) {
+		List<LotteryPrint> models = list.stream().map(dto->{
 			LotteryPrint lotteryPrint = new LotteryPrint();
 			lotteryPrint.setGame("T51");
 			lotteryPrint.setMerchant(merchant);
@@ -333,7 +335,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setPlaytype(dto.getPlayType());
 			lotteryPrint.setTimes(dto.getTimes());
 			lotteryPrint.setStakes(dto.getStakes());
-			lotteryPrint.setOrderSn(param.getOrderSn());
+			lotteryPrint.setOrderSn(orderSn);
 			lotteryPrint.setStatus(0);
 			return lotteryPrint;
 		}).collect(Collectors.toList());
