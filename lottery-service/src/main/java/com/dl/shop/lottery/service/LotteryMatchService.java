@@ -296,15 +296,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				//matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
+		homeCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+		visitingCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+		flatCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		String hOdds = jsonObj.getString("-1-h");
 		homeCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_90.getCode(), MatchResultCrsEnum.CRS_90.getMsg(), hOdds));
 		String aOdds = jsonObj.getString("-1-a");
 		visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_09.getCode(), MatchResultCrsEnum.CRS_09.getMsg(), aOdds));
 		String dOdds = jsonObj.getString("-1-d");
 		flatCell.getCellSons().add(new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_99.getCode(), MatchResultCrsEnum.CRS_99.getMsg(), dOdds));
-		homeCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
-		visitingCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
-		flatCell.getCellSons().sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
 		//dto.setMatchCells(matchCells);
 	}
 	/**
