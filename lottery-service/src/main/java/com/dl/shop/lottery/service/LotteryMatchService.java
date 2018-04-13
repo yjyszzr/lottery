@@ -397,15 +397,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", zbbOdds));
 		}
 		String zbOdds = jsonObj.getString("zb");
-		if(StringUtils.isNotBlank(zbbOdds)) {
+		if(StringUtils.isNotBlank(zbOdds)) {
 			dto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", zbOdds));
 		}
 		String zsOdds = jsonObj.getString("zs");
-		if(StringUtils.isNotBlank(zbbOdds)) {
+		if(StringUtils.isNotBlank(zsOdds)) {
 			dto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", zsOdds));
 		}
 		String zbsOdds = jsonObj.getString("zbs");
-		if(StringUtils.isNotBlank(zbbOdds)) {
+		if(StringUtils.isNotBlank(zbsOdds)) {
 			dto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", zbsOdds));
 		}
 		dto.setSingle(0);
