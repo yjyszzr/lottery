@@ -131,7 +131,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					LotteryPrint lotteryPrint = new LotteryPrint();
 					lotteryPrint.setTicketId(callbackStake.getTicketId());
 					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-					if(null != lotteryPrint && lotteryPrint.getStatus() == 0) {
+					if(null != lotteryPrint && lotteryPrint.getStatus() == 3) {
 						lotteryPrint.setStatus(1);
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
@@ -245,7 +245,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 高速批量更新LotteryPeint
 	 * @param list
 	 */
-	public void updateBatchByTicketId(List<LotteryPrint> list) {
+	public void updateBatchErrorByTicketId(List<LotteryPrint> list) {
 		try {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
@@ -257,6 +257,33 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				prest.setInt(1, list.get(i).getErrorCode());
 				prest.setInt(2, list.get(i).getStatus());
 				prest.setString(3, list.get(i).getTicketId());
+				prest.addBatch();
+			}
+			prest.executeBatch();
+			conn.commit();
+			conn.close();
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+		} catch (ClassNotFoundException ex) {
+			log.error(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * 高速批量更新LotteryPrint
+	 * @param list
+	 */
+	public void updateBatchSuccessByTicketId(List<LotteryPrint> list) {
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "update dl_print_lottery set status = ? where ticket_id = ?";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (int i = 0, size = list.size(); i < size; i++) {
+				prest.setInt(1, list.get(i).getStatus());
+				prest.setString(2, list.get(i).getTicketId());
 				prest.addBatch();
 			}
 			prest.executeBatch();

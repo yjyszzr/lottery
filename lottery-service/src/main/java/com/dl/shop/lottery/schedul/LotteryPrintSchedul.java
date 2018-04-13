@@ -70,18 +70,27 @@ public class LotteryPrintSchedul {
         	dlToStakeParam.setOrders(printTicketOrderParams);
         	DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(dlToStakeParam);
         	if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
-        		List<LotteryPrint> lotteryPrintList = new LinkedList<LotteryPrint>();
+        		List<LotteryPrint> lotteryPrintErrors = new LinkedList<LotteryPrint>();
+        		List<LotteryPrint> lotteryPrintSuccess = new LinkedList<LotteryPrint>();
         		for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
+        			LotteryPrint lotteryPrint = new LotteryPrint();
+        			lotteryPrint.setTicketId(backOrderDetail.getTicketId());
         			if(backOrderDetail.getErrorCode() != 0) {
-        				LotteryPrint lotteryPrint = new LotteryPrint();
-        				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
         				lotteryPrint.setErrorCode(backOrderDetail.getErrorCode());
+        				//出票失败
         				lotteryPrint.setStatus(2);
-        				lotteryPrintList.add(lotteryPrint);
+        				lotteryPrintErrors.add(lotteryPrint);
+        			} else {
+        				//出票中
+        				lotteryPrint.setStatus(3);
+        				lotteryPrintSuccess.add(lotteryPrint);
         			}
         		}
-        		if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
-        			lotteryPrintService.updateBatchByTicketId(lotteryPrintList);
+        		if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
+        			lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
+        		}
+        		if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
+        			lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintErrors);
         		}
         	}
         }
