@@ -169,6 +169,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
+			if(matchPlays.size() > 2) {
+				matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
+			}
 			matchDto.setMatchPlays(matchPlays);
 			//
 			DlJcZqDateMatchDTO dlJcZqMatchDTO = map.get(matchDay);
