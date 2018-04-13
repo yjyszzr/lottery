@@ -16,8 +16,8 @@
     <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
     <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
     <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
-    <result column="match_time" jdbcType="DATE" property="matchTime" />
-    <result column="show_time" jdbcType="DATE" property="showTime" />
+    <result column="match_time" jdbcType="TIMESTAMP" property="matchTime" />
+    <result column="show_time" jdbcType="TIMESTAMP" property="showTime" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="is_del" jdbcType="INTEGER" property="isDel" />
