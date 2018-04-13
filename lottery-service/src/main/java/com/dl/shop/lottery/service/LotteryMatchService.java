@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,8 @@ import com.dl.base.enums.MatchResultHadEnum;
 import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.exception.ServiceException;
+import com.dl.base.result.BaseResult;
+import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
@@ -54,9 +57,13 @@ import com.dl.lottery.dto.MatchBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.QueryMatchParam;
+import com.dl.order.api.IOrderDetailService;
+import com.dl.order.dto.IssueDTO;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
+import com.dl.order.param.DateStrParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
@@ -77,6 +84,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+	
+	@Resource
+	private DlLeagueInfoService leagueInfoService;
+	
+	@Resource
+	private IOrderDetailService orderDetailService;
 	
 	@Value("${match.url}")
 	private String matchUrl;
@@ -1008,25 +1021,46 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	/**
-	 * 根据日期查询比赛结果
+	 * 根据查询条件查看比赛结果
 	 * @param dateStr
 	 * @return
 	 */
-	public List<LotteryMatchDTO> queryMatchResult(String dateStr){
-		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByDate(dateStr);
+	public BaseResult<List<LotteryMatchDTO>> queryMatchResult(QueryMatchParam queryMatchParam){
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-//		if(CollectionUtils.isEmpty(lotteryMatchList)) {
-//			return lotteryMatchDTOList;
-//		}
-//		
-//		lotteryMatchList.forEach(s->{
-//			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
-//			BeanUtils.copyProperties(s, lotteryMatchDTO);
-//			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
-//			lotteryMatchDTOList.add(lotteryMatchDTO);
-//		});
+		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && queryMatchParam.getLeagueIds().length > 0) {
+			return ResultGenerator.genFailResult("只看已购对阵和赛事筛选为互斥关系,只能选择一种",lotteryMatchDTOList);
+		} 
 		
-		return lotteryMatchDTOList;
+		String[] issueArr = new String [] {};
+		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
+			//我的订单中包含的今天赛事的期次号issue
+			DateStrParam dateStrParam = new DateStrParam();
+			dateStrParam.setDateStr(queryMatchParam.getDateStr());
+			BaseResult<List<IssueDTO>> issuesDTO = orderDetailService.selectIssuesMatchInTodayOrder(dateStrParam);
+			if(issuesDTO.getCode() != 0) {
+				return ResultGenerator.genResult(issuesDTO.getCode(),issuesDTO.getMsg());
+			}
+			
+			List<IssueDTO> issueDTOList = issuesDTO.getData();
+			List<String> issueList = issueDTOList.stream().map(s->s.getIssue()).collect(Collectors.toList());
+			issueArr = (String[])issueList.toArray();
+		}
+
+				
+		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),issueArr,queryMatchParam.getLeagueIds());
+		
+		if(CollectionUtils.isEmpty(lotteryMatchList)) {
+			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
+		}
+		
+		lotteryMatchList.forEach(s->{
+			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
+			BeanUtils.copyProperties(s, lotteryMatchDTO);
+			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+			lotteryMatchDTOList.add(lotteryMatchDTO);
+		});
+		
+		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}
 	
 	@Transactional(readOnly=true)

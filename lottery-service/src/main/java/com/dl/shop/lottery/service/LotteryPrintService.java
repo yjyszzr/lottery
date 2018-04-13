@@ -176,7 +176,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	private String getComparePrintSp(String callBackSp, String ticketId) {
 		DlQueryStakeParam param = new DlQueryStakeParam();
 		param.setMerchant(merchant);
-		String[] orders = {};
+		String[] orders = new String[1];
 		orders[0] = ticketId;
 		param.setOrders(orders);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
