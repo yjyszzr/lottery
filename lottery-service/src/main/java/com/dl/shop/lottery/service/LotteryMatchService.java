@@ -1054,7 +1054,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 		}
-		
 		lotteryMatchList.forEach(s->{
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
