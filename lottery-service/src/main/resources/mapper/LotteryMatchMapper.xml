@@ -83,7 +83,7 @@
   	 	</foreach>
   	 </if>
   	 <if test="issueArr !=null and issueArr.length != 0">
-  	 	and issue in
+  	 	and match_sn in
   	 	<foreach collection="issueArr" item="issue" index="index" open="(" close=")" separator=",">
   	 		#{issue}
   	 	</foreach>
