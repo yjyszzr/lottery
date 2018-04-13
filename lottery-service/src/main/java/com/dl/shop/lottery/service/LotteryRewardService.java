@@ -76,6 +76,7 @@ import com.mysql.jdbc.PreparedStatement;
 
 import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Slf4j
@@ -162,44 +163,44 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//匹配中奖信息
 		this.compareReward(lotteryReward);
 		//更新订单及订单详情
-//		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
-//		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
-//			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
-//			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
-//			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
-//			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
-//				OrderDataParam dlOrderDataDTO = new OrderDataParam();
-//				try {
-//					BeanUtils.copyProperties(dlOrderDataDTO, dto);
-//				} catch (IllegalAccessException e) {
-//					e.printStackTrace();
-//				} catch (InvocationTargetException e) {
-//					e.printStackTrace();
-//				}
-//				dtos.add(dlOrderDataDTO);
-//			}
-//			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-//			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
-//		}
-//		//更新用户账户，大于派奖金额的需要派奖
-//		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
-//		orderWithUserParam.setIssue(param.getIssue());
-//		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
-//		if(result.getCode() == 0) {
-//			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
-//			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
-//				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
-//				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
-//				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
-//					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
-//					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
-//					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
-//					userIdAndRewardDTOs.add(userIdAndRewardDTO);
-//				}
-//				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
-//			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
-//			}
-//		}
+		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
+		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
+			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
+			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+				OrderDataParam dlOrderDataDTO = new OrderDataParam();
+				try {
+					BeanUtils.copyProperties(dlOrderDataDTO, dto);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				dtos.add(dlOrderDataDTO);
+			}
+			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+		}
+		//更新用户账户，大于派奖金额的需要派奖
+		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
+		orderWithUserParam.setIssue(param.getIssue());
+		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
+		if(result.getCode() == 0) {
+			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
+			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
+				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
+				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
+				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
+					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
+					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
+					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
+					userIdAndRewardDTOs.add(userIdAndRewardDTO);
+				}
+				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
+			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
+			}
+		}
 	}
 	
 	/**
@@ -335,6 +336,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			}
 			// 构造获胜期次的赔率集合和带有期次@赔率的字符串
 			RewardStakesWithSpDTO rewardStakesWithSpDTO = this.createRewardStakesWithSp(same, lp.getPrintSp());
+			if(null == rewardStakesWithSpDTO) {
+				break;
+			}
+			
 			// 最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
 			TicketRewardDTO ticketRewardDTO = this.createTicketRewardDTO(rewardStakes, lp, rewardStakesWithSpDTO);
 			
@@ -435,6 +440,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	public RewardStakesWithSpDTO createRewardStakesWithSp(List<String> same,String printSp){
 		List<String> rewardSpList = new ArrayList<String>();
 		List<Double> winSpList = new ArrayList<Double>();
+		if(StringUtil.isEmpty(printSp)) {
+			return null;
+		}
+		
 	    List<String> spList = Arrays.asList(printSp.split(";"));
 	    Map<String,String> spMap = new HashMap<String,String>();
 	    for(String temp:spList) {
@@ -447,7 +456,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					spMap.put(temp3.substring(0,temp3.indexOf("@")), temp3.substring(temp3.indexOf("@")+1));
 				}
 	    	}else {
-	    		spMap.put(temp.substring(0,temp.indexOf("@")), temp.substring(temp.indexOf("@")));
+	    		spMap.put(temp.substring(0,temp.indexOf("@")), temp.substring(temp.indexOf("@")+1));
 	    	}
 	    }
 	    
