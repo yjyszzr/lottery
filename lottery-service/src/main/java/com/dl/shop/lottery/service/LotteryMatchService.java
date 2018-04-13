@@ -188,6 +188,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map.forEach((key, value) ->{
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
+		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
+		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
 	    return dlJcZqMatchListDTO;
 	}
