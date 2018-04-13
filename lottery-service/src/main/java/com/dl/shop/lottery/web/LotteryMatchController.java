@@ -32,11 +32,11 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
-import com.dl.lottery.param.DateStrParam;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetFilterConditionsParam;
+import com.dl.lottery.param.QueryMatchParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
@@ -311,9 +311,8 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")
     @PostMapping("/queryMatchResult")
-    public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody DateStrParam dateStrParam) {
-		List<LotteryMatchDTO> lotteryMatchDTOList = lotteryMatchService.queryMatchResult(dateStrParam.getDateStr());
-    	return ResultGenerator.genSuccessResult("查询比赛结果成功",lotteryMatchDTOList);
+    public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody QueryMatchParam dateStrParam) {
+    	return lotteryMatchService.queryMatchResult(dateStrParam);
     }
 	
 	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")

@@ -71,11 +71,24 @@
   </select>
 
   
-  <select id="queryMatchByDate" parameterType ="java.lang.String" resultMap="BaseResultMap">
+  <select id="queryMatchByQueryCondition" parameterType ="java.lang.String" resultMap="BaseResultMap">
   	select * from dl_match
   	 where is_del = 0 
      and is_show = 1
-  	 and str_to_date(match_time,'%Y-%m-%d' )  = #{dateStr} 
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
+  	 	and league_id in
+  	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="issueArr !=null and issueArr.length != 0">
+  	 	and issue in
+  	 	<foreach collection="issueArr" item="issue" index="index" open="(" close=")" separator=",">
+  	 		#{issue}
+  	 	</foreach>
+  	 </if>
+  	 order by match_time
   </select>
 
   <update id="updateMatchBatch" parameterType="java.util.List">
