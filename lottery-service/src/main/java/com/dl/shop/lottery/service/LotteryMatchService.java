@@ -387,6 +387,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", zbOdds));
 		dto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", zsOdds));
 		dto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", zbsOdds));
+		dto.setSingle(0);
 	}
 	/**
 	 * 转换页面展示用的比赛时间
