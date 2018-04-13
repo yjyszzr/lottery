@@ -44,7 +44,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 出票任务 （每5分钟执行一次）
 	 */
-//	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
         List<LotteryPrint> lotteryPrints = lotteryPrintMapper.getPrintLotteryList();
