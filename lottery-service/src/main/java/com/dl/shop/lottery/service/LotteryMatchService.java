@@ -393,13 +393,21 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		String zbbOdds = jsonObj.getString("zbb");
+		if(StringUtils.isNotBlank(zbbOdds)) {
+			dto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", zbbOdds));
+		}
 		String zbOdds = jsonObj.getString("zb");
+		if(StringUtils.isNotBlank(zbOdds)) {
+			dto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", zbOdds));
+		}
 		String zsOdds = jsonObj.getString("zs");
+		if(StringUtils.isNotBlank(zsOdds)) {
+			dto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", zsOdds));
+		}
 		String zbsOdds = jsonObj.getString("zbs");
-		dto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", zbbOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", zbOdds));
-		dto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", zsOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", zbsOdds));
+		if(StringUtils.isNotBlank(zbsOdds)) {
+			dto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", zbsOdds));
+		}
 		dto.setSingle(0);
 	}
 	/**
@@ -526,12 +534,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					}
 				}
 				if(fixedodds.equals("+1")) {
-					tsoJo.put("zbb", "主不败 " + hhadJo.getString("h"));
-					tsoJo.put("zb", "主败 " + hadJo.getString("a"));
+					tsoJo.put("zbb", hhadJo.getString("h"));
+					tsoJo.put("zb", hadJo.getString("a"));
 					flag = true;
 				} else if(fixedodds.equals("-1")) {
-					tsoJo.put("zbs", "主不胜 " + hhadJo.getString("a"));
-					tsoJo.put("zs", "主胜 " + hadJo.getString("h"));
+					tsoJo.put("zbs", hhadJo.getString("a"));
+					tsoJo.put("zs", hadJo.getString("h"));
 					flag = true;
 				}
 				if(flag) {
