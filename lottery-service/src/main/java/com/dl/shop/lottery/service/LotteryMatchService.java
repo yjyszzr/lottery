@@ -345,9 +345,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(Pattern.matches(regex, key)) {
 				String code = String.valueOf(key.charAt(1));
 				String odds = jsonObj.getString(key);
-				String name = String.valueOf(new char[] {key.charAt(1),'球'});
+				String name = String.valueOf(new char[] {key.charAt(1)});
 				if("7".equals(code)) {
-					name += "或更多";
+					name += "+";
 				} 
 				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
