@@ -24,4 +24,7 @@ public class QueryMatchParam {
     @NotBlank(message = "联赛id集合不能为空")
     private String[] leagueIds;
     
+    @ApiModelProperty(value = "比赛完成：1-未完成,未选择这个条件的时候传空字符串 ")
+    private String matchFinish;
+    
 }

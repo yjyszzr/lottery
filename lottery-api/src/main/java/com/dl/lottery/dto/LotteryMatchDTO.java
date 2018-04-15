@@ -107,9 +107,18 @@ public class LotteryMatchDTO {
     @Column(name = "whole")
     private String whole;
     
+    private String matchFinish;
     
 
-    public String getMatchSn() {
+    public String getMatchFinish() {
+		return matchFinish;
+	}
+
+	public void setMatchFinish(String matchFinish) {
+		this.matchFinish = matchFinish;
+	}
+
+	public String getMatchSn() {
 		return matchSn;
 	}
 

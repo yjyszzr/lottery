@@ -88,6 +88,9 @@
   	 		#{issue}
   	 	</foreach>
   	 </if>
+  	 <if test="matchNotFinish !=null and matchNotFinish != ''">
+  	 	and  status = '1'
+  	 </if>
   	 order by match_time
   </select>
 
