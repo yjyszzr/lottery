@@ -1040,9 +1040,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	public BaseResult<List<LotteryMatchDTO>> queryMatchResult(QueryMatchParam queryMatchParam){
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && queryMatchParam.getLeagueIds().length > 0) {
+		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && !StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
 			return ResultGenerator.genFailResult("只看已购对阵和赛事筛选为互斥关系,只能选择一种",lotteryMatchDTOList);
 		} 
+		
+		String [] leagueIdArr = new String [] {};
+		if(!StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
+			leagueIdArr = queryMatchParam.getLeagueIds().split(",");
+		}
 		
 		String[] issueArr = new String [] {};
 		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
@@ -1058,17 +1063,24 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<String> issueList = issueDTOList.stream().map(s->s.getIssue()).collect(Collectors.toList());
 			issueArr = (String[])issueList.toArray();
 		}
-
 				
-		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),issueArr,queryMatchParam.getLeagueIds());
+		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
+				issueArr,leagueIdArr,queryMatchParam.getMatchFinish());
 		
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 		}
+		
 		lotteryMatchList.forEach(s->{
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
+			if(s.getStatus().equals(ProjectConstant.ONE_YES)) {
+				lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES);
+			}else {
+				lotteryMatchDTO.setMatchFinish(ProjectConstant.ZERO_NO);
+			}			
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		});
 		

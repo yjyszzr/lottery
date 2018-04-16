@@ -311,7 +311,7 @@ public class LotteryMatchController {
     	return ResultGenerator.genSuccessResult("抓取赛事列表保存成功");
     }
 	
-	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")
+	@ApiOperation(value = "根据条件查询比赛结果", notes = "根据条件查询比赛结果")
     @PostMapping("/queryMatchResult")
     public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody QueryMatchParam dateStrParam) {
     	return lotteryMatchService.queryMatchResult(dateStrParam);

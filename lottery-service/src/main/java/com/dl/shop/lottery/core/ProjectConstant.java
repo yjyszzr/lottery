@@ -408,4 +408,10 @@ public class ProjectConstant {
     public static final int BET_PRESET_TIME = 780;
   //彩票信息的缓存时长,单位分
     public final static long BET_INFO_EXPIRE_TIME = 10;
+    
+	/**
+	 * 通用的表示 是和否的常量
+	 */
+	public final static String ONE_YES = "1";
+	public final static String ZERO_NO = "0";
 }
