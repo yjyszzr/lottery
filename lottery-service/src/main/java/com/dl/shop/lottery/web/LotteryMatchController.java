@@ -32,10 +32,12 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetFilterConditionsParam;
+import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
@@ -329,5 +331,12 @@ public class LotteryMatchController {
 		}
 		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData());
     	return ResultGenerator.genSuccessResult("success",dto);
+    }
+	
+	@ApiOperation(value = "球队分析信息", notes = "球队分析信息")
+    @PostMapping("/matchTeamInfos")
+    public BaseResult<MatchTeamInfosDTO> matchTeamInfos(@Valid @RequestBody MatchTeamInfosParam param) {
+		MatchTeamInfosDTO matchTeamInfos = lotteryMatchService.matchTeamInfos(param.getMatchId());
+    	return ResultGenerator.genSuccessResult("success", matchTeamInfos);
     }
 }

@@ -122,4 +122,21 @@
             </foreach>
             
 	</update>
+	
+	
+	<select id="getByMatchId" resultMap="BaseResultMap">
+		select * from dl_match where changci_id=#{matchId}
+	</select>
+	<select id="getByTeamId" resultMap="BaseResultMap">
+		select * 
+		from dl_match 
+		where 1=1
+		 <if test="homeTeamId !=null and homeTeamId != ''">
+		 and home_team_id = #{homeTeamId}
+		</if>
+		<if test="visitingTeamId !=null and visitingTeamId != ''">
+		 and visiting_team_id=#{visitingTeamId}
+		</if>
+		order by match_time desc limit ${num}
+	</select>
 </mapper>

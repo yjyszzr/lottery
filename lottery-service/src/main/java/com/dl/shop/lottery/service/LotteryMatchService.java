@@ -55,6 +55,9 @@ import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchInfoDTO;
+import com.dl.lottery.dto.MatchTeamInfoDTO;
+import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.QueryMatchParam;
@@ -795,7 +798,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(danIndexList.size() > 0) {
 					String danIndexStr = danIndexList.stream().collect(Collectors.joining(","));
 					betIndexList = betIndexList.stream().filter(item->{
-						return item.contains(danIndexStr);
+						for(String danIndex: danIndexList) {
+							if(!item.contains(danIndex)) {
+								return false;
+							}
+						}
+						return true;
 					}).collect(Collectors.toList());
 				}
 				indexMap.put(betType, betIndexList);
@@ -1141,4 +1149,162 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	}
     	return cathecticData;
     }
+
+    /**
+     * 获取球队分析信息
+     * @param changciId
+     */
+	public MatchTeamInfosDTO matchTeamInfos(Integer matchId) {
+		LotteryMatch lotteryMatch = lotteryMatchMapper.getByMatchId(matchId);
+		if(null == lotteryMatch) {
+			return null;
+		}
+		MatchTeamInfoDTO hvMatchTeamInfo = this.hvMatchTeamInfo(lotteryMatch);
+		MatchTeamInfoDTO hMatchTeamInfo = this.hMatchTeamInfo(lotteryMatch);
+		MatchTeamInfoDTO vMatchTeamInfo = this.vMatchTeamInfo(lotteryMatch);
+		MatchTeamInfosDTO dto = new MatchTeamInfosDTO();
+		dto.setHvMatchTeamInfo(hvMatchTeamInfo);
+		dto.setHMatchTeamInfo(hMatchTeamInfo);
+		dto.setVMatchTeamInfo(vMatchTeamInfo);
+		return dto;
+	}
+
+	private MatchTeamInfoDTO vMatchTeamInfo(LotteryMatch lotteryMatch) {
+		Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
+		String visitingTeamAbbr = lotteryMatch.getVisitingTeamAbbr();
+		MatchTeamInfoDTO vMatchTeamInfo = new MatchTeamInfoDTO();
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamId(null, visitingTeamId, 15);
+		if(null != lotteryMatchs) {
+			int win =0, draw = 0, lose = 0;
+			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
+			for(LotteryMatch match: lotteryMatchs) {
+				MatchInfoDTO matchInfo = new MatchInfoDTO();
+				matchInfo.setHomeTeamAbbr(match.getHomeTeamAbbr());
+				matchInfo.setLeagueAddr(match.getLeagueAddr());
+				matchInfo.setVisitingTeamAbbr(match.getVisitingTeamAbbr());
+				String whole = match.getWhole();
+				matchInfo.setWhole(whole);
+				String matchDay =LocalDateTime.ofInstant(match.getMatchTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+				matchInfo.setMatchDay(matchDay);
+				if(StringUtils.isNotBlank(whole)) {
+					boolean isHome = true;
+					if(!match.getHomeTeamId().equals(visitingTeamId)) {
+						isHome = false;
+					}
+					String[] split = whole.split(":");
+					Integer h = Integer.valueOf(isHome?split[0]:split[1]);
+					Integer a = Integer.valueOf(isHome?split[1]:split[0]);
+					if(h > a) {
+						matchInfo.setMatchRs("胜");
+						win++;
+					}else if(h < a) {
+						matchInfo.setMatchRs("负");
+						lose++;
+					}else {
+						matchInfo.setMatchRs("平");
+						draw++;
+					}
+				}
+				matchInfos.add(matchInfo);
+			}
+			vMatchTeamInfo.setDraw(draw);
+			vMatchTeamInfo.setLose(lose);
+			vMatchTeamInfo.setMatchInfos(matchInfos);
+			vMatchTeamInfo.setTeamAbbr(visitingTeamAbbr);
+			vMatchTeamInfo.setWin(win);
+			vMatchTeamInfo.setTotal(matchInfos.size());
+		}
+		return vMatchTeamInfo;
+	}
+	private MatchTeamInfoDTO hMatchTeamInfo(LotteryMatch lotteryMatch) {
+		Integer homeTeamId = lotteryMatch.getHomeTeamId();
+		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();
+		MatchTeamInfoDTO hMatchTeamInfo = new MatchTeamInfoDTO();
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamId(homeTeamId, null, 15);
+		if(null != lotteryMatchs) {
+			int win =0, draw = 0, lose = 0;
+			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
+			for(LotteryMatch match: lotteryMatchs) {
+				MatchInfoDTO matchInfo = new MatchInfoDTO();
+				matchInfo.setHomeTeamAbbr(match.getHomeTeamAbbr());
+				matchInfo.setLeagueAddr(match.getLeagueAddr());
+				matchInfo.setVisitingTeamAbbr(match.getVisitingTeamAbbr());
+				String whole = match.getWhole();
+				matchInfo.setWhole(whole);
+				String matchDay =LocalDateTime.ofInstant(match.getMatchTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+				matchInfo.setMatchDay(matchDay);
+				if(StringUtils.isNotBlank(whole)) {
+					boolean isHome = true;
+					if(!match.getHomeTeamId().equals(homeTeamId)) {
+						isHome = false;
+					}
+					String[] split = whole.split(":");
+					Integer h = Integer.valueOf(isHome?split[0]:split[1]);
+					Integer a = Integer.valueOf(isHome?split[1]:split[0]);
+					if(h > a) {
+						matchInfo.setMatchRs("胜");
+						win++;
+					}else if(h < a) {
+						matchInfo.setMatchRs("负");
+						lose++;
+					}else {
+						matchInfo.setMatchRs("平");
+						draw++;
+					}
+				}
+				matchInfos.add(matchInfo);
+			}
+			hMatchTeamInfo.setDraw(draw);
+			hMatchTeamInfo.setLose(lose);
+			hMatchTeamInfo.setMatchInfos(matchInfos);
+			hMatchTeamInfo.setTeamAbbr(homeTeamAbbr);
+			hMatchTeamInfo.setWin(win);
+			hMatchTeamInfo.setTotal(matchInfos.size());
+		}
+		return hMatchTeamInfo;
+	}
+	private MatchTeamInfoDTO hvMatchTeamInfo(LotteryMatch lotteryMatch) {
+		Integer homeTeamId = lotteryMatch.getHomeTeamId();
+		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();
+		Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
+		MatchTeamInfoDTO hvMatchTeamInfo = new MatchTeamInfoDTO();
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamId(homeTeamId, visitingTeamId, 10);
+		if(null != lotteryMatchs) {
+			int win =0, draw = 0, lose = 0;
+			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
+			for(LotteryMatch match: lotteryMatchs) {
+				MatchInfoDTO matchInfo = new MatchInfoDTO();
+				matchInfo.setHomeTeamAbbr(match.getHomeTeamAbbr());
+				matchInfo.setLeagueAddr(match.getLeagueAddr());
+				matchInfo.setVisitingTeamAbbr(match.getVisitingTeamAbbr());
+				String whole = match.getWhole();
+				matchInfo.setWhole(whole);
+				String matchDay =LocalDateTime.ofInstant(match.getMatchTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+				matchInfo.setMatchDay(matchDay);
+				if(StringUtils.isNotBlank(whole)) {
+					String[] split = whole.split(":");
+					Integer h = Integer.valueOf(split[0]);
+					Integer a = Integer.valueOf(split[1]);
+					if(h > a) {
+						matchInfo.setMatchRs("胜");
+						win++;
+					}else if(h < a) {
+						matchInfo.setMatchRs("负");
+						lose++;
+					}else {
+						matchInfo.setMatchRs("平");
+						draw++;
+					}
+				}
+				matchInfos.add(matchInfo);
+			}
+			hvMatchTeamInfo.setDraw(draw);
+			hvMatchTeamInfo.setLose(lose);
+			hvMatchTeamInfo.setMatchInfos(matchInfos);
+			hvMatchTeamInfo.setTeamAbbr(homeTeamAbbr);
+			hvMatchTeamInfo.setWin(win);
+			hvMatchTeamInfo.setTotal(matchInfos.size());
+		}
+		return hvMatchTeamInfo;
+	}
 }
