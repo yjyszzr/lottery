@@ -1050,9 +1050,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<String> issueList = issueDTOList.stream().map(s->s.getIssue()).collect(Collectors.toList());
 			issueArr = (String[])issueList.toArray();
 		}
-
 				
-		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),issueArr,queryMatchParam.getLeagueIds());
+		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
+				issueArr,queryMatchParam.getLeagueIds(),queryMatchParam.getMatchFinish());
 		
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
@@ -1066,6 +1066,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setMatchFinish(ProjectConstant.ZERO_NO);
 			}			
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		});
 		

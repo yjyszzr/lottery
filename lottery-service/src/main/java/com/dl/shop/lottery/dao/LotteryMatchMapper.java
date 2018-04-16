@@ -44,6 +44,7 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @param dateStr
 	 * @return
 	 */
-	public List<LotteryMatch> queryMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("issueArr") String[] issueArr,@Param("leagueIdArr") String[] leagueIdArr);
+	public List<LotteryMatch> queryMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("issueArr") String[] issueArr,
+			@Param("leagueIdArr") String[] leagueIdArr,@Param("matchFinish") String matchFinish);
 	
 }
