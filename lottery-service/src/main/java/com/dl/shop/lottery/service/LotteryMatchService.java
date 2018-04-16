@@ -1032,9 +1032,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	public BaseResult<List<LotteryMatchDTO>> queryMatchResult(QueryMatchParam queryMatchParam){
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && queryMatchParam.getLeagueIds().length > 0) {
+		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && !StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
 			return ResultGenerator.genFailResult("只看已购对阵和赛事筛选为互斥关系,只能选择一种",lotteryMatchDTOList);
 		} 
+		
+		String [] leagueIdArr = new String [] {};
+		if(!StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
+			leagueIdArr = queryMatchParam.getLeagueIds().split(",");
+		}
 		
 		String[] issueArr = new String [] {};
 		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
@@ -1052,11 +1057,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 				
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
-				issueArr,queryMatchParam.getLeagueIds(),queryMatchParam.getMatchFinish());
+				issueArr,leagueIdArr,queryMatchParam.getMatchFinish());
 		
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 		}
+		
 		lotteryMatchList.forEach(s->{
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
