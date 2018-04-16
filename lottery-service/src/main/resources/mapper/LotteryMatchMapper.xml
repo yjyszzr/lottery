@@ -128,7 +128,7 @@
 	
 	
 	<select id="getByMatchId" resultMap="BaseResultMap">
-		select * from dl_match where changci_id=#{matchId}
+		select * from dl_match where changci_id=#{changciId}
 	</select>
 	<select id="getByTeamId" resultMap="BaseResultMap">
 		select * 

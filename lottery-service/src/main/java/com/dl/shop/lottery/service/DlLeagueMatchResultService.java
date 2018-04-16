@@ -38,10 +38,10 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
      * 从竞彩网拉取亚盘数据到数据库
      * @param matchId
      */
-    public void refreshMatchResultFromZC(Integer matchId) {
-    	int num = dlLeagueMatchResultMapper.getCountByMatchId(matchId);
+    public void refreshMatchResultFromZC(Integer changciId) {
+    	int num = dlLeagueMatchResultMapper.getCountByChangciId(changciId);
     	if(num == 0) {
-    		List<DlLeagueMatchResult> rsts = this.getMatchResultFromZC(matchId);
+    		List<DlLeagueMatchResult> rsts = this.getMatchResultFromZC(changciId);
     		if(null != rsts && rsts.size() > 0) {
     			super.save(rsts);
     		}
@@ -54,8 +54,8 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
      * @param matchId
      * @return
      */
-	private List<DlLeagueMatchResult> getMatchResultFromZC(Integer matchId) {
-		String reqUrl = MATCH_RESULT_URL + matchId;
+	private List<DlLeagueMatchResult> getMatchResultFromZC(Integer changciId) {
+		String reqUrl = MATCH_RESULT_URL + changciId;
     	String json = NetWorkUtil.doGet(reqUrl, new HashMap<String, Object>(), "utf-8");
 	    if(StringUtils.isBlank(json)) {
 	    	logger.info("");
@@ -76,13 +76,12 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	    	logger.info("");
 	    	return null;
 	    }
-	    LotteryMatch byMatchId = dlMatchMapper.getByMatchId(matchId);
-	    if(null == byMatchId) {
+	    LotteryMatch lotteryMatch = dlMatchMapper.getByChangciId(changciId);
+	    if(null == lotteryMatch) {
 	    	logger.info("");
 	    	return null;
 	    }
-	    String playCode = byMatchId.getMatchSn();
-	    Integer changciId = byMatchId.getChangciId();
+	    String playCode = lotteryMatch.getMatchSn();
 	    List<DlLeagueMatchResult> list = new ArrayList<DlLeagueMatchResult>(5);
 	    DlLeagueMatchResult crsMatchResult = this.crsMatchResult(changciId, poolRsObj);
 	    if(null != crsMatchResult) {

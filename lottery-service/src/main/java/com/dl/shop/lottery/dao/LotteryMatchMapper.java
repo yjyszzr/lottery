@@ -47,11 +47,11 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	public List<LotteryMatch> queryMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("issueArr") String[] issueArr,
 			@Param("leagueIdArr") String[] leagueIdArr,@Param("matchFinish") String matchFinish);
 	/**
-	 * 通过matchId获取对象
+	 * 通过changciId获取对象
 	 * @param matchId
 	 * @return
 	 */
-	public LotteryMatch getByMatchId(@Param("matchId")Integer matchId);
+	public LotteryMatch getByChangciId(@Param("changciId")Integer changciId);
 
 	/**
 	 * 获取球队相关的比赛
@@ -60,6 +60,8 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public List<LotteryMatch> getByTeamId(@Param("homeTeamId")Integer homeTeamId, @Param("visitingTeamId")Integer visitingTeamId, @Param("num")int num);
+
+	public LotteryMatch getByMatchId(Integer matchId);
 
 	
 

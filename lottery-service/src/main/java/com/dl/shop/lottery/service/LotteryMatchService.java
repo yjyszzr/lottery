@@ -1167,7 +1167,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      * @param changciId
      */
 	public MatchTeamInfosDTO matchTeamInfos(Integer matchId) {
-		LotteryMatch lotteryMatch = lotteryMatchMapper.getByMatchId(matchId);
+		LotteryMatch lotteryMatch = super.findById(matchId);
 		if(null == lotteryMatch) {
 			return null;
 		}

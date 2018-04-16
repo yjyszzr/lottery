@@ -15,9 +15,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.lottery.dto.LeagueMatchAsiaDTO;
 import com.dl.shop.lottery.core.MatchChangeEnum;
 import com.dl.shop.lottery.dao.DlLeagueMatchAsiaMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchAsia;
+
+import tk.mybatis.mapper.entity.Condition;
 
 @Service
 @Transactional
@@ -30,6 +33,40 @@ public class DlLeagueMatchAsiaService extends AbstractService<DlLeagueMatchAsia>
     @Resource
     private DlLeagueMatchAsiaMapper dlLeagueMatchAsiaMapper;
 
+    public List<LeagueMatchAsiaDTO> leagueMatchAsias(Integer changciId) {
+    	Condition condition = new Condition(DlLeagueMatchAsia.class);
+        condition.and().andEqualTo("changciId", changciId);
+        List<DlLeagueMatchAsia> list = super.findByCondition(condition);
+        if(list.size() == 0) {
+        	 this.refreshMatchAsiaInfoFromZC(changciId);
+        	 list = super.findByCondition(condition);
+        }
+        List<LeagueMatchAsiaDTO> dtos = new ArrayList<LeagueMatchAsiaDTO>(0);
+        if(null != list) {
+        	dtos = new ArrayList<LeagueMatchAsiaDTO>(list.size());
+        	for(DlLeagueMatchAsia asia: list) {
+        		LeagueMatchAsiaDTO dto = new LeagueMatchAsiaDTO();
+        		dto.setAsiaId(asia.getAsiaId());
+        		dto.setComName(asia.getComName());
+        		dto.setIndexA(asia.getIndexA());
+        		dto.setIndexH(asia.getIndexH());
+        		dto.setInitOdds1(asia.getInitOdds1());
+        		dto.setInitOdds2(asia.getInitOdds2());
+        		dto.setInitRule(asia.getInitRule());
+        		dto.setChangciId(asia.getChangciId());
+        		dto.setOdds1Change(asia.getOdds1Change());
+        		dto.setOdds2Change(asia.getOdds2Change());
+        		dto.setRatioA(asia.getRatioA());
+        		dto.setRatioH(asia.getRatioH());
+        		dto.setRealOdds1(asia.getRealOdds1());
+        		dto.setRealOdds2(asia.getRealOdds2());
+        		dto.setRealRule(asia.getRealRule());
+        		dto.setTimeMinus(asia.getTimeMinus());
+        		dtos.add(dto);
+        	}
+        }
+        return dtos;
+    }
     /**
      * 从竞彩网拉取亚盘数据到数据库
      * @param matchId

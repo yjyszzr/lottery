@@ -24,7 +24,7 @@
     <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
   </resultMap>
   
-  <select id="getCountByMatchId" resultType="int">
+  <select id="getCountByChangciId" resultType="int">
   	select count(id) from dl_league_match_asia where changci_id = #{changciId}
   </select>
   

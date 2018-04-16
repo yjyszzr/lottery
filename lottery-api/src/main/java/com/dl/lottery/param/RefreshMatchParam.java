@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 public class RefreshMatchParam implements Serializable{
 
-	@ApiModelProperty(value="比赛id")
-	private Integer matchId;
+	@ApiModelProperty(value="比赛场次id")
+	private Integer changciId;
 }

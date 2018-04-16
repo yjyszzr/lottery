@@ -19,6 +19,7 @@ import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Condition;
 
 /**
@@ -30,9 +31,10 @@ public class DlLeagueMatchAsiaController {
     @Resource
     private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
 
+    @ApiOperation(value = "刷新拉取赛事亚盘信息", notes = "刷新拉取赛事亚盘信息")
     @PostMapping("/refresh")
     public BaseResult add(@RequestBody RefreshMatchParam param) {
-        dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(param.getMatchId());
+        dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(param.getChangciId());
         return ResultGenerator.genSuccessResult();
     }
 
@@ -54,6 +56,7 @@ public class DlLeagueMatchAsiaController {
         return ResultGenerator.genSuccessResult(null,dlLeagueMatchAsia);
     }*/
 
+    @ApiOperation(value = "赛事亚盘信息", notes = "亚盘信息")
     @PostMapping("/list")
     public BaseResult<PageInfo<LeagueMatchAsiaDTO>> list(@RequestBody ListMatchAsiaInfoParam param) {
     	Integer page = param.getPage();
@@ -61,34 +64,8 @@ public class DlLeagueMatchAsiaController {
     	Integer size = param.getSize();
     	size = null == size?10:size;
         PageHelper.startPage(page, size);
-        Condition condition = new Condition(DlLeagueMatchAsia.class);
-        condition.and().andEqualTo("matchId", param.getMatchId());
-        List<DlLeagueMatchAsia> list = dlLeagueMatchAsiaService.findByCondition(condition);
-        List<LeagueMatchAsiaDTO> dtos = new ArrayList<LeagueMatchAsiaDTO>(0);
-        if(null != list) {
-        	dtos = new ArrayList<LeagueMatchAsiaDTO>(list.size());
-        	for(DlLeagueMatchAsia asia: list) {
-        		LeagueMatchAsiaDTO dto = new LeagueMatchAsiaDTO();
-        		dto.setAsiaId(asia.getAsiaId());
-        		dto.setComName(asia.getComName());
-        		dto.setIndexA(asia.getIndexA());
-        		dto.setIndexH(asia.getIndexH());
-        		dto.setInitOdds1(asia.getInitOdds1());
-        		dto.setInitOdds2(asia.getInitOdds2());
-        		dto.setInitRule(asia.getInitRule());
-        		dto.setChangciId(asia.getChangciId());
-        		dto.setOdds1Change(asia.getOdds1Change());
-        		dto.setOdds2Change(asia.getOdds2Change());
-        		dto.setRatioA(asia.getRatioA());
-        		dto.setRatioH(asia.getRatioH());
-        		dto.setRealOdds1(asia.getRealOdds1());
-        		dto.setRealOdds2(asia.getRealOdds2());
-        		dto.setRealRule(asia.getRealRule());
-        		dto.setTimeMinus(asia.getTimeMinus());
-        		dtos.add(dto);
-        	}
-        }
-        PageInfo<LeagueMatchAsiaDTO> pageInfo = new PageInfo<LeagueMatchAsiaDTO>(dtos);
+        List<LeagueMatchAsiaDTO> leagueMatchAsias = dlLeagueMatchAsiaService.leagueMatchAsias(param.getChangciId());
+        PageInfo<LeagueMatchAsiaDTO> pageInfo = new PageInfo<LeagueMatchAsiaDTO>(leagueMatchAsias);
         return ResultGenerator.genSuccessResult("success",pageInfo);
     }
 }

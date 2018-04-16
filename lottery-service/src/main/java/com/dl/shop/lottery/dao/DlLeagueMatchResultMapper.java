@@ -7,5 +7,5 @@ import com.dl.shop.lottery.model.DlLeagueMatchResult;
 
 public interface DlLeagueMatchResultMapper extends Mapper<DlLeagueMatchResult> {
 
-	int getCountByMatchId(@Param("changciId")Integer matchId);
+	int getCountByChangciId(@Param("changciId")Integer changciId);
 }
