@@ -662,7 +662,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(CollectionUtils.isNotEmpty(lotteryMatchs)) {
 			for(LotteryMatch lotteryMatch : lotteryMatchs) {
 				List<LotteryMatchPlay> lotteryMatchPlays = new LinkedList<LotteryMatchPlay>();
-				lotteryMatchMapper.insertMatch(lotteryMatch);
+				boolean isInsert = this.saveLotteryMatch(lotteryMatch);
 				if(CollectionUtils.isNotEmpty(matchPlays)) {
 					for(Map<String, Object> map : matchPlays) {
 						for(Map.Entry<String, Object> entry : map.entrySet()) {
@@ -676,10 +676,35 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						}
 					}
 					if(CollectionUtils.isNotEmpty(lotteryMatchPlays)) {
-						lotteryMatchPlayMapper.insertList(lotteryMatchPlays);
+						this.saveLotteryMatchPlays(lotteryMatchPlays, isInsert);
 					}
 				}
 			}
+		}
+	}
+
+	private void saveLotteryMatchPlays(List<LotteryMatchPlay> lotteryMatchPlays, boolean isInsert) {
+		if(isInsert) {
+			lotteryMatchPlayMapper.insertList(lotteryMatchPlays);
+		}else {
+			for(LotteryMatchPlay play: lotteryMatchPlays) {
+				lotteryMatchPlayMapper.updatePlayContent(play);
+			}
+		}
+	}
+
+	/**
+	 * 保存赛事对象
+	 * @param lotteryMatch
+	 */
+	private boolean saveLotteryMatch(LotteryMatch lotteryMatch) {
+		LotteryMatch byChangciId = lotteryMatchMapper.getByChangciId(lotteryMatch.getChangciId());
+		if(null == byChangciId) {
+			lotteryMatchMapper.insertMatch(lotteryMatch);
+			return true;
+		}else {
+			lotteryMatch.setMatchId(byChangciId.getMatchId());
+			return false;
 		}
 	}
 	

@@ -61,7 +61,7 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public List<LotteryMatch> getByTeamId(@Param("homeTeamId")Integer homeTeamId, @Param("visitingTeamId")Integer visitingTeamId, @Param("num")int num);
 
-	public LotteryMatch getByMatchId(Integer matchId);
+	public LotteryMatch getByMatchId(@Param("matchId")Integer matchId);
 
 	
 

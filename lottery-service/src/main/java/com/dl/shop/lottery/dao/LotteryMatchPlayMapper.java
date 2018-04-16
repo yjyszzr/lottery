@@ -10,4 +10,6 @@ import com.dl.shop.lottery.model.LotteryMatchPlay;
 public interface LotteryMatchPlayMapper extends Mapper<LotteryMatchPlay> {
 
 	List<LotteryMatchPlay> matchPlayListByMatchIds(@Param("matchIds")Integer[] matchIds, @Param("playType")String playType);
+
+	void updatePlayContent(LotteryMatchPlay play);
 }

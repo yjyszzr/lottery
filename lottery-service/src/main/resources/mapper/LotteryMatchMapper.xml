@@ -127,8 +127,11 @@
 	</update>
 	
 	
-	<select id="getByMatchId" resultMap="BaseResultMap">
+	<select id="getByChangciId" resultMap="BaseResultMap">
 		select * from dl_match where changci_id=#{changciId}
+	</select>
+	<select id="getByMatchId" resultMap="BaseResultMap">
+		select * from dl_match where match_id=#{matchId}
 	</select>
 	<select id="getByTeamId" resultMap="BaseResultMap">
 		select * 
