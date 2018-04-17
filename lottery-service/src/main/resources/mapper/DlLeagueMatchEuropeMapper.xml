@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueMatchEuropeMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueMatchEurope">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="europe_id" jdbcType="INTEGER" property="europeId" />
+    <result column="com_name" jdbcType="VARCHAR" property="comName" />
+    <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="init_win" jdbcType="DOUBLE" property="initWin" />
+    <result column="init_draw" jdbcType="DOUBLE" property="initDraw" />
+    <result column="init_lose" jdbcType="DOUBLE" property="initLose" />
+    <result column="real_win" jdbcType="DOUBLE" property="realWin" />
+    <result column="real_draw" jdbcType="DOUBLE" property="realDraw" />
+    <result column="real_lose" jdbcType="DOUBLE" property="realLose" />
+    <result column="win_change" jdbcType="BIT" property="winChange" />
+    <result column="draw_change" jdbcType="BIT" property="drawChange" />
+    <result column="lose_change" jdbcType="BIT" property="loseChange" />
+    <result column="time_minus" jdbcType="INTEGER" property="timeMinus" />
+    <result column="win_ratio" jdbcType="VARCHAR" property="winRatio" />
+    <result column="draw_ratio" jdbcType="VARCHAR" property="drawRatio" />
+    <result column="lose_ratio" jdbcType="VARCHAR" property="loseRatio" />
+    <result column="per" jdbcType="VARCHAR" property="per" />
+    <result column="win_index" jdbcType="DOUBLE" property="winIndex" />
+    <result column="draw_index" jdbcType="DOUBLE" property="drawIndex" />
+    <result column="lose_index" jdbcType="DOUBLE" property="loseIndex" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+  </resultMap>
+  
+  <select id="getCountByChangciId" resultType="int">
+  	select count(id) from dl_league_match_europe where changci_id = #{changciId}
+  </select>
+  
+  <update id="updateMatchAsia">
+  	update dl_league_match_europe 
+  	set order_num= #{orderNum},
+  	real_win = #{realWin},
+  	real_draw = #{realDraw},
+  	real_lose = #{realLose},
+  	win_change = #{winChange},
+  	draw_change = #{drawChange},
+  	lose_change = #{loseChange},
+  	time_minus = #{timeMinus},
+  	win_ratio = #{winRatio},
+  	draw_ratio =  #{drawRatio},
+  	lose_ratio =  #{loseRatio},
+  	per =  #{per},
+  	win_index =  #{winIndex},
+  	draw_index =  #{drawIndex},
+  	lose_index =  #{loseIndex},
+  	update_time = #{updateTime}
+  	where changci_id = #{changciId} and europe_id = #{europeId}
+  </update>
+</mapper>

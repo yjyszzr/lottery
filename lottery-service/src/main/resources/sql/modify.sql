@@ -333,12 +333,38 @@ DROP TABLE IF EXISTS `dl_league_team`;
 CREATE TABLE `dl_league_team` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `team_id` int(11) NOT NULL COMMENT '球队编号',
+  `sporttery_teamid` int(11) NOT NULL COMMENT '竞彩网球队编号,与dl_match表里的teamId对应',
   `team_name` varchar(64) NOT NULL COMMENT '球队名称',
   `team_addr` varchar(64) NOT NULL COMMENT '球队简称',
   `team_pic` varchar(256) NOT NULL COMMENT '球队图标',
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='球队信息';
+
+-- 球队 --
+DROP TABLE IF EXISTS `dl_league_team_score`;
+CREATE TABLE `dl_league_team_score` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `team_id` int(11) NOT NULL COMMENT '球队编号',
+  `team_name` varchar(64) NOT NULL COMMENT '球队名称',
+  `match_num` int(11) NOT NULL COMMENT '比赛场次数',
+  `match_h` int(11) NOT NULL COMMENT '胜场次数',
+  `match_d` int(11) NOT NULL COMMENT '平场次数',
+  `match_l` int(11) NOT NULL COMMENT '负场次数',
+  `ball_in` int(11) NOT NULL COMMENT '进球数',
+  `ball_lose` int(11) NOT NULL COMMENT '失球数',
+  `ball_clean` int(11) NOT NULL COMMENT '净球数',
+  `pre_h` double(6,2) NOT NULL COMMENT '均得',
+  `pre_l` double(6,2) NOT NULL COMMENT '均失',
+  `ratio_h` varchar(8) NOT NULL COMMENT '胜率',
+  `ratio_d` varchar(8) NOT NULL COMMENT '平率',
+  `ratio_l` varchar(8) NOT NULL COMMENT '负率',
+  `score` int(11) NOT NULL COMMENT '积分',
+  `flag` tinyint(1) default 0 COMMENT '0总1主2客',
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩,1 500万',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='球队信息';
+
 
 -- 球队联赛关系 --
 DROP TABLE IF EXISTS `dl_league_team_ref`;
@@ -439,6 +465,38 @@ CREATE TABLE `dl_league_match_asia` (
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='赛事结果';
+
+-- 欧赔 百家奖金数据 ---
+DROP TABLE IF EXISTS `dl_league_match_europe`;
+CREATE TABLE `dl_league_match_europe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `changci_id` int(11) NOT NULL COMMENT '赛事场次id',
+  `europe_id` int(11) NOT NULL COMMENT '欧赔对应竞彩网id',
+  `com_name` varchar(16) NOT NULL COMMENT '公司名称',
+  `order_num` int(8) NOT NULL COMMENT '排名',
+  `init_win` double(6,2) NOT NULL COMMENT '初始奖金胜',
+  `init_draw` double(6,2) NOT NULL COMMENT '初始奖金平',
+  `init_lose` double(6,2) NOT NULL COMMENT '初始奖金负',
+  `real_win` double(6,2) NOT NULL COMMENT '即时奖金胜',
+  `real_draw` double(6,2) NOT NULL COMMENT '即时奖金平',
+  `real_lose` double(6,2) NOT NULL COMMENT '即时奖金负',
+  `win_change` tinyint(1) default 0 COMMENT '胜变化趋势:0equal,1up,2down',
+  `draw_change` tinyint(1) default 0 COMMENT '平变化趋势:0equal,1up,2down',
+  `lose_change` tinyint(1) default 0 COMMENT '负变化趋势:0equal,1up,2down',
+  `time_minus` int(11) NOT NULL COMMENT '最新更新时间，以分为单位，如：大于一小时展示用',
+  `win_ratio` varchar(16) NOT NULL COMMENT '最新概率胜',
+  `draw_ratio` varchar(16) NOT NULL COMMENT '最新概率平',
+  `lose_ratio` varchar(16) NOT NULL COMMENT '凯利指数负',
+  `per` varchar(16) NOT NULL COMMENT '',
+  `win_index` double(6,2) NOT NULL COMMENT '凯利指数胜',
+  `draw_index` double(6,2) NOT NULL COMMENT '凯利指数平',
+  `lose_index` double(6,2) NOT NULL COMMENT '凯利指数负',
+  `create_time` int(11) NOT NULL COMMENT '创建时间',
+  `update_time` int(11) NOT NULL COMMENT '更新时间',
+  
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='欧赔 百家奖金数据';
 
 
 

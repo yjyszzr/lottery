@@ -627,6 +627,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatch.setCreateTime(DateUtil.getCurrentTimeLong());
 				lotteryMatch.setIsShow(ProjectConstant.IS_SHOW);
 				lotteryMatch.setIsDel(ProjectConstant.IS_NOT_DEL);
+				lotteryMatch.setIsHot(jo.getInteger("hot"));
 				lotteryMatchs.add(lotteryMatch);
 			}   
 		}
@@ -1215,11 +1216,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      * 获取球队分析信息
      * @param changciId
      */
-	public MatchTeamInfosDTO matchTeamInfos(Integer matchId) {
-		LotteryMatch lotteryMatch = super.findById(matchId);
-		if(null == lotteryMatch) {
-			return null;
-		}
+	public MatchTeamInfosDTO matchTeamInfos(LotteryMatch lotteryMatch) {
 		MatchTeamInfoDTO hvMatchTeamInfo = this.hvMatchTeamInfo(lotteryMatch);
 		MatchTeamInfoDTO hMatchTeamInfo = this.hMatchTeamInfo(lotteryMatch);
 		MatchTeamInfoDTO vMatchTeamInfo = this.vMatchTeamInfo(lotteryMatch);

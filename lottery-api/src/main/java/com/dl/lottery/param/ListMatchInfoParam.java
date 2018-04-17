@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class ListMatchAsiaInfoParam implements Serializable{
+public class ListMatchInfoParam implements Serializable{
 
 	@ApiModelProperty(value="比赛场次id")
 	private Integer changciId;

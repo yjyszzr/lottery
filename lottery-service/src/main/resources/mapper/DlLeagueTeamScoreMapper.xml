@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueTeamScoreMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueTeamScore">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="team_name" jdbcType="VARCHAR" property="teamName" />
+    <result column="match_num" jdbcType="INTEGER" property="matchNum" />
+    <result column="match_h" jdbcType="INTEGER" property="matchH" />
+    <result column="match_d" jdbcType="INTEGER" property="matchD" />
+    <result column="match_l" jdbcType="INTEGER" property="matchL" />
+    <result column="ball_in" jdbcType="INTEGER" property="ballIn" />
+    <result column="ball_lose" jdbcType="INTEGER" property="ballLose" />
+    <result column="ball_clean" jdbcType="INTEGER" property="ballClean" />
+    <result column="pre_h" jdbcType="DOUBLE" property="preH" />
+    <result column="pre_l" jdbcType="DOUBLE" property="preL" />
+    <result column="ratio_h" jdbcType="VARCHAR" property="ratioH" />
+    <result column="ratio_d" jdbcType="VARCHAR" property="ratioD" />
+    <result column="ratio_l" jdbcType="VARCHAR" property="ratioL" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="flag" jdbcType="BIT" property="flag" />
+    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+  </resultMap>
+  
+  <select id="getTeamScoresByFlag" resultMap="BaseResultMap">
+  	select * form dl_league_team_score
+  	where team_id=#{teamId} and flag=#{flag}
+  </select>
+</mapper>

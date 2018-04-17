@@ -3,7 +3,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +25,13 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BetPayInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetInfoDTO;
+import com.dl.lottery.dto.DLLeagueTeamScoreDTO;
+import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.lottery.dto.LeagueMatchAsiaDTO;
+import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
@@ -48,7 +51,11 @@ import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.param.OrderSnParam;
 import com.dl.shop.lottery.core.ProjectConstant;
+import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
+import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
+import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
+import com.dl.shop.lottery.service.DlLeagueTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 
@@ -73,6 +80,12 @@ public class LotteryMatchController {
     private DlLeagueInfoService dlLeagueInfoService;
     @Resource
     private IOrderService orderService;
+    @Resource
+    private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
+    @Resource
+    private DlLeagueTeamScoreService dlLeagueTeamScoreService;
+    @Resource
+    private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -395,7 +408,32 @@ public class LotteryMatchController {
 	@ApiOperation(value = "球队分析信息", notes = "球队分析信息")
     @PostMapping("/matchTeamInfos")
     public BaseResult<MatchTeamInfosDTO> matchTeamInfos(@Valid @RequestBody MatchTeamInfosParam param) {
-		MatchTeamInfosDTO matchTeamInfos = lotteryMatchService.matchTeamInfos(param.getMatchId());
-    	return ResultGenerator.genSuccessResult("success", matchTeamInfos);
+		LotteryMatch lotteryMatch = lotteryMatchService.findById(param.getMatchId());
+		if(null == lotteryMatch) {
+			return ResultGenerator.genFailResult("数据读取失败！", null);
+		}
+		MatchTeamInfosDTO matchTeamInfo = lotteryMatchService.matchTeamInfos(lotteryMatch);
+		List<LeagueMatchAsiaDTO> leagueMatchAsias = dlLeagueMatchAsiaService.leagueMatchAsias(lotteryMatch.getChangciId());
+		matchTeamInfo.setLeagueMatchAsias(leagueMatchAsias);
+		List<LeagueMatchEuropeDTO> leagueMatchEuropes = dlLeagueMatchEuropeService.leagueMatchEuropes(lotteryMatch.getChangciId());
+		matchTeamInfo.setLeagueMatchEuropes(leagueMatchEuropes);
+		DLLeagueTeamScoreInfoDTO homeTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getHomeTeamId(), lotteryMatch.getHomeTeamAbbr());
+		matchTeamInfo.setHomeTeamScoreInfo(homeTeamScoreInfo);
+		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
+		matchTeamInfo.setVisitingTeamScoreInfo(visitingTeamScoreInfo);
+		return ResultGenerator.genSuccessResult("success", matchTeamInfo);
     }
+
+	private DLLeagueTeamScoreInfoDTO teamScoreInfo(Integer teamId, String teamAbbr) {
+		DLLeagueTeamScoreDTO tteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 0);
+		DLLeagueTeamScoreDTO hteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 1);
+		DLLeagueTeamScoreDTO lteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 2);
+		DLLeagueTeamScoreInfoDTO teamScoreInfo = new DLLeagueTeamScoreInfoDTO();
+		teamScoreInfo.setTeamId(teamId);
+		teamScoreInfo.setTeamName(teamAbbr);
+		teamScoreInfo.setHteamScore(hteamScore);
+		teamScoreInfo.setTteamScore(tteamScore);
+		teamScoreInfo.setHteamScore(hteamScore);
+		return teamScoreInfo;
+	}
 }

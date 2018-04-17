@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.LeagueMatchAsiaDTO;
-import com.dl.lottery.param.ListMatchAsiaInfoParam;
+import com.dl.lottery.param.ListMatchInfoParam;
 import com.dl.lottery.param.RefreshMatchParam;
 import com.dl.shop.lottery.model.DlLeagueMatchAsia;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
@@ -58,7 +58,7 @@ public class DlLeagueMatchAsiaController {
 
     @ApiOperation(value = "赛事亚盘信息", notes = "亚盘信息")
     @PostMapping("/list")
-    public BaseResult<PageInfo<LeagueMatchAsiaDTO>> list(@RequestBody ListMatchAsiaInfoParam param) {
+    public BaseResult<PageInfo<LeagueMatchAsiaDTO>> list(@RequestBody ListMatchInfoParam param) {
     	Integer page = param.getPage();
     	page = null == page?1:page;
     	Integer size = param.getSize();
