@@ -1286,7 +1286,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return dto;
 	}
 
-	private MatchTeamInfoDTO vvMatchTeamInfo(LotteryMatch lotteryMatch) {
+	/**
+	 * 客场主客
+	 * @param lotteryMatch
+	 * @return
+	 */
+	private MatchTeamInfoDTO vMatchTeamInfo(LotteryMatch lotteryMatch) {
 		Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
 		String visitingTeamAbbr = lotteryMatch.getVisitingTeamAbbr();
 		MatchTeamInfoDTO vMatchTeamInfo = new MatchTeamInfoDTO();
@@ -1333,11 +1338,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return vMatchTeamInfo;
 	}
-	private MatchTeamInfoDTO vMatchTeamInfo(LotteryMatch lotteryMatch) {
+	/**
+	 * 客场客
+	 * @param lotteryMatch
+	 * @return
+	 */
+	private MatchTeamInfoDTO vvMatchTeamInfo(LotteryMatch lotteryMatch) {
 		Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
 		String visitingTeamAbbr = lotteryMatch.getVisitingTeamAbbr();
 		MatchTeamInfoDTO vMatchTeamInfo = new MatchTeamInfoDTO();
-		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForhv(visitingTeamId, 15);
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForvv(visitingTeamId, 15);
 		if(null != lotteryMatchs) {
 			int win =0, draw = 0, lose = 0;
 			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
@@ -1380,7 +1390,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return vMatchTeamInfo;
 	}
-	private MatchTeamInfoDTO hhMatchTeamInfo(LotteryMatch lotteryMatch) {
+	/**
+	 * 主场主客
+	 * @param lotteryMatch
+	 * @return
+	 */
+	private MatchTeamInfoDTO hMatchTeamInfo(LotteryMatch lotteryMatch) {
 		Integer homeTeamId = lotteryMatch.getHomeTeamId();
 		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();
 		MatchTeamInfoDTO hMatchTeamInfo = new MatchTeamInfoDTO();
@@ -1427,11 +1442,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return hMatchTeamInfo;
 	}
-	private MatchTeamInfoDTO hMatchTeamInfo(LotteryMatch lotteryMatch) {
+	/**
+	 * 主场主
+	 * @param lotteryMatch
+	 * @return
+	 */
+	private MatchTeamInfoDTO hhMatchTeamInfo(LotteryMatch lotteryMatch) {
 		Integer homeTeamId = lotteryMatch.getHomeTeamId();
 		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();
 		MatchTeamInfoDTO hMatchTeamInfo = new MatchTeamInfoDTO();
-		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForhv(homeTeamId, 15);
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForhh(homeTeamId, 15);
 		if(null != lotteryMatchs) {
 			int win =0, draw = 0, lose = 0;
 			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
