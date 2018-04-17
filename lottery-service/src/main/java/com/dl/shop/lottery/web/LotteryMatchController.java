@@ -111,8 +111,20 @@ public class LotteryMatchController {
 		if(StringUtils.isBlank(betType)) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
-		if((matchBetPlays.size() == 1 && !betType.equals("11")) || (matchBetPlays.size() > 1 && betType.contains("11"))) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		if(betType.contains("11")) {
+			boolean isAllSingle = true;
+			for(MatchBetPlayDTO betPlay : matchBetPlays){
+				List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+				for(MatchBetCellDTO betCell: matchBetCells){
+					if(0 == betCell.getSingle()) {
+						isAllSingle = false;
+						break;
+					}
+				}
+			}
+			if(!isAllSingle) {
+				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
+			}
 		}
 		List<Integer> betNums = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().collect(Collectors.toList());
 		int maxBetNum = betNums.get(betNums.size()-1);
