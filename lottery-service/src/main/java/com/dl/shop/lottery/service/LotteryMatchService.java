@@ -1078,9 +1078,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	public BaseResult<List<LotteryMatchDTO>> queryMatchResult(QueryMatchParam queryMatchParam){
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
+		String matchFinish = "";
 		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && !StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
 			return ResultGenerator.genFailResult("只看已购对阵和赛事筛选为互斥关系,只能选择一种",lotteryMatchDTOList);
 		} 
+		
+		if(queryMatchParam.getMatchFinish().equals("1")) {
+			matchFinish = "1";
+		}
 		
 		String [] leagueIdArr = new String [] {};
 		if(!StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
