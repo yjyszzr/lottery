@@ -26,7 +26,7 @@
   </resultMap>
   
   <select id="getTeamScoresByFlag" resultMap="BaseResultMap">
-  	select * form dl_league_team_score
+  	select * from dl_league_team_score
   	where team_id=#{teamId} and flag=#{flag}
   </select>
 </mapper>
