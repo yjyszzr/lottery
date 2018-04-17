@@ -18,4 +18,6 @@ public class LotteryPrintDTO {
 	private double money;
 	@ApiModelProperty("投注号码")
 	private String stakes;
+	@ApiModelProperty("彩票编号")
+	private String ticketId;
 }

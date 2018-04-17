@@ -51,4 +51,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * @return
 	 */
 	public List<DlOrderDataDTO> getRealRewardMoney(@Param("issue") String issue);
+	
+	public List<LotteryPrint> getByOrderSn(@Param("orderSn")String orderSn);
 }

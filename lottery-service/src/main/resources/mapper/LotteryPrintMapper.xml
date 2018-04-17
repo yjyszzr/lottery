@@ -109,4 +109,8 @@
 	   issue = #{issue}
 	group by order_sn
   </select>
+  
+  <select id=getByOrderSn" resultMap="BaseResultMap">
+  	select * from dl_print_lottery where order_sn=#{orderSn}
+  </select>
 </mapper>

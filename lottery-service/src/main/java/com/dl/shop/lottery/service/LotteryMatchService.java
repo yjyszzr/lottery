@@ -37,14 +37,17 @@ import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
 import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
+import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.exception.ServiceException;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.base.util.SNGenerator;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
+import com.dl.lottery.dto.DLZQOrderLotteryBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqDateMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
@@ -71,8 +74,10 @@ import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
+import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
+import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +92,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+	
+	@Resource
+	private LotteryPrintMapper lotteryPrintMapper;
 	
 	@Resource
 	private DlLeagueInfoService leagueInfoService;
@@ -806,6 +814,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		List<LotteryPrintDTO> lotteryPrints = new ArrayList<LotteryPrintDTO>();
 		List<List<MatchBetPlayCellDTO>>  matchBetList = new ArrayList<List<MatchBetPlayCellDTO>>();
+		List<DLZQOrderLotteryBetInfoDTO> orderLotteryBetInfos = new ArrayList<DLZQOrderLotteryBetInfoDTO>();
 		List<DLBetMatchCellDTO> betCellList = new ArrayList<DLBetMatchCellDTO>();
 		List<DLBetMatchCellDTO> maxBetCellList = new ArrayList<DLBetMatchCellDTO>();
 //		List<DLBetMatchCellDTO> minBetCellList = new ArrayList<DLBetMatchCellDTO>();
@@ -915,6 +924,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryPrintDTO.setMoney(money);
 				lotteryPrintDTO.setPlayType(param.getPlayType());
 				lotteryPrintDTO.setStakes(stakes);
+				String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
+				lotteryPrintDTO.setTicketId(ticketId);
+				orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(ticketId, betCellList1));
 				lotteryPrintDTO.setTimes(times);
 				lotteryPrints.add(lotteryPrintDTO);
 			}
@@ -939,7 +951,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
-		betInfoDTO.setBetCells(betCellList);//投注方案
+		betInfoDTO.setBetCells(orderLotteryBetInfos);//投注方案
 		betInfoDTO.setLotteryPrints(lotteryPrints);
 		/*String stakes = matchBellCellList.stream().map(item->{
 			String cellCodes = item.getBetCells().stream().map(cell->cell.getCellCode()).collect(Collectors.joining(","));
@@ -1113,7 +1125,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	@Transactional(readOnly=true)
-	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo) {
+	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
 		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();
 		List<MatchBetPlayDTO> matchBetPlays = selectByOrderId.stream().map(detail->{
@@ -1163,7 +1175,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	param.setPlayType(order.getPlayType());
     	param.setTimes(times);
     	param.setMatchBetPlays(matchBetPlays);
-    	return this.getBetInfo(param);
+    	DLZQBetInfoDTO betInfo = this.getBetInfo(param);
+    	List<DLZQOrderLotteryBetInfoDTO> betCells = betInfo.getBetCells();
+    	List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+    	betCells.forEach(betCell->{
+    		String ticketId = betCell.getTicketId();
+    		for(LotteryPrint lPrint: byOrderSn) {
+    			if(ticketId.equals(lPrint.getTicketId())) {
+    				betCell.setStatus(lPrint.getStatus());
+    				break;
+    			}
+    		}
+    	});
+    	return betInfo;
 	}
 	/**
      * 通过玩法code与投注内容，进行转换
