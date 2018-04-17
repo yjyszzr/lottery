@@ -734,7 +734,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setPlayType(remove.getPlayType());
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
 				dto.setAmount(Double.valueOf(String.format("%.2f", amount)));
-				String betContent = str.getBetContent() + changci + "(" + betCell.getCellName() + "@" + betCell.getCellOdds() +")X";
+				String betContent = str.getBetContent() + changci + "(" + betCell.getCellName() + " " + betCell.getCellOdds() +")X";
 				if(num == 1) {
 					betContent = betContent.substring(0, betContent.length()-1);
 				}
