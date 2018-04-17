@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueMatchAsiaMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueMatchAsia">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="asia_id" jdbcType="INTEGER" property="asiaId" />
+    <result column="com_name" jdbcType="VARCHAR" property="comName" />
+    <result column="init_odds1" jdbcType="DOUBLE" property="initOdds1" />
+    <result column="init_rule" jdbcType="VARCHAR" property="initRule" />
+    <result column="init_odds2" jdbcType="DOUBLE" property="initOdds2" />
+    <result column="real_odds1" jdbcType="DOUBLE" property="realOdds1" />
+    <result column="real_rule" jdbcType="VARCHAR" property="realRule" />
+    <result column="real_odds2" jdbcType="DOUBLE" property="realOdds2" />
+    <result column="odds1_change" jdbcType="BIT" property="odds1Change" />
+    <result column="odds2_change" jdbcType="BIT" property="odds2Change" />
+    <result column="time_minus" jdbcType="INTEGER" property="timeMinus" />
+    <result column="ratio_h" jdbcType="DOUBLE" property="ratioH" />
+    <result column="ratio_a" jdbcType="DOUBLE" property="ratioA" />
+    <result column="index_h" jdbcType="DOUBLE" property="indexH" />
+    <result column="index_a" jdbcType="DOUBLE" property="indexA" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
+  </resultMap>
+  
+  <select id="getCountByChangciId" resultType="int">
+  	select count(id) from dl_league_match_asia where changci_id = #{changciId}
+  </select>
+  
+  <update id="updateMatchAsia">
+  	update dl_league_match_asia 
+  	set real_odds1= #{realOdds1},
+  	real_rule = #{realRule},
+  	real_odds2 = #{realOdds2},
+  	odds1_change = #{odds1Change},
+  	odds2_change = #{odds2Change},
+  	time_minus = #{timeMinus},
+  	ratio_h = #{ratioH},
+  	ratio_a =  #{ratioA},
+  	index_h =  #{indexH},
+  	index_a =  #{indexA},
+  	update_time = #{updateTime}
+  	where changci_id = #{changciId} and asia_id = #{asiaId}
+  </update>
+</mapper>

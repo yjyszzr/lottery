@@ -32,10 +32,12 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetFilterConditionsParam;
+import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
@@ -105,17 +107,56 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
 		//校验串关
-		String betType = param.getBetType();
-		if(StringUtils.isBlank(betType)) {
+		String betTypeStr = param.getBetType();
+		if(StringUtils.isBlank(betTypeStr)) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
-		if((matchBetPlays.size() == 1 && !betType.equals("11")) || (matchBetPlays.size() > 1 && betType.contains("11"))) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+
+		if(betTypeStr.contains("11")) {
+			boolean isAllSingle = true;
+			for(MatchBetPlayDTO betPlay : matchBetPlays){
+				List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+				for(MatchBetCellDTO betCell: matchBetCells){
+					if(0 == betCell.getSingle()) {
+						isAllSingle = false;
+						break;
+					}
+				}
+				if(!isAllSingle) {
+					break;
+				}
+			}
+			if(!isAllSingle) {
+				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
+			}
 		}
-		List<Integer> betNums = Arrays.asList(betType.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().collect(Collectors.toList());
-		int maxBetNum = betNums.get(betNums.size()-1);
-		if(maxBetNum > matchBetPlays.size()) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
+		String[] betTypes = betTypeStr.split(",");
+		boolean isCheckedBetType = true;
+		int minBetNum = 9;
+		try {
+			int maxBetNum = 1;
+			for(String betType: betTypes) {
+				char[] charArray = betType.toCharArray();
+				if(charArray.length == 2 && charArray[1] == '1') {
+					int num = Integer.valueOf(String.valueOf(charArray[0]));
+					if(num > maxBetNum) {
+						maxBetNum = num;
+					}
+					if(minBetNum > num) {
+						minBetNum = num;
+					}
+					if(num < 1 || num > 8) {
+						isCheckedBetType = false;
+					}
+				}
+			}
+			if(maxBetNum > matchBetPlays.size()) {
+				isCheckedBetType = false;
+			}
+		} catch (NumberFormatException e) {
+		}
+		if(!isCheckedBetType) {
+			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
 		//校验投注选项
 		List<MatchBetPlayDTO> collect = matchBetPlays.stream().filter(dto->{
@@ -126,7 +167,6 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
 		}
 		//校验胆的个数设置
-		int minBetNum = betNums.get(0);
 		int danEnableNum = minBetNum -1;
 		if(minBetNum == matchBetPlays.size()) {
 			danEnableNum = 0;
@@ -179,30 +219,52 @@ public class LotteryMatchController {
 		if(StringUtils.isBlank(betTypeStr)) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
+		
+		if(betTypeStr.contains("11")) {
+			boolean isAllSingle = true;
+			for(MatchBetPlayDTO betPlay : matchBetPlays){
+				List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+				for(MatchBetCellDTO betCell: matchBetCells){
+					if(0 == betCell.getSingle()) {
+						isAllSingle = false;
+						break;
+					}
+				}
+				if(!isAllSingle) {
+					break;
+				}
+			}
+			if(!isAllSingle) {
+				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
+			}
+		}
 		String[] betTypes = betTypeStr.split(",");
-		boolean isCheckedBetType = false;
+		boolean isCheckedBetType = true;
+		int minBetNum = 9;
 		try {
+			int maxBetNum = 1;
 			for(String betType: betTypes) {
 				char[] charArray = betType.toCharArray();
 				if(charArray.length == 2 && charArray[1] == '1') {
 					int num = Integer.valueOf(String.valueOf(charArray[0]));
-					if(num > 0 && num < 9) {
-						isCheckedBetType = true;
+					if(num > maxBetNum) {
+						maxBetNum = num;
+					}
+					if(minBetNum > num) {
+						minBetNum = num;
+					}
+					if(num < 1 || num > 8) {
+						isCheckedBetType = false;
 					}
 				}
+			}
+			if(maxBetNum > matchBetPlays.size()) {
+				isCheckedBetType = false;
 			}
 		} catch (NumberFormatException e) {
 		}
 		if(!isCheckedBetType) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
-		}
-		if((matchBetPlays.size() == 1 && !betTypeStr.equals("11")) || (matchBetPlays.size() > 1 && betTypeStr.contains("11"))) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
-		}
-		List<Integer> betNums = Arrays.asList(betTypeStr.split(",")).stream().map(str->Integer.parseInt(str.split("")[0])).sorted().collect(Collectors.toList());
-		int maxBetNum = betNums.get(betNums.size()-1);
-		if(maxBetNum > matchBetPlays.size()) {
-			return ResultGenerator.genFailResult("请求场次与串关不符！", null);
 		}
 		//校验投注选项
 		List<MatchBetPlayDTO> collect = matchBetPlays.stream().filter(dto->{
@@ -213,7 +275,6 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("您有参赛场次玩法没有投注选项！", null);
 		}
 		//校验胆的个数设置
-		int minBetNum = betNums.get(0);
 		int danEnableNum = minBetNum -1;
 		if(minBetNum == matchBetPlays.size()) {
 			danEnableNum = 0;
@@ -327,7 +388,14 @@ public class LotteryMatchController {
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
 		}
-		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData());
+		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
     	return ResultGenerator.genSuccessResult("success",dto);
+    }
+	
+	@ApiOperation(value = "球队分析信息", notes = "球队分析信息")
+    @PostMapping("/matchTeamInfos")
+    public BaseResult<MatchTeamInfosDTO> matchTeamInfos(@Valid @RequestBody MatchTeamInfosParam param) {
+		MatchTeamInfosDTO matchTeamInfos = lotteryMatchService.matchTeamInfos(param.getMatchId());
+    	return ResultGenerator.genSuccessResult("success", matchTeamInfos);
     }
 }

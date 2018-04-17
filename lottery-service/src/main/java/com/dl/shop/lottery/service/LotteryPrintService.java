@@ -408,7 +408,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			LotteryPrint lotteryPrint = new LotteryPrint();
 			lotteryPrint.setGame("T51");
 			lotteryPrint.setMerchant(merchant);
-			lotteryPrint.setTicketId(SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode()));
+			lotteryPrint.setTicketId(dto.getTicketId());
 			lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
 			lotteryPrint.setBettype(dto.getBetType());
 			lotteryPrint.setMoney(BigDecimal.valueOf(dto.getMoney()*100));

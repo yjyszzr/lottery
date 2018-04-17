@@ -108,7 +108,7 @@ public class LotteryPrintController {
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
 		}
-		DLZQBetInfoDTO betInfoByOrderSn = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData());
+		DLZQBetInfoDTO betInfoByOrderSn = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
 		if(null == betInfoByOrderSn ) {
 			return ResultGenerator.genFailResult();
 		}

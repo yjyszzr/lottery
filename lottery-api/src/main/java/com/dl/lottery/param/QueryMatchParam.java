@@ -27,3 +27,4 @@ public class QueryMatchParam {
     private String matchFinish;
     
 }
+

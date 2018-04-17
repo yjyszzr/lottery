@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueMatchResultMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueMatchResult">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="play_type" jdbcType="TINYINT" property="playType" />
+    <result column="play_code" jdbcType="VARCHAR" property="playCode" />
+    <result column="cell_code" jdbcType="VARCHAR" property="cellCode" />
+    <result column="cell_name" jdbcType="VARCHAR" property="cellName" />
+    <result column="single" jdbcType="TINYINT" property="single" />
+    <result column="goalline" jdbcType="VARCHAR" property="goalline" />
+    <result column="odds" jdbcType="DOUBLE" property="odds" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
+  </resultMap>
+  
+  <select id="getCountByMatchId" resultType="int">
+  	select count(id) from dl_league_match_result where changci_id = #{changciId}
+  </select>
+</mapper>

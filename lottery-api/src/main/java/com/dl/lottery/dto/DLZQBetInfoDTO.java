@@ -14,7 +14,7 @@ public class DLZQBetInfoDTO implements Serializable{
 	@ApiModelProperty("最小奖金")
 	private Double minBonus;
 	@ApiModelProperty("投注彩票列表,投注方案展示")
-	private List<DLBetMatchCellDTO> betCells;
+	private List<DLZQOrderLotteryBetInfoDTO> betCells;
 	@ApiModelProperty("倍数")
 	private int times;
 	@ApiModelProperty("投注数目")

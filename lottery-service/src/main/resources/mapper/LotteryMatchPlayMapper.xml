@@ -26,4 +26,10 @@
   	 	and play_type = ${playType}
   	 </if> 
   </select>
+  
+  <update id="updatePlayContent">
+  	update dl_match_play
+  	set play_content = #{playContent},update_time=#{updateTime}
+  	where match_id=#{matchId} and play_type=#{playType}
+  </update>
 </mapper>
