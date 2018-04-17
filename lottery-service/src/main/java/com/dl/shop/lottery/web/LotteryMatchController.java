@@ -35,7 +35,9 @@ import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
+import com.dl.lottery.dto.MatchTeamInfosSumDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -406,13 +408,33 @@ public class LotteryMatchController {
     }
 	
 	@ApiOperation(value = "球队分析信息", notes = "球队分析信息")
-    @PostMapping("/matchTeamInfos")
-    public BaseResult<MatchTeamInfosDTO> matchTeamInfos(@Valid @RequestBody MatchTeamInfosParam param) {
+    @PostMapping("/matchTeamInfosSum")
+    public BaseResult<MatchTeamInfosSumDTO> matchTeamInfosSum(@Valid @RequestBody MatchTeamInfosParam param) {
 		LotteryMatch lotteryMatch = lotteryMatchService.findById(param.getMatchId());
 		if(null == lotteryMatch) {
 			return ResultGenerator.genFailResult("数据读取失败！", null);
 		}
 		MatchTeamInfosDTO matchTeamInfo = lotteryMatchService.matchTeamInfos(lotteryMatch);
+		MatchInfoForTeamDTO lotteryMatchForTeam = lotteryMatchService.LotteryMatchForTeam(lotteryMatch);
+		MatchTeamInfosSumDTO dto = new MatchTeamInfosSumDTO();
+		dto.setHhMatchTeamInfo(matchTeamInfo.getHhMatchTeamInfo());
+		dto.setHMatchTeamInfo(matchTeamInfo.getHMatchTeamInfo());
+		dto.setHvMatchTeamInfo(matchTeamInfo.getHvMatchTeamInfo());
+		dto.setMatchInfo(lotteryMatchForTeam);
+		dto.setVMatchTeamInfo(matchTeamInfo.getVMatchTeamInfo());
+		dto.setVvMatchTeamInfo(matchTeamInfo.getVvMatchTeamInfo());
+		return ResultGenerator.genSuccessResult("success", dto);
+    }
+	@ApiOperation(value = "球队分析详情信息", notes = "球队分析详情信息")
+	@PostMapping("/matchTeamInfos")
+	public BaseResult<MatchTeamInfosDTO> matchTeamInfos(@Valid @RequestBody MatchTeamInfosParam param) {
+		LotteryMatch lotteryMatch = lotteryMatchService.findById(param.getMatchId());
+		if(null == lotteryMatch) {
+			return ResultGenerator.genFailResult("数据读取失败！", null);
+		}
+		MatchInfoForTeamDTO lotteryMatchForTeam = lotteryMatchService.LotteryMatchForTeam(lotteryMatch);
+		MatchTeamInfosDTO matchTeamInfo = lotteryMatchService.matchTeamInfos(lotteryMatch);
+		matchTeamInfo.setMatchInfo(lotteryMatchForTeam);
 		List<LeagueMatchAsiaDTO> leagueMatchAsias = dlLeagueMatchAsiaService.leagueMatchAsias(lotteryMatch.getChangciId());
 		matchTeamInfo.setLeagueMatchAsias(leagueMatchAsias);
 		List<LeagueMatchEuropeDTO> leagueMatchEuropes = dlLeagueMatchEuropeService.leagueMatchEuropes(lotteryMatch.getChangciId());
@@ -422,7 +444,7 @@ public class LotteryMatchController {
 		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
 		matchTeamInfo.setVisitingTeamScoreInfo(visitingTeamScoreInfo);
 		return ResultGenerator.genSuccessResult("success", matchTeamInfo);
-    }
+	}
 
 	private DLLeagueTeamScoreInfoDTO teamScoreInfo(Integer teamId, String teamAbbr) {
 		DLLeagueTeamScoreDTO tteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 0);

@@ -7,9 +7,14 @@
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="sporttery_teamid" jdbcType="INTEGER" property="sportteryTeamid" />
     <result column="team_name" jdbcType="VARCHAR" property="teamName" />
     <result column="team_addr" jdbcType="VARCHAR" property="teamAddr" />
     <result column="team_pic" jdbcType="VARCHAR" property="teamPic" />
     <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
   </resultMap>
+  
+  <select id="getBySportteryTeamid" resultMap="BaseResultMap">
+  	select * from dl_league_team where sporttery_teamid=#{sportteryTeamid}
+  </select>
 </mapper>

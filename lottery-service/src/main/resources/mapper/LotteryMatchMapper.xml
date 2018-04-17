@@ -145,4 +145,13 @@
 		</if>
 		order by match_time desc limit ${num}
 	</select>
+	
+	<select id="getByTeamIdForhv" resultMap="BaseResultMap">
+		select * 
+		from dl_match 
+		where 
+		 home_team_id = #{teamId}
+		 or visiting_team_id=#{teamId}
+		order by match_time desc limit ${num}
+	</select>
 </mapper>

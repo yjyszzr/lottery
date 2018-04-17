@@ -16,6 +16,9 @@ public class DlLeagueTeam {
      */
     @Column(name = "team_id")
     private Integer teamId;
+    
+    @Column(name = "sporttery_teamid")
+    private Integer sportteryTeamid;
 
     /**
      * 球队名称
@@ -148,4 +151,12 @@ public class DlLeagueTeam {
     public void setLeagueFrom(Byte leagueFrom) {
         this.leagueFrom = leagueFrom;
     }
+
+	public Integer getSportteryTeamid() {
+		return sportteryTeamid;
+	}
+
+	public void setSportteryTeamid(Integer sportteryTeamid) {
+		this.sportteryTeamid = sportteryTeamid;
+	}
 }

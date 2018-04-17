@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class MatchTeamInfosDTO implements Serializable{
+public class MatchTeamInfosSumDTO implements Serializable{
 
 	@ApiModelProperty(value = "赛事信息", required = true)
 	private MatchInfoForTeamDTO matchInfo;
@@ -27,16 +27,6 @@ public class MatchTeamInfosDTO implements Serializable{
 	@ApiModelProperty(value = "客场客战绩", required = true)
 	private MatchTeamInfoDTO vvMatchTeamInfo;
 	
-	@ApiModelProperty(value = "亚盘", required = true)
-	List<LeagueMatchAsiaDTO> leagueMatchAsias ;
 	
-	@ApiModelProperty(value = "欧赔", required = true)
-	List<LeagueMatchEuropeDTO> leagueMatchEuropes ;
-	
-	@ApiModelProperty(value = "主场积分", required = true)
-	DLLeagueTeamScoreInfoDTO homeTeamScoreInfo;
-	
-	@ApiModelProperty(value = "客场积分", required = true)
-	DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo ;
 	
 }
