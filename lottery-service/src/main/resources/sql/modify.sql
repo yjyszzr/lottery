@@ -341,7 +341,7 @@ CREATE TABLE `dl_league_team` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='球队信息';
 
--- 球队 --
+-- 球队得分 --
 DROP TABLE IF EXISTS `dl_league_team_score`;
 CREATE TABLE `dl_league_team_score` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',

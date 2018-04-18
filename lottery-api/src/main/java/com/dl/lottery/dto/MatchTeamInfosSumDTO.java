@@ -27,6 +27,10 @@ public class MatchTeamInfosSumDTO implements Serializable{
 	@ApiModelProperty(value = "客场客战绩", required = true)
 	private MatchTeamInfoDTO vvMatchTeamInfo;
 	
+	@ApiModelProperty(value = "胜平负支持率", required = true)
+	private TeamSupportDTO hadTeamSupport;
 	
+	@ApiModelProperty(value = "让球胜平负支持率", required = true)
+	private TeamSupportDTO hhadTeamSupport;
 	
 }
