@@ -934,7 +934,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryPrintDTO.setStakes(stakes);
 				String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
 				lotteryPrintDTO.setTicketId(ticketId);
-				orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(ticketId, betCellList1));
+				orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
 				lotteryPrintDTO.setTimes(times);
 				lotteryPrints.add(lotteryPrintDTO);
 			}
@@ -1192,9 +1192,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	List<DLZQOrderLotteryBetInfoDTO> betCells = betInfo.getBetCells();
     	List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
     	betCells.forEach(betCell->{
-    		String ticketId = betCell.getTicketId();
+    		String stakes = betCell.getStakes();
     		for(LotteryPrint lPrint: byOrderSn) {
-    			if(ticketId.equals(lPrint.getTicketId())) {
+    			if(stakes.equals(lPrint.getStakes())) {
     				betCell.setStatus(lPrint.getStatus());
     				break;
     			}
