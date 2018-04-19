@@ -334,9 +334,10 @@ CREATE TABLE `dl_league_team` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `team_id` int(11) NOT NULL COMMENT '球队编号',
   `sporttery_teamid` int(11) NOT NULL COMMENT '竞彩网球队编号,与dl_match表里的teamId对应',
-  `team_name` varchar(64) NOT NULL COMMENT '球队名称',
+  `team_name` varchar(64)  COMMENT '球队名称',
   `team_addr` varchar(64) NOT NULL COMMENT '球队简称',
-  `team_pic` varchar(256) NOT NULL COMMENT '球队图标',
+  `team_type` varchar(64)  COMMENT '球队类型',
+  `team_pic` varchar(256)  COMMENT '球队图标',
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='球队信息';

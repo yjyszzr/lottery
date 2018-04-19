@@ -29,6 +29,14 @@ public class DlLeagueInfo {
     @Column(name = "league_addr")
     private String leagueAddr;
 
+    @Column(name = "contry_id")
+    private String contryId;
+    
+    @Column(name = "league_type")
+    private String leagueType;
+    
+    @Column(name = "league_from")
+    private String leagueFrom;
     /**
      * 获取ID
      *
@@ -100,4 +108,29 @@ public class DlLeagueInfo {
     public void setLeagueAddr(String leagueAddr) {
         this.leagueAddr = leagueAddr;
     }
+
+	public String getContryId() {
+		return contryId;
+	}
+
+	public void setContryId(String contryId) {
+		this.contryId = contryId;
+	}
+
+	public String getLeagueType() {
+		return leagueType;
+	}
+
+	public void setLeagueType(String leagueType) {
+		this.leagueType = leagueType;
+	}
+
+	public String getLeagueFrom() {
+		return leagueFrom;
+	}
+
+	public void setLeagueFrom(String leagueFrom) {
+		this.leagueFrom = leagueFrom;
+	}
+    
 }

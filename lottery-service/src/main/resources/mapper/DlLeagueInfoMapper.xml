@@ -9,6 +9,9 @@
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
     <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
+    <result column="contry_id" jdbcType="INTEGER" property="contryId" />
+    <result column="league_type" jdbcType="INTEGER" property="leagueType" />
+    <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
   </resultMap>
   
   <select id="getFilterConditions" resultMap="BaseResultMap">
@@ -16,4 +19,9 @@
   	from dl_league_info
   	where id &lt; 10
   </select>
+  
+  <insert id="saveLeagueTeamRef" >
+  	insert into dl_league_team_ref(team_id, league_id) values(#{teamId}, #{leagueId})
+  </insert>
+  
 </mapper>

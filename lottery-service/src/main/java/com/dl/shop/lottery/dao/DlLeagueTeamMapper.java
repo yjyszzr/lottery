@@ -8,4 +8,6 @@ import com.dl.shop.lottery.model.DlLeagueTeam;
 public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 
 	DlLeagueTeam getBySportteryTeamid(@Param("sportteryTeamid")Integer sportteryTeamid);
+
+	DlLeagueTeam getByTeamId(@Param("teamId")Integer teamId);
 }

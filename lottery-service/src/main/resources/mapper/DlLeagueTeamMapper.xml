@@ -10,11 +10,15 @@
     <result column="sporttery_teamid" jdbcType="INTEGER" property="sportteryTeamid" />
     <result column="team_name" jdbcType="VARCHAR" property="teamName" />
     <result column="team_addr" jdbcType="VARCHAR" property="teamAddr" />
+    <result column="team_type" jdbcType="VARCHAR" property="teamType" />
     <result column="team_pic" jdbcType="VARCHAR" property="teamPic" />
     <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
   </resultMap>
   
   <select id="getBySportteryTeamid" resultMap="BaseResultMap">
   	select * from dl_league_team where sporttery_teamid=#{sportteryTeamid}
+  </select>
+  <select id="getByTeamId" resultMap="BaseResultMap">
+  	select * from dl_league_team where team_id=#{teamId}
   </select>
 </mapper>

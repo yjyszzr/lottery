@@ -1,11 +1,19 @@
 package com.dl.shop.lottery.web;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.param.RefreshMatchParam;
+import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlLeagueTeamService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Condition;
+
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,13 +30,25 @@ public class DlLeagueTeamController {
     @Resource
     private DlLeagueTeamService dlLeagueTeamService;
 
-    @PostMapping("/add")
-    public BaseResult add(DlLeagueTeam dlLeagueTeam) {
-        dlLeagueTeamService.save(dlLeagueTeam);
+    @Resource
+    private DlLeagueInfoService leagueInfoService;
+    
+   /* @ApiOperation(value = "刷新拉取球队信息", notes = "刷新拉取球队信息")
+    @PostMapping("/refresh")
+    public BaseResult add() {
+    	for(int i=1; i< 43; i++) {
+    		Integer contryId = i;
+    		Condition condition = new Condition(DlLeagueInfo.class);
+    		condition.and().andEqualTo("contryId", contryId);
+    		List<DlLeagueInfo> leagueInfos = leagueInfoService.findByCondition(condition);
+    		for(DlLeagueInfo leagueInfo: leagueInfos) {
+    			dlLeagueTeamService.refreshMatchTeams(leagueInfo);
+    		}
+    	}
         return ResultGenerator.genSuccessResult();
-    }
+    }*/
 
-    @PostMapping("/delete")
+   /* @PostMapping("/delete")
     public BaseResult delete(@RequestParam Integer id) {
         dlLeagueTeamService.deleteById(id);
         return ResultGenerator.genSuccessResult();
@@ -44,7 +64,7 @@ public class DlLeagueTeamController {
     public BaseResult detail(@RequestParam Integer id) {
         DlLeagueTeam dlLeagueTeam = dlLeagueTeamService.findById(id);
         return ResultGenerator.genSuccessResult(null,dlLeagueTeam);
-    }
+    }*/
 
     @PostMapping("/list")
     public BaseResult list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {

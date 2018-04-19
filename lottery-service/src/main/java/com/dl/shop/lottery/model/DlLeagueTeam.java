@@ -25,6 +25,9 @@ public class DlLeagueTeam {
      */
     @Column(name = "team_name")
     private String teamName;
+    
+    @Column(name = "team_type")
+    private String teamType;
 
     /**
      * 球队简称
@@ -42,7 +45,7 @@ public class DlLeagueTeam {
      * 拉取平台
      */
     @Column(name = "league_from")
-    private Byte leagueFrom;
+    private Integer leagueFrom;
 
     /**
      * 获取ID
@@ -139,7 +142,7 @@ public class DlLeagueTeam {
      *
      * @return league_from - 拉取平台
      */
-    public Byte getLeagueFrom() {
+    public Integer getLeagueFrom() {
         return leagueFrom;
     }
 
@@ -148,7 +151,7 @@ public class DlLeagueTeam {
      *
      * @param leagueFrom 拉取平台
      */
-    public void setLeagueFrom(Byte leagueFrom) {
+    public void setLeagueFrom(Integer leagueFrom) {
         this.leagueFrom = leagueFrom;
     }
 
@@ -158,5 +161,13 @@ public class DlLeagueTeam {
 
 	public void setSportteryTeamid(Integer sportteryTeamid) {
 		this.sportteryTeamid = sportteryTeamid;
+	}
+
+	public String getTeamType() {
+		return teamType;
+	}
+
+	public void setTeamType(String teamType) {
+		this.teamType = teamType;
 	}
 }
