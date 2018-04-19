@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueMatchDaoXiaoMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueMatchDaoXiao">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="daoxiao_id" jdbcType="INTEGER" property="daoxiaoId" />
+    <result column="com_name" jdbcType="VARCHAR" property="comName" />
+    <result column="order_num" jdbcType="INTEGER" property="orderNum" />
+    <result column="init_win" jdbcType="DOUBLE" property="initWin" />
+    <result column="init_draw" jdbcType="DOUBLE" property="initDraw" />
+    <result column="init_lose" jdbcType="DOUBLE" property="initLose" />
+    <result column="real_win" jdbcType="DOUBLE" property="realWin" />
+    <result column="real_draw" jdbcType="DOUBLE" property="realDraw" />
+    <result column="real_lose" jdbcType="DOUBLE" property="realLose" />
+    <result column="win_change" jdbcType="BIT" property="winChange" />
+    <result column="draw_change" jdbcType="BIT" property="drawChange" />
+    <result column="lose_change" jdbcType="BIT" property="loseChange" />
+    <result column="init_time" jdbcType="INTEGER" property="initTime" />
+    <result column="real_time" jdbcType="INTEGER" property="realTime" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+  </resultMap>
+</mapper>

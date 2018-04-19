@@ -499,6 +499,31 @@ CREATE TABLE `dl_league_match_europe` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='欧赔 百家奖金数据';
 
+-- 大小球数据 ---
+DROP TABLE IF EXISTS `dl_league_match_daoxiao`;
+CREATE TABLE `dl_league_match_daoxiao` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `changci_id` int(11) NOT NULL COMMENT '赛事场次id',
+  `daoxiao_id` int(11) NOT NULL COMMENT 'id',
+  `com_name` varchar(16) NOT NULL COMMENT '公司名称',
+  `order_num` int(8) NOT NULL COMMENT '排名',
+  `init_win` double(6,2) NOT NULL COMMENT '初始奖金大',
+  `init_draw` double(6,2) NOT NULL COMMENT '初始奖金盘',
+  `init_lose` double(6,2) NOT NULL COMMENT '初始奖金小',
+  `real_win` double(6,2) NOT NULL COMMENT '即时奖金大',
+  `real_draw` double(6,2) NOT NULL COMMENT '即时奖金盘',
+  `real_lose` double(6,2) NOT NULL COMMENT '即时奖金小',
+  `win_change` tinyint(1) default 0 COMMENT '胜变化趋势:0equal,1up,2down',
+  `draw_change` tinyint(1) default 0 COMMENT '平变化趋势:0equal,1up,2down',
+  `lose_change` tinyint(1) default 0 COMMENT '负变化趋势:0equal,1up,2down',
+  `init_time` int(11) NOT NULL COMMENT '初始变化 时间',
+  `real_time` int(11) NOT NULL COMMENT '即时变化时间',
+  `create_time` int(11) NOT NULL COMMENT '创建时间',
+  `update_time` int(11) NOT NULL COMMENT '更新时间',
+  
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩1 500万',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='大小球数据';
 
 
 

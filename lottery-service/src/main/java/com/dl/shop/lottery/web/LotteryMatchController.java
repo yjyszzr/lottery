@@ -31,6 +31,7 @@ import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchAsiaDTO;
+import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
 import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
@@ -56,6 +57,7 @@ import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
+import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchService;
@@ -88,6 +90,8 @@ public class LotteryMatchController {
     private DlLeagueTeamScoreService dlLeagueTeamScoreService;
     @Resource
     private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
+    @Resource
+    private DlLeagueMatchDaoXiaoService dlLeagueMatchDaoXiaoService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -439,6 +443,8 @@ public class LotteryMatchController {
 		matchTeamInfo.setLeagueMatchAsias(leagueMatchAsias);
 		List<LeagueMatchEuropeDTO> leagueMatchEuropes = dlLeagueMatchEuropeService.leagueMatchEuropes(lotteryMatch.getChangciId());
 		matchTeamInfo.setLeagueMatchEuropes(leagueMatchEuropes);
+		List<LeagueMatchDaoXiaoDTO> leagueMatchDaoXiaos = dlLeagueMatchDaoXiaoService.leagueMatchDaoXiaos(lotteryMatch.getChangciId());
+		matchTeamInfo.setLeagueMatchDaoxiaos(leagueMatchDaoXiaos);
 		DLLeagueTeamScoreInfoDTO homeTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getHomeTeamId(), lotteryMatch.getHomeTeamAbbr());
 		matchTeamInfo.setHomeTeamScoreInfo(homeTeamScoreInfo);
 		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
