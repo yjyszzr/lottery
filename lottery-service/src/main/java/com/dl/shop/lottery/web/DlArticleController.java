@@ -6,17 +6,19 @@ import javax.annotation.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
+import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import io.swagger.annotations.ApiOperation;
 
 /**
 * Created by CodeGenerator on 2018/04/19.
@@ -45,12 +47,14 @@ public class DlArticleController {
         return ResultGenerator.genSuccessResult();
     }*/
 
+    @ApiOperation(value = "资讯详情", notes = "资讯详情")
     @PostMapping("/detail")
-    public BaseResult<DLArticleDetailDTO> detail(@RequestParam Integer id) {
-    	DLArticleDetailDTO dlArticle = dlArticleService.findArticleById(id);
+    public BaseResult<DLArticleDetailDTO> detail(@RequestBody ArticleDetailParam param) {
+    	DLArticleDetailDTO dlArticle = dlArticleService.findArticleById(param.getArticleId());
         return ResultGenerator.genSuccessResult(null,dlArticle);
     }
 
+    @ApiOperation(value = "资讯首页", notes = "资讯首页")
     @PostMapping("/list")
     public BaseResult<PageInfo<DLArticleDTO>> list(@RequestBody ListArticleParam param) {
     	Integer page = param.getPage();
