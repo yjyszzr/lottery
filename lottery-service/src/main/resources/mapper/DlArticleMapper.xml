@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlArticleMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlArticle">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="article_id" jdbcType="INTEGER" property="articleId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="cat_id" jdbcType="INTEGER" property="catId" />
+    <result column="keywords" jdbcType="VARCHAR" property="keywords" />
+    <result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction" />
+    <result column="article_thumb" jdbcType="VARCHAR" property="articleThumb" />
+    <result column="add_time" jdbcType="INTEGER" property="addTime" />
+    <result column="is_comment" jdbcType="INTEGER" property="isComment" />
+    <result column="click_number" jdbcType="INTEGER" property="clickNumber" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="link" jdbcType="VARCHAR" property="link" />
+    <result column="source" jdbcType="VARCHAR" property="source" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="extend_cat" jdbcType="VARCHAR" property="extendCat" />
+    <result column="is_recommend" jdbcType="INTEGER" property="isRecommend" />
+    <result column="author" jdbcType="VARCHAR" property="author" />
+    <result column="match_id" jdbcType="INTEGER" property="matchId" />
+    <result column="related_team" jdbcType="VARCHAR" property="relatedTeam" />
+    <result column="list_style" jdbcType="INTEGER" property="listStyle" />
+    <result column="is_original" jdbcType="INTEGER" property="isOriginal" />
+    <result column="is_delete" jdbcType="INTEGER" property="isDelete" />
+    <result column="is_stick" jdbcType="INTEGER" property="isStick" />
+    <result column="stick_time" jdbcType="INTEGER" property="stickTime" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="article_pv" jdbcType="INTEGER" property="articlePv" />
+    <result column="article_uv" jdbcType="INTEGER" property="articleUv" />
+    <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <select id="findArticles" resultMap="BaseResultMap">
+  	select * from dl_article
+  	where is_show=1 and status=1 and is_delete=0
+  	order by is_stick,add_time desc
+  </select>
+  
+</mapper>
