@@ -37,4 +37,6 @@ public class DlJcZqMatchPlayDTO implements Serializable{
 	@ApiModelProperty(value = "单场，1可以单场，0不可以", required = true)
 	private Integer single;
 	
+	@ApiModelProperty(value = "是否有数据，1有，0无", required = true)
+	private Integer isShow=1;
 }

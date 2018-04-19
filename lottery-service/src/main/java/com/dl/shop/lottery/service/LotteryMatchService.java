@@ -189,9 +189,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			if(matchPlays.size() > 2) {
-				matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
+			if(matchPlays.size() < 5) {
+				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
+				for(int i=1; i< 6; i++) {
+					if(!collect.contains(i)) {
+						DlJcZqMatchPlayDTO dto = new DlJcZqMatchPlayDTO();
+						dto.setPlayType(i);
+						dto.setIsShow(0);
+						matchPlays.add(dto);
+					}
+				}
 			}
+			matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
 			matchDto.setMatchPlays(matchPlays);
 			//
 			DlJcZqDateMatchDTO dlJcZqMatchDTO = map.get(matchDay);
