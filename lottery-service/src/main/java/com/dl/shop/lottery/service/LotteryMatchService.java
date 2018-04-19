@@ -1199,7 +1199,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     		for(LotteryPrint lPrint: byOrderSn) {
     			if(stakes.equals(lPrint.getStakes())) {
     				betCell.setStatus(lPrint.getStatus());
-    				logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes + " ordersn: "+ orderSn+" lPrint:"+ lPrint.getTicketId());
+    				logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes + " ordersn: "+ orderSn+" lPrint:"+ lPrint.getTicketId() + "  status:"+lPrint.getStatus());
+    				logger.info("betCell status:" + betCell.getStatus());
     				break;
     			}
     		}
