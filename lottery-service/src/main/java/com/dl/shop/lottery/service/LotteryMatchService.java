@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -90,6 +91,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
+	private final static Logger logger = Logger.getLogger(LotteryMatchService.class);
 	@Resource
     private LotteryMatchMapper lotteryMatchMapper;
 	
@@ -1193,9 +1195,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
     	betCells.forEach(betCell->{
     		String stakes = betCell.getStakes();
+    		logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes+ " ordersn: "+ orderSn);
     		for(LotteryPrint lPrint: byOrderSn) {
     			if(stakes.equals(lPrint.getStakes())) {
     				betCell.setStatus(lPrint.getStatus());
+    				logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes + " ordersn: "+ orderSn+" lPrint:"+ lPrint.getTicketId());
     				break;
     			}
     		}
