@@ -132,14 +132,24 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void saveRewardData(DlRewardParam param){
-		JSONObject jo = queryRewardData(param.getChangCiId());
-		if(null != jo) {
-			List<JSONObject> jos = getRewardListData(jo);
-			Condition condition = new Condition(LotteryMatch.class);
-	        condition.createCriteria().andCondition("changci_id=", param.getChangCiId());
-			List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.selectByCondition(condition);
-			if(CollectionUtils.isNotEmpty(lotteryMatchs)) {
-				LotteryMatch lotteryMatch = lotteryMatchs.get(0);
+		Condition condition = new Condition(LotteryMatch.class);
+		condition.createCriteria().andCondition("changci_id=", param.getChangCiId());
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.selectByCondition(condition);
+		this.saveRewardInfos(lotteryMatchs);
+	}
+
+	/**
+	 * 保存比赛结果信息
+	 * @param lotteryMatchs
+	 */
+	public void saveRewardInfos(List<LotteryMatch> lotteryMatchs) {
+		if(CollectionUtils.isEmpty(lotteryMatchs)) {
+			return;
+		}
+		for(LotteryMatch lotteryMatch : lotteryMatchs) {
+			JSONObject jo = queryRewardData(lotteryMatch.getChangciId());
+			if(null != jo) {
+				List<JSONObject> jos = getRewardListData(jo);
 				String rewardData = getAssembleRewardData(lotteryMatch, jos);
 				if(StringUtils.isNotEmpty(rewardData)) {
 					insertRewardData(lotteryMatch, rewardData);
@@ -300,7 +310,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * 拉取开奖信息
 	 * @return
 	 */
-	private JSONObject queryRewardData(String changCiId) {
+	private JSONObject queryRewardData(Integer changCiId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("mid", changCiId);
 		String json = NetWorkUtil.doGet(rewardUrl, map, "UTF-8");

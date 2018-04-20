@@ -110,6 +110,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	@Resource
 	private DlLeagueTeamMapper leagueTeamMapper;
 	
+	@Resource
+	private LotteryRewardService lotteryRewardService;
+	
+	@Resource
+	private DlLeagueMatchResultService matchResultService;
+	
 	
 	@Value("${match.url}")
 	private String matchUrl;
@@ -1038,10 +1044,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			Date matchTime = match.getMatchTime();
 			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
 			String matchDate = localDate.toString();
-			return matchDate+"_" + changci+"_"+match.getMatchId();
+			return matchDate+"_" + changci+"_"+match.getMatchId() + "_" + match.getChangciId();
 		}).collect(Collectors.toList());
         Document doc = null;
-        List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>();
+        List<String> changciIds = new ArrayList<String>(matchs.size());
+        List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>(matchs.size());
         try {
             doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
             Elements elements =  doc.getElementsByClass("m-tab");
@@ -1056,8 +1063,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             		if(MATCH_RESULT_OVER.equals(status)) {
             			String matchDate = tds.get(0).text();
             			String changci = tds.get(1).text();
-            			String matchId = this.matchId(matchs, matchDate, changci);
-            			if(StringUtils.isNotBlank(matchId)) {
+            			String[] arr = this.matchId(matchs, matchDate, changci);
+            			if(null != arr) {
+            				String matchId = arr[2];
+            				String changciId = arr[3];
             				LotteryMatch lotteryMatch = new  LotteryMatch();
             				String firstHalf = tds.get(4).text();
             				String whole = tds.get(5).text();
@@ -1066,6 +1075,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             				lotteryMatch.setWhole(whole);
             				lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
             				matchResult.add(lotteryMatch);
+            				changciIds.add(changciId);
             			}
             		}
             	}
@@ -1075,17 +1085,23 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         }
         
         int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
-        
+        //保存比赛结果详情
+        lotteryRewardService.saveRewardInfos(matchList);
+        //保存比赛结果详情2
+        matchResultService.refreshMatchResultsFromZC(changciIds);
 		return rst;
 	}
-	
-	private String matchId(List<String> matchs, String matchDate, String changci) {
+	/**
+	 * 通过获取的比赛结果信息获取matchid
+	 * @return
+	 */
+	private String[] matchId(List<String> matchs, String matchDate, String changci) {
 		for(String match: matchs) {
 			String[] split = match.split("_");
-			if(split.length == 3) {
+			if(split.length == 4) {
 				if(split[0].equals(matchDate) && split[1].equals(changci)){
 					matchs.remove(match);
-					return split[2];
+					return split;
 				}
 			}
 		}

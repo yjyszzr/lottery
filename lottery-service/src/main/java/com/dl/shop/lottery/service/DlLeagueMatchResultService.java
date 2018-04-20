@@ -21,6 +21,8 @@ import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
 
+import io.jsonwebtoken.lang.Collections;
+
 @Service
 @Transactional
 public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchResult> {
@@ -34,8 +36,19 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
     @Resource
     private LotteryMatchMapper dlMatchMapper;
 
+    public void refreshMatchResultsFromZC(List<String> changciIds) {
+		if(Collections.isEmpty(changciIds)) {
+			return;
+		}
+		for(String changciId: changciIds) {
+			if(StringUtils.isBlank(changciId)) {
+				continue;
+			}
+			this.refreshMatchResultFromZC(Integer.valueOf(changciId));
+		}
+	}
     /**
-     * 从竞彩网拉取亚盘数据到数据库
+     * 从竞彩网拉取比赛结果到数据库
      * @param matchId
      */
     public void refreshMatchResultFromZC(Integer changciId) {
@@ -244,4 +257,6 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	    matchResult.setPlayType(MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode());
 	    return matchResult;
 	}
+
+
 }
