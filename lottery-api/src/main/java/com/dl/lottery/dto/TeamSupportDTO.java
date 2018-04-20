@@ -18,6 +18,7 @@ public class TeamSupportDTO implements Serializable{
 	@ApiModelProperty(value = "负支持率", required = true)
 	public String aSupport;
 	
+	
 	@ApiModelProperty(value = "让球数", required = true)
 	private String fixedOdds;
 	

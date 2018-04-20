@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
@@ -39,6 +40,7 @@ import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
+import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -60,6 +62,7 @@ import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueTeamScoreService;
+import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 
@@ -92,6 +95,8 @@ public class LotteryMatchController {
     private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
     @Resource
     private DlLeagueMatchDaoXiaoService dlLeagueMatchDaoXiaoService;
+    @Resource
+    private DlMatchSupportService dlMatchSupportService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -420,6 +425,8 @@ public class LotteryMatchController {
 		}
 		MatchTeamInfosDTO matchTeamInfo = lotteryMatchService.matchTeamInfos(lotteryMatch);
 		MatchInfoForTeamDTO lotteryMatchForTeam = lotteryMatchService.LotteryMatchForTeam(lotteryMatch);
+		TeamSupportDTO hadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode());
+		TeamSupportDTO hhadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode());
 		MatchTeamInfosSumDTO dto = new MatchTeamInfosSumDTO();
 		dto.setHhMatchTeamInfo(matchTeamInfo.getHhMatchTeamInfo());
 		dto.setHMatchTeamInfo(matchTeamInfo.getHMatchTeamInfo());
@@ -427,6 +434,8 @@ public class LotteryMatchController {
 		dto.setMatchInfo(lotteryMatchForTeam);
 		dto.setVMatchTeamInfo(matchTeamInfo.getVMatchTeamInfo());
 		dto.setVvMatchTeamInfo(matchTeamInfo.getVvMatchTeamInfo());
+		dto.setHadTeamSupport(hadTeamSupport);
+		dto.setHhadTeamSupport(hhadTeamSupport);
 		return ResultGenerator.genSuccessResult("success", dto);
     }
 	@ApiOperation(value = "球队分析详情信息", notes = "球队分析详情信息")

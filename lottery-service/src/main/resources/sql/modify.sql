@@ -422,6 +422,27 @@ CREATE TABLE `dl_league_match_play` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='赛事信息';
 
+-- 赛事支持率信息 --
+DROP TABLE IF EXISTS `dl_match_support`;
+CREATE TABLE `dl_match_support` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `support_id` int(11)   COMMENT '竞彩网对应',
+   `changci_id` int(11)  COMMENT '赛事场次id',
+   `win_num` int(11)  COMMENT '胜支持数',
+   `lose_num` int(11)  COMMENT '负支持数',
+   `draw_num` int(11) COMMENT '平支持数',
+   `pre_win` varchar(8)  COMMENT '支持率',
+   `pre_lose` varchar(8)  COMMENT '支持率',
+   `pre_draw` varchar(8)  COMMENT '支持率',
+   `total` int(11)  COMMENT '总支持数',
+  `play_type` tinyint(1) NOT NULL COMMENT '玩法类型',
+  `create_time` int(11) NOT NULL COMMENT '创建时间',
+  `update_time` int(11) NOT NULL COMMENT '更新时间',
+  
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='赛事支持率信息';
+
 -- 赛事结果 ---
 DROP TABLE IF EXISTS `dl_league_match_result`;
 CREATE TABLE `dl_league_match_result` (

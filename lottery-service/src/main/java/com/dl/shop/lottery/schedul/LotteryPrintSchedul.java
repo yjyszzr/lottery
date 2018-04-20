@@ -20,6 +20,7 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
+import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 import com.dl.shop.lottery.service.LotteryRewardService;
@@ -48,6 +49,9 @@ public class LotteryPrintSchedul {
 	
 	 @Resource
 	 private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
+	 
+	 @Resource
+	 private DlMatchSupportService dlMatchSupportService;
 	 
 	/**
 	 * 赔率任务 （每5分钟执行一次）
@@ -133,6 +137,9 @@ public class LotteryPrintSchedul {
 		 log.info("当天比赛结果拉取开始");
 		int rst = lotteryMatchService.pullMatchResult();
 		log.info("当天比赛结果拉取完成");
+		log.info("比赛支持率拉取开始");
+		dlMatchSupportService.refreshMatchSupports();
+		log.info("比赛支持率拉取完成");
 	}
 	
 	/**

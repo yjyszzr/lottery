@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlMatchSupportMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlMatchSupport">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="support_id" jdbcType="INTEGER" property="supportId" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="win_num" jdbcType="INTEGER" property="winNum" />
+    <result column="lose_num" jdbcType="INTEGER" property="loseNum" />
+    <result column="draw_num" jdbcType="INTEGER" property="drawNum" />
+    <result column="pre_win" jdbcType="VARCHAR" property="preWin" />
+    <result column="pre_lose" jdbcType="VARCHAR" property="preLose" />
+    <result column="pre_draw" jdbcType="VARCHAR" property="preDraw" />
+    <result column="total" jdbcType="INTEGER" property="total" />
+    <result column="play_type" jdbcType="BIT" property="playType" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="update_time" jdbcType="INTEGER" property="updateTime" />
+    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+  </resultMap>
+  
+  <select id="getByChangciIdAndPlayType" resultMap="BaseResultMap">
+  	select * from dl_match_support where changci_id=#{changciId} and play_type=#{playType}
+  </select>
+</mapper>
