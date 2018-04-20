@@ -132,7 +132,7 @@
 	
   <update id="updateMatchResult" >
         update dl_match
-        set firstHalf = #{firstHalf}, whole=#{whole}, status=#{status}
+        set first_half = #{firstHalf}, whole=#{whole}, status=#{status}
         where match_id=#{matchId}
 	</update>
 	
