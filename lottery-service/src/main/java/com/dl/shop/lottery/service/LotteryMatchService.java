@@ -1083,10 +1083,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         } catch (Exception e) {
         	log.error(e.getMessage());
         }
-        
+       /* for(LotteryMatch match: matchResult) {
+        	lotteryMatchMapper.updateMatchResult(match);
+        }*/
         int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
         //保存比赛结果详情
-        //lotteryRewardService.saveRewardInfos(matchList);
+        lotteryRewardService.saveRewardInfos(matchList);
         //保存比赛结果详情2
         matchResultService.refreshMatchResultsFromZC(changciIds);
 		return rst;

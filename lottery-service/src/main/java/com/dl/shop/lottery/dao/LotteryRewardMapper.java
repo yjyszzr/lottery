@@ -13,4 +13,6 @@ public interface LotteryRewardMapper extends Mapper<LotteryReward> {
 	
 	List<LotteryReward> queryRewardByIssueBySelective(@Param("issue") String issue);
 	
+	LotteryReward queryRewardByChangciId(@Param("changciId") Integer changciId);
+	
 }

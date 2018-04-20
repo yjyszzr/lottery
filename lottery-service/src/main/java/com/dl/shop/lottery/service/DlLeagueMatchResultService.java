@@ -99,26 +99,31 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	    DlLeagueMatchResult crsMatchResult = this.crsMatchResult(changciId, poolRsObj);
 	    if(null != crsMatchResult) {
 	    	crsMatchResult.setPlayCode(playCode);
+	    	crsMatchResult.setLeagueFrom(0);
 	    	list.add(crsMatchResult);
 	    }
 	    DlLeagueMatchResult hadMatchResult = this.hadMatchResult(changciId, poolRsObj);
 	    if(null != hadMatchResult) {
 	    	hadMatchResult.setPlayCode(playCode);
+	    	crsMatchResult.setLeagueFrom(0);
 	    	list.add(hadMatchResult);
 	    }
 	    DlLeagueMatchResult hhadMatchResult = this.hhadMatchResult(changciId, poolRsObj);
 	    if(null != hhadMatchResult) {
 	    	hhadMatchResult.setPlayCode(playCode);
+	    	crsMatchResult.setLeagueFrom(0);
 	    	list.add(hhadMatchResult);
 	    }
 	    DlLeagueMatchResult ttgMatchResult = this.ttgMatchResult(changciId, poolRsObj);
 	    if(null != ttgMatchResult) {
 	    	ttgMatchResult.setPlayCode(playCode);
+	    	crsMatchResult.setLeagueFrom(0);
 	    	list.add(ttgMatchResult);
 	    }
 	    DlLeagueMatchResult hafuMatchResult = this.hafuMatchResult(changciId, poolRsObj);
 	    if(null != hafuMatchResult) {
 	    	hafuMatchResult.setPlayCode(playCode);
+	    	crsMatchResult.setLeagueFrom(0);
 	    	list.add(hafuMatchResult);
 	    }
 		return list;
@@ -163,7 +168,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 		matchResult.setChangciId(changciId);
 		String rsCode = hafuObj.getString("pool_rs");
 		if(StringUtils.isNotBlank(rsCode)) {
-			rsCode.replaceAll("h", "3").replaceAll("a", "0").replaceAll("d", "1");
+			rsCode = rsCode.replaceAll("h", "3").replaceAll("a", "0").replaceAll("d", "1");
 		}
 		matchResult.setCellCode(rsCode);
 		String rsName = hafuObj.getString("prs_name");

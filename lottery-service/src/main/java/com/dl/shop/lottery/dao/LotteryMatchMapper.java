@@ -66,6 +66,8 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	public List<LotteryMatch> getByTeamIdForhh(@Param("teamId")Integer teamId,  @Param("num")int i);
 	public List<LotteryMatch> getByTeamIdForvv(@Param("teamId")Integer teamId,  @Param("num")int i);
 
+	public void updateMatchResult(LotteryMatch match);
+
 	
 
 	

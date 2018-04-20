@@ -25,4 +25,8 @@
       	select * from dl_reward where status = 1 AND issue = #{issue}
   </select>
   
+  <select id="queryRewardByChangciId" resultMap="BaseResultMap">
+      	select * from dl_reward where changci_id = #{changciId}
+  </select>
+  
 </mapper>

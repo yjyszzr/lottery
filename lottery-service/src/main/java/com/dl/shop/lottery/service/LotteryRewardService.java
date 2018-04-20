@@ -237,15 +237,19 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param rewardData
 	 */
 	private void insertRewardData(LotteryMatch lotteryMatch, String rewardData) {
-		LotteryReward lotteryReward = new LotteryReward();
-		lotteryReward.setMatchId(lotteryMatch.getMatchId());
-		lotteryReward.setChangciId(lotteryMatch.getChangciId());
-		lotteryReward.setChangci(lotteryMatch.getChangci());
-		lotteryReward.setMatchTime(lotteryMatch.getMatchTime());
-		lotteryReward.setRewardData(rewardData);
-		lotteryReward.setStatus(ProjectConstant.AUDIT_STAY);
-		lotteryReward.setCreateTime(DateUtil.getCurrentTimeLong());
-		lotteryRewardMapper.insert(lotteryReward);
+		LotteryReward queryRewardByChangciId = lotteryRewardMapper.queryRewardByChangciId(lotteryMatch.getChangciId());
+		if(null == queryRewardByChangciId) {
+			LotteryReward lotteryReward = new LotteryReward();
+			lotteryReward.setMatchId(lotteryMatch.getMatchId());
+			lotteryReward.setChangciId(lotteryMatch.getChangciId());
+			lotteryReward.setChangci(lotteryMatch.getChangci());
+			lotteryReward.setMatchTime(lotteryMatch.getMatchTime());
+			lotteryReward.setRewardData(rewardData);
+			lotteryReward.setIssue(lotteryMatch.getMatchSn());
+			lotteryReward.setStatus(ProjectConstant.AUDIT_STAY);
+			lotteryReward.setCreateTime(DateUtil.getCurrentTimeLong());
+			lotteryRewardMapper.insert(lotteryReward);
+		}
 	}
 	
 	/**
@@ -267,14 +271,26 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			String pre = sdf.format(lotteryMatch.getShowTime());
 			int weekDay = LocalWeekDate.getCode(lotteryMatch.getChangci().substring(0, 2));
 			sb.append(pre + weekDay + lotteryMatch.getChangci().substring(2) + "|");
+			JSONObject jsonObject = jos.get(i-1);
+			if(null == jsonObject) {
+				continue;
+			}
 			if(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode() == i || MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode() == i) {
-				sb.append(MatchResultHadEnum.getCode(jos.get(i-1).getString("prs_name")));
+				String rsCode = jsonObject.getString("pool_rs");
+				if("h".equals(rsCode)) {
+					rsCode = MatchResultHadEnum.HAD_H.getCode().toString();
+				}else if("a".equals(rsCode)) {
+					rsCode = MatchResultHadEnum.HAD_A.getCode().toString();
+				}else {
+					rsCode = MatchResultHadEnum.HAD_D.getCode().toString();
+				}
+				sb.append(rsCode);
 			} else if(MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode() == i) {
-				sb.append(MatchResultCrsEnum.getCode(jos.get(i-1).getString("prs_name")));
+				sb.append(MatchResultCrsEnum.getCode(jsonObject.getString("prs_name")));
 			} else if(MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode() == i) {
-				sb.append(jos.get(i-1).getString("prs_name"));
+				sb.append(jsonObject.getString("prs_name"));
 			} else if(MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode() == i) {
-				sb.append(MatchResultHafuEnum.getCode(jos.get(i-1).getString("prs_name")));
+				sb.append(MatchResultHafuEnum.getCode(jsonObject.getString("prs_name")));
 			}
 			strBuilder.append(sb.toString() + ";");
 		}

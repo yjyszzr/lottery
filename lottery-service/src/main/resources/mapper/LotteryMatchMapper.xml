@@ -126,11 +126,11 @@
             
 	</update>
 	
-  <!-- <update id="updateMatchResult" parameterType="java.util.List">
+  <update id="updateMatchResult" >
         update dl_match
         set firstHalf = #{firstHalf}, whole=#{whole}, status=#{status}
         where match_id=#{matchId}
-	</update> -->
+	</update>
 	
 	
 	<select id="getByChangciId" resultMap="BaseResultMap">
