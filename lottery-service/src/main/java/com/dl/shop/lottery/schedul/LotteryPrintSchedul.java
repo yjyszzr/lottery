@@ -94,6 +94,7 @@ public class LotteryPrintSchedul {
         		}
         	}
         }
+        log.info("出票定时任务结束");
     }
 	
 	
@@ -103,10 +104,9 @@ public class LotteryPrintSchedul {
 	  */
 	 @Scheduled(cron = "0 0/2 * * * ?")
 	 public void fetchMatchScore() {
+		 log.info("当天比赛结果拉取开始");
 		int rst = lotteryMatchService.pullMatchResult();
-		if(rst == -1) {
-			log.info("当天比赛结果拉取完成");
-		}
+		log.info("当天比赛结果拉取完成");
 	}
 	
 	/**
@@ -114,6 +114,17 @@ public class LotteryPrintSchedul {
 	 */
 	@Scheduled(cron = "0 0/2 * * * ?")
 	public void fetchRewardTxt() {
+		log.info("获取开奖结果开始");
 		lotteryRewardService.resovleRewardTxt();
+		log.info("获取开奖结果结束");
+	}
+	/**
+	 * 赛事列表获取
+	 */
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public void fetchMatch() {
+		log.info("赛事列表获取开始");
+		lotteryMatchService.saveMatchList();
+		log.info("赛事列表获取结束");
 	}
 }
