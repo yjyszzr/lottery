@@ -312,7 +312,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 */
 	private JSONObject queryRewardData(Integer changCiId) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("mid", changCiId);
+		map.put("mid", changCiId.toString());
 		String json = NetWorkUtil.doGet(rewardUrl, map, "UTF-8");
 	    if (json.contains("error")) {
 	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), changCiId + "，中奖信息查询失败");
