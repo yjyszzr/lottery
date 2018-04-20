@@ -1,5 +1,6 @@
 package com.dl.shop.lottery.service;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
+import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.shop.lottery.dao.DlArticleMapper;
@@ -34,9 +36,10 @@ public class DlArticleService extends AbstractService<DlArticle> {
 
 	private DLArticleDTO articleDto(DlArticle article) {
 		DLArticleDTO dto = new DLArticleDTO();
-		dto.setAddTime(article.getAddTime());
+		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
-		dto.setArticleThumb(article.getArticleThumb());
+		List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
+		dto.setArticleThumb(picList);
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(article.getExtendCat());
 		dto.setKeywords(article.getKeywords());
@@ -55,7 +58,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			return null;
 		}
 		DLArticleDetailDTO dto = new DLArticleDetailDTO();
-		dto.setAddTime(article.getAddTime());
+		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
 		dto.setArticleThumb(article.getArticleThumb());
 		dto.setClickNumber(article.getClickNumber());

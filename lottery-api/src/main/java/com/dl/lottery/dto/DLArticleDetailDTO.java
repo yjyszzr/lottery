@@ -23,7 +23,7 @@ public class DLArticleDetailDTO implements Serializable{
 	@ApiModelProperty(value="文章缩略图，用‘，’分隔")
 	private String articleThumb;
 	@ApiModelProperty(value="发布时间")
-	private Integer addTime;
+	private String addTime;
 	@ApiModelProperty(value="阅读量")
 	private Integer clickNumber;
 	@ApiModelProperty(value="转向链接")
