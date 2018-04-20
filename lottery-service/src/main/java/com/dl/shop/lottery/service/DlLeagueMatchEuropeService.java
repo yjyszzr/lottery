@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -33,7 +34,7 @@ public class DlLeagueMatchEuropeService extends AbstractService<DlLeagueMatchEur
 	
 	@Resource
     private DlLeagueMatchEuropeMapper dlLeagueMatchEuropeMapper;
-
+	
 	public void refreshMatchEuropeInfoFromZC(Integer changciId) {
 		List<DlLeagueMatchEurope> europes = this.getMatchEuropeFromZC(changciId);
     	if(null != europes && europes.size() > 0) {

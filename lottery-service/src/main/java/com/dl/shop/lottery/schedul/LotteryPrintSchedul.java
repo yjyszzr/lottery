@@ -58,7 +58,9 @@ public class LotteryPrintSchedul {
 		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
 		if(CollectionUtils.isNotEmpty(changciIds)) {
 			for(Integer changciId: changciIds) {
+				log.info("拉取亚盘赔率信息"+changciId);
 				dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(changciId);
+				log.info("拉取欧赔赔率信息"+changciId);
 				dlLeagueMatchEuropeService.refreshMatchEuropeInfoFromZC(changciId);
 			}
 		}
