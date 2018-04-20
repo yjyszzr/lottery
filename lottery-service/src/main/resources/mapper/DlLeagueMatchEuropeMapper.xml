@@ -36,7 +36,7 @@
   	select count(id) from dl_league_match_europe where changci_id = #{changciId}
   </select>
   
-  <update id="updateMatchAsia">
+  <update id="updateMatchEurope">
   	update dl_league_match_europe 
   	set order_num= #{orderNum},
   	real_win = #{realWin},
