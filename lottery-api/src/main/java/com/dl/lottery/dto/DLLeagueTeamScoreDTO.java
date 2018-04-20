@@ -60,5 +60,8 @@ public class DLLeagueTeamScoreDTO implements Serializable{
 
 	@ApiModelProperty(value="0总1主2客")
     private Integer flag;
+	
+	@ApiModelProperty(value="排名")
+	private Integer rank;
 
 }

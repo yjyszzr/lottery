@@ -21,6 +21,7 @@
     <result column="ratio_d" jdbcType="VARCHAR" property="ratioD" />
     <result column="ratio_l" jdbcType="VARCHAR" property="ratioL" />
     <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="rank" jdbcType="INTEGER" property="rank" />
     <result column="flag" jdbcType="BIT" property="flag" />
     <result column="league_from" jdbcType="BIT" property="leagueFrom" />
   </resultMap>

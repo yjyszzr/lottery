@@ -113,6 +113,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Value("${match.url}")
 	private String matchUrl;
+	
+	private final static String MATCH_RESULT_OVER = "已完成";
 
     /**
      * 获取赛事列表
@@ -189,7 +191,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			if(matchPlays.size() < 5) {
+			if("6".equals(playType) && matchPlays.size() < 5) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
 				for(int i=1; i< 6; i++) {
 					if(!collect.contains(i)) {
@@ -1031,7 +1033,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(CollectionUtils.isEmpty(matchList)) {
 			return -1;
 		}
-		
+		List<String> matchs = matchList.stream().map(match->{
+			String changci = match.getChangci();
+			Date matchTime = match.getMatchTime();
+			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+			String matchDate = localDate.toString();
+			return matchDate+"_" + changci+"_"+match.getMatchId();
+		}).collect(Collectors.toList());
         Document doc = null;
         List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>();
         try {
@@ -1039,21 +1047,27 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             Elements elements =  doc.getElementsByClass("m-tab");
             Elements trs = elements.select("tbody tr");
             for (int i = 0; i < trs.size(); i++) {
-            	Elements tds = trs.get(i).select("td");
-            	LotteryMatch lotteryMatch = new  LotteryMatch();
-            	for(int j = 0,tdsLen = tds.size();j < tdsLen;j++) {
-            		if(j <= 1) {
-            			String str = getMatchSnStr(tds);
-            			if(StringUtils.isEmpty(str)) {
-            				break;
-            			}
-            			lotteryMatch.setMatchSn(str);
-            		}
-            		lotteryMatch.setFirstHalf(String.valueOf(tds.get(4).text()));
-            		lotteryMatch.setWhole(String.valueOf(tds.get(5).text()));
-            		lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
-            		matchResult.add(lotteryMatch);
+            	if(matchs.size() == 0) {
             		break;
+            	}
+            	Elements tds = trs.get(i).select("td");
+            	if(null != tds && tds.size() == 12) {
+            		String status = tds.get(9).text();
+            		if(MATCH_RESULT_OVER.equals(status)) {
+            			String matchDate = tds.get(0).text();
+            			String changci = tds.get(1).text();
+            			String matchId = this.matchId(matchs, matchDate, changci);
+            			if(StringUtils.isNotBlank(matchId)) {
+            				LotteryMatch lotteryMatch = new  LotteryMatch();
+            				String firstHalf = tds.get(4).text();
+            				String whole = tds.get(5).text();
+            				lotteryMatch.setMatchId(Integer.valueOf(matchId));
+            				lotteryMatch.setFirstHalf(firstHalf);
+            				lotteryMatch.setWhole(whole);
+            				lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
+            				matchResult.add(lotteryMatch);
+            			}
+            		}
             	}
             }
         } catch (Exception e) {
@@ -1065,6 +1079,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return rst;
 	}
 	
+	private String matchId(List<String> matchs, String matchDate, String changci) {
+		for(String match: matchs) {
+			String[] split = match.split("_");
+			if(split.length == 3) {
+				if(split[0].equals(matchDate) && split[1].equals(changci)){
+					matchs.remove(match);
+					return split[2];
+				}
+			}
+		}
+		return null;
+	}
+
 	/** 
 	 * 对抓取的数据构造赛事编号
 	 * @param tds

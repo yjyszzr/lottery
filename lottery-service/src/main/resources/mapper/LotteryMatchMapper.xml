@@ -67,7 +67,7 @@
   </select>
   
   <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
-  	select * from dl_match where status = '0' and DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 
+  	select * from dl_match where status = '0' and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt;= 90 and is_del = 0 and is_show=1 
   </select>
 
   
@@ -100,31 +100,37 @@
 	             <trim prefix="first_half =case" suffix="end,">
 	                 <foreach collection="list" item="i" index="index">
 	                         <if test="i.firstHalf!=null">
-	                          when match_sn=#{i.matchSn} then #{i.firstHalf}
+	                          when match_id=#{i.matchId} then #{i.firstHalf}
 	                         </if>
 	                 </foreach>
 	              </trim>
 	              <trim prefix="whole =case" suffix="end,">
 	                 <foreach collection="list" item="i" index="index">
 	                         <if test="i.whole!=null">
-	                          when match_sn=#{i.matchSn} then #{i.whole}
+	                          when match_id=#{i.matchId} then #{i.whole}
 	                         </if>
 	                 </foreach>
 	              </trim>
 	              <trim prefix="status =case" suffix="end,">
 	                 <foreach collection="list" item="i" index="index">
 	                         <if test="i.status!=null">
-	                          when match_sn=#{i.matchSn} then #{i.status}
+	                          when match_id=#{i.matchId} then #{i.status}
 	                         </if>
 	                 </foreach>
 	              </trim>
              </trim>
               where
             <foreach collection="list" separator="or" item="i" index="index" >
-              match_sn = #{i.matchSn}
+             match_id=#{i.matchId}
             </foreach>
             
 	</update>
+	
+  <!-- <update id="updateMatchResult" parameterType="java.util.List">
+        update dl_match
+        set firstHalf = #{firstHalf}, whole=#{whole}, status=#{status}
+        where match_id=#{matchId}
+	</update> -->
 	
 	
 	<select id="getByChangciId" resultMap="BaseResultMap">

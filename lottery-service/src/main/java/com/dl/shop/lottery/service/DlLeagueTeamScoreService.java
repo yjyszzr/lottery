@@ -39,6 +39,7 @@ public class DlLeagueTeamScoreService extends AbstractService<DlLeagueTeamScore>
 			dto.setTeamId(score.getTeamId());
 			dto.setTeamName(score.getTeamName());
 			dto.setBallClean(score.getBallClean());
+			dto.setRank(score.getRank());
     	}
     	return dto;
     }

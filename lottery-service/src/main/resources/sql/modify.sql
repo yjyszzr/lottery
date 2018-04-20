@@ -361,6 +361,7 @@ CREATE TABLE `dl_league_team_score` (
   `ratio_d` varchar(8) NOT NULL COMMENT '平率',
   `ratio_l` varchar(8) NOT NULL COMMENT '负率',
   `score` int(11) NOT NULL COMMENT '积分',
+  `rank` int(8) NOT NULL COMMENT '排名',
   `flag` tinyint(1) default 0 COMMENT '0总1主2客',
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩,1 500万',
   PRIMARY KEY (`id`)

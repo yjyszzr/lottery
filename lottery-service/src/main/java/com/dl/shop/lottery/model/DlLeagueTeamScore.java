@@ -99,6 +99,8 @@ public class DlLeagueTeamScore {
      * 积分
      */
     private Integer score;
+    
+    private Integer rank;
 
     /**
      * 0总1主2客
@@ -434,4 +436,12 @@ public class DlLeagueTeamScore {
     public void setLeagueFrom(Integer leagueFrom) {
         this.leagueFrom = leagueFrom;
     }
+
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
 }
