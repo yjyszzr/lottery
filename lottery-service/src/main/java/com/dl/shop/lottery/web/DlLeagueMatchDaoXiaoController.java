@@ -22,7 +22,7 @@ public class DlLeagueMatchDaoXiaoController {
     @Resource
     private DlLeagueMatchDaoXiaoService dlLeagueMatchDaoXiaoService;
 
-    @PostMapping("/add")
+   /* @PostMapping("/add")
     public BaseResult add(DlLeagueMatchDaoXiao dlLeagueMatchDaoXiao) {
         dlLeagueMatchDaoXiaoService.save(dlLeagueMatchDaoXiao);
         return ResultGenerator.genSuccessResult();
@@ -44,7 +44,7 @@ public class DlLeagueMatchDaoXiaoController {
     public BaseResult detail(@RequestParam Integer id) {
         DlLeagueMatchDaoXiao dlLeagueMatchDaoXiao = dlLeagueMatchDaoXiaoService.findById(id);
         return ResultGenerator.genSuccessResult(null,dlLeagueMatchDaoXiao);
-    }
+    }*/
 
     @PostMapping("/list")
     public BaseResult list(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size) {

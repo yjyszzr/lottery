@@ -66,6 +66,10 @@
   	select * from dl_match where DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 and status = 1
   </select>
   
+  <select id="getChangcidIsUnEnd" resultType="int">
+  	select changci_id from dl_match where is_del = 0 and is_show=1 and status = 0
+  </select>
+  
   <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
   	select * from dl_match where status = '0' and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt;= 90 and is_del = 0 and is_show=1 
   </select>

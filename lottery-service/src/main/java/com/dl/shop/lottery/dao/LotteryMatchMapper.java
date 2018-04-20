@@ -68,7 +68,11 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 
 	public void updateMatchResult(LotteryMatch match);
 
-	
+	/**
+	 * 获取未结束赛事的场次id,供摘取赔率信息用
+	 * @return
+	 */
+	public List<Integer> getChangcidIsUnEnd();
 
 	
 }

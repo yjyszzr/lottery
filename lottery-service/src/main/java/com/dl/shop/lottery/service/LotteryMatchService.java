@@ -1597,4 +1597,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return hvMatchTeamInfo;
 	}
+	
+	public List<Integer> getChangcidIsUnEnd(){
+		return lotteryMatchMapper.getChangcidIsUnEnd();
+	}
 }

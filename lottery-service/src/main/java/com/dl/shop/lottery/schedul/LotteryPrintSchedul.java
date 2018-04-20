@@ -18,6 +18,8 @@ import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
+import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 import com.dl.shop.lottery.service.LotteryRewardService;
@@ -40,6 +42,28 @@ public class LotteryPrintSchedul {
 	
 	@Resource
 	private LotteryRewardService lotteryRewardService;
+	
+	@Resource
+    private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
+	
+	 @Resource
+	 private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
+	 
+	/**
+	 * 赔率任务 （每5分钟执行一次）
+	 */
+	@Scheduled(cron = "0 0/5 * * * ?")
+    public void refreshPeilv() {
+		log.info("开始拉取赔率信息");
+		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
+		if(CollectionUtils.isNotEmpty(changciIds)) {
+			for(Integer changciId: changciIds) {
+				dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(changciId);
+				dlLeagueMatchEuropeService.refreshMatchEuropeInfoFromZC(changciId);
+			}
+		}
+		log.info("结束拉取赔率信息");
+	}
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）
