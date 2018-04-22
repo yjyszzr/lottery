@@ -12,6 +12,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
+import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.service.DlArticleService;
@@ -62,8 +63,25 @@ public class DlArticleController {
     	Integer size = param.getSize();
     	size = null == size?20:size;
         PageHelper.startPage(page, size);
-        List<DLArticleDTO> list = dlArticleService.findArticles();
-        PageInfo<DLArticleDTO> pageInfo = new PageInfo<DLArticleDTO>(list);
-        return ResultGenerator.genSuccessResult(null,pageInfo);
+        PageInfo<DLArticleDTO> rst = dlArticleService.findArticles();
+        return ResultGenerator.genSuccessResult(null,rst);
+    }
+    
+    
+    /**
+     * 根据分来查找相关文章
+     * @param param
+     * @return
+     */
+    @ApiOperation(value = "相关文章", notes = "相关文章")
+    @PostMapping("/relatedArticles")
+    public BaseResult<PageInfo<DLArticleDTO>> relatedArticles(@RequestBody ArticleCatParam param) {
+    	Integer page = param.getPage();
+    	page = null == page?1:page;
+    	Integer size = param.getSize();
+    	size = null == size?20:size;
+        PageHelper.startPage(page, size);
+        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(Integer.valueOf(param.getCurrentArticleId()),param.getExtendCat());
+        return ResultGenerator.genSuccessResult(null,rst);
     }
 }

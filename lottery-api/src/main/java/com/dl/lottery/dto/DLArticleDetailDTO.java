@@ -39,6 +39,7 @@ public class DLArticleDetailDTO implements Serializable{
 	@ApiModelProperty(value="列表展示形式 1- 单张图  2-两张图  3-三张图")
 	private Integer listStyle;
 
+	@ApiModelProperty(value="相关文章：默认展示3条")
 	private List<DLArticleDTO> articles;
 
 }

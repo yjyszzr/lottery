@@ -44,4 +44,10 @@
   	order by is_stick,add_time desc
   </select>
   
+  <select id="findArticlesRelated"  resultMap="BaseResultMap">
+  	select * from dl_article
+  	where is_show=1 and status=1 and is_delete=0 and article_id != #{articleId} and extend_cat=#{extendCat}
+  	order by is_stick,add_time desc
+  </select>
+  
 </mapper>
