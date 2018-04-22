@@ -28,7 +28,10 @@ public class DlArticleService extends AbstractService<DlArticle> {
     @Resource
     private DlArticleMapper dlArticleMapper;
 
-    
+    /**
+     * 全部文章
+     * @return
+     */
 	public PageInfo<DLArticleDTO> findArticles() {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		
@@ -53,6 +56,36 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		result.setList(dtos);
 		return result;
 	}
+	
+	
+	/**
+	 * 根据文章id集合查询所有文章
+	 */
+	public PageInfo<DLArticleDTO> findArticlesByids(List<Integer> articleIds) {
+		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
+		
+		List<DlArticle> findAll = dlArticleMapper.findArticlesByIds(articleIds);
+		
+		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
+		
+		if(null == findAll) {
+			return new PageInfo<DLArticleDTO>();
+		}
+		for(DlArticle article: findAll) {
+			DLArticleDTO dto = this.articleDto(article);
+			dtos.add(dto);
+		}
+		
+		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
+		try {
+			BeanUtils.copyProperties(pageInfo, result);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		} 
+		result.setList(dtos);
+		return result;
+	}
+	
 	
 	/**
 	 * 相关文章

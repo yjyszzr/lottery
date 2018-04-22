@@ -50,4 +50,14 @@
   	order by is_stick,add_time desc
   </select>
   
+  <select id="findArticlesByIds" parameterType="java.util.List" resultMap="BaseResultMap">
+  	select * from dl_article
+  	where is_show=1 and status=1 and is_delete=0 and article_id in
+  	<foreach collection="articleIds" index="index" item="item" open="(" separator="," close=")">  
+         #{item}  
+    </foreach>
+  	order by is_stick,add_time desc
+  </select>
+  
+  
 </mapper>

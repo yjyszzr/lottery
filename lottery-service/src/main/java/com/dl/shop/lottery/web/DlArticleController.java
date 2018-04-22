@@ -14,6 +14,7 @@ import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
+import com.dl.lottery.param.ArticleIdsParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.github.pagehelper.PageHelper;
@@ -84,4 +85,16 @@ public class DlArticleController {
         PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(Integer.valueOf(param.getCurrentArticleId()),param.getExtendCat());
         return ResultGenerator.genSuccessResult(null,rst);
     }
+    
+    
+    /**
+     * 根据文章id集合查询文章列表
+     */
+    @ApiOperation(value = "前端不用，根据文章id集合查询文章列表", notes = "前端不用，根据文章id集合查询文章列表")
+    @PostMapping("/queryArticlesByIds")
+    public BaseResult<PageInfo<DLArticleDTO>> queryArticlesByIds(@RequestBody ArticleIdsParam param) {
+        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesByids(param.getArticleIds());
+        return ResultGenerator.genSuccessResult(null,rst);
+    }
+    
 }
