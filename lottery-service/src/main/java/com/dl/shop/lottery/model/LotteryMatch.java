@@ -145,7 +145,7 @@ public class LotteryMatch {
      * 比赛状态：0-未拉取 1-已拉取
      */
     @Column(name = "status")
-    private String status;
+    private Integer status;
     
     @Column(name = "is_hot")
     private Integer isHot;
@@ -158,11 +158,11 @@ public class LotteryMatch {
 		this.isHot = isHot;
 	}
 
-	public String getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

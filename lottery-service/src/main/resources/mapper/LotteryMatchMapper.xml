@@ -24,7 +24,7 @@
     <result column="match_sn" jdbcType="VARCHAR" property="matchSn" />
     <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
     <result column="whole" jdbcType="VARCHAR" property="whole" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_hot" jdbcType="INTEGER" property="isHot" />
   </resultMap>
   

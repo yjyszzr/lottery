@@ -393,8 +393,8 @@ public class ProjectConstant {
     public static int PRICE = 2;
     
     
-    public static String MATCH_NOT_FINISH = "0";//比赛未结束
-    public static String MATCH_FINISH = "1";//比赛结束
+    public static int MATCH_NOT_FINISH = 0;//比赛未结束
+    public static int MATCH_FINISH = 1;//比赛结束
     
     
     /**
