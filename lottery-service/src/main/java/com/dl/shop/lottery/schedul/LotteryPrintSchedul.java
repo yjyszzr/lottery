@@ -23,6 +23,7 @@ import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.param.OrderSnListGoPrintLotteryParam;
 import com.dl.order.param.UpdateOrderStatusParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
@@ -65,7 +66,7 @@ public class LotteryPrintSchedul {
 	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
-        List<String> orderSns = orderService.orderSnListGoPrintLottery().getData();
+        List<String> orderSns = orderService.orderSnListGoPrintLottery(new OrderSnListGoPrintLotteryParam()).getData();
         if(CollectionUtils.isEmpty(orderSns)) {
         	log.info("暂时没有可出票的订单号");
         	return;
