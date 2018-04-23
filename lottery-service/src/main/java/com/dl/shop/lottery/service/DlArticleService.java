@@ -154,6 +154,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
 		dto.setTitle(article.getTitle());
+		dto.setContent(article.getContent());
 		dto.setSummary(article.getSummary());
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
 		

@@ -22,6 +22,8 @@ public class DLArticleDetailDTO implements Serializable{
 	private String keywords;
 	@ApiModelProperty(value="文章缩略图，用‘，’分隔")
 	private String articleThumb;
+	@ApiModelProperty(value="富文本内容")
+	private String content;
 	@ApiModelProperty(value="发布时间")
 	private String addTime;
 	@ApiModelProperty(value="阅读量")
