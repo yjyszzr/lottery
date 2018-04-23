@@ -52,35 +52,12 @@ public class LotteryPrintSchedul {
 	@Resource
 	private LotteryRewardService lotteryRewardService;
 	
-	@Resource
-    private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
-	
-	 @Resource
-	 private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
-	 
 	 @Resource
 	 private DlMatchSupportService dlMatchSupportService;
 	 
 	 @Resource
 	 private IOrderService orderService;
 	 
-	/**
-	 * 赔率任务 （每5分钟执行一次）
-	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
-    public void refreshPeilv() {
-		log.info("开始拉取赔率信息");
-		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
-		if(CollectionUtils.isNotEmpty(changciIds)) {
-			for(Integer changciId: changciIds) {
-				log.info("拉取亚盘赔率信息"+changciId);
-				dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(changciId);
-				log.info("拉取欧赔赔率信息"+changciId);
-				dlLeagueMatchEuropeService.refreshMatchEuropeInfoFromZC(changciId);
-			}
-		}
-		log.info("结束拉取赔率信息");
-	}
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）

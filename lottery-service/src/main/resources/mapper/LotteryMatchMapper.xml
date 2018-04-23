@@ -24,7 +24,7 @@
     <result column="match_sn" jdbcType="VARCHAR" property="matchSn" />
     <result column="first_half" jdbcType="VARCHAR" property="firstHalf" />
     <result column="whole" jdbcType="VARCHAR" property="whole" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_hot" jdbcType="INTEGER" property="isHot" />
   </resultMap>
   
@@ -67,7 +67,8 @@
   </select>
   
   <select id="getChangcidIsUnEnd" resultType="int">
-  	select changci_id from dl_match where is_del = 0 and is_show=1 and status = 0
+  	select changci_id from dl_match 
+  	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
   </select>
   
   <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
