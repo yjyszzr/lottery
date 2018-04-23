@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -143,6 +144,7 @@ public class LotteryPrintSchedul {
         		}
         		orderSns.removeAll(successOrderSn);
         		if(!orderSns.isEmpty()) {
+        			log.info("出票失败的订单："+orderSns.stream().collect(Collectors.joining(",")));
         			UpdateOrderStatusParam param = new UpdateOrderStatusParam();
         			param.setOrderSns(orderSns);
         			param.setAcceptTime(DateUtil.getCurrentTimeLong());
