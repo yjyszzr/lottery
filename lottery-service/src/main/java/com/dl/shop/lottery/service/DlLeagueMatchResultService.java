@@ -2,6 +2,7 @@ package com.dl.shop.lottery.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -19,12 +20,15 @@ import com.dl.base.util.NetWorkUtil;
 import com.dl.shop.lottery.dao.DlLeagueMatchResultMapper;
 import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
+import com.dl.shop.lottery.model.DlLeagueMatchResultStringDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchResult> {
 	
 	private final static Logger logger = Logger.getLogger(DlLeagueMatchAsiaService.class);
@@ -263,5 +267,21 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	    return matchResult;
 	}
 
-
+	/**
+	 * 
+	 * @param playCode
+	 * @return
+	 */
+	public List<DlLeagueMatchResult> queryMatchResultByPlayCode(String playCode){
+		List<DlLeagueMatchResult> matchResultList = dlLeagueMatchResultMapper.queryMatchResultByPlayCode(playCode);
+		if(matchResultList.size() == 0) {
+			return new ArrayList<DlLeagueMatchResult>();
+		}
+		
+		if(matchResultList.size() != 5) {
+			log.error("期次为:"+playCode+"的开赛结果不是5个,请检查数据库");
+			return new ArrayList<DlLeagueMatchResult>();
+		}
+		return matchResultList;
+	}
 }

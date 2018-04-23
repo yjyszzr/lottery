@@ -20,9 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javax.annotation.Resource;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dl.base.constant.CommonConstants;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
@@ -50,8 +49,11 @@ import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
+import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserAccountService;
+import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.dto.UserIdAndRewardDTO;
+import com.dl.member.param.SysConfigParam;
 import com.dl.member.param.UserIdAndRewardListParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderWithUserDTO;
@@ -65,6 +67,8 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.LotteryRewardMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
 import com.dl.shop.lottery.dao.PeriodRewardMapper;
+import com.dl.shop.lottery.model.DlLeagueMatchResult;
+import com.dl.shop.lottery.model.DlLeagueMatchResultStringDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryReward;
@@ -111,6 +115,12 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	
 	@Resource
 	private IUserAccountService userAccountService;
+	
+	@Resource
+	private DlLeagueMatchResultService leagueMatchResultService;
+	
+	@Resource
+	private ISysConfigService sysConfigService;
 	
 	@Value("${reward.url}")
 	private String rewardUrl;
@@ -163,20 +173,31 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void toAwarding(DlToAwardingParam param) {
+		//检查是否设置了派奖阈值
+		SysConfigParam sysConfigParam = new SysConfigParam();
+		sysConfigParam.setBusinessId(CommonConstants.BUSINESS_ID_REWARD);
+		BaseResult<SysConfigDTO> sysRst = sysConfigService.querySysConfig(sysConfigParam);
+		if(sysRst.getCode() != 0) {
+			log.warn("派奖前，请前往后台管理设置派奖的奖金阈值");
+			return;
+		}
+		BigDecimal limitValue = sysRst.getData().getValue();
+		
 		//获取某个期次的获奖信息
-		List<LotteryReward> rewards = lotteryRewardMapper.queryRewardByIssueBySelective(param.getIssue());
-		if(CollectionUtils.isEmpty(rewards)) {
+		List<DlLeagueMatchResult> matchResultList = leagueMatchResultService.queryMatchResultByPlayCode(param.getIssue());
+		
+		if(CollectionUtils.isEmpty(matchResultList)) {
 			log.info(new Date()+"没有开奖信息");
 			return;
 		}
-		LotteryReward lotteryReward = rewards.get(0);
 		//匹配中奖信息
-		this.compareReward(lotteryReward);
+		this.compareReward(matchResultList);
 		//更新订单及订单详情
 		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(param.getIssue());
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
 			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
-			lotteryPrintMoneyDTO.setRewardLimit(lotteryReward.getRewardLimit());
+			
+			lotteryPrintMoneyDTO.setRewardLimit(limitValue);
 			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
 			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
 				OrderDataParam dlOrderDataDTO = new OrderDataParam();
@@ -342,11 +363,11 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	/**
 	 * 单个开奖结果匹配中奖-- 可以采用定时任务 或 提供给后台管理调用
 	 */
-	public void compareReward(LotteryReward rewards) {
-		// 该期次的中奖号码
-		String rewardStakes = rewards.getRewardData();
+	public void compareReward(List<DlLeagueMatchResult> matchResultList) {
+		// 该期次的开奖结果
+		List<String> rewardStakesList = this.createRewardStakesList2(matchResultList);
 		// 获取该期次未与开奖信息比较的出票集合
-		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectPrintsIncludeCurIssue(rewards.getIssue());
+		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.selectPrintsIncludeCurIssue(matchResultList.get(0).getPlayCode());
 		if (CollectionUtils.isEmpty(lotteryPrintList)) {
 			return;
 		}
@@ -354,7 +375,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		List<LotteryPrint> updatelotteryPrintList = new ArrayList<>();
 		for (LotteryPrint lp : lotteryPrintList) {
 			List<String> stakesList = this.createStakesList1(lp.getStakes());
-			List<String> rewardStakesList = this.createRewardStakesList2(rewardStakes);
 			// 匹配获奖信息:出票号码和开奖号码相同的 就是中奖号码
 			List<String> same = NuclearUtil.getSame(stakesList, rewardStakesList);
 			if (CollectionUtils.isEmpty(same)) {
@@ -367,7 +387,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			}
 			
 			// 最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
-			TicketRewardDTO ticketRewardDTO = this.createTicketRewardDTO(rewardStakes, lp, rewardStakesWithSpDTO);
+			TicketRewardDTO ticketRewardDTO = this.createTicketRewardDTO(rewardStakesList, lp, rewardStakesWithSpDTO);
 			
 			LotteryPrint updatePrint = new LotteryPrint();
 			updatePrint.setRealRewardMoney(ticketRewardDTO.getRewardSum());
@@ -397,7 +417,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param rewardStakesWithSpDTO
 	 * @return
 	 */
-	public TicketRewardDTO createTicketRewardDTO(String rewardStakes,LotteryPrint lp,RewardStakesWithSpDTO rewardStakesWithSpDTO) {
+	public TicketRewardDTO createTicketRewardDTO(List<String> rewardStakes,LotteryPrint lp,RewardStakesWithSpDTO rewardStakesWithSpDTO) {
 		TicketRewardDTO ticketRewardDTO = new TicketRewardDTO();
 		Double rewardSum = 0.00;
 		String compareStatus = ProjectConstant.NOT_FINISH_COMPARE;
@@ -533,10 +553,12 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param rewardsTakes
 	 * @return
 	 */
-	public List<String> createRewardStakesList2(String rewardsTakes) {
-		String[] arr = rewardsTakes.split(";");
-	    List<String> list2 = java.util.Arrays.asList(arr);
-	    return list2;
+	public List<String> createRewardStakesList2(List<DlLeagueMatchResult> matchResultList) {
+		List<String> rewardStakesList = matchResultList.stream().map(s->{
+			return "0"+s.getPlayType()+"|"+s.getPlayCode()+"|"+s.getCellCode();
+		}).collect(Collectors.toList());
+		
+		return rewardStakesList;
 	}
 	
 	/**

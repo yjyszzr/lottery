@@ -20,7 +20,7 @@ public class DLArticleDTO implements Serializable{
 	private String title;
 	@ApiModelProperty(value="关键字")
 	private String keywords;
-	@ApiModelProperty(value="文章缩略图，用‘，’分隔")
+	@ApiModelProperty(value="列表用的缩略图")
 	private List<String> articleThumb;
 	@ApiModelProperty(value="发布时间")
 	private String addTime;
@@ -36,7 +36,7 @@ public class DLArticleDTO implements Serializable{
 	private Integer matchId;
 	@ApiModelProperty(value="主队- 1  客队 - 2")
 	private String relatedTeam;
-	@ApiModelProperty(value="列表展示形式 1- 单张图  2-两张图  3-三张图")
+	@ApiModelProperty(value="列表展示形式:0 -纯文字  1- 单张图  2-两张图  3-三张图  4-视频")
 	private Integer listStyle;
 
 

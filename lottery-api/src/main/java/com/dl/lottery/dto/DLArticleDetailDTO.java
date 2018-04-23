@@ -26,7 +26,7 @@ public class DLArticleDetailDTO implements Serializable{
 	private String addTime;
 	@ApiModelProperty(value="阅读量")
 	private Integer clickNumber;
-	@ApiModelProperty(value="转向链接")
+	@ApiModelProperty(value="转向链接:分享的时使用")
 	private String link;
 	@ApiModelProperty(value="文章摘要")
 	private String summary;

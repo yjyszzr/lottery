@@ -18,4 +18,8 @@
   <select id="getCountByChangciId" resultType="int">
   	select count(id) from dl_league_match_result where changci_id = #{changciId}
   </select>
+  
+  <select id="queryMatchResultByPlayCode" resultMap="BaseResultMap">
+  	select * from dl_league_match_result where play_code = #{playCode}
+  </select>
 </mapper>

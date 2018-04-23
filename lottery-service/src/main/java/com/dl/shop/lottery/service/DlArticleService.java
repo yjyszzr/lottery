@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dl.base.enums.CommonEnum;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DLArticleDTO;
@@ -125,7 +126,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
 		dto.setArticleThumb(picList);
 		dto.setClickNumber(article.getClickNumber());
-		dto.setExtendCat(article.getExtendCat());
+		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
 		dto.setKeywords(article.getKeywords());
 		dto.setLink(article.getLink());
 		dto.setListStyle(article.getListStyle());

@@ -10,10 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DlHallDTO;
+import com.dl.lottery.dto.DlHallMixDTO;
 import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
+import com.dl.lottery.param.PageParam;
+import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
+import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -24,10 +29,29 @@ public class LotteryHallController {
 	@Resource
     private LotteryHallService lotteryHallService;
 	
+	@Resource
+    private DlArticleService articleService;
+	
+	@ApiOperation(value = "获取彩票大厅数据和咨询列表数据", notes = "获取彩票大厅数据和咨询列表数据")
+    @PostMapping("/getHallMixData")
+    public BaseResult<DlHallMixDTO> getHallDataMix(@Valid @RequestBody PageParam pageParam) {
+		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
+		DlHallDTO dlHallDTO = lotteryHallService.getHallData();
+		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
+		
+		dlHallMixDTO.setDlHallDTO(dlHallDTO);
+		dlHallMixDTO.setDlArticlePage(pageInfo);
+		
+    	return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
+    }
+	
+	
 	@ApiOperation(value = "获取彩票大厅数据", notes = "获取彩票大厅数据")
     @PostMapping("/getHallData")
     public BaseResult<DlHallDTO> getHallData() {
 		DlHallDTO dlHallDTO = lotteryHallService.getHallData();
+		
+		
     	return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
     }
 	
