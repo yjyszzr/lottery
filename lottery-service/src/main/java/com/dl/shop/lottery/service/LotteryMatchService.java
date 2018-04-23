@@ -1100,12 +1100,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         for(LotteryMatch match: matchResult) {
         	lotteryMatchMapper.updateMatchResult(match);
         }
+        log.info("保存比赛结果结束");
         int rst = 1;
         //int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
         //保存比赛结果详情
        // lotteryRewardService.saveRewardInfos(matchList);
         //保存比赛结果详情2
+        log.info("保存比赛结果详情");
         matchResultService.refreshMatchResultsFromZC(changciIds);
+        log.info("保存比赛结果详情结束 ");
 		return rst;
 	}
 	/**
