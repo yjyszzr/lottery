@@ -42,6 +42,10 @@ public class DLArticleDetailDTO implements Serializable{
 	private Integer listStyle;
 	@ApiModelProperty(value="标签")
 	private List<String> labelsArr;
+	
+	@ApiModelProperty(value="0-已收藏  1-未收藏")
+	private String isCollect;
+	
 	@ApiModelProperty(value="相关文章：默认展示3条")
 	private List<DLArticleDTO> articles;
 

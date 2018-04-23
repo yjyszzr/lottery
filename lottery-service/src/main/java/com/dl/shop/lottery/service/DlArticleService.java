@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.enums.CommonEnum;
+import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
+import com.dl.lottery.param.ArticleCatParam;
+import com.dl.member.api.IUserCollectService;
+import com.dl.member.param.ArticleIdParam;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.github.pagehelper.PageHelper;
@@ -28,6 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DlArticleService extends AbstractService<DlArticle> {
     @Resource
     private DlArticleMapper dlArticleMapper;
+    
+    @Resource
+    private IUserCollectService userCollectService;
 
     /**
      * 全部文章
@@ -93,13 +100,19 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	 * @param articleCat
 	 * @return
 	 */
-	public PageInfo<DLArticleDTO> findArticlesRelated(Integer articleId) {
+	public PageInfo<DLArticleDTO> findArticlesRelated( ArticleCatParam param) {
+        Integer articleId = Integer.valueOf(param.getCurrentArticleId());
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		DlArticle curArticle = this.findBy("articleId", articleId);
 		if(null == curArticle) {
 			return new PageInfo<DLArticleDTO>();
 		}
 		
+    	Integer page = param.getPage();
+    	page = null == page?1:page;
+    	Integer size = param.getSize();
+    	size = null == size?20:size;
+        PageHelper.startPage(page, size);
 		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId,curArticle.getExtendCat());
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
 		if(null == findAllRelated) {
@@ -146,6 +159,18 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			return null;
 		}
 		DLArticleDetailDTO dto = new DLArticleDetailDTO();
+		
+		//是否收藏
+		String isCollect = "";
+		ArticleIdParam articleIdParam = new ArticleIdParam();
+		articleIdParam.setArticleId(id);
+		BaseResult<Integer> rst =  userCollectService.isCollect(articleIdParam);
+		if(rst.getCode() != 0) {
+			log.error(rst.getData().toString());
+			isCollect = "1";
+		}
+		
+		isCollect = String.valueOf(rst.getData());
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
 		dto.setArticleThumb(article.getArticleThumb());
@@ -158,6 +183,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setRelatedTeam(article.getRelatedTeam());
 		dto.setTitle(article.getTitle());
 		dto.setContent(article.getContent());
+		dto.setIsCollect(isCollect);
 		dto.setSummary(article.getSummary());
 		List<String> labelList = Arrays.asList(article.getKeywords().split(","));
 		dto.setLabelsArr(labelList);

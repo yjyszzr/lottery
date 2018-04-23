@@ -77,12 +77,7 @@ public class DlArticleController {
     @ApiOperation(value = "相关文章", notes = "相关文章")
     @PostMapping("/relatedArticles")
     public BaseResult<PageInfo<DLArticleDTO>> relatedArticles(@RequestBody ArticleCatParam param) {
-    	Integer page = param.getPage();
-    	page = null == page?1:page;
-    	Integer size = param.getSize();
-    	size = null == size?20:size;
-        PageHelper.startPage(page, size);
-        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(Integer.valueOf(param.getCurrentArticleId()));
+        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(param);
         return ResultGenerator.genSuccessResult(null,rst);
     }
     
