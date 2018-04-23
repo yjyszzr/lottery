@@ -121,6 +121,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param param
 	 */
 	public void callbackStake(DlCallbackStakeParam param) {
+		log.info("************************callbackStake***********订单出票回调");
 		List<CallbackStake> callbackStakes = param.getOrders();
 		if(CollectionUtils.isNotEmpty(callbackStakes)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

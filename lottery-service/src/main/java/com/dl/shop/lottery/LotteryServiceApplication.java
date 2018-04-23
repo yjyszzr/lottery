@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 @Import({RestTemplateConfig.class, Swagger2.class, WebMvcConfigurer.class, FeignConfiguration.class})
 @MapperScan(ProjectConstant.MAPPER_PACKAGE)
 @EnableEurekaClient
-@EnableFeignClients({"com.dl.member.api", "com.dl.order.api"})
+@EnableFeignClients({"com.dl.member.api", "com.dl.order.api", "com.dl.shop.payment.api"})
 public class LotteryServiceApplication {
 	
     public static void main(String[] args) {
