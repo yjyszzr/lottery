@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,11 +50,12 @@ public class RefreshPeilvSchedul {
 	 @Resource
 	 private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
 	 
+	 private final static String START_FLAG = "in";
 	 
 	/**
 	 * 赔率任务 （每5分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	//@Scheduled(cron = "0 0/5 * * * ?")
     public void refreshPeilv() {
 		log.info("开始拉取赔率信息");
 		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
