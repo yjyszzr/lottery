@@ -66,11 +66,13 @@ public class LotteryPrintSchedul {
 	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
-        List<String> orderSns = orderService.orderSnListGoPrintLottery(new OrderSnListGoPrintLotteryParam()).getData();
+        OrderSnListGoPrintLotteryParam orderSnListGoPrintLotteryParam = new OrderSnListGoPrintLotteryParam();
+        List<String> orderSns = orderService.orderSnListGoPrintLottery(orderSnListGoPrintLotteryParam).getData();
         if(CollectionUtils.isEmpty(orderSns)) {
         	log.info("暂时没有可出票的订单号");
         	return;
         }
+        log.info("可出票的订单数："+orderSns.size());
         List<LotteryPrint> lotteryPrints = lotteryPrintMapper.getPrintLotteryListByOrderSns(orderSns);
         if(CollectionUtils.isNotEmpty(lotteryPrints)) {
         	DlToStakeParam dlToStakeParam = new DlToStakeParam();
