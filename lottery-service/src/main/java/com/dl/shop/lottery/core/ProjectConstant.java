@@ -40,6 +40,8 @@ public class ProjectConstant {
     public final static Integer AUDIT_FAIL= 2;    //审核失败
     
     public final static Integer CALLBACK_STAKE_SUCCESS= 16;   //出票回调成功状态
+    public final static Integer CALLBACK_STAKE_FAIL= 17;   //出票回调失败状态
+    public final static Integer CALLBACK_STAKE_ING= 8;   //出票回调出票中状态
     
     public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖{1}元";
     

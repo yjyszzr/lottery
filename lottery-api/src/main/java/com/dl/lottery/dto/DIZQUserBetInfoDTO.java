@@ -45,6 +45,9 @@ public class DIZQUserBetInfoDTO implements Serializable{
 	private Integer userId;
 	@ApiModelProperty("期次")
 	private String issue;
+	@ApiModelProperty("投注票数")
+	private Integer ticketNum;
+	
 	
 	public DIZQUserBetInfoDTO(DlJcZqMatchBetParam param){
 		this.times = param.getTimes();

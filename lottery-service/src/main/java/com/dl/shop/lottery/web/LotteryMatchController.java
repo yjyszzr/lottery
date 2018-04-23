@@ -357,10 +357,12 @@ public class LotteryMatchController {
 			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
 		}
 		int betNum = betInfo.getBetNum();
+		int ticketNum = betInfo.getTicketNum();
 		//缓存订单支付信息
 		DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO(param);
 		dto.setUserBetCellInfos(userBetCellInfos);
 		dto.setBetNum(betNum);
+		dto.setTicketNum(ticketNum);
 		dto.setMoney(orderMoney);
 		dto.setBonusAmount(bonusAmount);
 		dto.setBonusId(bonusId);

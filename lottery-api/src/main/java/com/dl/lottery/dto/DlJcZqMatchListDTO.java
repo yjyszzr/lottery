@@ -22,4 +22,7 @@ public class DlJcZqMatchListDTO implements Serializable{
 
 	@ApiModelProperty(value = "最近几天的赛事列表", required = true)
 	public List<DlJcZqDateMatchDTO> playList = new ArrayList<DlJcZqDateMatchDTO>();
+	
+	@ApiModelProperty(value = "所有联赛列表，用来作筛选条件", required = true)
+	public List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>();
 }

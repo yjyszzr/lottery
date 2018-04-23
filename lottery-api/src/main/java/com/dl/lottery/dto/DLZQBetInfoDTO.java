@@ -33,4 +33,6 @@ public class DLZQBetInfoDTO implements Serializable{
 	private List<DIZQUserBetCellInfoDTO>  userBetCellInfos;
 	@ApiModelProperty("预出票信息列表")
 	private List<LotteryPrintDTO> lotteryPrints;
+	@ApiModelProperty("投注票数")
+	private int ticketNum;
 }

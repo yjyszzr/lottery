@@ -1,5 +1,4 @@
 package com.dl.shop.lottery.web;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -14,13 +13,11 @@ import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.LeagueMatchAsiaDTO;
 import com.dl.lottery.param.ListMatchInfoParam;
 import com.dl.lottery.param.RefreshMatchParam;
-import com.dl.shop.lottery.model.DlLeagueMatchAsia;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.entity.Condition;
 
 /**
 * Created by CodeGenerator on 2018/04/15.
