@@ -54,6 +54,7 @@ import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
@@ -157,6 +158,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
+		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
 		for(LotteryMatch match: matchList) {
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			Date matchTimeDate = match.getMatchTime();
@@ -197,6 +199,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
+			if(null == leagueInfoMap.get(match.getLeagueId())) {
+				LeagueInfoDTO leagueInfo = new LeagueInfoDTO();
+				leagueInfo.setLeagueAddr(match.getLeagueAddr());
+				leagueInfo.setLeagueId(match.getLeagueId());
+				leagueInfo.setLeagueName(match.getLeagueName());
+				leagueInfoMap.put(match.getLeagueId(), leagueInfo);
+			}
+			
 			if("6".equals(playType) && matchPlays.size() < 5) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
 				for(int i=1; i< 6; i++) {
@@ -227,6 +237,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		map.forEach((key, value) ->{
 			dlJcZqMatchListDTO.getPlayList().add(value);
+		});
+		leagueInfoMap.forEach((key,value)->{
+			dlJcZqMatchListDTO.getLeagueInfos().add(value);
 		});
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
@@ -974,6 +987,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setMinBonus(Double.valueOf(String.format("%.2f", minBonus)));
 		betInfoDTO.setTimes(param.getTimes());
 		betInfoDTO.setBetNum(betCellList.size());
+		betInfoDTO.setTicketNum(lotteryPrints.size());
 		Double money = betCellList.size()*param.getTimes()*2.0;
 		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
