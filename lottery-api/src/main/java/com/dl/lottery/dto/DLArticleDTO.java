@@ -37,9 +37,6 @@ public class DLArticleDTO implements Serializable{
 	@ApiModelProperty(value="主队- 1  客队 - 2")
 	private String relatedTeam;
 	
-	@ApiModelProperty(value="标签")
-	private List<String> labelsArr;
-	
 	@ApiModelProperty(value="列表展示形式:0 -纯文字  1- 单张图  2-两张图  3-三张图  4-视频")
 	private Integer listStyle;
 

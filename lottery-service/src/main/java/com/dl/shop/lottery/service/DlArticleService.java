@@ -93,16 +93,19 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	 * @param articleCat
 	 * @return
 	 */
-	public PageInfo<DLArticleDTO> findArticlesRelated(Integer articleId,String articleCat) {
+	public PageInfo<DLArticleDTO> findArticlesRelated(Integer articleId) {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
+		DlArticle curArticle = this.findBy("articleId", articleId);
+		if(null == curArticle) {
+			return new PageInfo<DLArticleDTO>();
+		}
 		
-		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId,articleCat);
-		
+		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId,curArticle.getExtendCat());
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
-		
 		if(null == findAllRelated) {
 			return new PageInfo<DLArticleDTO>();
 		}
+		
 		for(DlArticle article: findAllRelated) {
 			DLArticleDTO dto = this.articleDto(article);
 			dtos.add(dto);
@@ -132,8 +135,6 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
-		List<String> labelList = Arrays.asList(article.getKeywords().split(","));
-		dto.setLabelsArr(labelList);
 		dto.setTitle(article.getTitle());
 		dto.setSummary(article.getSummary());
 		return dto;
@@ -158,6 +159,8 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setTitle(article.getTitle());
 		dto.setContent(article.getContent());
 		dto.setSummary(article.getSummary());
+		List<String> labelList = Arrays.asList(article.getKeywords().split(","));
+		dto.setLabelsArr(labelList);
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
 		
 		//第一期通过 分类 来关联
