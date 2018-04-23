@@ -70,7 +70,7 @@ public class DlArticleController {
     
     
     /**
-     * 根据分来查找相关文章
+     * 根据当前文章的分类查找相关文章
      * @param param
      * @return
      */
@@ -82,7 +82,7 @@ public class DlArticleController {
     	Integer size = param.getSize();
     	size = null == size?20:size;
         PageHelper.startPage(page, size);
-        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(Integer.valueOf(param.getCurrentArticleId()),param.getExtendCat());
+        PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(Integer.valueOf(param.getCurrentArticleId()));
         return ResultGenerator.genSuccessResult(null,rst);
     }
     
