@@ -132,6 +132,8 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
+		List<String> labelList = Arrays.asList(article.getKeywords().split(","));
+		dto.setLabelsArr(labelList);
 		dto.setTitle(article.getTitle());
 		dto.setSummary(article.getSummary());
 		return dto;

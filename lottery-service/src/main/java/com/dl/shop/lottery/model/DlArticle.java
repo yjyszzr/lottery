@@ -114,6 +114,14 @@ public class DlArticle {
      */
     @Column(name = "related_team")
     private String relatedTeam;
+    
+    
+    /**
+     * 文章标签
+     */
+    @Column(name = "label_defaults")
+    private String labelDefaults;
+    
 
     /**
      * 列表展示形式 1- 单张图  2-两张图  3-三张图
