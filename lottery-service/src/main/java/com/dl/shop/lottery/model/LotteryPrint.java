@@ -149,8 +149,21 @@ public class LotteryPrint {
     private String compareStatus;
     
     
+    /**
+     * compared_stakes
+     */
+    @Column(name = "compared_stakes")
+    private String comparedStakes;
     
-    public BigDecimal getRealRewardMoney() {
+    public String getComparedStakes() {
+		return comparedStakes;
+	}
+
+	public void setComparedStakes(String comparedStakes) {
+		this.comparedStakes = comparedStakes;
+	}
+
+	public BigDecimal getRealRewardMoney() {
 		return realRewardMoney;
 	}
 
