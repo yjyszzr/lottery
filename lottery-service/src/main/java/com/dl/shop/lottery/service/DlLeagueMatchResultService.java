@@ -283,10 +283,10 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 			return new ArrayList<DlLeagueMatchResult>();
 		}
 		
-		if(matchResultList.size() != 5) {
+		/*if(matchResultList.size() != 5) {
 			log.error("期次为:"+playCode+"的开赛结果不是5个,请检查数据库");
 			return new ArrayList<DlLeagueMatchResult>();
-		}
+		}*/
 		return matchResultList;
 	}
 }
