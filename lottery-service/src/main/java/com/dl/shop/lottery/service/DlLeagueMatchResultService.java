@@ -48,21 +48,23 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 			if(StringUtils.isBlank(changciId)) {
 				continue;
 			}
-			this.refreshMatchResultFromZC(Integer.valueOf(changciId));
+			List<DlLeagueMatchResult> results = this.refreshMatchResultFromZC(Integer.valueOf(changciId));
 		}
 	}
     /**
      * 从竞彩网拉取比赛结果到数据库
      * @param matchId
      */
-    public void refreshMatchResultFromZC(Integer changciId) {
+    public List<DlLeagueMatchResult> refreshMatchResultFromZC(Integer changciId) {
     	int num = dlLeagueMatchResultMapper.getCountByChangciId(changciId);
     	if(num == 0) {
     		List<DlLeagueMatchResult> rsts = this.getMatchResultFromZC(changciId);
     		if(null != rsts && rsts.size() > 0) {
     			super.save(rsts);
+    			return rsts;
     		}
     	}
+    	return null;
     }
     
     

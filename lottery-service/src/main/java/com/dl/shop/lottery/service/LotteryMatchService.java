@@ -69,11 +69,13 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.order.api.IOrderDetailService;
+import com.dl.order.api.IOrderService;
 import com.dl.order.dto.IssueDTO;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.DateStrParam;
+import com.dl.order.param.LotteryPrintRewardParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.DlLeagueTeamMapper;
@@ -117,6 +119,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private DlLeagueMatchResultService matchResultService;
+	
+	@Resource
+	private IOrderService orderService;
 	
 	
 	@Value("${match.url}")
@@ -1103,6 +1108,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         	matchResultService.refreshMatchResultsFromZC(changciIds);
         	int end = DateUtil.getCurrentTimeLong();
         	log.info("保存比赛结果详情结束 用时："+(end-start));
+        }
+        {
+        	log.info("更新订单详情的赛事结果  size="+issueList.size());
+        	int start = DateUtil.getCurrentTimeLong();
+        	for(String issue: issueList) {
+        		LotteryPrintRewardParam param = new LotteryPrintRewardParam();
+        		param.setIssue(issue);
+        		orderService.updateOrderInfoByMatchResult(param);
+        	}
+        	int end = DateUtil.getCurrentTimeLong();
+        	log.info("更新订单详情的赛事结果结束，用时："+(end-start));
         }
         {
         	log.info("开奖 size="+issueList.size());

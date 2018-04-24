@@ -1,22 +1,23 @@
 package com.dl.shop.lottery.web;
-import com.dl.base.result.BaseResult;
-import com.dl.base.result.ResultGenerator;
-import com.dl.lottery.param.RefreshMatchParam;
-import com.dl.shop.lottery.model.DlLeagueMatchResult;
-import com.dl.shop.lottery.service.DlLeagueMatchResultService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import java.util.List;
+import com.dl.base.result.BaseResult;
+import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.dto.MatchResultDTO;
+import com.dl.lottery.param.QueryMatchResultByPlayCodeParam;
+import com.dl.lottery.param.RefreshMatchParam;
+import com.dl.shop.lottery.model.DlLeagueMatchResult;
+import com.dl.shop.lottery.service.DlLeagueMatchResultService;
+
+import io.swagger.annotations.ApiOperation;
 
 /**
 * Created by CodeGenerator on 2018/04/15.
@@ -32,6 +33,29 @@ public class DlLeagueMatchResultController {
     public BaseResult add(@RequestBody RefreshMatchParam param) {
         dlLeagueMatchResultService.refreshMatchResultFromZC(param.getChangciId());
         return ResultGenerator.genSuccessResult();
+    }
+    
+    @ApiOperation(value = "取赛事结果", notes = "取赛事结果")
+    @PostMapping("/queryMatchResultByPlayCode")
+    public BaseResult<List<MatchResultDTO>> queryMatchResultByPlayCode(@RequestBody QueryMatchResultByPlayCodeParam param) {
+    	List<DlLeagueMatchResult> queryMatchResultByPlayCode = dlLeagueMatchResultService.queryMatchResultByPlayCode(param.getPlayCode());
+    	List<MatchResultDTO> rst = new ArrayList<MatchResultDTO>(0);
+    	if(queryMatchResultByPlayCode != null) {
+    		rst = new ArrayList<MatchResultDTO>(queryMatchResultByPlayCode.size());
+    		for(DlLeagueMatchResult dto: queryMatchResultByPlayCode) {
+    			MatchResultDTO resultDTO = new MatchResultDTO();
+    			resultDTO.setCellCode(dto.getCellCode());
+    			resultDTO.setCellName(dto.getCellName());
+    			resultDTO.setChangciId(dto.getChangciId());
+    			resultDTO.setGoalline(dto.getGoalline());
+    			resultDTO.setOdds(dto.getOdds());
+    			resultDTO.setPlayCode(dto.getPlayCode());
+    			resultDTO.setPlayType(dto.getPlayType());
+    			resultDTO.setSingle(dto.getSingle());
+    			rst.add(resultDTO);
+    		}
+    	}
+    	return ResultGenerator.genSuccessResult("success", rst);
     }
 
    /* @PostMapping("/delete")
