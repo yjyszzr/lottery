@@ -383,7 +383,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			// 构造获胜期次的赔率集合和带有期次@赔率的字符串
 			RewardStakesWithSpDTO rewardStakesWithSpDTO = this.createRewardStakesWithSp(same, lp.getPrintSp());
 			if(null == rewardStakesWithSpDTO) {
-				break;
+				continue;
 			}
 			
 			// 最后一期已经开奖,并且中奖 才计算这张彩票的中奖金额
@@ -423,6 +423,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		String compareStatus = ProjectConstant.NOT_FINISH_COMPARE;
 		BigDecimal thirdPartRewardMoney = BigDecimal.ZERO;
 		
+		List<String> rewardStakesList = rewardStakes.stream().map(s->s.substring(s.indexOf("|")+1, s.lastIndexOf("|"))).collect(Collectors.toList());
 		if (rewardStakes.contains(lp.getIssue())) {
 			List<Double> winSPList = new ArrayList<>();
 			if (!StringUtils.isEmpty(lp.getRewardStakes())) {// 计算价格要累计上已匹配中奖的号码
