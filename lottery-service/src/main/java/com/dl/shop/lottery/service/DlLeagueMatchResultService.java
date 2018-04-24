@@ -139,6 +139,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	 */
 	private DlLeagueMatchResult hadMatchResult(Integer changciId, JSONObject poolRsObj) {
 		JSONObject hadObj = poolRsObj.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HAD.getMsg());
+		if(null == hadObj)return null;
 		DlLeagueMatchResult matchResult = new DlLeagueMatchResult();
 		matchResult.setChangciId(changciId);
 		String rsCode = hadObj.getString("pool_rs");
@@ -168,6 +169,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	 */
 	private DlLeagueMatchResult hafuMatchResult(Integer changciId, JSONObject poolRsObj) {
 		 JSONObject hafuObj = poolRsObj.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HAFU.getMsg());
+		 if(null == hafuObj)return null;
 		DlLeagueMatchResult matchResult = new DlLeagueMatchResult();
 		matchResult.setChangciId(changciId);
 		String rsCode = hafuObj.getString("pool_rs");
@@ -193,6 +195,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	 */
 	private DlLeagueMatchResult hhadMatchResult(Integer changciId, JSONObject poolRsObj) {
 		JSONObject hhadObj = poolRsObj.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getMsg());
+		if(null == hhadObj)return null;
 		DlLeagueMatchResult matchResult = new DlLeagueMatchResult();
 		matchResult.setChangciId(changciId);
 		String rsCode = hhadObj.getString("pool_rs");
@@ -222,6 +225,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	 */
 	private DlLeagueMatchResult ttgMatchResult(Integer changciId, JSONObject poolRsObj) {
 		 JSONObject ttgObj = poolRsObj.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_TTG.getMsg());
+		 if(null == ttgObj)return null;
 		DlLeagueMatchResult matchResult = new DlLeagueMatchResult();
 		matchResult.setChangciId(changciId);
 		String rsCode = ttgObj.getString("pool_rs");
@@ -247,6 +251,7 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	 */
 	private DlLeagueMatchResult crsMatchResult(Integer changciId, JSONObject poolRsObj) {
 		JSONObject crsObj = poolRsObj.getJSONObject(MatchPlayTypeEnum.PLAY_TYPE_CRS.getMsg());
+		if(null == crsObj)return null;
 	    DlLeagueMatchResult matchResult = new DlLeagueMatchResult();
 	    matchResult.setChangciId(changciId);
 	    String rsCode = crsObj.getString("pool_rs");
