@@ -67,7 +67,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 出票任务 （每5分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
         OrderSnListGoPrintLotteryParam orderSnListGoPrintLotteryParam = new OrderSnListGoPrintLotteryParam();
@@ -121,9 +121,11 @@ public class LotteryPrintSchedul {
         			}
         		}
         		if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
+        			log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
         			lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
         		}
         		if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
+        			log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
         			lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
         		}
         		orderSns.removeAll(successOrderSn);
