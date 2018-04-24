@@ -55,7 +55,7 @@ public class RefreshPeilvSchedul {
 	/**
 	 * 赔率任务 （每5分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	//@Scheduled(cron = "0 0/5 * * * ?")
     public void refreshPeilv() {
 		log.info("开始拉取赔率信息");
 		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
