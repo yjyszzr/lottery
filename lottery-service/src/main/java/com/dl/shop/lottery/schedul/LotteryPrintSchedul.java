@@ -28,6 +28,8 @@ import com.dl.order.param.OrderSnListGoPrintLotteryParam;
 import com.dl.order.param.UpdateOrderInfoParam;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
+import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
@@ -62,7 +64,32 @@ public class LotteryPrintSchedul {
 	 
 	 @Resource
 	 private IpaymentService paymentService;
+
+	 @Resource
+	 private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
+
+	 @Resource
+	 private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
 	 
+	 /**
+	  * 赔率任务 （每5分钟执行一次）
+	  */
+	 //@Scheduled(cron = "0 0/5 * * * ?")
+	 public void refreshPeilv() {
+		 log.info("开始拉取赔率信息");
+		 int start = DateUtil.getCurrentTimeLong();
+		 List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
+		 if(CollectionUtils.isNotEmpty(changciIds)) {
+			 for(Integer changciId: changciIds) {
+				 log.info("拉取亚盘赔率信息"+changciId);
+				 dlLeagueMatchAsiaService.refreshMatchAsiaInfoFromZC(changciId);
+				 log.info("拉取欧赔赔率信息"+changciId);
+				 dlLeagueMatchEuropeService.refreshMatchEuropeInfoFromZC(changciId);
+			 }
+		 }
+		 int end = DateUtil.getCurrentTimeLong();
+		 log.info("结束拉取赔率信息, time="+(end-start));
+	 }
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）
