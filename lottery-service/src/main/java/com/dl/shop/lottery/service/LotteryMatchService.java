@@ -1067,7 +1067,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         List<String> issueList = new ArrayList<String>(matchs.size());
         List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>(matchs.size());
         try {
-            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php?search_league=0&start_date=2018-04-21&end_date=2018-04-24&dan=").get();
+            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
             Elements elementsByClass = doc.getElementsByClass("m-page");
             Elements pageLis = elementsByClass.get(0).select("tr td ul li");
             List<String> pageUrls = new ArrayList<String>();
