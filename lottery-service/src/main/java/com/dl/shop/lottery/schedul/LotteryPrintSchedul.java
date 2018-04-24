@@ -142,7 +142,6 @@ public class LotteryPrintSchedul {
 	private void toStak(Set<String> successOrderSn, List<LotteryPrint> lotteryPrintList) {
 		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
 		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
-		lotteryPrintList.removeAll(lotteryPrints);
 		DlToStakeParam dlToStakeParam = new DlToStakeParam();
 		dlToStakeParam.setMerchant(lotteryPrints.get(0).getMerchant());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -163,6 +162,7 @@ public class LotteryPrintSchedul {
 			printTicketOrderParams.add(printTicketOrderParam);
 			ticketIdOrderSnMap.put(lp.getTicketId(), lp.getOrderSn());
 		});
+		lotteryPrintList.removeAll(lotteryPrints);
 		dlToStakeParam.setOrders(printTicketOrderParams);
 		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(dlToStakeParam);
 		if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
