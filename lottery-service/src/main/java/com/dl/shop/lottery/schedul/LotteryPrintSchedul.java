@@ -130,7 +130,8 @@ public class LotteryPrintSchedul {
 						RollbackOrderAmountParam param1 = new RollbackOrderAmountParam();
 						param1.setOrderSn(orderSn);
 						log.info("invoke rollbackOrderAmount 准备回流资金");
-						paymentService.rollbackOrderAmount(param1);
+						BaseResult rollbackOrderAmount = paymentService.rollbackOrderAmount(param1);
+						log.info("rollbackOrderAmount ordersn="+orderSn+" result: code="+rollbackOrderAmount.getCode()+" msg="+rollbackOrderAmount.getMsg());
 					}
 				}
 			}
