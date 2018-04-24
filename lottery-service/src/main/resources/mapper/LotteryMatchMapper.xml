@@ -72,7 +72,7 @@
   </select>
   
   <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
-  	select * from dl_match where status = '0' and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt;= 90 and is_del = 0 and is_show=1 
+  	select * from dl_match where status = 0 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt;= 90 and is_del = 0 and is_show=1 
   </select>
 
   
@@ -94,7 +94,7 @@
   	 	</foreach>
   	 </if>
   	 <if test="matchFinish != null and matchFinish != ''">
-  	 	and  status = '1'
+  	 	and  status = 1
   	 </if>
   	 order by match_time
   </select>

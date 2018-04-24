@@ -66,6 +66,7 @@ import com.dl.lottery.dto.MatchTeamInfoDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.order.api.IOrderDetailService;
 import com.dl.order.dto.IssueDTO;
@@ -1053,15 +1054,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(CollectionUtils.isEmpty(matchList)) {
 			return -1;
 		}
+		log.info("准备摘取开赛结果 ： size=" + matchList.size());
 		List<String> matchs = matchList.stream().map(match->{
 			String changci = match.getChangci();
 			Date matchTime = match.getMatchTime();
 			LocalDate localDate = LocalDateTime.ofInstant(matchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
 			String matchDate = localDate.toString();
-			return matchDate+"_" + changci+"_"+match.getMatchId() + "_" + match.getChangciId();
+			return matchDate+"_" + changci+"_"+match.getMatchId() + "_" + match.getChangciId() + "_" + match.getMatchSn();
 		}).collect(Collectors.toList());
         Document doc = null;
         List<String> changciIds = new ArrayList<String>(matchs.size());
+        List<String> issueList = new ArrayList<String>(matchs.size());
         List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>(matchs.size());
         try {
             doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
@@ -1081,6 +1084,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             			if(null != arr) {
             				String matchId = arr[2];
             				String changciId = arr[3];
+            				String issue = arr[4];
             				LotteryMatch lotteryMatch = new  LotteryMatch();
             				String firstHalf = tds.get(4).text();
             				String whole = tds.get(5).text();
@@ -1090,6 +1094,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             				lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
             				matchResult.add(lotteryMatch);
             				changciIds.add(changciId);
+            				issueList.add(issue);
             			}
             		}
             	}
@@ -1109,6 +1114,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         log.info("保存比赛结果详情");
         matchResultService.refreshMatchResultsFromZC(changciIds);
         log.info("保存比赛结果详情结束 ");
+        log.info("开奖");
+        for(String issue: issueList) {
+        	DlToAwardingParam param = new DlToAwardingParam();
+        	param.setIssue(issue);
+        	lotteryRewardService.toAwarding(param);
+        }
+        log.info("开奖结束");
 		return rst;
 	}
 	/**
@@ -1118,7 +1130,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private String[] matchId(List<String> matchs, String matchDate, String changci) {
 		for(String match: matchs) {
 			String[] split = match.split("_");
-			if(split.length == 4) {
+			if(split.length == 5) {
 				if(split[0].equals(matchDate) && split[1].equals(changci)){
 					matchs.remove(match);
 					return split;
