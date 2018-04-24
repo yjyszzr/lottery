@@ -1068,61 +1068,90 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>(matchs.size());
         try {
             doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
-            Elements elements =  doc.getElementsByClass("m-tab");
-            Elements trs = elements.select("tbody tr");
-            for (int i = 0; i < trs.size(); i++) {
-            	if(matchs.size() == 0) {
-            		break;
-            	}
-            	Elements tds = trs.get(i).select("td");
-            	if(null != tds && tds.size() == 12) {
-            		String status = tds.get(9).text();
-            		if(MATCH_RESULT_OVER.equals(status)) {
-            			String matchDate = tds.get(0).text();
-            			String changci = tds.get(1).text();
-            			String[] arr = this.matchId(matchs, matchDate, changci);
-            			if(null != arr) {
-            				String matchId = arr[2];
-            				String changciId = arr[3];
-            				String issue = arr[4];
-            				LotteryMatch lotteryMatch = new  LotteryMatch();
-            				String firstHalf = tds.get(4).text();
-            				String whole = tds.get(5).text();
-            				lotteryMatch.setMatchId(Integer.valueOf(matchId));
-            				lotteryMatch.setFirstHalf(firstHalf);
-            				lotteryMatch.setWhole(whole);
-            				lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
-            				matchResult.add(lotteryMatch);
-            				changciIds.add(changciId);
-            				issueList.add(issue);
-            			}
-            		}
-            	}
+            Elements elementsByClass = doc.getElementsByClass("m-page");
+            Elements pageLis = elementsByClass.get(0).select("tr td ul li");
+            List<String> pageUrls = new ArrayList<String>();
+            for(int i=2; i< (pageLis.size()-2); i++) {
+            	String href = pageLis.get(i).select("a").attr("href");
+            	pageUrls.add("http://info.sporttery.cn/football/" +href);
+            }
+            this.aa(matchs, doc, changciIds, issueList, matchResult);
+            for(String url: pageUrls) {
+            	doc = Jsoup.connect(url).get();
+            	this.aa(matchs, doc, changciIds, issueList, matchResult);
             }
         } catch (Exception e) {
         	log.error(e.getMessage());
         }
-        for(LotteryMatch match: matchResult) {
-        	lotteryMatchMapper.updateMatchResult(match);
+        {
+        	log.info("保存比赛结果开始：size="+matchResult.size());
+        	int start = DateUtil.getCurrentTimeLong();
+        	for(LotteryMatch match: matchResult) {
+        		lotteryMatchMapper.updateMatchResult(match);
+        	}
+        	int end = DateUtil.getCurrentTimeLong();
+        	log.info("保存比赛结果结束,用时："+ (end-start));
         }
-        log.info("保存比赛结果结束");
         int rst = 1;
         //int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
         //保存比赛结果详情
        // lotteryRewardService.saveRewardInfos(matchList);
         //保存比赛结果详情2
-        log.info("保存比赛结果详情");
-        matchResultService.refreshMatchResultsFromZC(changciIds);
-        log.info("保存比赛结果详情结束 ");
-        log.info("开奖");
-        for(String issue: issueList) {
-        	DlToAwardingParam param = new DlToAwardingParam();
-        	param.setIssue(issue);
-        	log.info("开奖场次："+issue);
-        	lotteryRewardService.toAwarding(param);
+        {
+        	log.info("保存比赛结果详情,size="+changciIds.size());
+        	int start = DateUtil.getCurrentTimeLong();
+        	matchResultService.refreshMatchResultsFromZC(changciIds);
+        	int end = DateUtil.getCurrentTimeLong();
+        	log.info("保存比赛结果详情结束 用时："+(end-start));
         }
-        log.info("开奖结束");
+        {
+        	log.info("开奖 size="+issueList.size());
+        	int start = DateUtil.getCurrentTimeLong();
+        	for(String issue: issueList) {
+        		DlToAwardingParam param = new DlToAwardingParam();
+        		param.setIssue(issue);
+        		log.info("开奖场次："+issue);
+        		lotteryRewardService.toAwarding(param);
+        	}
+        	int end = DateUtil.getCurrentTimeLong();
+        	log.info("开奖结束,用时："+(end-start));
+        }
 		return rst;
+	}
+
+	private void aa(List<String> matchs, Document doc, List<String> changciIds, List<String> issueList,
+			List<LotteryMatch> matchResult) {
+		Elements elements =  doc.getElementsByClass("m-tab");
+		Elements trs = elements.select("tbody tr");
+		for (int i = 0; i < trs.size(); i++) {
+			if(matchs.size() == 0) {
+				break;
+			}
+			Elements tds = trs.get(i).select("td");
+			if(null != tds && tds.size() == 12) {
+				String status = tds.get(9).text();
+				if(MATCH_RESULT_OVER.equals(status)) {
+					String matchDate = tds.get(0).text();
+					String changci = tds.get(1).text();
+					String[] arr = this.matchId(matchs, matchDate, changci);
+					if(null != arr) {
+						String matchId = arr[2];
+						String changciId = arr[3];
+						String issue = arr[4];
+						LotteryMatch lotteryMatch = new  LotteryMatch();
+						String firstHalf = tds.get(4).text();
+						String whole = tds.get(5).text();
+						lotteryMatch.setMatchId(Integer.valueOf(matchId));
+						lotteryMatch.setFirstHalf(firstHalf);
+						lotteryMatch.setWhole(whole);
+						lotteryMatch.setStatus(ProjectConstant.MATCH_FINISH);
+						matchResult.add(lotteryMatch);
+						changciIds.add(changciId);
+						issueList.add(issue);
+					}
+				}
+			}
+		}
 	}
 	/**
 	 * 通过获取的比赛结果信息获取matchid
