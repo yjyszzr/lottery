@@ -106,7 +106,7 @@
        sum(real_reward_money) realRewardMoney
     from dl_print_lottery 
 	where 
-	   issue = #{issue}
+	   compare_status=1 and stakes like CONCAT('%',#{issue},'%')
 	group by order_sn
   </select>
   

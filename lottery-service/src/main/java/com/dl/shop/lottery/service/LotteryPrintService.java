@@ -418,6 +418,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setTimes(dto.getTimes());
 			lotteryPrint.setStakes(dto.getStakes());
 			lotteryPrint.setOrderSn(orderSn);
+			lotteryPrint.setRealRewardMoney(BigDecimal.valueOf(0.00));
+			lotteryPrint.setThirdPartRewardMoney(BigDecimal.valueOf(0.00));
+			lotteryPrint.setCompareStatus("0");
+			lotteryPrint.setRewardStakes("");
 			lotteryPrint.setStatus(0);
 			return lotteryPrint;
 		}).collect(Collectors.toList());
