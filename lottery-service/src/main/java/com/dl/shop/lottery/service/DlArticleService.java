@@ -166,7 +166,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		articleIdParam.setArticleId(id);
 		BaseResult<Integer> rst =  userCollectService.isCollect(articleIdParam);
 		if(rst.getCode() != 0) {
-			log.error(rst.getData().toString());
+			log.error(rst.getMsg());
 			isCollect = "1";
 		}
 		
