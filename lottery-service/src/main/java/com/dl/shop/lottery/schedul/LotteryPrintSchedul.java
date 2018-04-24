@@ -107,8 +107,13 @@ public class LotteryPrintSchedul {
         Set<String> successOrderSn = new HashSet<String>(orderSns.size());
         List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.getPrintLotteryListByOrderSns(orderSns);
         if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
+        	log.info("lotteryPrintList size="+lotteryPrintList.size());
         	while(lotteryPrintList.size() > 0) {
-        		this.toStak(successOrderSn, lotteryPrintList);
+        		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
+        		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
+        		log.info(" go tostake size="+lotteryPrints.size());
+        		this.toStak(successOrderSn, lotteryPrints);
+        		lotteryPrintList.removeAll(lotteryPrints);
         	}
         	orderSns.removeAll(successOrderSn);
 			if(!orderSns.isEmpty()) {
@@ -139,9 +144,7 @@ public class LotteryPrintSchedul {
 	 * @param successOrderSn
 	 * @param lotteryPrintList
 	 */
-	private void toStak(Set<String> successOrderSn, List<LotteryPrint> lotteryPrintList) {
-		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
-		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
+	private void toStak(Set<String> successOrderSn, List<LotteryPrint> lotteryPrints) {
 		DlToStakeParam dlToStakeParam = new DlToStakeParam();
 		dlToStakeParam.setMerchant(lotteryPrints.get(0).getMerchant());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -162,10 +165,10 @@ public class LotteryPrintSchedul {
 			printTicketOrderParams.add(printTicketOrderParam);
 			ticketIdOrderSnMap.put(lp.getTicketId(), lp.getOrderSn());
 		});
-		lotteryPrintList.removeAll(lotteryPrints);
 		dlToStakeParam.setOrders(printTicketOrderParams);
 		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(dlToStakeParam);
 		if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
+			log.info("inf tostake orders");
 			List<LotteryPrint> lotteryPrintErrors = new LinkedList<LotteryPrint>();
 			List<LotteryPrint> lotteryPrintSuccess = new LinkedList<LotteryPrint>();
 			for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
