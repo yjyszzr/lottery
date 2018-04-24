@@ -155,7 +155,7 @@ public class LotteryPrintSchedul {
 	 /**
 	  * 获取已完成比赛的比赛分数 （每2分钟执行一次）
 	  */
-	 @Scheduled(cron = "0 0/1 * * * ?")
+	 @Scheduled(cron = "0 0/2 * * * ?")
 	 public void fetchMatchScore() {
 		 log.info("当天比赛结果拉取开始");
 		int rst = lotteryMatchService.pullMatchResult();
@@ -168,7 +168,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 获取开奖结果的txt （每2分钟执行一次）
 	 */
-	//@Scheduled(cron = "0 0/2 * * * ?")
+	@Scheduled(cron = "0 0/2 * * * ?")
 	public void fetchRewardTxt() {
 		log.info("获取开奖结果开始");
 		lotteryRewardService.resovleRewardTxt();
@@ -177,7 +177,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 赛事列表获取
 	 */
-	//@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
 	public void fetchMatch() {
 		log.info("赛事列表获取开始");
 		lotteryMatchService.saveMatchList();

@@ -55,9 +55,10 @@ public class RefreshPeilvSchedul {
 	/**
 	 * 赔率任务 （每5分钟执行一次）
 	 */
-	//@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
     public void refreshPeilv() {
 		log.info("开始拉取赔率信息");
+		int start = DateUtil.getCurrentTimeLong();
 		List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
 		if(CollectionUtils.isNotEmpty(changciIds)) {
 			for(Integer changciId: changciIds) {
@@ -67,7 +68,8 @@ public class RefreshPeilvSchedul {
 				dlLeagueMatchEuropeService.refreshMatchEuropeInfoFromZC(changciId);
 			}
 		}
-		log.info("结束拉取赔率信息");
+		int end = DateUtil.getCurrentTimeLong();
+		log.info("结束拉取赔率信息, time="+(end-start));
 	}
 	
 	
