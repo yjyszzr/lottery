@@ -651,7 +651,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		        this.insertBatchRewardDetail(detailList, String.valueOf(periodId));
 		        
 			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+				log.error(e.getMessage());
 			}
 		}
 		
