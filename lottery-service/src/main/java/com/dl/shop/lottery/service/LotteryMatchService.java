@@ -1118,6 +1118,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         for(String issue: issueList) {
         	DlToAwardingParam param = new DlToAwardingParam();
         	param.setIssue(issue);
+        	log.info("开奖场次："+issue);
         	lotteryRewardService.toAwarding(param);
         }
         log.info("开奖结束");
