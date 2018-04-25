@@ -28,7 +28,7 @@
   </select>
   
   <select id="lotteryMatchPlayByMatchIdAndPlayType" resultMap="BaseResultMap">
-  	select * from dl_match_play where match_id=#{matchId} and playType=#{playType}
+  	select * from dl_match_play where match_id=#{matchId} and play_type=#{playType}
   </select>
   
   <update id="updatePlayContent">
