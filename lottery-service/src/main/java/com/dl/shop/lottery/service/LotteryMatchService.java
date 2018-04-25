@@ -1067,12 +1067,20 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			String matchDate = localDate.toString();
 			return matchDate+"_" + changci+"_"+match.getMatchId() + "_" + match.getChangciId() + "_" + match.getMatchSn();
 		}).collect(Collectors.toList());
+		LotteryMatch minMatch = matchList.get(0);
+		if(matchList.size() > 1) {
+			minMatch = matchList.stream().min((item1,item2)->item1.getMatchTime().compareTo(item2.getMatchTime())).get();
+		}
+		Date miMatchTime = minMatch.getMatchTime();
+		LocalDate localDate = LocalDateTime.ofInstant(miMatchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
+		String minMatchTimeStr = localDate.toString();
+		log.info("minMatchTimeStr = "+minMatchTimeStr);
         Document doc = null;
         List<String> changciIds = new ArrayList<String>(matchs.size());
         List<String> issueList = new ArrayList<String>(matchs.size());
         List<LotteryMatch> matchResult = new ArrayList<LotteryMatch>(matchs.size());
         try {
-            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php").get();
+            doc = Jsoup.connect("http://info.sporttery.cn/football/match_result.php?start_date="+minMatchTimeStr).get();
             Elements elementsByClass = doc.getElementsByClass("m-page");
             Elements pageLis = elementsByClass.get(0).select("tr td ul li");
             List<String> pageUrls = new ArrayList<String>();
