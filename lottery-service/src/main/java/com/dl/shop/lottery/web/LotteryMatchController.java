@@ -319,13 +319,16 @@ public class LotteryMatchController {
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
 		if(userInfoExceptPassRst.getCode() != 0) {
-			ResultGenerator.genFailResult("操作失败！", null);
+			return ResultGenerator.genFailResult("操作失败！", null);
+		}
+		if(null == userInfoExceptPassRst.getData()) {
+			return ResultGenerator.genFailResult("操作失败！", null);
 		}
 		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
 		Double userTotalMoney = Double.valueOf(totalMoney);
 		BaseResult<List<UserBonusDTO>> userBonusListRst = userBonusService.queryValidBonusList(strParam);
 		if(userBonusListRst.getCode() != 0) {
-			ResultGenerator.genFailResult("操作失败！", null);
+			return ResultGenerator.genFailResult("操作失败！", null);
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
 		Double orderMoney = betInfo.getMoney();
