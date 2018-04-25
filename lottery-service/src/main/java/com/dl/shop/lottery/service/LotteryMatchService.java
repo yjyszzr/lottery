@@ -1076,10 +1076,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * 抓取当天和前两天的中国体育彩票足球竞猜网 开赛结果 并更新赛事结果  -- 定时任务
 	 * @return
 	 */
-	public int pullMatchResult() {
+	public void pullMatchResult() {
 		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListUnknowScoreToday();
 		if(CollectionUtils.isEmpty(matchList)) {
-			return -1;
+			return ;
 		}
 		log.info("准备拉取开赛结果 ： size=" + matchList.size());
 		List<String> matchs = matchList.stream().map(match->{
@@ -1118,7 +1118,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         } catch (Exception e) {
         	log.error(e.getMessage());
         }
-       {
+    /*   {
         	log.info("保存比赛结果开始：size="+matchResult.size());
         	int start = DateUtil.getCurrentTimeLong();
         	for(LotteryMatch match: matchResult) {
@@ -1160,8 +1160,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         	}
         	int end = DateUtil.getCurrentTimeLong();
         	log.info("开奖结束,用时："+(end-start));
-        }
-		return rst;
+        }*/
 	}
 
 	private void aa(List<String> matchs, Document doc, List<String> changciIds, List<String> issueList,
