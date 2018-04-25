@@ -986,7 +986,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryPrintDTO.setBetType(betType);
 				lotteryPrintDTO.setIssue(issue);
 				lotteryPrintDTO.setMoney(money);
-				lotteryPrintDTO.setPlayType(param.getPlayType());
+				String playType = param.getPlayType();
+				if(Integer.valueOf(playType).equals(7)) {
+					playType = "06";
+				}
+				lotteryPrintDTO.setPlayType(playType);
 				lotteryPrintDTO.setStakes(stakes);
 				String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
 				lotteryPrintDTO.setTicketId(ticketId);
