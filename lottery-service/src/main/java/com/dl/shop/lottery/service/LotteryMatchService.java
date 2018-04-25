@@ -953,6 +953,24 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String stakes = subList.stream().map(cdto->{
 					String playCode = cdto.getPlayCode();
 					String playType = cdto.getPlayType();
+					if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())) {
+						StringBuffer sbuf = new StringBuffer();
+						for(DlJcZqMatchCellDTO betCell: cdto.getBetCells()) {
+							String cellCode = betCell.getCellCode();
+							if("30".equals(cellCode)) {
+								sbuf.append("02|").append(playCode).append("|0").append(";");
+							}else if("31".equals(cellCode)) {
+								sbuf.append("02|").append(playCode).append("|3").append(";");
+							}else if("32".equals(cellCode)) {
+								sbuf.append("01|").append(playCode).append("|3").append(";");
+							}else if("33".equals(cellCode)) {
+								sbuf.append("01|").append(playCode).append("|0").append(";");
+							}
+						}
+						if(sbuf.length() > 0) {
+							return sbuf.substring(0, sbuf.length() - 1);
+						}
+					}
 					String cellCodes = cdto.getBetCells().stream().map(cell->{
 						return cell.getCellCode();
 					}).collect(Collectors.joining(","));
