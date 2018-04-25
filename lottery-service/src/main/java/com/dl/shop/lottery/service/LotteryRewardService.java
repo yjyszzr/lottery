@@ -434,14 +434,14 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			comparedStakes = Arrays.asList((String[])lp.getComparedStakes().split(","));
 		}
 		
-		
-		if(!comparedStakes.contains(issue)) {
-			comparedStakes.add(issue);
+		List<String> comparedStakesList = new ArrayList<String>(comparedStakes);
+		if(!comparedStakesList.contains(issue)) {
+			comparedStakesList.add(issue);
 		}
 		
 		List<String> includeIssues = this.createIssueListWithStakes(lp.getStakes());
-		if(comparedStakes.size() == includeIssues.size()) {
-			Boolean sameBz = NuclearUtil.isSame(comparedStakes, includeIssues);//一张彩票中投注信息中包含的期次所有都已经被派过奖
+		if(comparedStakesList.size() == includeIssues.size()) {
+			Boolean sameBz = NuclearUtil.isSame(comparedStakesList, includeIssues);//一张彩票中投注信息中包含的期次所有都已经被派过奖
 			if(true == sameBz) {
 				compareStatus = ProjectConstant.FINISH_COMPARE;
 				List<Double> winSPList = new ArrayList<>();
