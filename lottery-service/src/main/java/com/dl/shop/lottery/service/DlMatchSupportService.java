@@ -110,14 +110,13 @@ public class DlMatchSupportService extends AbstractService<DlMatchSupport> {
 	public TeamSupportDTO matchSupports(LotteryMatch lotteryMatch, int playType) {
 		Integer changciId = lotteryMatch.getChangciId();
 		DlMatchSupport matchSupport = dlMatchSupportMapper.getByChangciIdAndPlayType(changciId, playType);
-		if(null == matchSupport) {
-			return null;
-		}
 		TeamSupportDTO dto = new TeamSupportDTO();
-		dto.setASupport(matchSupport.getPreLose());
-		dto.setDSupport(matchSupport.getPreDraw());
-		dto.setHSupport(matchSupport.getPreWin());
-		dto.setFixedOdds("");
+		if(null != matchSupport) {
+			dto.setASupport(matchSupport.getPreLose());
+			dto.setDSupport(matchSupport.getPreDraw());
+			dto.setHSupport(matchSupport.getPreWin());
+			dto.setFixedOdds("");
+		}
 		return dto;
 	}
 

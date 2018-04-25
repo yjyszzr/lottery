@@ -63,6 +63,7 @@ import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueTeamScoreService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
+import com.dl.shop.lottery.service.LotteryMatchPlayService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 
@@ -97,6 +98,8 @@ public class LotteryMatchController {
     private DlLeagueMatchDaoXiaoService dlLeagueMatchDaoXiaoService;
     @Resource
     private DlMatchSupportService dlMatchSupportService;
+    @Resource
+    private LotteryMatchPlayService lotteryMatchPlayService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -425,10 +428,13 @@ public class LotteryMatchController {
 		if(null == lotteryMatch) {
 			return ResultGenerator.genFailResult("数据读取失败！", null);
 		}
+		
 		MatchTeamInfosDTO matchTeamInfo = lotteryMatchService.matchTeamInfos(lotteryMatch);
 		MatchInfoForTeamDTO lotteryMatchForTeam = lotteryMatchService.LotteryMatchForTeam(lotteryMatch);
 		TeamSupportDTO hadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode());
 		TeamSupportDTO hhadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode());
+		String fixedOdds = lotteryMatchPlayService.fixedOddsByMatchId(param.getMatchId());
+		hhadTeamSupport.setFixedOdds(fixedOdds);
 		MatchTeamInfosSumDTO dto = new MatchTeamInfosSumDTO();
 		dto.setHhMatchTeamInfo(matchTeamInfo.getHhMatchTeamInfo());
 		dto.setHMatchTeamInfo(matchTeamInfo.getHMatchTeamInfo());

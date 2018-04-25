@@ -27,6 +27,10 @@
   	 </if> 
   </select>
   
+  <select id="lotteryMatchPlayByMatchIdAndPlayType" resultMap="BaseResultMap">
+  	select * from dl_match_play where match_id=#{matchId} and playType=#{playType}
+  </select>
+  
   <update id="updatePlayContent">
   	update dl_match_play
   	set play_content = #{playContent},update_time=#{updateTime}
