@@ -421,6 +421,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setRealRewardMoney(BigDecimal.valueOf(0.00));
 			lotteryPrint.setThirdPartRewardMoney(BigDecimal.valueOf(0.00));
 			lotteryPrint.setCompareStatus("0");
+			lotteryPrint.setComparedStakes("");
 			lotteryPrint.setRewardStakes("");
 			lotteryPrint.setStatus(0);
 			return lotteryPrint;

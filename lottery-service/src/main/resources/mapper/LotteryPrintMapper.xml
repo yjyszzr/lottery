@@ -28,6 +28,7 @@
     <result column="real_reward_money" jdbcType="DECIMAL" property="realRewardMoney" />
     <result column="third_part_reward_money" jdbcType="DECIMAL" property="thirdPartRewardMoney" />
     <result column="compare_status" jdbcType="VARCHAR" property="compareStatus" />
+    <result column="compared_stakes" jdbcType="VARCHAR" property="comparedStakes" />
   </resultMap>
   
   <update id="updateByTicketId">
