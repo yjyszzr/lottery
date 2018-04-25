@@ -1118,7 +1118,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         } catch (Exception e) {
         	log.error(e.getMessage());
         }
-       /* {
+       {
         	log.info("保存比赛结果开始：size="+matchResult.size());
         	int start = DateUtil.getCurrentTimeLong();
         	for(LotteryMatch match: matchResult) {
@@ -1126,13 +1126,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         	}
         	int end = DateUtil.getCurrentTimeLong();
         	log.info("保存比赛结果结束,用时："+ (end-start));
-        }*/
-        int rst = 1;
-        //int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
+        }
+        int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
         //保存比赛结果详情
-       // lotteryRewardService.saveRewardInfos(matchList);
+        lotteryRewardService.saveRewardInfos(matchList);
         //保存比赛结果详情2
-       /* {
+        {
         	log.info("保存比赛结果详情,size="+changciIds.size());
         	int start = DateUtil.getCurrentTimeLong();
         	matchResultService.refreshMatchResultsFromZC(changciIds);
@@ -1161,7 +1160,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         	}
         	int end = DateUtil.getCurrentTimeLong();
         	log.info("开奖结束,用时："+(end-start));
-        }*/
+        }
 		return rst;
 	}
 
