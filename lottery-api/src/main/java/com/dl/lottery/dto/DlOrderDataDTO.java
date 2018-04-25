@@ -14,6 +14,6 @@ public class DlOrderDataDTO implements Serializable{
 	@ApiModelProperty(value = "订单编号")
 	public String orderSn;
 	
-	@ApiModelProperty(value = "中奖金额")
+	@ApiModelProperty(value = "该订单的中奖金额")
 	public BigDecimal realRewardMoney;
 }

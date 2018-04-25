@@ -416,4 +416,9 @@ public class ProjectConstant {
 	 */
 	public final static String ONE_YES = "1";
 	public final static String ZERO_NO = "0";
+	
+    public static final Integer ORDER_STATUS_NOT = 4;             //未中奖
+    public static final Integer ORDER_STATUS_ALREADY = 5;         //已中奖
+    public static final Integer ORDER_STATUS_REWARDING = 6;       //派奖中
+	
 }
