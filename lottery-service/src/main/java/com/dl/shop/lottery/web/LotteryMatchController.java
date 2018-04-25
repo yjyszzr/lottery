@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -128,9 +129,9 @@ public class LotteryMatchController {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-		LocalDateTime localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC);
-		LocalDateTime now = LocalDateTime.now();
-		if(localDate.isBefore(now)) {
+		Date now = new Date();
+		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
+		if(nowTime - betEndTime > 0) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
 		//校验串关
@@ -236,9 +237,9 @@ public class LotteryMatchController {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-		LocalDateTime localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC);
-		LocalDateTime now = LocalDateTime.now();
-		if(localDate.isBefore(now)) {
+		Date now = new Date();
+		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
+		if(nowTime - betEndTime > 0) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
 		//校验串关
