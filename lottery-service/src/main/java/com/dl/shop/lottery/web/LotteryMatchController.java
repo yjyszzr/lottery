@@ -128,8 +128,8 @@ public class LotteryMatchController {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
-		LocalDate now = LocalDate.now();
+		LocalDateTime localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC);
+		LocalDateTime now = LocalDateTime.now();
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}
@@ -236,8 +236,8 @@ public class LotteryMatchController {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
 		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-		LocalDate localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC).toLocalDate();
-		LocalDate now = LocalDate.now();
+		LocalDateTime localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC);
+		LocalDateTime now = LocalDateTime.now();
 		if(localDate.isBefore(now)) {
 			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
 		}

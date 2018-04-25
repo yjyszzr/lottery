@@ -1,35 +1,25 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.dl.base.result.ResultGenerator;
+import com.dl.shop.lottery.core.ProjectConstant;
+
 public class Test {
 
 	public static void main(String[] args) {
-			Document doc = null;
-			String hrefUrl = "http://info.sporttery.cn/football/info/fb_team_info.php?tid=";
-			try {
-				Connection connect = Jsoup.connect("http://info.sporttery.cn/football/history/history_data.php?mid=127");
-				doc = connect.get();
-				Elements elementsByClass = doc.getElementsByClass("integral");
-				for(Element elem: elementsByClass){
-					Element elementById = elem.getElementById("jfg");
-					if(null != elementById) {
-						Elements elementsByTag = elem.getElementsByTag("a");
-						for(Element e: elementsByTag) {
-							String attr = e.attr("href");
-							if(attr.startsWith(hrefUrl)) {
-								String substring = attr.substring(hrefUrl.length());
-							}
-							System.out.println("");
-						}
-					}
-				}
-				System.out.println("end");
-			}catch(Exception e) {
-				e.printStackTrace();
-			}
+		int betEndTime = 1524650400 - ProjectConstant.BET_PRESET_TIME;
+		LocalDateTime localDate = LocalDateTime.ofEpochSecond(betEndTime, 0, ZoneOffset.UTC);
+		LocalDateTime now = LocalDateTime.now();
+		if(localDate.isBefore(now)) {
+			System.out.println("ok");
+		}
 		            
 	}
 }
