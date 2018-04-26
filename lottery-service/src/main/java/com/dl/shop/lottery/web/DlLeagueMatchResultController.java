@@ -13,6 +13,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.MatchResultDTO;
 import com.dl.lottery.param.QueryMatchResultByPlayCodeParam;
+import com.dl.lottery.param.QueryMatchResultsByPlayCodesParam;
 import com.dl.lottery.param.RefreshMatchParam;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.service.DlLeagueMatchResultService;
@@ -39,6 +40,29 @@ public class DlLeagueMatchResultController {
     @PostMapping("/queryMatchResultByPlayCode")
     public BaseResult<List<MatchResultDTO>> queryMatchResultByPlayCode(@RequestBody QueryMatchResultByPlayCodeParam param) {
     	List<DlLeagueMatchResult> queryMatchResultByPlayCode = dlLeagueMatchResultService.queryMatchResultByPlayCode(param.getPlayCode());
+    	List<MatchResultDTO> rst = new ArrayList<MatchResultDTO>(0);
+    	if(queryMatchResultByPlayCode != null) {
+    		rst = new ArrayList<MatchResultDTO>(queryMatchResultByPlayCode.size());
+    		for(DlLeagueMatchResult dto: queryMatchResultByPlayCode) {
+    			MatchResultDTO resultDTO = new MatchResultDTO();
+    			resultDTO.setCellCode(dto.getCellCode());
+    			resultDTO.setCellName(dto.getCellName());
+    			resultDTO.setChangciId(dto.getChangciId());
+    			resultDTO.setGoalline(dto.getGoalline());
+    			resultDTO.setOdds(dto.getOdds());
+    			resultDTO.setPlayCode(dto.getPlayCode());
+    			resultDTO.setPlayType(dto.getPlayType());
+    			resultDTO.setSingle(dto.getSingle());
+    			rst.add(resultDTO);
+    		}
+    	}
+    	return ResultGenerator.genSuccessResult("success", rst);
+    }
+    
+    @ApiOperation(value = "取赛事结果", notes = "取赛事结果")
+    @PostMapping("/queryMatchResultsByPlayCodes")
+    public BaseResult<List<MatchResultDTO>> queryMatchResultsByPlayCodes(@RequestBody QueryMatchResultsByPlayCodesParam param) {
+    	List<DlLeagueMatchResult> queryMatchResultByPlayCode = dlLeagueMatchResultService.queryMatchResultsByPlayCodes(param.getPlayCodes());
     	List<MatchResultDTO> rst = new ArrayList<MatchResultDTO>(0);
     	if(queryMatchResultByPlayCode != null) {
     		rst = new ArrayList<MatchResultDTO>(queryMatchResultByPlayCode.size());

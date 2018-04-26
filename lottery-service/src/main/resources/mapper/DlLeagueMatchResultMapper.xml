@@ -22,4 +22,13 @@
   <select id="queryMatchResultByPlayCode" resultMap="BaseResultMap">
   	select * from dl_league_match_result where play_code = #{playCode}
   </select>
+  
+  <select id="queryMatchResultsByPlayCodes" resultMap="BaseResultMap">
+  select * from dl_league_match_result
+  where play_code in
+  <foreach collection="playCodes" item="playCode" index="index" open="(" close=")" separator=",">
+	#{playCode}
+  </foreach>
+  </select>
+  
 </mapper>

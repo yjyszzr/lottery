@@ -1194,13 +1194,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						issueList.add(issue);
 						log.info("保存比赛结果详情"+changciId);
 						matchResultService.refreshMatchResultFromZC(Integer.valueOf(changciId));
-						log.info("更新订单详情的赛事结果"+issue);
+						/*log.info("更新订单详情的赛事结果"+issue);
 						LotteryPrintRewardParam lotteryPrintRewardParam = new LotteryPrintRewardParam();
 						lotteryPrintRewardParam.setIssue(issue);
 						int rstCode = orderService.updateOrderInfoByMatchResult(lotteryPrintRewardParam).getCode();
 						if(rstCode != 0) {
 							continue;
-						}
+						}*/
 						log.info("开奖场次："+issue);
 						DlToAwardingParam dltoAwardingParm = new DlToAwardingParam();
 						dltoAwardingParm.setIssue(issue);

@@ -291,4 +291,12 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 		}*/
 		return matchResultList;
 	}
+	
+	public List<DlLeagueMatchResult> queryMatchResultsByPlayCodes(List<String> playCodes){
+		List<DlLeagueMatchResult> matchResultList = dlLeagueMatchResultMapper.queryMatchResultsByPlayCodes(playCodes);
+		if(matchResultList.size() == 0) {
+			return new ArrayList<DlLeagueMatchResult>();
+		}
+		return matchResultList;
+	}
 }
