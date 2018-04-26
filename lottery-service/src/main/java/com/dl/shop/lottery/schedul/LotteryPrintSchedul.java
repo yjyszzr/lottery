@@ -264,7 +264,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新中奖用户的账户
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
 	public void addRewardMoneyToUsers() {
 		log.info("更新中奖用户的账户开始");
 		lotteryRewardService.addRewardMoneyToUsers();
