@@ -784,7 +784,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
 				dto.setAmount(Double.valueOf(String.format("%.2f", amount)));
 				String betContent = str.getBetContent() + changci + "(" + betCell.getCellName() + " " + betCell.getCellOdds() +")X";
-				StringBuffer sbuf = new StringBuffer();
+				/*StringBuffer sbuf = new StringBuffer();
 				if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
 					if("30".equals(cellCode)) {
 						sbuf.append("02|").append(playCode).append("|0").append(";");
@@ -798,13 +798,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}else {
 					sbuf.append("0").append(playType).append("|").append(playCode).append("|").append(cellCode);
 				}
-				String betStakes = str.getBetStakes() + sbuf.toString();
+				String betStakes = str.getBetStakes() + sbuf.toString();*/
 				 
 				if(num == 1) {
 					betContent = betContent.substring(0, betContent.length()-1);
-					betStakes = betStakes.substring(0, betStakes.length()-1);
+//					betStakes = betStakes.substring(0, betStakes.length()-1);
 				}
-				dto.setBetStakes(betStakes);
+//				dto.setBetStakes(betStakes);
 				dto.setBetContent(betContent);
 				dto.setBetType(str.getBetType());
 				dto.setTimes(str.getTimes());
@@ -988,35 +988,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				int times = param.getTimes();
 				Double money = betCellList1.size()*times*2.0;
 				String playType = param.getPlayType();
-				if(Integer.valueOf(playType).equals(7)) {
-					for(DLBetMatchCellDTO cellDTO: betCellList1) {
-						LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
-						lotteryPrintDTO.setBetType(betType);
-						lotteryPrintDTO.setIssue(issue);
-						lotteryPrintDTO.setMoney(times*2.0);
-						lotteryPrintDTO.setPlayType("06");
-						lotteryPrintDTO.setStakes(cellDTO.getBetStakes());
-						String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
-						lotteryPrintDTO.setTicketId(ticketId);
-						List<DLBetMatchCellDTO> matchCellList = new ArrayList<DLBetMatchCellDTO>();
-						matchCellList.add(cellDTO);
-						orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(cellDTO.getBetStakes(), matchCellList));
-						lotteryPrintDTO.setTimes(times);
-						lotteryPrints.add(lotteryPrintDTO);
-					}
-				}else {
-					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
-					lotteryPrintDTO.setBetType(betType);
-					lotteryPrintDTO.setIssue(issue);
-					lotteryPrintDTO.setMoney(money);
-					lotteryPrintDTO.setPlayType(playType);
-					lotteryPrintDTO.setStakes(stakes);
-					String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
-					lotteryPrintDTO.setTicketId(ticketId);
-					orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
-					lotteryPrintDTO.setTimes(times);
-					lotteryPrints.add(lotteryPrintDTO);
-				}
+				LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
+				lotteryPrintDTO.setBetType(betType);
+				lotteryPrintDTO.setIssue(issue);
+				lotteryPrintDTO.setMoney(money);
+				lotteryPrintDTO.setPlayType(playType);
+				lotteryPrintDTO.setStakes(stakes);
+				String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
+				lotteryPrintDTO.setTicketId(ticketId);
+				orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
+				lotteryPrintDTO.setTimes(times);
+				lotteryPrints.add(lotteryPrintDTO);
 			}
 		}
 		Double maxBonus = maxBetCellList.stream().map(item->{
