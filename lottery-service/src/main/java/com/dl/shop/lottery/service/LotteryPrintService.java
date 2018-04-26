@@ -536,6 +536,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						updatePrint.setCompareStatus(ProjectConstant.FINISH_COMPARE);
 						if(StringUtils.isNotBlank(reward)) {
 							//彩票中奖金额
+							log.info(reward);
 							List<String> spList = Arrays.asList(reward.split(";"));
 							List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
 							List<Double> rewardList = new ArrayList<Double>();
