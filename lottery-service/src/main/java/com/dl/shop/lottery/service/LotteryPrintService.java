@@ -6,11 +6,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -27,13 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.dl.base.configurer.RestTemplateConfig;
-import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.MD5Utils;
-import com.dl.base.util.SNGenerator;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO.QueryIssue;
@@ -44,6 +46,7 @@ import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.lottery.dto.LotteryPrintDTO;
+import com.dl.lottery.dto.MatchResultDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
 import com.dl.lottery.param.DlQueryAccountParam;
@@ -56,7 +59,10 @@ import com.dl.order.api.IOrderService;
 import com.dl.order.param.LotteryPrintParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
+import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
+import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
@@ -78,6 +84,12 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
 	@Resource
 	private RestTemplate restTemplate;  
+	
+	@Resource
+	private DlLeagueMatchResultService matchResultService;
+	
+	@Resource
+	private PeriodRewardDetailMapper periodRewardDetailMapper;
 
 	@Value("${print.ticket.url}")
 	private String printTicketUrl;
@@ -428,5 +440,186 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}).collect(Collectors.toList());
 		super.save(models);
 		return ResultGenerator.genSuccessResult();
+	}
+	
+	/**
+	 * 定时任务：更新出票信息
+	 */
+	public void updatePrintLotteryCompareStatus() {
+		List<LotteryPrint> lotteryPrints = lotteryPrintMapper.lotteryPrintsByUnCompare();
+		if(lotteryPrints == null) {
+			log.info("updatePrintLotteryCompareStatus 没有获取到需要更新的出票数据");
+			return;
+		}
+		//获取没有赛事结果比较的playcodes
+		Set<String> unPlayCodes = new HashSet<String>();
+		for(LotteryPrint print: lotteryPrints) {
+			List<String> playCodes = this.printStakePlayCodes(print);
+			String comparedStakes = print.getComparedStakes();
+			List<String> comparedPlayCodes = null;
+			if(StringUtils.isNotEmpty(comparedStakes)) {
+				comparedPlayCodes = Arrays.asList(comparedStakes.split(","));
+			}
+			if(comparedPlayCodes != null) {
+				playCodes.removeAll(comparedPlayCodes);
+			}
+			unPlayCodes.addAll(playCodes);
+		}
+		//获取赛事结果
+		List<String> playCodes = new ArrayList<String>(unPlayCodes.size());
+    	playCodes.addAll(unPlayCodes);
+		List<DlLeagueMatchResult> matchResults = matchResultService.queryMatchResultsByPlayCodes(playCodes);
+		if(CollectionUtils.isEmpty(matchResults)) {
+			log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 没有获取到相应的赛事结果信息");
+			return;
+		}
+		log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 获取到相应的赛事结果信息数："+matchResults.size());
+		Map<String, List<DlLeagueMatchResult>> resultMap = new HashMap<String, List<DlLeagueMatchResult>>();
+		for(DlLeagueMatchResult dto: matchResults) {
+			String playCode = dto.getPlayCode();
+			List<DlLeagueMatchResult> list = resultMap.get(playCode);
+			if(list == null) {
+				list = new ArrayList<DlLeagueMatchResult>(5);
+				resultMap.put(playCode, list);
+			}
+			list.add(dto);
+		}
+		//
+		List<LotteryPrint> updates = new ArrayList<LotteryPrint>(lotteryPrints.size());
+		for(String playCode: resultMap.keySet()) {
+			List<DlLeagueMatchResult> matchResultList = resultMap.get(playCode);
+			for(LotteryPrint print: lotteryPrints) {
+				String stakes = print.getStakes();
+				String comparedStakes = print.getComparedStakes()==null?"":print.getComparedStakes();
+				//判断是否对比过
+				if(stakes.contains(playCode) && !comparedStakes.contains(playCode)) {
+					if(comparedStakes.length() > 0) {
+						comparedStakes +=",";
+					}
+					comparedStakes += playCode;
+					LotteryPrint updatePrint = new LotteryPrint();
+					updatePrint.setPrintLotteryId(print.getPrintLotteryId());
+					updatePrint.setComparedStakes(comparedStakes);
+					String[] stakesarr = stakes.split(";");
+					StringBuffer sbuf = new StringBuffer();
+					Set<String> stakePlayCodes = new HashSet<String>(stakesarr.length);
+					//彩票的每一场次分析
+					for(String stake: stakesarr) {
+						String[] split = stake.split("\\|");
+						stakePlayCodes.add(split[1]);
+						if(stake.contains(playCode)) {
+							String playTypeStr = split[0];
+							List<String> cellCodes = Arrays.asList(split[2].split(","));
+							//比赛结果获取中奖信息
+							for(DlLeagueMatchResult rst : matchResultList) {
+								if(rst.getPlayType().equals(Integer.valueOf(playTypeStr))) {
+									String cellCode = rst.getCellCode();
+									if(cellCodes.contains(cellCode)) {
+										sbuf.append(";").append("0").append(rst.getPlayType()).append("|")
+										.append(rst.getPlayCode()).append("|").append(rst.getCellCode())
+										.append("@").append(rst.getOdds());
+									}
+									break;
+								}
+							}
+						}
+					}
+					//中奖记录
+					if(sbuf.length() > 0) {
+						String reward = print.getRewardStakes()==null?sbuf.substring(1, sbuf.length()):(print.getRewardStakes()+sbuf.toString());
+						updatePrint.setRewardStakes(reward);
+					}
+					//彩票对票结束 
+					if(stakePlayCodes.size() == comparedStakes.split(",").length) {
+						updatePrint.setCompareStatus(ProjectConstant.FINISH_COMPARE);
+						//彩票中奖金额
+						List<String> spList = Arrays.asList(updatePrint.getRewardStakes().split(";"));
+						List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
+						List<Double> rewardList = new ArrayList<Double>();
+						this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
+						double rewardSum = rewardList.stream().reduce(0.00, Double::sum);
+						updatePrint.setRealRewardMoney(BigDecimal.valueOf(rewardSum));
+						// 保存第三方给计算的单张彩票的价格
+						PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
+						periodRewardDetail.setTicketId(print.getTicketId());
+						List<PeriodRewardDetail> tickets = periodRewardDetailMapper.queryPeriodRewardDetailBySelective(periodRewardDetail);
+						if (!CollectionUtils.isEmpty(tickets)) {
+							BigDecimal thirdPartRewardMoney = BigDecimal.valueOf(tickets.get(0).getReward());
+							updatePrint.setThirdPartRewardMoney(thirdPartRewardMoney);
+						}
+					}
+					//添加
+					updates.add(updatePrint);
+				}//判断是否对比过over
+			}//over prints for
+		}//over playcode for
+		this.updateBatchLotteryPrint(updates);
+	}
+
+	/**
+	 * 高速批量更新LotteryPrint 10万条数据 18s
+	 * @param list
+	 */
+	public void updateBatchLotteryPrint(List<LotteryPrint> list) {
+		log.info("updateBatchLotteryPrint 准备更新彩票信息到数据库：size" + list.size());
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ?,compare_status = ?, compared_stakes = ? where print_lottery_id = ?";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (int x = 0, size = list.size(); x < size; x++) {
+				prest.setString(1, list.get(x).getRewardStakes());
+				prest.setBigDecimal(2, list.get(x).getRealRewardMoney() == null?BigDecimal.ZERO:list.get(x).getRealRewardMoney());
+				prest.setString(3, list.get(x).getCompareStatus());
+				prest.setString(4,list.get(x).getComparedStakes());
+				prest.setInt(5, list.get(x).getPrintLotteryId());
+				prest.addBatch();
+			}
+			int[] rst = prest.executeBatch();
+			conn.commit();
+			conn.close();
+			log.info("updateBatchLotteryPrint 更新彩票信息到数据库：size" + list.size() + "  入库返回：size=" + rst.length);
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+		} catch (ClassNotFoundException ex) {
+			log.error(ex.getMessage());
+		}
+	}
+	/**
+	 * 组合中奖集合
+	 * @param amount:初始值2*times
+	 * @param num:几串几
+	 * @param list:赔率
+	 * @param rewardList:组合后的中奖金额list
+	 */
+	private void groupByRewardList(Double amount, int num, List<Double> list, List<Double> rewardList) {
+		LinkedList<Double> link = new LinkedList<Double>(list);
+		while(link.size() > 0) {
+			Double remove = link.remove(0);
+			Double item = amount*remove;
+			if(num == 1) {
+				rewardList.add(item);
+			} else {
+				groupByRewardList(item,num-1,link, rewardList);
+			}
+		}		
+	}
+	/**
+	 * 获取playcode
+	 * @param print
+	 * @return
+	 */
+	private List<String> printStakePlayCodes(LotteryPrint print) {
+		String stakes = print.getStakes();
+		String[] split = stakes.split(";");
+		List<String> playCodes = new ArrayList<String>(split.length);
+		for(String str: split) {
+			String[] split2 = str.split("\\|");
+			String playCode = split2[1];
+			playCodes.add(playCode);
+		}
+		return playCodes;
 	}
 }

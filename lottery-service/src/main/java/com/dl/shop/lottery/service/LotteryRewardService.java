@@ -452,7 +452,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			return;
 		}
 		// 更新结果：中奖号和中奖金额
-		this.updateBatchLotteryPrint(updatelotteryPrintList);
+		lotteryPrintService.updateBatchLotteryPrint(updatelotteryPrintList);
 	}
 	
 	/**
@@ -773,33 +773,4 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		}
 	}
 	
-	/**
-	 * 高速批量更新LotteryPrint 10万条数据 18s
-	 * @param list
-	 */
-	public void updateBatchLotteryPrint(List<LotteryPrint> list) {
-		try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ?,compare_status = ?, compared_stakes = ? where print_lottery_id = ?";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (int x = 0, size = list.size(); x < size; x++) {
-				prest.setString(1, list.get(x).getRewardStakes());
-				prest.setBigDecimal(2, list.get(x).getRealRewardMoney() == null?BigDecimal.ZERO:list.get(x).getRealRewardMoney());
-				prest.setString(3, list.get(x).getCompareStatus());
-				prest.setString(4,list.get(x).getComparedStakes());
-				prest.setInt(5, list.get(x).getPrintLotteryId());
-				prest.addBatch();
-			}
-			prest.executeBatch();
-			conn.commit();
-			conn.close();
-		} catch (SQLException ex) {
-			log.error(ex.getMessage());
-		} catch (ClassNotFoundException ex) {
-			log.error(ex.getMessage());
-		}
-	}
 }

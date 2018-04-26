@@ -1201,10 +1201,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						if(rstCode != 0) {
 							continue;
 						}*/
-						log.info("开奖场次："+issue);
+						/*log.info("开奖场次："+issue);
 						DlToAwardingParam dltoAwardingParm = new DlToAwardingParam();
 						dltoAwardingParm.setIssue(issue);
-						lotteryRewardService.toAwarding(dltoAwardingParm);
+						lotteryRewardService.toAwarding(dltoAwardingParm);*/
 						log.info("保存比赛比分结果"+changciId);
 						lotteryMatchMapper.updateMatchResult(lotteryMatch);
 					}
