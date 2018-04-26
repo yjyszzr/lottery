@@ -127,6 +127,6 @@
   </select>
   
   <select id="lotteryPrintsByUnCompare" resultMap="BaseResultMap">
-  	select * from dl_print_lottery where compare_status = 0 and stakes is not null and stakes != ''
+  	select * from dl_print_lottery where status=1 and compare_status = 0 and stakes is not null and stakes != ''
   </select>
 </mapper>

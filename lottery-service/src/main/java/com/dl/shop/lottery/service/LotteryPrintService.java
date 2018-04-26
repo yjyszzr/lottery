@@ -515,11 +515,16 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 								if(rst.getPlayType().equals(Integer.valueOf(playTypeStr))) {
 									String cellCode = rst.getCellCode();
 									if(cellCodes.contains(cellCode)) {
-										sbuf.append(";").append("0").append(rst.getPlayType()).append("|")
-										.append(rst.getPlayCode()).append("|").append(rst.getCellCode())
-										.append("@").append(rst.getOdds());
+										Map<String, String> aa = this.aa(print.getPrintSp());
+										String key = rst.getPlayCode() + "|" + rst.getCellCode();
+										String odds = aa.get(key);
+										if(StringUtils.isNotBlank(odds)) {
+											sbuf.append(";").append("0").append(rst.getPlayType()).append("|")
+											.append(key)
+											.append("@").append(odds);
+											break;
+										}
 									}
-									break;
 								}
 							}
 						}
@@ -559,6 +564,25 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}//over prints for
 		}//over playcode for
 		this.updateBatchLotteryPrint(updates);
+	}
+	
+	private Map<String,String> aa(String printSp) {
+		List<String> spList = Arrays.asList(printSp.split(";"));
+		Map<String,String> spMap = new HashMap<String,String>();
+		for(String temp:spList) {
+			if(temp.contains(",")) {
+				String playCode = temp.substring(0, temp.lastIndexOf("|"));
+				String temp2 =  temp.substring(temp.lastIndexOf("|")+1);
+				String[] tempArr = temp2.split(",");
+				for(int j = 0;j < tempArr.length;j++) {
+					String temp3 = playCode + "|" + tempArr[j];
+					spMap.put(temp3.substring(0,temp3.indexOf("@")), temp3.substring(temp3.indexOf("@")+1));
+				}
+			}else {
+				spMap.put(temp.substring(0,temp.indexOf("@")), temp.substring(temp.indexOf("@")+1));
+			}
+		}
+		return spMap;
 	}
 
 	/**
