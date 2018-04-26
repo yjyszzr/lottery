@@ -7,6 +7,8 @@ import lombok.Data;
 public class DLBetMatchCellDTO {
 
 	@ApiModelProperty("投注内容")
+	private String betStakes;
+	@ApiModelProperty("投注内容")
 	private String betContent;
 	@ApiModelProperty("投注方式")
 	private String betType;
