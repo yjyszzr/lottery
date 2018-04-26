@@ -791,9 +791,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					}else if("31".equals(cellCode)) {
 						sbuf.append("02|").append(playCode).append("|3").append(";");
 					}else if("32".equals(cellCode)) {
-						sbuf.append("01|").append(playCode).append("|3").append(";");
+						sbuf.append("01|").append(playCode).append("|3,1").append(";");
 					}else if("33".equals(cellCode)) {
-						sbuf.append("01|").append(playCode).append("|0").append(";");
+						sbuf.append("01|").append(playCode).append("|0,1").append(";");
 					}
 				}else {
 					sbuf.append("0").append(playType).append("|").append(playCode).append("|").append(cellCode);
@@ -993,7 +993,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
 						lotteryPrintDTO.setBetType(betType);
 						lotteryPrintDTO.setIssue(issue);
-						lotteryPrintDTO.setMoney(money);
+						lotteryPrintDTO.setMoney(times*2.0);
 						lotteryPrintDTO.setPlayType("06");
 						lotteryPrintDTO.setStakes(cellDTO.getBetStakes());
 						String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
