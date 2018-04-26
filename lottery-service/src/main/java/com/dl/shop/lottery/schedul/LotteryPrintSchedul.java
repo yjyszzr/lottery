@@ -275,7 +275,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新彩票信息
 	 */
-	@Scheduled(cron = "0 0/1 * * * ?")
+	//@Scheduled(cron = "0 0/1 * * * ?")
 	public void updatePrintLotteryCompareStatus() {
 		log.info("更新中奖用户的账户开始");
 		lotteryPrintService.updatePrintLotteryCompareStatus();

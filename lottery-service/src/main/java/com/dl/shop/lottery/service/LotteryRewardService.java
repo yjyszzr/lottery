@@ -309,8 +309,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				
 				dtos.add(dlOrderDataDTO);
 			}
-			lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-			orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+			if(dtos.size() > 0) {
+				lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
+				orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+			}
 		}
 	}
 	/**
