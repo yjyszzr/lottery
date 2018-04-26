@@ -189,11 +189,23 @@ public class LotteryPrintSchedul {
 			}
 			if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
 				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
-				lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
+				long start = System.currentTimeMillis();
+				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
+					lotteryPrintService.update(lotteryPrint);
+				}
+				long end = System.currentTimeMillis();
+				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() + "  times=" + (end-start));
+//				lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
 			}
 			if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
 				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
-				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
+				long start = System.currentTimeMillis();
+//				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
+				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
+					lotteryPrintService.update(lotteryPrint);
+				}
+				long end = System.currentTimeMillis();
+				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size() + "  times=" + (end-start));
 			}
 		}
 	}
