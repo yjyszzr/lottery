@@ -528,10 +528,12 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				winSPList.addAll(rewardStakesWithSpDTO.getWinSpList());//加上本期中奖号码的赔率
 				
 				Integer rewardSize = winSPList.size();// 中奖号码有几个
-				if (rewardSize >= 2) {// 比对后的中奖号码 大于等于2 就说明一定中奖，然后计算该张彩票的中奖金额
+				Integer betType = Integer.valueOf(lp.getBetType().substring(0, 1));
+				if (rewardSize == betType) {// 比对后的中奖号码 大于等于几串几的几 就说明一定中奖，然后计算该张彩票的中奖金额
 					List<Double> rewardList = new ArrayList<Double>();
 					this.groupByRewardList(Double.valueOf(2 * lp.getTimes()), Integer.valueOf(lp.getBetType()) / 10,winSPList, rewardList);
 					rewardSum = rewardList.stream().reduce(0.00, Double::sum);
+					log.info("彩票id:"+lp.getTicketId()+"中奖，中奖金额为:"+rewardSum+"元");
 				}
 				
 				
