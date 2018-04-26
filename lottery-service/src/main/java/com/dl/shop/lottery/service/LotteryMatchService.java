@@ -960,6 +960,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetType(param.getBetType());
 				dto.setTimes(param.getTimes());
 				dto.setBetContent("");
+				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());
 				List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
 				List<DLBetMatchCellDTO> maxBetCellList1 = new ArrayList<DLBetMatchCellDTO>();
