@@ -73,6 +73,11 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public List<Integer> getChangcidIsUnEnd();
+	/**
+	 * 获取已结束赛事去拉详情
+	 * @return
+	 */
+	public List<LotteryMatch> matchListEnded();
 
 	
 }

@@ -1120,49 +1120,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         } catch (Exception e) {
         	log.error(e.getMessage());
         }
-    /*   {
-        	log.info("保存比赛结果开始：size="+matchResult.size());
-        	int start = DateUtil.getCurrentTimeLong();
-        	for(LotteryMatch match: matchResult) {
-        		lotteryMatchMapper.updateMatchResult(match);
-        	}
-        	int end = DateUtil.getCurrentTimeLong();
-        	log.info("保存比赛结果结束,用时："+ (end-start));
-        }
-        int rst = lotteryMatchMapper.updateMatchBatch(matchResult);
-        //保存比赛结果详情
-        lotteryRewardService.saveRewardInfos(matchList);
-        //保存比赛结果详情2
-        {
-        	log.info("保存比赛结果详情,size="+changciIds.size());
-        	int start = DateUtil.getCurrentTimeLong();
-        	matchResultService.refreshMatchResultsFromZC(changciIds);
-        	int end = DateUtil.getCurrentTimeLong();
-        	log.info("保存比赛结果详情结束 用时："+(end-start));
-        }
-        {
-        	log.info("更新订单详情的赛事结果  size="+issueList.size());
-        	int start = DateUtil.getCurrentTimeLong();
-        	for(String issue: issueList) {
-        		LotteryPrintRewardParam param = new LotteryPrintRewardParam();
-        		param.setIssue(issue);
-        		orderService.updateOrderInfoByMatchResult(param);
-        	}
-        	int end = DateUtil.getCurrentTimeLong();
-        	log.info("更新订单详情的赛事结果结束，用时："+(end-start));
-        }
-        {
-        	log.info("开奖 size="+issueList.size());
-        	int start = DateUtil.getCurrentTimeLong();
-        	for(String issue: issueList) {
-        		DlToAwardingParam param = new DlToAwardingParam();
-        		param.setIssue(issue);
-        		log.info("开奖场次："+issue);
-        		lotteryRewardService.toAwarding(param);
-        	}
-        	int end = DateUtil.getCurrentTimeLong();
-        	log.info("开奖结束,用时："+(end-start));
-        }*/
 	}
 
 	private void aa(List<String> matchs, Document doc, List<String> changciIds, List<String> issueList,
@@ -1194,8 +1151,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						matchResult.add(lotteryMatch);
 						changciIds.add(changciId);
 						issueList.add(issue);
-						log.info("保存比赛结果详情"+changciId);
-						matchResultService.refreshMatchResultFromZC(Integer.valueOf(changciId));
+						/*log.info("保存比赛结果详情"+changciId);
+						matchResultService.refreshMatchResultFromZC(Integer.valueOf(changciId));*/
 						/*log.info("更新订单详情的赛事结果"+issue);
 						LotteryPrintRewardParam lotteryPrintRewardParam = new LotteryPrintRewardParam();
 						lotteryPrintRewardParam.setIssue(issue);

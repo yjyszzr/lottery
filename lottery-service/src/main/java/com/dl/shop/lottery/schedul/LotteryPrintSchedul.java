@@ -30,6 +30,7 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
+import com.dl.shop.lottery.service.DlLeagueMatchResultService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
@@ -52,6 +53,9 @@ public class LotteryPrintSchedul {
 	
 	@Resource
 	private LotteryMatchService lotteryMatchService;
+	
+	@Resource
+	private DlLeagueMatchResultService matchResultService;
 	
 	@Resource
 	private LotteryRewardService lotteryRewardService;
@@ -220,6 +224,9 @@ public class LotteryPrintSchedul {
 		 log.info("当天比赛结果拉取开始");
 	    lotteryMatchService.pullMatchResult();
 		log.info("当天比赛结果拉取完成");
+		log.info("当天比赛结果详情拉取开始");
+		matchResultService.pullMatchResultInfos();
+		log.info("当天比赛结果详情拉取完成");
 		log.info("比赛支持率拉取开始");
 		dlMatchSupportService.refreshMatchSupports();
 		log.info("比赛支持率拉取完成");

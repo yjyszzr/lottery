@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,25 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
     	}
     	return null;
     }
-    
+    /**
+     * 拉取赛事结果定时任务
+     */
+    public void pullMatchResultInfos() {
+    	List<LotteryMatch> matchListEnded = dlMatchMapper.matchListEnded();
+    	if(CollectionUtils.isEmpty(matchListEnded)) {
+    		log.info("pullMatchResult 没有拉取赛事结果详情的数据 ");
+    		return;
+    	}
+    	log.info("pullMatchResult 拉取赛事结果详情的数据 数："+matchListEnded.size());
+    	int i = 0;
+    	for(LotteryMatch match: matchListEnded) {
+    		List<DlLeagueMatchResult> rst = this.refreshMatchResultFromZC(match.getChangciId());
+    		if(rst!= null) {
+    			i++;
+    		}
+    	}
+    	log.info("pullMatchResult 拉取赛事结果详情的数据 数："+matchListEnded.size() + "  实际 拉取到赛事结果场次数："+i);
+    }
     
     /**
      * 竞彩网拉取数据

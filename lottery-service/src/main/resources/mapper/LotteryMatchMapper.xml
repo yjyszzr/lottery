@@ -172,4 +172,8 @@
 		 visiting_team_id = #{teamId}
 		order by match_time desc limit ${num}
 	</select>
+	
+	<select id="matchListEnded" resultMap="BaseResultMap">
+		select * from dl_match where status = 1 and DATEDIFF(match_time,NOW()) &gt; -3 and is_del = 0 and is_show=1
+	</select>
 </mapper>
