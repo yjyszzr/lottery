@@ -525,27 +525,31 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						}
 					}
 					//中奖记录
+					String reward = print.getRewardStakes();
 					if(sbuf.length() > 0) {
-						String reward = print.getRewardStakes()==null?sbuf.substring(1, sbuf.length()):(print.getRewardStakes()+sbuf.toString());
+						reward = reward==null?sbuf.substring(1, sbuf.length()):(reward+sbuf.toString());
 						updatePrint.setRewardStakes(reward);
 					}
+					
 					//彩票对票结束 
 					if(stakePlayCodes.size() == comparedStakes.split(",").length) {
 						updatePrint.setCompareStatus(ProjectConstant.FINISH_COMPARE);
-						//彩票中奖金额
-						List<String> spList = Arrays.asList(updatePrint.getRewardStakes().split(";"));
-						List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
-						List<Double> rewardList = new ArrayList<Double>();
-						this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
-						double rewardSum = rewardList.stream().reduce(0.00, Double::sum);
-						updatePrint.setRealRewardMoney(BigDecimal.valueOf(rewardSum));
-						// 保存第三方给计算的单张彩票的价格
-						PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
-						periodRewardDetail.setTicketId(print.getTicketId());
-						List<PeriodRewardDetail> tickets = periodRewardDetailMapper.queryPeriodRewardDetailBySelective(periodRewardDetail);
-						if (!CollectionUtils.isEmpty(tickets)) {
-							BigDecimal thirdPartRewardMoney = BigDecimal.valueOf(tickets.get(0).getReward());
-							updatePrint.setThirdPartRewardMoney(thirdPartRewardMoney);
+						if(StringUtils.isNotBlank(reward)) {
+							//彩票中奖金额
+							List<String> spList = Arrays.asList(reward.split(";"));
+							List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
+							List<Double> rewardList = new ArrayList<Double>();
+							this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
+							double rewardSum = rewardList.stream().reduce(0.00, Double::sum);
+							updatePrint.setRealRewardMoney(BigDecimal.valueOf(rewardSum));
+							// 保存第三方给计算的单张彩票的价格
+							PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
+							periodRewardDetail.setTicketId(print.getTicketId());
+							List<PeriodRewardDetail> tickets = periodRewardDetailMapper.queryPeriodRewardDetailBySelective(periodRewardDetail);
+							if (!CollectionUtils.isEmpty(tickets)) {
+								BigDecimal thirdPartRewardMoney = BigDecimal.valueOf(tickets.get(0).getReward());
+								updatePrint.setThirdPartRewardMoney(thirdPartRewardMoney);
+							}
 						}
 					}
 					//添加
