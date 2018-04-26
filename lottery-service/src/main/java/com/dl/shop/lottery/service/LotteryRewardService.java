@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dl.base.constant.CommonConstants;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
@@ -51,12 +52,15 @@ import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
 import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserAccountService;
+import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.dto.UserIdAndRewardDTO;
+import com.dl.member.param.SysConfigParam;
 import com.dl.member.param.UserIdAndRewardListParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderWithUserDTO;
 import com.dl.order.param.LotteryPrintMoneyParam;
 import com.dl.order.param.OrderDataParam;
+import com.dl.order.param.OrderQueryParam;
 import com.dl.order.param.OrderWithUserParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
@@ -170,15 +174,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param param
 	 */
 	public void toAwarding(DlToAwardingParam param) {
-//		//检查是否设置了派奖阈值
-//		SysConfigParam sysConfigParam = new SysConfigParam();
-//		sysConfigParam.setBusinessId(CommonConstants.BUSINESS_ID_REWARD);
-//		BaseResult<SysConfigDTO> sysRst = sysConfigService.querySysConfig(sysConfigParam);
-//		if(sysRst.getCode() != 0) {
-//			log.warn("派奖前，请前往后台管理设置派奖的奖金阈值");
-//			return;
-//		}
-		BigDecimal limitValue = new BigDecimal(5000);//sysRst.getData().getValue();
 		
 		//获取某个期次的获奖信息
 		List<DlLeagueMatchResult> matchResultList = leagueMatchResultService.queryMatchResultByPlayCode(param.getIssue());
@@ -191,20 +186,32 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		//匹配中奖信息
 		this.compareReward(matchResultList);
 		
-		//根据开奖期次更新订单的状态，中奖金额 等
-		this.updateOrderAfterOpenReward(param.getIssue(), limitValue);
-		
-		//更新用户账户，大于派奖金额的需要派奖
-		this.addRewardMoneyToUsers(param.getIssue());
+	}
+	
+	/**
+	 * 查询业务值得限制：CommonConstants 中9-派奖限制 8-提现限制
+	 * @return
+	 */
+	public BigDecimal queryBusinessLimit(Integer businessId) {
+		//检查是否设置了派奖阈值
+		SysConfigParam sysConfigParam = new SysConfigParam();
+		sysConfigParam.setBusinessId(businessId);
+		BaseResult<SysConfigDTO> sysRst = sysConfigService.querySysConfig(sysConfigParam);
+		if(sysRst.getCode() != 0) {
+			log.warn("派奖前，请前往后台管理设置派奖的奖金阈值");
+			return BigDecimal.ZERO;
+		}
+		BigDecimal limitValue = sysRst.getData().getValue();
+		return limitValue;
 	}
 
 	/**
 	 * 已中奖的用户订单，即订单状态是5-已中奖，派奖中（订单状态是6）的不自动加奖金， 更新用户账户，记录奖金流水
 	 * @param issue
 	 */
-	public void addRewardMoneyToUsers(String issue) {
+	public void addRewardMoneyToUsers() {
 		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
-		orderWithUserParam.setIssue(issue);
+		orderWithUserParam.setStr("");
 		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
 		if(result.getCode() == 0) {
 			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
@@ -229,11 +236,31 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * 根据开奖期次更新订单的状态，中奖金额 等
 	 * @param issue
 	 */
-	public void updateOrderAfterOpenReward(String issue,BigDecimal limitValue) {
-		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(issue);
+	public void updateOrderAfterOpenReward() {
+		BigDecimal limitValue = this.queryBusinessLimit(CommonConstants.BUSINESS_ID_REWARD);
+		if(limitValue.compareTo(BigDecimal.ZERO) <= 0) {
+			log.error("请前往后台管理系统设置派奖金额阈值,不予派奖");
+			return;
+		}
+		
+		//查询订单状态是待开奖的，查询是否每笔订单锁包含的彩票都已经比对完成
+		OrderQueryParam orderQueryParam = new OrderQueryParam();
+		orderQueryParam.setOrderStatus(ProjectConstant.ORDER_STATUS_STAY);
+		orderQueryParam.setPayStatus(ProjectConstant.PAY_STATUS_ALREADY);
+		BaseResult<List<String>> rst = orderService.queryOrderSnListByStatus(orderQueryParam);
+		if(rst.getCode() != 0) {
+			log.error(rst.getMsg());
+			return;
+		}
+		
+		List<String> orderSnList = rst.getData();
+		if(CollectionUtils.isEmpty(orderSnList)) {
+			return;
+		}		
+		
+		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(orderSnList);
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
 			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
-			
 			lotteryPrintMoneyDTO.setRewardLimit(limitValue);
 			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
 			for(DlOrderDataDTO dto : dlOrderDataDTOs) {

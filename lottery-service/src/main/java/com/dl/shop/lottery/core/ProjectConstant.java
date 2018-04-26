@@ -417,8 +417,18 @@ public class ProjectConstant {
 	public final static String ONE_YES = "1";
 	public final static String ZERO_NO = "0";
 	
+    //订单状态
+    public static final Integer ORDER_STATUS_NOT_PAY = 0;         //待付款
+    public static final Integer ORDER_STATUS_PAY_FAIL_LOTTERY = 1;//待出票
+    public static final Integer ORDER_STATUS_FAIL_LOTTERY = 2;    //出票失败
+    public static final Integer ORDER_STATUS_STAY = 3;            //待开奖
     public static final Integer ORDER_STATUS_NOT = 4;             //未中奖
     public static final Integer ORDER_STATUS_ALREADY = 5;         //已中奖
     public static final Integer ORDER_STATUS_REWARDING = 6;       //派奖中
+    public static final Integer ORDER_STATUS_REWARDED = 7;        //已派奖
+    
+    public static final Integer PAY_STATUS_STAY = 0;   //待支付
+    public static final Integer PAY_STATUS_ALREADY = 1;//已支付
+	
 	
 }
