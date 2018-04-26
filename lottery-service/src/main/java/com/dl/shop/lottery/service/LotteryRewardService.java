@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -248,41 +250,61 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		orderQueryParam.setOrderStatus(ProjectConstant.ORDER_STATUS_STAY);
 		orderQueryParam.setPayStatus(ProjectConstant.PAY_STATUS_ALREADY);
 		BaseResult<List<String>> rst = orderService.queryOrderSnListByStatus(orderQueryParam);
+		log.info("获取待开奖订单返回：code="+rst.getCode()+" msg="+rst.getMsg());
 		if(rst.getCode() != 0) {
 			log.error(rst.getMsg());
 			return;
 		}
 		
 		List<String> orderSnList = rst.getData();
+		log.info("待开奖数据： size="+orderSnList.size());
 		if(CollectionUtils.isEmpty(orderSnList)) {
 			return;
 		}		
 		
 		List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(orderSnList);
+		log.info("获取可开奖彩票信息："+dlOrderDataDTOs.size());
 		if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
+			Map<String, Double> map = new HashMap<String, Double>();
+			Set<String> unOrderSns = new HashSet<String>();
+			for(DlOrderDataDTO dto: dlOrderDataDTOs) {
+				String orderSn = dto.getOrderSn();
+				String compareStatus = dto.getCompareStatus();
+				if(compareStatus.equals("0")) {
+					unOrderSns.add(orderSn);
+				}
+				if(unOrderSns.contains(orderSn)) {
+					map.remove(orderSn);
+					continue;
+				}
+				Double double1 = map.get(orderSn);
+				double realReward = dto.getRealRewardMoney().doubleValue();
+				double1 = double1==null?realReward:(double1+realReward);
+				map.put(orderSn, double1);
+			}
+			
+			
 			LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
 			lotteryPrintMoneyDTO.setRewardLimit(limitValue);
 			List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
-			for(DlOrderDataDTO dto : dlOrderDataDTOs) {
+			for(String orderSn: map.keySet()) {
 				OrderDataParam dlOrderDataDTO = new OrderDataParam();
-				try {
-					BeanUtils.copyProperties(dlOrderDataDTO, dto);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				dlOrderDataDTO.setOrderSn(orderSn);
+				BigDecimal realReward = BigDecimal.valueOf(map.get(orderSn));
+				dlOrderDataDTO.setRealRewardMoney(realReward);
 				
-				if(dto.getRealRewardMoney().compareTo(limitValue) >= 0) {//派奖中
+				if(realReward.compareTo(limitValue) >= 0) {//派奖中
 					dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_REWARDING);
 				}
 				
-				if(dto.getRealRewardMoney().compareTo(BigDecimal.ZERO) == 0) {//未中奖
+				if(realReward.compareTo(BigDecimal.ZERO) == 0) {//未中奖
 					dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_NOT);
-				}else if(dto.getRealRewardMoney().compareTo(BigDecimal.ZERO) > 0) {//已中奖
+				}else if(realReward.compareTo(BigDecimal.ZERO) > 0) {//已中奖
 					dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_ALREADY);
 				}
 				
-				if(dto.getRealRewardMoney().compareTo(BigDecimal.ZERO) < 0) {//中奖金额为负数，过滤掉
-					break;
+				if(realReward.compareTo(BigDecimal.ZERO) < 0) {//中奖金额为负数，过滤掉
+					continue;
 				}
 				
 				dtos.add(dlOrderDataDTO);
