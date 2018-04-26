@@ -527,7 +527,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					//中奖记录
 					String reward = print.getRewardStakes();
 					if(sbuf.length() > 0) {
-						reward = reward==null?sbuf.substring(1, sbuf.length()):(reward+sbuf.toString());
+						reward = StringUtils.isBlank(reward)?sbuf.substring(1, sbuf.length()):(reward+sbuf.toString());
 						updatePrint.setRewardStakes(reward);
 					}
 					
