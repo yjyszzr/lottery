@@ -231,4 +231,26 @@ public class LotteryPrintSchedul {
 		lotteryMatchService.saveMatchList();
 		log.info("赛事列表获取结束");
 	}
+	
+	/**
+	 * 更新待开奖的订单
+	 */
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public void updateOrderAfterOpenReward() {
+		log.info("更新待开奖的订单开始");
+		lotteryRewardService.updateOrderAfterOpenReward();
+		log.info("更新待开奖的订单结束");
+	}
+	
+	/**
+	 * 更新中奖用户的账户
+	 */
+	@Scheduled(cron = "0 0/5 * * * ?")
+	public void addRewardMoneyToUsers() {
+		log.info("更新中奖用户的账户开始");
+		lotteryRewardService.addRewardMoneyToUsers();
+		log.info("更新中奖用户的账户结束");
+		
+	}
+	
 }

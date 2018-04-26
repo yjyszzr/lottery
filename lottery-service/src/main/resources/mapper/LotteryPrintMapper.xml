@@ -101,13 +101,16 @@
   </select>
   
   
-  <select id="getRealRewardMoney" resultType="com.dl.lottery.dto.DlOrderDataDTO">
+  <select id="getRealRewardMoney" parameterType = "java.util.List" resultType="com.dl.lottery.dto.DlOrderDataDTO">
     select 
        order_sn orderSn,
        sum(real_reward_money) realRewardMoney
     from dl_print_lottery 
 	where 
-	   compare_status=1 and stakes like CONCAT('%',#{issue},'%')
+	   compare_status=1 and order_sn in
+  	<foreach collection="orderSns" item="orderSn" index="index" open="(" separator="," close=")">
+		#{orderSn}
+    </foreach>
 	group by order_sn
   </select>
   
