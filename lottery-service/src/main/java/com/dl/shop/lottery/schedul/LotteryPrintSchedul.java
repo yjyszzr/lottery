@@ -235,7 +235,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 获取开奖结果的txt （每2分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/2 * * * ?")
+	//@Scheduled(cron = "0 0/2 * * * ?")
 	public void fetchRewardTxt() {
 		log.info("获取开奖结果开始");
 		lotteryRewardService.resovleRewardTxt();
@@ -275,11 +275,11 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新彩票信息
 	 */
-	//@Scheduled(cron = "0 0/1 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
 	public void updatePrintLotteryCompareStatus() {
-		log.info("更新中奖用户的账户开始");
+		log.info("更新出票信息开始");
 		lotteryPrintService.updatePrintLotteryCompareStatus();
-		log.info("更新中奖用户的账户结束");
+		log.info("更新出票信息结束");
 		
 	}
 	
