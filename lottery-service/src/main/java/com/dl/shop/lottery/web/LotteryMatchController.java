@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -161,19 +162,34 @@ public class LotteryMatchController {
 		boolean isAllSingle = true;
 		for(MatchBetPlayDTO betPlay : matchBetPlays){
 			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+			if(CollectionUtils.isEmpty(matchBetCells)) {
+				isCellError = true;
+				break;
+			}
 			for(MatchBetCellDTO betCell: matchBetCells){
 				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+				if(CollectionUtils.isEmpty(betCells)) {
+					isCellError = true;
+					break;
+				}
 				for(DlJcZqMatchCellDTO dto: betCells) {
 					String cellCode = dto.getCellCode();
 					String cellName = dto.getCellName();
 					String cellOdds = dto.getCellOdds();
 					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
 						isCellError = true;
+						break;
 					}
 				}
 				if(0 == betCell.getSingle()) {
 					isAllSingle = false;
 				}
+				if(isCellError) {
+					break;
+				}
+			}
+			if(isCellError) {
+				break;
 			}
 		}
 		//校验投注选项
@@ -275,19 +291,34 @@ public class LotteryMatchController {
 		boolean isAllSingle = true;
 		for(MatchBetPlayDTO betPlay : matchBetPlays){
 			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+			if(CollectionUtils.isEmpty(matchBetCells)) {
+				isCellError = true;
+				break;
+			}
 			for(MatchBetCellDTO betCell: matchBetCells){
 				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+				if(CollectionUtils.isEmpty(betCells)) {
+					isCellError = true;
+					break;
+				}
 				for(DlJcZqMatchCellDTO dto: betCells) {
 					String cellCode = dto.getCellCode();
 					String cellName = dto.getCellName();
 					String cellOdds = dto.getCellOdds();
 					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
 						isCellError = true;
+						break;
 					}
 				}
 				if(0 == betCell.getSingle()) {
 					isAllSingle = false;
 				}
+				if(isCellError) {
+					break;
+				}
+			}
+			if(isCellError) {
+				break;
 			}
 		}
 		//校验投注选项
