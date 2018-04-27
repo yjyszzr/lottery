@@ -195,7 +195,7 @@ public class LotteryPrintSchedul {
 				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
 				long start = System.currentTimeMillis();
 				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
-					lotteryPrintService.update(lotteryPrint);
+					lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
 				}
 				long end = System.currentTimeMillis();
 				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() + "  times=" + (end-start));
@@ -206,7 +206,7 @@ public class LotteryPrintSchedul {
 				long start = System.currentTimeMillis();
 //				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
 				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
-					lotteryPrintService.update(lotteryPrint);
+					lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
 				}
 				long end = System.currentTimeMillis();
 				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size() + "  times=" + (end-start));

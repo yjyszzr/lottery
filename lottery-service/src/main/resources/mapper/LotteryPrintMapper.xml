@@ -130,4 +130,8 @@
   <select id="lotteryPrintsByUnCompare" resultMap="BaseResultMap">
   	select * from dl_print_lottery where status=1 and (compare_status = 0 or compare_status is null or compare_status = '')and stakes is not null and stakes != ''
   </select>
+  
+  <update id="updatePrintStatusByTicketId">
+  	update dl_print_lottery set error_code=#{errorCode}, stauts=#{stauts} where ticket_id=#{ticketId}
+  </update>
 </mapper>
