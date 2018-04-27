@@ -286,10 +286,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					map.put(orderSn, double1);
 				}
 				
-				
+				log.info("*********8可开奖订单及资金数："+map.size());
 				LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
 				lotteryPrintMoneyDTO.setRewardLimit(limitValue);
-				List<OrderDataParam> dtos = new LinkedList<OrderDataParam>();
+				List<OrderDataParam> dtos = new ArrayList<OrderDataParam>(map.size());
 				for(String orderSn: map.keySet()) {
 					OrderDataParam dlOrderDataDTO = new OrderDataParam();
 					dlOrderDataDTO.setOrderSn(orderSn);
@@ -312,6 +312,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					
 					dtos.add(dlOrderDataDTO);
 				}
+				log.info("%%%%%%准备执行开奖订单数："+dtos.size());
 				if(dtos.size() > 0) {
 					lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
 					BaseResult<Integer> result = orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
