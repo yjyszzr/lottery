@@ -957,7 +957,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //					minList.add(minBetCell);
 				});
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setBetType(param.getBetType());
+				dto.setBetType(betType);
 				dto.setTimes(param.getTimes());
 				dto.setBetContent("");
 				dto.setBetStakes("");
