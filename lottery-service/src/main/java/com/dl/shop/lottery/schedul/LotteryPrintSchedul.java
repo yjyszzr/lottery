@@ -98,7 +98,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 出票任务 （每5分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
         OrderSnListGoPrintLotteryParam orderSnListGoPrintLotteryParam = new OrderSnListGoPrintLotteryParam();
@@ -208,7 +208,7 @@ public class LotteryPrintSchedul {
 				long start = System.currentTimeMillis();
 				int num = 0;
 //				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
-				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
+				for(LotteryPrint lotteryPrint:lotteryPrintSuccess) {
 					int rst = lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
 					num+=rst<0?0:rst;
 				}
@@ -221,9 +221,9 @@ public class LotteryPrintSchedul {
 	
 	
 	 /**
-	  * 获取已完成比赛的比赛分数 （每2分钟执行一次）
+	  * 获取已完成比赛的比赛分数 （每10分钟执行一次）
 	  */
-	 @Scheduled(cron = "0 0/2 * * * ?")
+	 @Scheduled(cron = "0 0/10 * * * ?")
 	 public void fetchMatchScore() {
 		 log.info("当天比赛结果拉取开始");
 	    lotteryMatchService.pullMatchResult();
@@ -248,7 +248,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 赛事列表获取
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/15 * * * ?")
 	public void fetchMatch() {
 		log.info("赛事列表获取开始");
 		lotteryMatchService.saveMatchList();
@@ -258,7 +258,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新待开奖的订单
 	 */
-	@Scheduled(cron = "0 0/1 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
 	public void updateOrderAfterOpenReward() {
 		log.info("更新待开奖的订单开始");
 		lotteryRewardService.updateOrderAfterOpenReward();
@@ -268,7 +268,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新中奖用户的账户
 	 */
-	@Scheduled(cron = "0 0/1 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
 	public void addRewardMoneyToUsers() {
 		log.info("更新中奖用户的账户开始");
 		lotteryRewardService.addRewardMoneyToUsers();
@@ -279,7 +279,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新彩票信息
 	 */
-	@Scheduled(cron = "0 0/1 * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
 	public void updatePrintLotteryCompareStatus() {
 		log.info("更新彩票信息开始");
 		lotteryPrintService.updatePrintLotteryCompareStatus();
