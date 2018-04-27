@@ -132,6 +132,6 @@
   </select>
   
   <update id="updatePrintStatusByTicketId">
-  	update dl_print_lottery set error_code=#{errorCode}, stauts=#{stauts} where ticket_id=#{ticketId}
+  	update dl_print_lottery set error_code=#{errorCode}, status=#{status} where ticket_id=#{ticketId}
   </update>
 </mapper>
