@@ -443,16 +443,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	}
 	
 	/**
-	 * 定时任务：更新出票信息
+	 * 定时任务：更新彩票信息
 	 */
 	public void updatePrintLotteryCompareStatus() {
 		List<LotteryPrint> lotteryPrints = lotteryPrintMapper.lotteryPrintsByUnCompare();
 		if(lotteryPrints == null) {
-			log.info("updatePrintLotteryCompareStatus 没有获取到需要更新的出票数据");
+			log.info("updatePrintLotteryCompareStatus 没有获取到需要更新状态的彩票数据");
 			return;
 		}
+		log.info("updatePrintLotteryCompareStatus 获取到需要更新状态的彩票数据，size="+lotteryPrints.size());
 		//获取没有赛事结果比较的playcodes
 		Set<String> unPlayCodes = new HashSet<String>();
+		List<LotteryPrint> endPrints = new ArrayList<LotteryPrint>(lotteryPrints.size());
 		for(LotteryPrint print: lotteryPrints) {
 			List<String> playCodes = this.printStakePlayCodes(print);
 			String comparedStakes = print.getComparedStakes();
@@ -463,8 +465,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			if(comparedPlayCodes != null) {
 				playCodes.removeAll(comparedPlayCodes);
 			}
-			unPlayCodes.addAll(playCodes);
+			if(playCodes.size() == 0) {
+				print.setCompareStatus(ProjectConstant.FINISH_COMPARE);
+				endPrints.add(print);
+			}else {
+				unPlayCodes.addAll(playCodes);
+			}
 		}
+		log.info("updatePrintLotteryCompareStatus 未更新状态彩票对应其次数，size="+unPlayCodes.size());
 		//获取赛事结果
 		List<String> playCodes = new ArrayList<String>(unPlayCodes.size());
     	playCodes.addAll(unPlayCodes);
@@ -564,6 +572,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}//over prints for
 		}//over playcode for
 		this.updateBatchLotteryPrint(updates);
+		this.updateBatchLotteryPrint(endPrints);
 	}
 	
 	private Map<String,String> aa(String printSp) {
