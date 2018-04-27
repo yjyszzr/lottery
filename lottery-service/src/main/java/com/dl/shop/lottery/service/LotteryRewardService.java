@@ -272,7 +272,8 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				for(DlOrderDataDTO dto: dlOrderDataDTOs) {
 					String orderSn = dto.getOrderSn();
 					String compareStatus = dto.getCompareStatus();
-					if(compareStatus.equals("0")) {
+					log.info("ordersn="+orderSn+" comaprestatus="+compareStatus);
+					if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
 						unOrderSns.add(orderSn);
 					}
 					if(unOrderSns.contains(orderSn)) {
