@@ -1282,6 +1282,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     		List<MatchBetCellDTO> matchBetCells = new ArrayList<MatchBetCellDTO>(tickets.length);
     		for(String tikcket: tickets) {
     			String[] split = tikcket.split("\\|");
+    			if(split.length != 3) {
+    				log.error("getBetInfoByOrderInfo ticket has error, orderSn="+orderSn+ " ticket="+tikcket);
+    			}
     			String playType = split[0];
     			if(null == playCode) {
     				playCode = split[1];
