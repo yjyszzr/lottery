@@ -663,4 +663,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		return playCodes;
 	}
+
+	public int updatePrintStatusByTicketId(LotteryPrint lotteryPrint) {
+		return lotteryPrintMapper.updatePrintStatusByTicketId(lotteryPrint);
+	}
 }

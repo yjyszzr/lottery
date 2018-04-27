@@ -957,7 +957,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //					minList.add(minBetCell);
 				});
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setBetType(param.getBetType());
+				dto.setBetType(betType);
 				dto.setTimes(param.getTimes());
 				dto.setBetContent("");
 				dto.setBetStakes("");
@@ -1282,6 +1282,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     		List<MatchBetCellDTO> matchBetCells = new ArrayList<MatchBetCellDTO>(tickets.length);
     		for(String tikcket: tickets) {
     			String[] split = tikcket.split("\\|");
+    			if(split.length != 3) {
+    				log.error("getBetInfoByOrderInfo ticket has error, orderSn="+orderSn+ " ticket="+tikcket);
+    				continue;
+    			}
     			String playType = split[0];
     			if(null == playCode) {
     				playCode = split[1];

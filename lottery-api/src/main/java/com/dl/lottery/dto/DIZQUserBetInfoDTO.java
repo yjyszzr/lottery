@@ -29,8 +29,8 @@ public class DIZQUserBetInfoDTO implements Serializable{
 	private int betNum;
 	@ApiModelProperty("彩票金额")
 	private Double money;
-	@ApiModelProperty("最大奖金")
-	private Double maxBonus;
+	@ApiModelProperty("预测奖金")
+	private String forecastMoney;
 	@ApiModelProperty(value="余额抵扣")
 	private Double surplus;
 	@ApiModelProperty(value="优惠卷抵扣")

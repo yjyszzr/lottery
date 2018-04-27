@@ -57,4 +57,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> getPrintLotteryListByOrderSns(@Param("orderSns")List<String> orderSns);
 
 	public List<LotteryPrint> lotteryPrintsByUnCompare();
+
+	public int updatePrintStatusByTicketId(LotteryPrint lotteryPrint);
 }
