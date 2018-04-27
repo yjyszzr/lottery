@@ -58,5 +58,5 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 
 	public List<LotteryPrint> lotteryPrintsByUnCompare();
 
-	public void updatePrintStatusByTicketId(LotteryPrint lotteryPrint);
+	public int updatePrintStatusByTicketId(LotteryPrint lotteryPrint);
 }

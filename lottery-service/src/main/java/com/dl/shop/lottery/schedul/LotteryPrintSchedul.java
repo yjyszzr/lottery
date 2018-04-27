@@ -194,22 +194,26 @@ public class LotteryPrintSchedul {
 			if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
 				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
 				long start = System.currentTimeMillis();
+				int num = 0;
 				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
-					lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
+					int rst = lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
+					num+=rst<0?0:rst;
 				}
 				long end = System.currentTimeMillis();
-				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() + "  times=" + (end-start));
+				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() +" rst size="+ num+ "  times=" + (end-start));
 //				lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
 			}
 			if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
 				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
 				long start = System.currentTimeMillis();
+				int num = 0;
 //				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
 				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
-					lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
+					int rst = lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
+					num+=rst<0?0:rst;
 				}
 				long end = System.currentTimeMillis();
-				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size() + "  times=" + (end-start));
+				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size()+" rst size="+ num + "  times=" + (end-start));
 			}
 		}
 	}
