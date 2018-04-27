@@ -123,6 +123,22 @@ public class LotteryMatchController {
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
 		}
+		String playType = param.getPlayType();
+		if(StringUtils.isBlank(playType)) {
+			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+		}
+		try {
+			int parseInt = Integer.parseInt(playType);
+			if(parseInt < 1 || parseInt > 7) {
+				return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			}
+		} catch (NumberFormatException e) {
+			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+		}
+		//2 1
+		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
+			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
+		}
 		//校验赛事投注时间
 		MatchBetPlayDTO min = matchBetPlays.get(0);
 		if(matchBetPlays.size() > 1) {
@@ -230,6 +246,10 @@ public class LotteryMatchController {
 			}
 		} catch (NumberFormatException e) {
 			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+		}
+		//2 1
+		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
+			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
 		}
 		//校验赛事投注时间
 		MatchBetPlayDTO min = matchBetPlays.get(0);
