@@ -254,7 +254,7 @@ public class LotteryPrintSchedul {
 	/**
 	 * 更新待开奖的订单
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
 	public void updateOrderAfterOpenReward() {
 		log.info("更新待开奖的订单开始");
 		lotteryRewardService.updateOrderAfterOpenReward();
