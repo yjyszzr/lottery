@@ -277,9 +277,9 @@ public class LotteryPrintSchedul {
 	 */
 	@Scheduled(cron = "0 0/1 * * * ?")
 	public void updatePrintLotteryCompareStatus() {
-		log.info("更新出票信息开始");
+		log.info("更新彩票信息开始");
 		lotteryPrintService.updatePrintLotteryCompareStatus();
-		log.info("更新出票信息结束");
+		log.info("更新彩票信息结束");
 		
 	}
 	

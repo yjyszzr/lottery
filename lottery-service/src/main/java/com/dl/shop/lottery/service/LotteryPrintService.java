@@ -456,6 +456,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		Set<String> unPlayCodes = new HashSet<String>();
 		List<LotteryPrint> endPrints = new ArrayList<LotteryPrint>(lotteryPrints.size());
 		for(LotteryPrint print: lotteryPrints) {
+			if("2018042415134251290005".equals(print.getOrderSn())) {
+				log.info("ordersn=2018042415134251290005");
+			}
 			List<String> playCodes = this.printStakePlayCodes(print);
 			String comparedStakes = print.getComparedStakes();
 			List<String> comparedPlayCodes = null;
