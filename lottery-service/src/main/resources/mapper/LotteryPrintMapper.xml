@@ -112,7 +112,7 @@
   	<foreach collection="orderSns" item="orderSn" index="index" open="(" separator="," close=")">
 		#{orderSn}
     </foreach>
-	order by order_sn limit 
+	order by order_sn  
   </select>
   
   <select id="getByOrderSn" resultMap="BaseResultMap">
