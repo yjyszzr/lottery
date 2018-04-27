@@ -30,6 +30,7 @@ import com.dl.lottery.dto.DIZQUserBetInfoDTO;
 import com.dl.lottery.dto.DLLeagueTeamScoreDTO;
 import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
+import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchAsiaDTO;
@@ -156,20 +157,30 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
 
-		if(betTypeStr.contains("11")) {
-			boolean isAllSingle = true;
-			for(MatchBetPlayDTO betPlay : matchBetPlays){
-				List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
-				for(MatchBetCellDTO betCell: matchBetCells){
-					if(0 == betCell.getSingle()) {
-						isAllSingle = false;
-						break;
+		boolean isCellError = false;
+		boolean isAllSingle = true;
+		for(MatchBetPlayDTO betPlay : matchBetPlays){
+			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+			for(MatchBetCellDTO betCell: matchBetCells){
+				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+				for(DlJcZqMatchCellDTO dto: betCells) {
+					String cellCode = dto.getCellCode();
+					String cellName = dto.getCellName();
+					String cellOdds = dto.getCellOdds();
+					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
+						isCellError = true;
 					}
 				}
-				if(!isAllSingle) {
-					break;
+				if(0 == betCell.getSingle()) {
+					isAllSingle = false;
 				}
 			}
+		}
+		//校验投注选项
+		if(isCellError) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		if(betTypeStr.contains("11")) {
 			if(!isAllSingle) {
 				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
 			}
@@ -201,14 +212,6 @@ public class LotteryMatchController {
 		}
 		if(!isCheckedBetType) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
-		}
-		//校验投注选项
-		List<MatchBetPlayDTO> collect = matchBetPlays.stream().filter(dto->{
-			int sum = dto.getMatchBetCells().stream().mapToInt(betCell->betCell.getBetCells()==null?0:betCell.getBetCells().size()).sum();
-			return sum == 0;
-		}).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
 		}
 		//校验胆的个数设置
 		int danEnableNum = minBetNum -1;
@@ -268,20 +271,30 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
 		}
 		
-		if(betTypeStr.contains("11")) {
-			boolean isAllSingle = true;
-			for(MatchBetPlayDTO betPlay : matchBetPlays){
-				List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
-				for(MatchBetCellDTO betCell: matchBetCells){
-					if(0 == betCell.getSingle()) {
-						isAllSingle = false;
-						break;
+		boolean isCellError = false;
+		boolean isAllSingle = true;
+		for(MatchBetPlayDTO betPlay : matchBetPlays){
+			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+			for(MatchBetCellDTO betCell: matchBetCells){
+				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+				for(DlJcZqMatchCellDTO dto: betCells) {
+					String cellCode = dto.getCellCode();
+					String cellName = dto.getCellName();
+					String cellOdds = dto.getCellOdds();
+					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
+						isCellError = true;
 					}
 				}
-				if(!isAllSingle) {
-					break;
+				if(0 == betCell.getSingle()) {
+					isAllSingle = false;
 				}
 			}
+		}
+		//校验投注选项
+		if(isCellError) {
+			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+		}
+		if(betTypeStr.contains("11")) {
 			if(!isAllSingle) {
 				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
 			}
@@ -313,14 +326,6 @@ public class LotteryMatchController {
 		}
 		if(!isCheckedBetType) {
 			return ResultGenerator.genFailResult("请选择有效的串关！", null);
-		}
-		//校验投注选项
-		List<MatchBetPlayDTO> collect = matchBetPlays.stream().filter(dto->{
-			List<MatchBetCellDTO> list = dto.getMatchBetCells().stream().filter(betCell->betCell.getBetCells() == null || betCell.getBetCells().size() == 0).collect(Collectors.toList());
-			return list.size() > 0;
-		}).collect(Collectors.toList());
-		if(collect.size() > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次玩法没有投注选项！", null);
 		}
 		//校验胆的个数设置
 		int danEnableNum = minBetNum -1;
