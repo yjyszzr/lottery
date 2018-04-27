@@ -272,7 +272,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				for(DlOrderDataDTO dto: dlOrderDataDTOs) {
 					String orderSn = dto.getOrderSn();
 					String compareStatus = dto.getCompareStatus();
-					log.info("ordersn="+orderSn+" comaprestatus="+compareStatus);
+//					log.info("ordersn="+orderSn+" comaprestatus="+compareStatus);
 					if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
 						unOrderSns.add(orderSn);
 					}
@@ -314,7 +314,11 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				}
 				if(dtos.size() > 0) {
 					lotteryPrintMoneyDTO.setOrderDataDTOs(dtos);
-					orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+					BaseResult<Integer> result = orderService.updateOrderInfoByExchangeReward(lotteryPrintMoneyDTO);
+					log.info("更新订单中奖状态和中奖金额updateOrderInfoByExchangeReward param size="+dtos.size() + "  result :"+ result.getCode());
+					if(result.getCode() == 0) {
+						log.info("更新订单中奖状态和中奖金额updateOrderInfoByExchangeReward param size="+dtos.size() + "  result :"+ result.getCode()+"  result size="+result.getData());
+					}
 				}
 			}
 			orderSnList.removeAll(subList);
