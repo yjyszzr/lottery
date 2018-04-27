@@ -1284,6 +1284,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     			String[] split = tikcket.split("\\|");
     			if(split.length != 3) {
     				log.error("getBetInfoByOrderInfo ticket has error, orderSn="+orderSn+ " ticket="+tikcket);
+    				continue;
     			}
     			String playType = split[0];
     			if(null == playCode) {
