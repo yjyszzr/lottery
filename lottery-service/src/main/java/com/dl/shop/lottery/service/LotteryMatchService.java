@@ -1030,7 +1030,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}).collect(Collectors.joining(";"));
 		betInfoDTO.setStakes(stakes);*/
 		//所有选项的最后一个场次编码
-		String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+		String issue = matchBellCellList.get(0).getPlayCode();
+		if(matchBellCellList.size() > 1) {
+			issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
+		}
 		betInfoDTO.setIssue(issue);
 //		betInfoDTO.setMatchBetList(matchBetList);
 		return betInfoDTO;
