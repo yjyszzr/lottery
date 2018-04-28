@@ -46,9 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 public class LotteryPrintSchedul {
 	
 	@Resource
-	private LotteryPrintMapper lotteryPrintMapper;
-	
-	@Resource
 	private LotteryPrintService lotteryPrintService;
 	
 	@Resource
@@ -66,9 +63,6 @@ public class LotteryPrintSchedul {
 	 @Resource
 	 private IOrderService orderService;
 	 
-	 @Resource
-	 private IpaymentService paymentService;
-
 	 @Resource
 	 private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
 
@@ -98,133 +92,14 @@ public class LotteryPrintSchedul {
 	/**
 	 * 出票任务 （每5分钟执行一次）
 	 */
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
         log.info("出票定时任务启动");
-        OrderSnListGoPrintLotteryParam orderSnListGoPrintLotteryParam = new OrderSnListGoPrintLotteryParam();
-        List<String> orderSns = orderService.orderSnListGoPrintLottery(orderSnListGoPrintLotteryParam).getData();
-        if(CollectionUtils.isEmpty(orderSns)) {
-        	log.info("暂时没有可出票的订单号");
-        	return;
-        }
-        log.info("可出票的订单数："+orderSns.size());
-        Set<String> successOrderSn = new HashSet<String>(orderSns.size());
-        List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.getPrintLotteryListByOrderSns(orderSns);
-        if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
-        	log.info("lotteryPrintList size="+lotteryPrintList.size());
-        	while(lotteryPrintList.size() > 0) {
-        		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
-        		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
-        		log.info(" go tostake size="+lotteryPrints.size());
-        		this.toStak(successOrderSn, lotteryPrints);
-        		lotteryPrintList.removeAll(lotteryPrints);
-        	}
-        	orderSns.removeAll(successOrderSn);
-			if(!orderSns.isEmpty()) {
-				log.info("出票失败的订单："+orderSns.stream().collect(Collectors.joining(",")));
-				for(String orderSn: orderSns) {
-					UpdateOrderInfoParam param = new UpdateOrderInfoParam();
-					param.setOrderSn(orderSn);
-					param.setAcceptTime(DateUtil.getCurrentTimeLong());
-					param.setOrderStatus(2);
-					param.setTicketTime(DateUtil.getCurrentTimeLong());
-					BaseResult<String> updateOrderInfo = orderService.updateOrderInfo(param);
-					//回退订单金额
-					if(updateOrderInfo.getCode() == 0) {
-						RollbackOrderAmountParam param1 = new RollbackOrderAmountParam();
-						param1.setOrderSn(orderSn);
-						log.info("invoke rollbackOrderAmount 准备回流资金");
-						BaseResult rollbackOrderAmount = paymentService.rollbackOrderAmount(param1);
-						log.info("rollbackOrderAmount ordersn="+orderSn+" result: code="+rollbackOrderAmount.getCode()+" msg="+rollbackOrderAmount.getMsg());
-					}
-				}
-			}
-        }
+        lotteryPrintService.goPrintLottery();
         log.info("出票定时任务结束");
     }
 
 
-	/**
-	 * 调用第三方出票
-	 * @param successOrderSn
-	 * @param lotteryPrintList
-	 */
-	private void toStak(Set<String> successOrderSn, List<LotteryPrint> lotteryPrints) {
-		DlToStakeParam dlToStakeParam = new DlToStakeParam();
-		dlToStakeParam.setMerchant(lotteryPrints.get(0).getMerchant());
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		dlToStakeParam.setTimestamp(sdf.format(new Date()));
-		dlToStakeParam.setVersion("1.0");
-		List<PrintTicketOrderParam> printTicketOrderParams = new LinkedList<PrintTicketOrderParam>();
-		Map<String, String> ticketIdOrderSnMap = new HashMap<String, String>();
-		lotteryPrints.forEach(lp->{
-			PrintTicketOrderParam printTicketOrderParam = new PrintTicketOrderParam();
-			printTicketOrderParam.setTicketId(lp.getTicketId());
-			printTicketOrderParam.setGame(lp.getGame());
-			printTicketOrderParam.setIssue(lp.getIssue());
-			printTicketOrderParam.setPlayType(lp.getPlayType());
-			printTicketOrderParam.setBetType(lp.getBetType());
-			printTicketOrderParam.setTimes(lp.getTimes());
-			printTicketOrderParam.setMoney(lp.getMoney().intValue());
-			printTicketOrderParam.setStakes(lp.getStakes());
-			printTicketOrderParams.add(printTicketOrderParam);
-			ticketIdOrderSnMap.put(lp.getTicketId(), lp.getOrderSn());
-		});
-		dlToStakeParam.setOrders(printTicketOrderParams);
-		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(dlToStakeParam);
-		if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
-			log.info("inf tostake orders");
-			List<LotteryPrint> lotteryPrintErrors = new LinkedList<LotteryPrint>();
-			List<LotteryPrint> lotteryPrintSuccess = new LinkedList<LotteryPrint>();
-			for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
-				LotteryPrint lotteryPrint = new LotteryPrint();
-				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
-				Integer errorCode = backOrderDetail.getErrorCode();
-				if(errorCode != 0) {
-					if(3002 == errorCode) {
-						successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
-					}else {
-						lotteryPrint.setErrorCode(errorCode);
-						//出票失败
-						lotteryPrint.setStatus(2);
-						lotteryPrintErrors.add(lotteryPrint);
-					}
-				} else {
-					//出票中
-					successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
-					lotteryPrint.setStatus(3);
-					lotteryPrintSuccess.add(lotteryPrint);
-				}
-			}
-			if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
-				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
-				long start = System.currentTimeMillis();
-				int num = 0;
-				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
-					int rst = lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
-					num+=rst<0?0:rst;
-				}
-				long end = System.currentTimeMillis();
-				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() +" rst size="+ num+ "  times=" + (end-start));
-//				lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
-			}
-			if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
-				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
-				long start = System.currentTimeMillis();
-				int num = 0;
-//				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
-				for(LotteryPrint lotteryPrint:lotteryPrintSuccess) {
-					int rst = lotteryPrintService.updatePrintStatusByTicketId(lotteryPrint);
-					num+=rst<0?0:rst;
-				}
-				long end = System.currentTimeMillis();
-				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size()+" rst size="+ num + "  times=" + (end-start));
-			}
-		}
-	}
-	
-	
-	
 	 /**
 	  * 获取已完成比赛的比赛分数 （每10分钟执行一次）
 	  */
