@@ -179,11 +179,16 @@ public class LotteryPrintSchedul {
 			for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
 				LotteryPrint lotteryPrint = new LotteryPrint();
 				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
-				if(backOrderDetail.getErrorCode() != 0) {
-					lotteryPrint.setErrorCode(backOrderDetail.getErrorCode());
-					//出票失败
-					lotteryPrint.setStatus(2);
-					lotteryPrintErrors.add(lotteryPrint);
+				Integer errorCode = backOrderDetail.getErrorCode();
+				if(errorCode != 0) {
+					if(3002 == errorCode) {
+						successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
+					}else {
+						lotteryPrint.setErrorCode(errorCode);
+						//出票失败
+						lotteryPrint.setStatus(2);
+						lotteryPrintErrors.add(lotteryPrint);
+					}
 				} else {
 					//出票中
 					successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
