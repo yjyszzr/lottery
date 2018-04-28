@@ -122,8 +122,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	@Resource
 	private DlLeagueMatchResultService leagueMatchResultService;
 	
-	@Resource
-	private ISysConfigService sysConfigService;
 	
 	@Value("${reward.url}")
 	private String rewardUrl;
@@ -190,22 +188,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		
 	}
 	
-	/**
-	 * 查询业务值得限制：CommonConstants 中9-派奖限制 8-提现限制
-	 * @return
-	 */
-	public BigDecimal queryBusinessLimit(Integer businessId) {
-		//检查是否设置了派奖阈值
-		SysConfigParam sysConfigParam = new SysConfigParam();
-		sysConfigParam.setBusinessId(businessId);
-		BaseResult<SysConfigDTO> sysRst = sysConfigService.querySysConfig(sysConfigParam);
-		if(sysRst.getCode() != 0) {
-			log.warn("派奖前，请前往后台管理设置派奖的奖金阈值");
-			return BigDecimal.ZERO;
-		}
-		BigDecimal limitValue = sysRst.getData().getValue();
-		return limitValue;
-	}
 
 	/**
 	 * 已中奖的用户订单，即订单状态是5-已中奖，派奖中（订单状态是6）的不自动加奖金， 更新用户账户，记录奖金流水
@@ -239,11 +221,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param issue
 	 */
 	public void updateOrderAfterOpenReward() {
-		BigDecimal limitValue = this.queryBusinessLimit(CommonConstants.BUSINESS_ID_REWARD);
-		if(limitValue.compareTo(BigDecimal.ZERO) <= 0) {
-			log.error("请前往后台管理系统设置派奖金额阈值,不予派奖");
-			return;
-		}
 		
 		//查询订单状态是待开奖的，查询是否每笔订单锁包含的彩票都已经比对完成
 		OrderQueryParam orderQueryParam = new OrderQueryParam();
@@ -288,7 +265,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				
 				log.info("*********8可开奖订单及资金数："+map.size());
 				LotteryPrintMoneyParam lotteryPrintMoneyDTO = new LotteryPrintMoneyParam();
-				lotteryPrintMoneyDTO.setRewardLimit(limitValue);
 				List<OrderDataParam> dtos = new ArrayList<OrderDataParam>(map.size());
 				for(String orderSn: map.keySet()) {
 					OrderDataParam dlOrderDataDTO = new OrderDataParam();
@@ -296,14 +272,10 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					BigDecimal realReward = BigDecimal.valueOf(map.get(orderSn));
 					dlOrderDataDTO.setRealRewardMoney(realReward);
 					
-					if(realReward.compareTo(limitValue) >= 0) {//派奖中
-						dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_REWARDING);
-					}
-					
 					if(realReward.compareTo(BigDecimal.ZERO) == 0) {//未中奖
 						dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_NOT);
 					}else if(realReward.compareTo(BigDecimal.ZERO) > 0) {//已中奖
-						dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_ALREADY);
+						dlOrderDataDTO.setOrderStatus(ProjectConstant.ORDER_STATUS_REWARDING);
 					}
 					
 					if(realReward.compareTo(BigDecimal.ZERO) < 0) {//中奖金额为负数，过滤掉
