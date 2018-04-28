@@ -107,7 +107,7 @@ public class LotteryMatchController {
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
-    	List<LeagueInfoDTO> leagueInfos = dlLeagueInfoService.getFilterConditions();
+    	List<LeagueInfoDTO> leagueInfos = lotteryMatchService.getFilterConditions();
     	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
     }
     
