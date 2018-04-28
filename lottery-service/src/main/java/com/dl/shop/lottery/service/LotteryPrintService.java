@@ -225,101 +225,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param list
 	 */
 	public void updateLotteryPrintByCallBack(List<LotteryPrint> list) {
-		try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "update dl_print_lottery set status = ?,platform_id = ?,print_status = ?,"
-					   + "print_sp = ?,print_no = ?,print_time = ? "
-					   + "where ticket_id = ?";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (int i = 0, size = list.size(); i < size; i++) {
-				prest.setInt(1, list.get(i).getStatus());
-				prest.setString(2, list.get(i).getPlatformId());
-				prest.setInt(3, list.get(i).getPrintStatus());
-				prest.setString(4, list.get(i).getPrintSp());
-				prest.setString(5, list.get(i).getPrintNo());
-				prest.setDate(6, new java.sql.Date(list.get(i).getPrintTime().getTime()));
-				prest.setString(7, list.get(i).getTicketId());
-				prest.addBatch();
-			}
-			prest.executeBatch();
-			conn.commit();
-			conn.close();
-		} catch (SQLException ex) {
-			log.error(ex.getMessage());
-		} catch (ClassNotFoundException ex) {
-			log.error(ex.getMessage());
+		for(LotteryPrint print: list) {
+			lotteryPrintMapper.updateLotteryPrintByCallBack(print);
 		}
 	}
 	
-	/**
-	 * 高速批量更新LotteryPeint
-	 * @param list
-	 */
-	public void updateBatchErrorByTicketId(List<LotteryPrint> list) {
-		try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "update dl_print_lottery set error_code = ?,status = ? where ticket_id = ?";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (int i = 0, size = list.size(); i < size; i++) {
-				prest.setInt(1, list.get(i).getErrorCode());
-				prest.setInt(2, list.get(i).getStatus());
-				prest.setString(3, list.get(i).getTicketId());
-				prest.addBatch();
-			}
-			prest.executeBatch();
-			conn.commit();
-			conn.close();
-		} catch (SQLException ex) {
-			log.error(ex.getMessage());
-		} catch (ClassNotFoundException ex) {
-			log.error(ex.getMessage());
-		}
-	}
-	
-	/**
-	 * 高速批量更新LotteryPrint
-	 * @param list
-	 */
-	public void updateBatchSuccessByTicketId(List<LotteryPrint> list) {
-		try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "update dl_print_lottery set status = ? where ticket_id = ?";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (int i = 0, size = list.size(); i < size; i++) {
-				prest.setInt(1, list.get(i).getStatus());
-				prest.setString(2, list.get(i).getTicketId());
-				prest.addBatch();
-			}
-			prest.executeBatch();
-			conn.commit();
-			conn.close();
-		} catch (SQLException ex) {
-			log.error(ex.getMessage());
-		} catch (ClassNotFoundException ex) {
-			log.error(ex.getMessage());
-		}
-	}
-	
-	/**
-	 * 出票失败，更新订单状态为出票失败（2），并回滚红包状态为未使用
-	 * @param list
-	 */
-	public void updateOrder(List<LotteryPrint> list){
-		if(CollectionUtils.isNotEmpty(list)) {
-			for(LotteryPrint lotteryPrint : list) {
-				
-			}
-		}
-	}
 	
 	/**
 	 * 投注结果查询
@@ -603,30 +513,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 */
 	public void updateBatchLotteryPrint(List<LotteryPrint> list) {
 		log.info("updateBatchLotteryPrint 准备更新彩票信息到数据库：size" + list.size());
-		try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "UPDATE dl_print_lottery  SET reward_stakes = ?,real_reward_money = ?,compare_status = ?, compared_stakes = ? where print_lottery_id = ?";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (int x = 0, size = list.size(); x < size; x++) {
-				prest.setString(1, list.get(x).getRewardStakes());
-				prest.setBigDecimal(2, list.get(x).getRealRewardMoney() == null?BigDecimal.ZERO:list.get(x).getRealRewardMoney());
-				prest.setString(3, list.get(x).getCompareStatus());
-				prest.setString(4,list.get(x).getComparedStakes());
-				prest.setInt(5, list.get(x).getPrintLotteryId());
-				prest.addBatch();
+		int num = 0;
+		for(LotteryPrint print: list) {
+			int n = lotteryPrintMapper.updateBatchLotteryPrint(print);
+			if(n > 0) {
+				num += n;
 			}
-			int[] rst = prest.executeBatch();
-			conn.commit();
-			conn.close();
-			log.info("updateBatchLotteryPrint 更新彩票信息到数据库：size" + list.size() + "  入库返回：size=" + rst.length);
-		} catch (SQLException ex) {
-			log.error(ex.getMessage());
-		} catch (ClassNotFoundException ex) {
-			log.error(ex.getMessage());
 		}
+		log.info("updateBatchLotteryPrint 更新彩票信息到数据库：size" + list.size() + "  入库返回：size=" + num);
 	}
 	/**
 	 * 组合中奖集合

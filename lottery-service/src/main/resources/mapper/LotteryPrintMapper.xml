@@ -31,7 +31,7 @@
     <result column="compared_stakes" jdbcType="VARCHAR" property="comparedStakes" />
   </resultMap>
   
-  <update id="updateByTicketId">
+  <update id="updateLotteryPrintByCallBack">
     update dl_print_lottery set
            status = #{status},
            platform_id = #{platformId},
@@ -133,5 +133,14 @@
   
   <update id="updatePrintStatusByTicketId">
   	update dl_print_lottery set error_code=#{errorCode}, status=#{status} where ticket_id=#{ticketId}
+  </update>
+  
+  <update id="updateBatchLotteryPrint">
+  	UPDATE dl_print_lottery  
+  	SET reward_stakes = #{rewardStakes},
+  	real_reward_money = #{realRewardMoney},
+  	compare_status = #{compareStatus}, 
+  	compared_stakes = #{comparedStakes} 
+  	where print_lottery_id = #{printLotteryId}
   </update>
 </mapper>

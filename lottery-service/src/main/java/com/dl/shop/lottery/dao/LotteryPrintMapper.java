@@ -14,7 +14,7 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * 根据订单
 	 * @param lotteryPrint
 	 */
-	public void updateByTicketId(LotteryPrint lotteryPrint);
+	public void updateLotteryPrintByCallBack(LotteryPrint lotteryPrint);
 	
 	/**
 	 * 查询出票列表（每次最多查询50条）
@@ -59,4 +59,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> lotteryPrintsByUnCompare();
 
 	public int updatePrintStatusByTicketId(LotteryPrint lotteryPrint);
+	
+	public int updateBatchLotteryPrint(LotteryPrint lotteryPrint);
 }
