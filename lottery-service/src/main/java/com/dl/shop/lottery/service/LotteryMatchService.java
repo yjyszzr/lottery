@@ -129,6 +129,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
 
+	/**
+	 * 获取赛事列表的联赛信息
+	 * @return
+	 */
+	public List<LeagueInfoDTO> getFilterConditions(){
+		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditions();
+		if(null == filterConditions) {
+			filterConditions = new ArrayList<LeagueInfoDTO>(0);
+		}
+		return filterConditions;
+	}
     /**
      * 获取赛事列表
      * @param param
@@ -164,7 +175,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
-		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
+//		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
 		for(LotteryMatch match: matchList) {
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			Date matchTimeDate = match.getMatchTime();
@@ -205,13 +216,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			if(null == leagueInfoMap.get(match.getLeagueId())) {
+			/*if(null == leagueInfoMap.get(match.getLeagueId())) {
 				LeagueInfoDTO leagueInfo = new LeagueInfoDTO();
 				leagueInfo.setLeagueAddr(match.getLeagueAddr());
 				leagueInfo.setLeagueId(match.getLeagueId());
 				leagueInfo.setLeagueName(match.getLeagueName());
 				leagueInfoMap.put(match.getLeagueId(), leagueInfo);
-			}
+			}*/
 			
 			if("6".equals(playType) && matchPlays.size() < 5) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
@@ -244,9 +255,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map.forEach((key, value) ->{
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
-		leagueInfoMap.forEach((key,value)->{
+		/*leagueInfoMap.forEach((key,value)->{
 			dlJcZqMatchListDTO.getLeagueInfos().add(value);
-		});
+		});*/
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());

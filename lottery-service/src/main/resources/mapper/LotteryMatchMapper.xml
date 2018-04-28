@@ -61,6 +61,16 @@
   	 </if>
   	 order by match_time
   </select>
+  
+  <select id="getFilterConditions" resultType="com.dl.lottery.dto.LeagueInfoDTO">
+	select
+		distinct(league_id) as leagueId,
+		league_name as leagueName,
+		league_addr as leagueAddr
+	from dl_match 
+	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+  	 order by leagueId
+  </select>
 
   <select id="getMatchListToday" resultMap="BaseResultMap">
   	select * from dl_match where DATEDIFF(match_time,NOW())= 0 and is_del = 0 and is_show=1 and status = 1

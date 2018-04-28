@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.dl.base.mapper.Mapper;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
@@ -78,6 +79,12 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public List<LotteryMatch> matchListEnded();
+
+	/**
+	 * 获取赛事列表的联赛信息
+	 * @return
+	 */
+	public List<LeagueInfoDTO> getFilterConditions();
 
 	
 }
