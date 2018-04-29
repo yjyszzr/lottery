@@ -635,10 +635,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("poolcode[]", playType);
 		String json = NetWorkUtil.doGet(matchUrl, map, "UTF-8");
-	    if (json.contains("error")) {
-	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), playType + "赛事查询失败");
+	    if (StringUtils.isBlank(json) || json.contains("error")) {
+	    	log.info("读取赛事信息有误：playtype="+playType);
+	    	return null;
 	    }
 	    JSONObject jsonObject = JSONObject.parseObject(json);
+	    if(null == jsonObject) {
+	    	log.info("读取赛事信息有误：playtype="+playType);
+	    	return null;
+	    }
 	    JSONObject jo = jsonObject.getJSONObject("data");
 	    map = jo;
 	    return map;
