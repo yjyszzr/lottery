@@ -392,6 +392,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}
 		}
 		log.info("updatePrintLotteryCompareStatus 未更新状态彩票对应其次数，size="+unPlayCodes.size());
+		if(CollectionUtils.isEmpty(unPlayCodes)) {
+			return;
+		}
 		//获取赛事结果
 		List<String> playCodes = new ArrayList<String>(unPlayCodes.size());
     	playCodes.addAll(unPlayCodes);

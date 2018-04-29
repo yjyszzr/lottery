@@ -1,7 +1,4 @@
 package com.dl.shop.lottery.web;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +41,7 @@ import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
+import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -246,6 +244,7 @@ public class LotteryMatchController {
 			param.setTimes(1);
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
+		
 		return ResultGenerator.genSuccessResult("success", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
@@ -391,6 +390,9 @@ public class LotteryMatchController {
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
 		Double orderMoney = betInfo.getMoney();
+		if(orderMoney > 20000) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+		}
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
 		if(userBonusList != null && userBonusList.size() > 0) {
