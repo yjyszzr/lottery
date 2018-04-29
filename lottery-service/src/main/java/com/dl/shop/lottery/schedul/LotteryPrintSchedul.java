@@ -91,6 +91,7 @@ public class LotteryPrintSchedul {
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）
+	 * 调用第三方接口出票定时任务
 	 */
 	@Scheduled(cron = "0 0/1 * * * ?")
     public void printLottery() {
@@ -101,7 +102,8 @@ public class LotteryPrintSchedul {
 
 
 	 /**
-	  * 获取已完成比赛的比赛分数 （每10分钟执行一次）
+	  * 抓取已完成比赛的比赛分数 （每10分钟执行一次）
+	  * 这里不需爬虫作处理
 	  */
 	 @Scheduled(cron = "0 0/10 * * * ?")
 	 public void fetchMatchScore() {
@@ -126,7 +128,8 @@ public class LotteryPrintSchedul {
 		log.info("获取开奖结果结束");
 	}
 	/**
-	 * 赛事列表获取
+	 * 抓取赛事列表获取
+	 * 当天可投比赛信息
 	 */
 	@Scheduled(cron = "0 0/15 * * * ?")
 	public void fetchMatch() {
@@ -137,6 +140,7 @@ public class LotteryPrintSchedul {
 	
 	/**
 	 * 更新待开奖的订单
+	 * 
 	 */
 	@Scheduled(cron = "0 0/5 * * * ?")
 	public void updateOrderAfterOpenReward() {

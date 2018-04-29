@@ -258,7 +258,8 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 						continue;
 					}
 					Double double1 = map.get(orderSn);
-					double realReward = dto.getRealRewardMoney().doubleValue();
+					BigDecimal realRewardMoney = dto.getRealRewardMoney();
+					double realReward = realRewardMoney == null?0:realRewardMoney.doubleValue();
 					double1 = double1==null?realReward:(double1+realReward);
 					map.put(orderSn, double1);
 				}
