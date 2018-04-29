@@ -312,6 +312,9 @@ public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchRes
 	}
 	
 	public List<DlLeagueMatchResult> queryMatchResultsByPlayCodes(List<String> playCodes){
+		if(CollectionUtils.isEmpty(playCodes)) {
+			return new ArrayList<DlLeagueMatchResult>();
+		}
 		List<DlLeagueMatchResult> matchResultList = dlLeagueMatchResultMapper.queryMatchResultsByPlayCodes(playCodes);
 		if(matchResultList.size() == 0) {
 			return new ArrayList<DlLeagueMatchResult>();
