@@ -181,7 +181,8 @@ public class LotteryMatchController {
 						break;
 					}
 				}
-				if(0 == betCell.getSingle()) {
+				Integer single = betCell.getSingle();
+				if(single == null || single.equals(0)) {
 					isAllSingle = false;
 				}
 				if(isCellError) {
