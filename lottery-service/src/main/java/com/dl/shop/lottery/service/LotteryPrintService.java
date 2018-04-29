@@ -471,7 +471,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						updatePrint.setCompareStatus(ProjectConstant.FINISH_COMPARE);
 						if(StringUtils.isNotBlank(reward)) {
 							//彩票中奖金额
-							log.info(reward);
+							//log.info(reward);
 							List<String> spList = Arrays.asList(reward.split(";"));
 							List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
 							List<Double> rewardList = new ArrayList<Double>();
@@ -524,6 +524,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		log.info("updateBatchLotteryPrint 准备更新彩票信息到数据库：size" + list.size());
 		int num = 0;
 		for(LotteryPrint print: list) {
+			if(null == print.getRealRewardMoney()) {
+				print.setRealRewardMoney(BigDecimal.ZERO);
+			}
 			int n = lotteryPrintMapper.updateBatchLotteryPrint(print);
 			if(n > 0) {
 				num += n;
