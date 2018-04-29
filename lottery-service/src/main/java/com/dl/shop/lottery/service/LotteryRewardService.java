@@ -241,27 +241,32 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		while(orderSnList.size() > 0) {
 			int num = orderSnList.size()>20?20:orderSnList.size();
 			List<String> subList = orderSnList.subList(0, num);
-			List<DlOrderDataDTO> dlOrderDataDTOs = lotteryPrintMapper.getRealRewardMoney(subList);
+			List<LotteryPrint> dlOrderDataDTOs = lotteryPrintMapper.getPrintLotteryListByOrderSns(subList);
 			log.info("获取可开奖彩票信息："+dlOrderDataDTOs.size());
 			if(CollectionUtils.isNotEmpty(dlOrderDataDTOs)) {
 				Map<String, Double> map = new HashMap<String, Double>();
 				Set<String> unOrderSns = new HashSet<String>();
-				for(DlOrderDataDTO dto: dlOrderDataDTOs) {
-					String orderSn = dto.getOrderSn();
-					String compareStatus = dto.getCompareStatus();
-//					log.info("ordersn="+orderSn+" comaprestatus="+compareStatus);
-					if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
-						unOrderSns.add(orderSn);
+				List<LotteryPrint> errorPrints = new ArrayList<LotteryPrint>(0);
+				for(LotteryPrint dto: dlOrderDataDTOs) {
+					int printStatus = dto.getPrintStatus();
+					if(printStatus == 1) {
+						String orderSn = dto.getOrderSn();
+						String compareStatus = dto.getCompareStatus();
+						if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
+							unOrderSns.add(orderSn);
+						}
+						if(unOrderSns.contains(orderSn)) {
+							map.remove(orderSn);
+							continue;
+						}
+						Double double1 = map.get(orderSn);
+						BigDecimal realRewardMoney = dto.getRealRewardMoney();
+						double realReward = realRewardMoney == null?0:realRewardMoney.doubleValue();
+						double1 = double1==null?realReward:(double1+realReward);
+						map.put(orderSn, double1);
+					}else if(printStatus == 0){
+						errorPrints.add(dto);
 					}
-					if(unOrderSns.contains(orderSn)) {
-						map.remove(orderSn);
-						continue;
-					}
-					Double double1 = map.get(orderSn);
-					BigDecimal realRewardMoney = dto.getRealRewardMoney();
-					double realReward = realRewardMoney == null?0:realRewardMoney.doubleValue();
-					double1 = double1==null?realReward:(double1+realReward);
-					map.put(orderSn, double1);
 				}
 				
 				log.info("*********8可开奖订单及资金数："+map.size());
@@ -292,6 +297,13 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					log.info("更新订单中奖状态和中奖金额updateOrderInfoByExchangeReward param size="+dtos.size() + "  result :"+ result.getCode());
 					if(result.getCode() == 0) {
 						log.info("更新订单中奖状态和中奖金额updateOrderInfoByExchangeReward param size="+dtos.size() + "  result :"+ result.getCode()+"  result size="+result.getData());
+					}
+				}
+				if(errorPrints.size() > 0) {
+					for(LotteryPrint lotteryPrint:errorPrints) {
+						lotteryPrint.setStatus(2);
+						lotteryPrint.setErrorCode(55555);
+						lotteryPrintMapper.updatePrintStatusByTicketId(lotteryPrint);
 					}
 				}
 			}

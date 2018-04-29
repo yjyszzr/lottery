@@ -45,13 +45,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	
 	List<LotteryPrint> selectTodayPrints();
 	
-	/**
-	 * 查询中奖金额
-	 * @param issue
-	 * @return
-	 */
-	public List<DlOrderDataDTO> getRealRewardMoney(@Param("orderSns") List<String> orderSns);
-	
 	public List<LotteryPrint> getByOrderSn(@Param("orderSn")String orderSn);
 	
 	public List<LotteryPrint> getPrintLotteryListByOrderSns(@Param("orderSns")List<String> orderSns);

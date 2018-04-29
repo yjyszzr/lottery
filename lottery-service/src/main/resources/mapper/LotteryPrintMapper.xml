@@ -101,20 +101,6 @@
   </select>
   
   
-  <select id="getRealRewardMoney" parameterType = "java.util.List" resultType="com.dl.lottery.dto.DlOrderDataDTO">
-    select 
-       order_sn orderSn,
-       compare_status compareStatus,
-       real_reward_money realRewardMoney
-    from dl_print_lottery 
-	where 
-	   order_sn in
-  	<foreach collection="orderSns" item="orderSn" index="index" open="(" separator="," close=")">
-		#{orderSn}
-    </foreach>
-	order by order_sn  
-  </select>
-  
   <select id="getByOrderSn" resultMap="BaseResultMap">
   	select * from dl_print_lottery where order_sn=#{orderSn}
   </select>
@@ -125,6 +111,7 @@
   	 <foreach collection="orderSns" item="orderSn" index="index" open="(" separator="," close=")">
 		#{orderSn}
      </foreach>
+     order by order_sn
   </select>
   
   <select id="lotteryPrintsByUnCompare" resultMap="BaseResultMap">

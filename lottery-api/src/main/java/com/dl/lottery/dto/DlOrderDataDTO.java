@@ -18,4 +18,6 @@ public class DlOrderDataDTO implements Serializable{
 	public BigDecimal realRewardMoney;
 	
 	public String compareStatus;
+	
+	public int printStatus;
 }
