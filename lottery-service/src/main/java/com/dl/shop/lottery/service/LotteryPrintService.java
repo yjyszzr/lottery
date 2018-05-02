@@ -585,19 +585,20 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
         	return;
         }
         log.info("可出票的订单数："+orderSns.size());
-        Set<String> successOrderSn = new HashSet<String>(orderSns.size());
         List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.getPrintLotteryListByOrderSns(orderSns);
         if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
+        	Set<String> errorOrderSns = new HashSet<String>(orderSns.size());
         	log.info("lotteryPrintList size="+lotteryPrintList.size());
         	while(lotteryPrintList.size() > 0) {
         		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
         		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
         		log.info(" go tostake size="+lotteryPrints.size());
-        		this.gotoStak(successOrderSn, lotteryPrints);
+        		Set<String> errOrderSns = this.gotoStak(lotteryPrints);
+        		errorOrderSns.addAll(errOrderSns);
         		lotteryPrintList.removeAll(lotteryPrints);
         	}
-        	orderSns.removeAll(successOrderSn);
-			if(!orderSns.isEmpty()) {
+        	//orderSns.removeAll(successOrderSn);
+			if(!errorOrderSns.isEmpty()) {
 				log.info("出票失败的订单："+orderSns.stream().collect(Collectors.joining(",")));
 				for(String orderSn: orderSns) {
 					UpdateOrderInfoParam param = new UpdateOrderInfoParam();
@@ -623,8 +624,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 调用第三方出票
 	 * @param successOrderSn
 	 * @param lotteryPrintList
+	 * @return 返回
 	 */
-	private void gotoStak(Set<String> successOrderSn, List<LotteryPrint> lotteryPrints) {
+	private Set<String> gotoStak(List<LotteryPrint> lotteryPrints) {
 		DlToStakeParam dlToStakeParam = new DlToStakeParam();
 		dlToStakeParam.setMerchant(lotteryPrints.get(0).getMerchant());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -632,6 +634,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		dlToStakeParam.setVersion("1.0");
 		List<PrintTicketOrderParam> printTicketOrderParams = new LinkedList<PrintTicketOrderParam>();
 		Map<String, String> ticketIdOrderSnMap = new HashMap<String, String>();
+		Set<String> allOrderSns = new HashSet<String>(lotteryPrints.size());
+		Set<String> successOrderSn = new HashSet<String>(lotteryPrints.size());
 		lotteryPrints.forEach(lp->{
 			PrintTicketOrderParam printTicketOrderParam = new PrintTicketOrderParam();
 			printTicketOrderParam.setTicketId(lp.getTicketId());
@@ -644,6 +648,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			printTicketOrderParam.setStakes(lp.getStakes());
 			printTicketOrderParams.add(printTicketOrderParam);
 			ticketIdOrderSnMap.put(lp.getTicketId(), lp.getOrderSn());
+			allOrderSns.add(lp.getOrderSn());
 		});
 		dlToStakeParam.setOrders(printTicketOrderParams);
 		DlToStakeDTO dlToStakeDTO = this.toStake(dlToStakeParam);
@@ -696,5 +701,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size()+" rst size="+ num + "  times=" + (end-start));
 			}
 		}
+		allOrderSns.removeAll(successOrderSn);
+		return allOrderSns;
 	}
 }
