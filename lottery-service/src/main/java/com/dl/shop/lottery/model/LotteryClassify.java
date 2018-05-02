@@ -45,7 +45,20 @@ public class LotteryClassify {
     @Column(name = "create_time")
     private Integer createTime;
 
-    /**
+    @Column(name="redirect_url")
+    private String redirectUrl;
+    
+    
+    
+    public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
+
+	/**
      * 获取彩票分类表id
      *
      * @return lottery_classify_id - 彩票分类表id

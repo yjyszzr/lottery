@@ -30,4 +30,7 @@ public class DlPlayClassifyDetailDTO implements Serializable{
 	
 	@ApiModelProperty(value = "玩法标签名称")
 	public String playClassifyLabelName;
+	
+	@ApiModelProperty(value = "跳转链接地址")
+	public String redirectUrl;
 }

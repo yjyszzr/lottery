@@ -122,19 +122,19 @@ public class LotteryMatchController {
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
-			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
 		String playType = param.getPlayType();
 		if(StringUtils.isBlank(playType)) {
-			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
 			if(parseInt < 1 || parseInt > 7) {
-				return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {
-			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
 		//2 1
 		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
@@ -149,12 +149,12 @@ public class LotteryMatchController {
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
 		if(nowTime - betEndTime > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
 		//校验串关
 		String betTypeStr = param.getBetType();
 		if(StringUtils.isBlank(betTypeStr)) {
-			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
 
 		boolean isCellError = false;
@@ -194,11 +194,11 @@ public class LotteryMatchController {
 		}
 		//校验投注选项
 		if(isCellError) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
 		}
 		if(betTypeStr.contains("11")) {
 			if(!isAllSingle) {
-				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
+				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
 			}
 		}
 		String[] betTypes = betTypeStr.split(",");
@@ -227,7 +227,7 @@ public class LotteryMatchController {
 		} catch (NumberFormatException e) {
 		}
 		if(!isCheckedBetType) {
-			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
 		//校验胆的个数设置
 		int danEnableNum = minBetNum -1;
@@ -236,7 +236,7 @@ public class LotteryMatchController {
 		}
 		long danNum = matchBetPlays.stream().filter(dto->dto.getIsDan() == 1).count();
 		if(danNum > danEnableNum) {
-			return ResultGenerator.genFailResult("参赛设胆场次有误，请核对！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
 		
 		//设置投注倍数
@@ -253,19 +253,19 @@ public class LotteryMatchController {
 	public BaseResult<BetPayInfoDTO> saveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
-			return ResultGenerator.genFailResult("请选择有效的参赛场次！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
 		String playType = param.getPlayType();
 		if(StringUtils.isBlank(playType)) {
-			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
 			if(parseInt < 1 || parseInt > 7) {
-				return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {
-			return ResultGenerator.genFailResult("请选择有效的赛事玩法！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
 		//2 1
 		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
@@ -280,12 +280,12 @@ public class LotteryMatchController {
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
 		if(nowTime - betEndTime > 0) {
-			return ResultGenerator.genFailResult("您有参赛场次投注时间已过！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
 		//校验串关
 		String betTypeStr = param.getBetType();
 		if(StringUtils.isBlank(betTypeStr)) {
-			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
 		
 		boolean isCellError = false;
@@ -325,11 +325,11 @@ public class LotteryMatchController {
 		}
 		//校验投注选项
 		if(isCellError) {
-			return ResultGenerator.genFailResult("您有参赛场次没有投注选项！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
 		}
 		if(betTypeStr.contains("11")) {
 			if(!isAllSingle) {
-				return ResultGenerator.genFailResult("请求场次不能选择单关！", null);
+				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
 			}
 		}
 		String[] betTypes = betTypeStr.split(",");
@@ -358,7 +358,7 @@ public class LotteryMatchController {
 		} catch (NumberFormatException e) {
 		}
 		if(!isCheckedBetType) {
-			return ResultGenerator.genFailResult("请选择有效的串关！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
 		//校验胆的个数设置
 		int danEnableNum = minBetNum -1;
@@ -367,7 +367,7 @@ public class LotteryMatchController {
 		}
 		long danNum = matchBetPlays.stream().filter(dto->dto.getIsDan() == 1).count();
 		if(danNum > danEnableNum) {
-			return ResultGenerator.genFailResult("参赛设胆场次有误，请核对！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
 		
 		//设置投注倍数
@@ -378,16 +378,16 @@ public class LotteryMatchController {
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
 		if(userInfoExceptPassRst.getCode() != 0) {
-			return ResultGenerator.genFailResult("操作失败！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		if(null == userInfoExceptPassRst.getData()) {
-			return ResultGenerator.genFailResult("操作失败！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
 		Double userTotalMoney = Double.valueOf(totalMoney);
 		BaseResult<List<UserBonusDTO>> userBonusListRst = userBonusService.queryValidBonusList(strParam);
 		if(userBonusListRst.getCode() != 0) {
-			return ResultGenerator.genFailResult("操作失败！", null);
+			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
 		Double orderMoney = betInfo.getMoney();

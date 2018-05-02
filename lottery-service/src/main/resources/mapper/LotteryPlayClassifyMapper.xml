@@ -15,6 +15,7 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />
   </resultMap>
   
   <select id="selectAllData" resultType="com.dl.lottery.dto.DlPlayClassifyDetailDTO">
@@ -24,6 +25,7 @@
            dl.lottery_play_classify_id playClassifyId,
            dl.play_label_id playClassifyLabelId,
            dl.play_type playType,
+           dl.redirect_url redirectUrl,
            dpl.label_name playClassifyLabelName
         from
             dl_lottery_play_classify dl 

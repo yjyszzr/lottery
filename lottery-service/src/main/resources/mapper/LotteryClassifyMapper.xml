@@ -12,5 +12,6 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />
   </resultMap>
 </mapper>
