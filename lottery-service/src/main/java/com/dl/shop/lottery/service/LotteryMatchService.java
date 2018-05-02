@@ -129,17 +129,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
 
-	/**
-	 * 获取赛事列表的联赛信息
-	 * @return
-	 */
-	public List<LeagueInfoDTO> getFilterConditions(){
-		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditions();
-		if(null == filterConditions) {
-			filterConditions = new ArrayList<LeagueInfoDTO>(0);
-		}
-		return filterConditions;
-	}
     /**
      * 获取赛事列表
      * @param param
@@ -175,7 +164,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
-//		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
+		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
 		for(LotteryMatch match: matchList) {
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			Date matchTimeDate = match.getMatchTime();
@@ -216,13 +205,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			/*if(null == leagueInfoMap.get(match.getLeagueId())) {
+			if(null == leagueInfoMap.get(match.getLeagueId())) {
 				LeagueInfoDTO leagueInfo = new LeagueInfoDTO();
 				leagueInfo.setLeagueAddr(match.getLeagueAddr());
 				leagueInfo.setLeagueId(match.getLeagueId());
 				leagueInfo.setLeagueName(match.getLeagueName());
 				leagueInfoMap.put(match.getLeagueId(), leagueInfo);
-			}*/
+			}
 			
 			if("6".equals(playType) && matchPlays.size() < 5) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
@@ -255,9 +244,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map.forEach((key, value) ->{
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
-		/*leagueInfoMap.forEach((key,value)->{
+		leagueInfoMap.forEach((key,value)->{
 			dlJcZqMatchListDTO.getLeagueInfos().add(value);
-		});*/
+		});
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
@@ -635,15 +624,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("poolcode[]", playType);
 		String json = NetWorkUtil.doGet(matchUrl, map, "UTF-8");
-	    if (StringUtils.isBlank(json) || json.contains("error")) {
-	    	log.info("读取赛事信息有误：playtype="+playType);
-	    	return null;
+	    if (json.contains("error")) {
+	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), playType + "赛事查询失败");
 	    }
 	    JSONObject jsonObject = JSONObject.parseObject(json);
-	    if(null == jsonObject) {
-	    	log.info("读取赛事信息有误：playtype="+playType);
-	    	return null;
-	    }
 	    JSONObject jo = jsonObject.getJSONObject("data");
 	    map = jo;
 	    return map;
@@ -1046,10 +1030,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}).collect(Collectors.joining(";"));
 		betInfoDTO.setStakes(stakes);*/
 		//所有选项的最后一个场次编码
-		String issue = matchBellCellList.get(0).getPlayCode();
-		if(matchBellCellList.size() > 1) {
-			issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
-		}
+		String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
 		betInfoDTO.setIssue(issue);
 //		betInfoDTO.setMatchBetList(matchBetList);
 		return betInfoDTO;
@@ -1701,91 +1682,5 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	public List<Integer> getChangcidIsUnEnd(){
 		return lotteryMatchMapper.getChangcidIsUnEnd();
-	}
-	
-	/**
-	 * 历史赛事入库
-	 * @throws IOException 
-	 */
-	@Transactional
-	public BaseResult<String> historyMatchIntoDB(String filepath) {
-		String separator = File.separator;
-		File file=new File(filepath);
-		
-		if(!file.exists()) {
-			return ResultGenerator.genSuccessResult("目录不存在");
-		}
-		
-		if(!file.isDirectory()) {
-			return ResultGenerator.genSuccessResult("文件不存在");
-		}
-		
-		List<String> pathsList = new ArrayList<String>();
-		String realPath = "";
-		if(filepath.contains("\\")) {
-			String[] filePathArr = filepath.split("\\");
-			pathsList = Arrays.asList(filePathArr);
-		}
-		
-		if(filepath.contains("/")) {
-			String[] filePathArr = filepath.split("/");
-			pathsList = Arrays.asList(filePathArr);
-		}
-		
-		for(String str:pathsList) {
-			realPath += str + separator;
-		}
-		
-        String content = "";
-		try {
-			content = new String(Files.readAllBytes(Paths.get(realPath)));
-			if(StringUtils.isEmpty(content)) {
-				ResultGenerator.genSuccessResult("历史赛事json文件 为空，未进行入库");
-			}
-		} catch (Exception e) {
-			log.error("解析历史赛事json文件出错:"+e.getMessage());
-			return ResultGenerator.genFailResult("解析历史赛事json文件出错");
-		}
-		
-		List<Object> matchList = JSON.parseArray(content);
-		if(CollectionUtils.isEmpty(matchList)) {
-			return ResultGenerator.genFailResult("解析历史赛事json文件出错");
-		}
-		
-		List<LotteryMatch> lotteryMatchList = new ArrayList<>();
-		matchList.stream().forEach(s->{
-			JSONObject str = (JSONObject)s;
-			LotteryMatch m = new LotteryMatch();
-			m.setLeagueAddr(str.getString("league_addr"));
-			m.setChangciId(str.getInteger("cangci_id"));
-			m.setChangci(str.getString("changci"));
-			m.setHomeTeamAbbr("home_team_abbr");
-			m.setVisitingTeamAbbr("visiting_team_abbr");
-			m.setMatchTime(str.getDate("match_time"));
-			m.setShowTime(str.getDate("match_time"));
-			m.setCreateTime(DateUtil.getCurrentTimeLong());
-			m.setFirstHalf(str.getString("first_hslf"));
-			m.setWhole(str.getString("whole"));
-			m.setMatchSn(this.commonCreateIssue(str.getString("match_time"), str.getString("changci")));
-			m.setIsShow(Integer.valueOf(ProjectConstant.ONE_YES));
-			m.setIsDel(Integer.valueOf(ProjectConstant.ZERO_NO));
-			m.setStatus(Integer.valueOf(ProjectConstant.ONE_YES));
-			m.setIsHot(Integer.valueOf(ProjectConstant.ZERO_NO));
-			
-			lotteryMatchList.add(m);
-		});
-		
-		int historyMatchSize = lotteryMatchList.size();
-		while(historyMatchSize > 0) {
-			int num = matchList.size() > 200?200:historyMatchSize;
-			List<LotteryMatch> lotterySubMatchList =  lotteryMatchList.subList(0, num);
-			int rst = lotteryMatchMapper.batchInsertHistoryMatch(lotteryMatchList);
-			if(rst != lotterySubMatchList.size()) {
-				log.error("历史赛事入库失败");
-			}
-			lotteryMatchList.removeAll(lotterySubMatchList);
-		}
-		
-		return ResultGenerator.genSuccessResult("历史赛事入库成功");
 	}
 }
