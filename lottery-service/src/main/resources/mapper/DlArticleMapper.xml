@@ -40,19 +40,19 @@
   
   <select id="findArticles" resultMap="BaseResultMap">
   	select * from dl_article
-  	where is_show=1 and status=1 and is_delete=0
+  	where status=1
   	order by is_stick,add_time desc
   </select>
   
   <select id="findArticlesRelated"  resultMap="BaseResultMap">
   	select * from dl_article
-  	where is_show=1 and status=1 and is_delete=0 and article_id != #{articleId} and extend_cat=#{extendCat}
+  	where status=1 and article_id != #{articleId} and extend_cat=#{extendCat}
   	order by is_stick,add_time desc
   </select>
   
   <select id="findArticlesByIds" parameterType="java.util.List" resultMap="BaseResultMap">
   	select * from dl_article
-  	where is_show=1 and status=1 and is_delete=0 and article_id in
+  	where status=1  and article_id in
   	<foreach collection="articleIds" index="index" item="item" open="(" separator="," close=")">  
          #{item}  
     </foreach>

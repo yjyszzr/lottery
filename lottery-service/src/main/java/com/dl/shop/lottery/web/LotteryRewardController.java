@@ -14,6 +14,7 @@ import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.service.LotteryRewardService;
 
 import io.swagger.annotations.ApiOperation;
@@ -52,4 +53,5 @@ public class LotteryRewardController {
 		LotteryRewardByIssueDTO lotteryRewardByIssueDTO = lotteryRewardService.queryRewardByIssue(param);
     	return ResultGenerator.genSuccessResult("根据期次，查询审核通过的开奖数据成功", lotteryRewardByIssueDTO);
     }
+	
 }

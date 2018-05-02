@@ -36,7 +36,11 @@ public class LotteryHallController {
     @PostMapping("/getHallMixData")
     public BaseResult<DlHallMixDTO> getHallDataMix(@Valid @RequestBody PageParam pageParam) {
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
-		DlHallDTO dlHallDTO = lotteryHallService.getHallData();
+		DlHallDTO dlHallDTO = new DlHallDTO();
+		if(pageParam.getPageNum() == 1) {
+			dlHallDTO = lotteryHallService.getHallData();
+		}
+		
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
 		
 		dlHallMixDTO.setDlHallDTO(dlHallDTO);

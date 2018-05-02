@@ -87,4 +87,10 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	public List<LeagueInfoDTO> getFilterConditions();
 
 	
+	/**
+	 * 批量入库历史赛事
+	 * @return
+	 */
+	public int batchInsertHistoryMatch(@Param("list") List<LotteryMatch> list);
+	
 }
