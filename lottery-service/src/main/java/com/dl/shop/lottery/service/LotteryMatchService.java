@@ -1,4 +1,7 @@
 package com.dl.shop.lottery.service;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -1690,5 +1693,91 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			filterConditions = new ArrayList<LeagueInfoDTO>(0);
 		}
 		return null;
+	}
+	
+	/**
+	 * 历史赛事入库
+	 * @throws IOException 
+	 */
+	@Transactional
+	public BaseResult<String> historyMatchIntoDB(String filepath) {
+		String separator = File.separator;
+		File file=new File(filepath);
+		
+		if(!file.exists()) {
+			return ResultGenerator.genSuccessResult("目录不存在");
+		}
+		
+		if(!file.isDirectory()) {
+			return ResultGenerator.genSuccessResult("文件不存在");
+		}
+		
+		List<String> pathsList = new ArrayList<String>();
+		String realPath = "";
+		if(filepath.contains("\\")) {
+			String[] filePathArr = filepath.split("\\");
+			pathsList = Arrays.asList(filePathArr);
+		}
+		
+		if(filepath.contains("/")) {
+			String[] filePathArr = filepath.split("/");
+			pathsList = Arrays.asList(filePathArr);
+		}
+		
+		for(String str:pathsList) {
+			realPath += str + separator;
+		}
+		
+        String content = "";
+		try {
+			content = new String(Files.readAllBytes(Paths.get(realPath)));
+			if(StringUtils.isEmpty(content)) {
+				ResultGenerator.genSuccessResult("历史赛事json文件 为空，未进行入库");
+			}
+		} catch (Exception e) {
+			log.error("解析历史赛事json文件出错:"+e.getMessage());
+			return ResultGenerator.genFailResult("解析历史赛事json文件出错");
+		}
+		
+		List<Object> matchList = JSON.parseArray(content);
+		if(CollectionUtils.isEmpty(matchList)) {
+			return ResultGenerator.genFailResult("解析历史赛事json文件出错");
+		}
+		
+		List<LotteryMatch> lotteryMatchList = new ArrayList<>();
+		matchList.stream().forEach(s->{
+			JSONObject str = (JSONObject)s;
+			LotteryMatch m = new LotteryMatch();
+			m.setLeagueAddr(str.getString("league_addr"));
+			m.setChangciId(str.getInteger("cangci_id"));
+			m.setChangci(str.getString("changci"));
+			m.setHomeTeamAbbr("home_team_abbr");
+			m.setVisitingTeamAbbr("visiting_team_abbr");
+			m.setMatchTime(str.getDate("match_time"));
+			m.setShowTime(str.getDate("match_time"));
+			m.setCreateTime(DateUtil.getCurrentTimeLong());
+			m.setFirstHalf(str.getString("first_hslf"));
+			m.setWhole(str.getString("whole"));
+			m.setMatchSn(this.commonCreateIssue(str.getString("match_time"), str.getString("changci")));
+			m.setIsShow(Integer.valueOf(ProjectConstant.ONE_YES));
+			m.setIsDel(Integer.valueOf(ProjectConstant.ZERO_NO));
+			m.setStatus(Integer.valueOf(ProjectConstant.ONE_YES));
+			m.setIsHot(Integer.valueOf(ProjectConstant.ZERO_NO));
+			
+			lotteryMatchList.add(m);
+		});
+		
+		int historyMatchSize = lotteryMatchList.size();
+		while(historyMatchSize > 0) {
+			int num = matchList.size() > 200?200:historyMatchSize;
+			List<LotteryMatch> lotterySubMatchList =  lotteryMatchList.subList(0, num);
+			int rst = lotteryMatchMapper.batchInsertHistoryMatch(lotteryMatchList);
+			if(rst != lotterySubMatchList.size()) {
+				log.error("历史赛事入库失败");
+			}
+			lotteryMatchList.removeAll(lotterySubMatchList);
+		}
+		
+		return ResultGenerator.genSuccessResult("历史赛事入库成功");
 	}
 }
