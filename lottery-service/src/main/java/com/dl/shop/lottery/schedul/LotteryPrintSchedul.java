@@ -73,7 +73,7 @@ public class LotteryPrintSchedul {
 	  * 赔率任务 （每5分钟执行一次）
 	  */
 	 //@Scheduled(cron = "0 0/5 * * * ?")
-	 public void refreshPeilv() {
+	 /*public void refreshPeilv() {
 		 log.info("开始拉取赔率信息");
 		 int start = DateUtil.getCurrentTimeLong();
 		 List<Integer> changciIds = lotteryMatchService.getChangcidIsUnEnd();
@@ -87,7 +87,7 @@ public class LotteryPrintSchedul {
 		 }
 		 int end = DateUtil.getCurrentTimeLong();
 		 log.info("结束拉取赔率信息, time="+(end-start));
-	 }
+	 }*/
 	
 	/**
 	 * 出票任务 （每5分钟执行一次）

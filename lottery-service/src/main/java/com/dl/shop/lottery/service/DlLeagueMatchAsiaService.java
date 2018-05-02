@@ -37,10 +37,10 @@ public class DlLeagueMatchAsiaService extends AbstractService<DlLeagueMatchAsia>
     	Condition condition = new Condition(DlLeagueMatchAsia.class);
         condition.and().andEqualTo("changciId", changciId);
         List<DlLeagueMatchAsia> list = super.findByCondition(condition);
-        if(list.size() == 0) {
+       /* if(list.size() == 0) {//这里转到爬虫处理
         	 this.refreshMatchAsiaInfoFromZC(changciId);
         	 list = super.findByCondition(condition);
-        }
+        }*/
         List<LeagueMatchAsiaDTO> dtos = new ArrayList<LeagueMatchAsiaDTO>(0);
         if(null != list) {
         	dtos = new ArrayList<LeagueMatchAsiaDTO>(list.size());
