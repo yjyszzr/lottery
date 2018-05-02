@@ -1683,4 +1683,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public List<Integer> getChangcidIsUnEnd(){
 		return lotteryMatchMapper.getChangcidIsUnEnd();
 	}
+
+	public List<LeagueInfoDTO> getFilterConditions() {
+		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditions();
+		if(filterConditions == null) {
+			filterConditions = new ArrayList<LeagueInfoDTO>(0);
+		}
+		return null;
+	}
 }
