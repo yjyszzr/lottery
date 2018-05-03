@@ -1686,7 +1686,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(filterConditions == null) {
 			filterConditions = new ArrayList<LeagueInfoDTO>(0);
 		}
-		return null;
+		return filterConditions;
 	}
 	
 	/**
