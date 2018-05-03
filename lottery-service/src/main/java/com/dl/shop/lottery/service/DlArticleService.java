@@ -19,6 +19,7 @@ import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.member.api.IUserCollectService;
 import com.dl.member.param.ArticleIdParam;
+import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.github.pagehelper.PageHelper;
@@ -35,6 +36,9 @@ public class DlArticleService extends AbstractService<DlArticle> {
     
     @Resource
     private IUserCollectService userCollectService;
+    
+    @Resource
+    private LotteryConfig lotteryConfig;
 
     /**
      * 全部文章
@@ -144,7 +148,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
 		dto.setKeywords(article.getKeywords());
-		dto.setLink(article.getLink());
+		dto.setLink(lotteryConfig.getShareInfoUrl()+article.getArticleId());
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
