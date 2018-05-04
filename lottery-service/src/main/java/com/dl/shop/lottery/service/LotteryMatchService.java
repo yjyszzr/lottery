@@ -67,6 +67,7 @@ import com.dl.lottery.dto.MatchInfoDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfoDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
+import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.DlToAwardingParam;
@@ -1222,14 +1223,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	public BaseResult<List<LotteryMatchDTO>> queryMatchResult(QueryMatchParam queryMatchParam){
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-		String matchFinish = "";
 		if(!StringUtils.isEmpty(queryMatchParam.getIsAlreadyBuyMatch()) && !StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
-			return ResultGenerator.genFailResult("只看已购对阵和赛事筛选为互斥关系,只能选择一种",lotteryMatchDTOList);
+			return ResultGenerator.genResult(LotteryResultEnum.ONLY_ONE_CONDITION.getCode(),LotteryResultEnum.ONLY_ONE_CONDITION.getMsg());
 		} 
-		
-		if(queryMatchParam.getMatchFinish().equals("1")) {
-			matchFinish = "1";
-		}
 		
 		String [] leagueIdArr = new String [] {};
 		if(!StringUtils.isEmpty(queryMatchParam.getLeagueIds())) {
@@ -1248,7 +1244,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			
 			List<IssueDTO> issueDTOList = issuesDTO.getData();
 			List<String> issueList = issueDTOList.stream().map(s->s.getIssue()).collect(Collectors.toList());
-			issueArr = (String[])issueList.toArray();
+			if(issueList.size() > 0) {
+				issueArr = (String[])issueList.toArray();
+			}
 		}
 				
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
@@ -1261,11 +1259,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		lotteryMatchList.forEach(s->{
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
-			if(s.getStatus().equals(ProjectConstant.ONE_YES)) {
-				lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES);
-			}else {
-				lotteryMatchDTO.setMatchFinish(ProjectConstant.ZERO_NO);
-			}			
+			lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES.equals(s.getStatus().toString())?ProjectConstant.ONE_YES:ProjectConstant.ZERO_NO);
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
 			lotteryMatchDTOList.add(lotteryMatchDTO);

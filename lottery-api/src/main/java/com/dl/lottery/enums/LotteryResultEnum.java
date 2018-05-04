@@ -11,7 +11,9 @@ public enum LotteryResultEnum {
 	BET_CELL_HAS_NULL(303006,"您有参赛场次没有投注选项！"),
 	BET_CELL_NO_SINGLE(303007,"请求场次不能选择单关！"),
 	BET_CELL_DAN_ERR(303008,"参赛设胆场次有误，请核对！"),
-	BET_MONEY_other(303100,"");
+	BET_MONEY_other(303100,""),
+	ONLY_ONE_CONDITION(303009,"只看已购对阵和赛事筛选为互斥关系,只能选择一种");
+	
 	
 	private Integer code;
 	private String msg;

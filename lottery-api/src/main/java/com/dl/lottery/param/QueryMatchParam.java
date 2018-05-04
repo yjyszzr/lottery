@@ -23,7 +23,7 @@ public class QueryMatchParam {
     @ApiModelProperty(value = "联赛id集合以,分隔,没有传空字符串")
     private String leagueIds;
     
-    @ApiModelProperty(value = "比赛完成：1-未完成,未选择这个条件的时候传空字符串 ")
+    @ApiModelProperty(value = "比赛结束：1-已结束,空字符串-全部 ")
     private String matchFinish;
     
 }
