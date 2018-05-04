@@ -521,7 +521,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map = getTwoSelOneMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_TSO.getMsg());
 		
 		List<LotteryMatch> lotteryMatchs = getLotteryMatchData(matchs);
-		log.info(lotteryMatchs.toString());
+//		log.info(lotteryMatchs.toString());
 		
 		//保存赛事数据
 		saveMatchData(lotteryMatchs, matchPlays);
@@ -1339,12 +1339,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
     	betCells.forEach(betCell->{
     		String stakes = betCell.getStakes();
-    		logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes+ " ordersn: "+ orderSn);
+//    		logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes+ " ordersn: "+ orderSn);
     		for(LotteryPrint lPrint: byOrderSn) {
     			if(stakes.equals(lPrint.getStakes())) {
     				betCell.setStatus(lPrint.getStatus());
-    				logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes + " ordersn: "+ orderSn+" lPrint:"+ lPrint.getTicketId() + "  status:"+lPrint.getStatus());
-    				logger.info("betCell status:" + betCell.getStatus());
+//    				logger.info("DLZQOrderLotteryBetInfoDTO stakes: " + stakes + " ordersn: "+ orderSn+" lPrint:"+ lPrint.getTicketId() + "  status:"+lPrint.getStatus());
+//    				logger.info("betCell status:" + betCell.getStatus());
     				break;
     			}
     		}
