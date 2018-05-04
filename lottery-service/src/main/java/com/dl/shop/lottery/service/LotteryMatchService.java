@@ -180,7 +180,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
-				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.UTC).getEpochSecond()).intValue();
+				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
 			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
@@ -1785,4 +1785,5 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		return ResultGenerator.genSuccessResult("历史赛事入库成功");
 	}
+	
 }
