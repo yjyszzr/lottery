@@ -752,7 +752,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchPlayMapper.insertList(lotteryMatchPlays);
 		}else {
 			for(LotteryMatchPlay play: lotteryMatchPlays) {
-				lotteryMatchPlayMapper.updatePlayContent(play);
+				LotteryMatchPlay existPlay = lotteryMatchPlayMapper.lotteryMatchPlayByMatchIdAndPlayType(play.getMatchId(), play.getPlayType());
+				if(existPlay == null) {
+					lotteryMatchPlayMapper.insert(play);
+				} else {
+					lotteryMatchPlayMapper.updatePlayContent(play);
+				}
 			}
 		}
 	}
