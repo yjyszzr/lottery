@@ -128,7 +128,7 @@
   	update dl_print_lottery set 
   	error_code=#{errorCode}, 
   	status=#{status} 
-  	<if test="printTime != null and printTime != ''">
+  	<if test="printTime != null ">
 	     ,print_time = #{printTime}
 	</if>
   	where ticket_id=#{ticketId}
