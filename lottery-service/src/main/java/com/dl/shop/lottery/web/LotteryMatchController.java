@@ -437,7 +437,7 @@ public class LotteryMatchController {
 		dto.setSurplus(surplus);
 		double minBonus = betInfo.getMinBonus();
 		double maxBonus = betInfo.getMaxBonus();
-		String forecastMoney = minBonus + "~" + maxBonus;
+		String forecastMoney = String.format("%.2f", minBonus) + "~" + String.format("%.2f", maxBonus);
 		dto.setForecastMoney(forecastMoney);
 		dto.setThirdPartyPaid(thirdPartyPaid);
 		int requestFrom = 0;
@@ -555,4 +555,5 @@ public class LotteryMatchController {
     public BaseResult<String> historyMatchIntoDB(@Valid @RequestBody PathParam param) {
 		return lotteryMatchService.historyMatchIntoDB(param.getRealPath());
     }
+	
 }
