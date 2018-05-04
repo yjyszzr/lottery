@@ -25,6 +25,7 @@ import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
+import com.dl.lottery.param.PrintLotteryStatusByOrderSnParam;
 import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
@@ -115,5 +116,11 @@ public class LotteryPrintController {
 		return lotteryPrintService.saveLotteryPrintInfo(betInfoByOrderSn.getLotteryPrints(), param.getOrderSn());
     }
 	
+	@ApiOperation(value = "查询订单对应的出票状态", notes = "查询订单对应的出票状态:1：待出票，2出票失败，3待开奖")
+    @PostMapping("/printLotteryStatusByOrderSn")
+    public BaseResult<Integer> printLotteryStatusByOrderSn(@Valid @RequestBody PrintLotteryStatusByOrderSnParam param) {
+		Integer status = lotteryPrintService.printLotteryStatusByOrderSn(param.getOrderSn());
+		return ResultGenerator.genSuccessResult("success", status);
+	}
 	
 }

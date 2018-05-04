@@ -578,45 +578,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 出票定时任务
 	 */
 	public void goPrintLottery() {
-		OrderSnListGoPrintLotteryParam orderSnListGoPrintLotteryParam = new OrderSnListGoPrintLotteryParam();
-        List<String> orderSns = orderService.orderSnListGoPrintLottery(orderSnListGoPrintLotteryParam).getData();
-        if(CollectionUtils.isEmpty(orderSns)) {
-        	log.info("暂时没有可出票的订单号");
-        	return;
-        }
-        log.info("可出票的订单数："+orderSns.size());
-        List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.getPrintLotteryListByOrderSns(orderSns);
+        List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.lotteryPrintsByUnPrint();
+        log.info("goPrintLottery 未出票数："+lotteryPrintList.size());
         if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
-        	Set<String> errorOrderSns = new HashSet<String>(orderSns.size());
         	log.info("lotteryPrintList size="+lotteryPrintList.size());
         	while(lotteryPrintList.size() > 0) {
         		int toIndex = lotteryPrintList.size() > 50?50:lotteryPrintList.size();
         		List<LotteryPrint> lotteryPrints = lotteryPrintList.subList(0, toIndex);
         		log.info(" go tostake size="+lotteryPrints.size());
         		Set<String> errOrderSns = this.gotoStak(lotteryPrints);
-        		errorOrderSns.addAll(errOrderSns);
+        		log.info("出票失败订单数："+errOrderSns.size());
         		lotteryPrintList.removeAll(lotteryPrints);
         	}
-        	//orderSns.removeAll(successOrderSn);
-			if(!errorOrderSns.isEmpty()) {
-				log.info("出票失败的订单："+orderSns.stream().collect(Collectors.joining(",")));
-				for(String orderSn: orderSns) {
-					UpdateOrderInfoParam param = new UpdateOrderInfoParam();
-					param.setOrderSn(orderSn);
-					param.setAcceptTime(DateUtil.getCurrentTimeLong());
-					param.setOrderStatus(2);
-					param.setTicketTime(DateUtil.getCurrentTimeLong());
-					BaseResult<String> updateOrderInfo = orderService.updateOrderInfo(param);
-					//回退订单金额
-					if(updateOrderInfo.getCode() == 0) {
-						RollbackOrderAmountParam param1 = new RollbackOrderAmountParam();
-						param1.setOrderSn(orderSn);
-						log.info("invoke rollbackOrderAmount 准备回流资金");
-						BaseResult rollbackOrderAmount = paymentService.rollbackOrderAmount(param1);
-						log.info("rollbackOrderAmount ordersn="+orderSn+" result: code="+rollbackOrderAmount.getCode()+" msg="+rollbackOrderAmount.getMsg());
-					}
-				}
-			}
         }
 	}
 	
@@ -667,6 +640,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						lotteryPrint.setErrorCode(errorCode);
 						//出票失败
 						lotteryPrint.setStatus(2);
+						lotteryPrint.setPrintTime(new Date());
 						lotteryPrintErrors.add(lotteryPrint);
 					}
 				} else {
@@ -703,5 +677,26 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		allOrderSns.removeAll(successOrderSn);
 		return allOrderSns;
+	}
+	/**
+	 * 查询订单对应的出票状态
+	 * @param orderSn
+	 * @return 1：待出票，2出票失败，3待开奖
+	 */
+	public int printLotteryStatusByOrderSn(String orderSn) {
+		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+		if(CollectionUtils.isNotEmpty(byOrderSn)) {
+			Set<Integer> status = byOrderSn.stream().map(obj->obj.getStatus()).collect(Collectors.toSet());
+			if(status.contains(0)) {//未完全出票
+				return 1;
+			}else if(status.contains(3)) {//出票中
+				return 1;
+			}else if(status.contains(1)) {//有成功出票
+				return 3;
+			}else {
+				return 2;
+			}
+		}
+		return -1;
 	}
 }
