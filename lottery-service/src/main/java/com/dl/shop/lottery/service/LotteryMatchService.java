@@ -8,7 +8,9 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -176,6 +178,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
 //			LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
+			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.UTC).getEpochSecond()).intValue();
+			}
 			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
 			matchDto.setChangciId(match.getChangciId().toString());
