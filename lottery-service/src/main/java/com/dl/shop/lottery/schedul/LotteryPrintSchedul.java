@@ -131,9 +131,9 @@ public class LotteryPrintSchedul {
 	 */
 	@Scheduled(cron = "0 0/5 * * * ?")
 	public void addRewardMoneyToUsers() {
-		log.info("更新中奖用户的账户开始");
+		log.info("更新中奖用户的账户，派奖开始");
 		lotteryRewardService.addRewardMoneyToUsers();
-		log.info("更新中奖用户的账户结束");
+		log.info("更新中奖用户的账户，派奖结束");
 		
 	}
 	
@@ -142,9 +142,9 @@ public class LotteryPrintSchedul {
 	 */
 	@Scheduled(cron = "0 0/5 * * * ?")
 	public void updatePrintLotteryCompareStatus() {
-		log.info("更新彩票信息开始");
+		log.info("更新彩票信息，彩票对奖开始");
 		lotteryPrintService.updatePrintLotteryCompareStatus();
-		log.info("更新彩票信息结束");
+		log.info("更新彩票信息，彩票对奖结束");
 		
 	}
 	
