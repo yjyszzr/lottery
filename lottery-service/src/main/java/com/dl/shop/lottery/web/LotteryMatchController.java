@@ -49,6 +49,7 @@ import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.PathParam;
 import com.dl.lottery.param.QueryMatchParam;
+import com.dl.lottery.param.StringRemindParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
@@ -552,8 +553,8 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "历史赛事入库", notes = "历史赛事入库")
     @PostMapping("/historyMatchIntoDB")
-    public BaseResult<String> historyMatchIntoDB(@Valid @RequestBody PathParam param) {
-		return lotteryMatchService.historyMatchIntoDB(param.getRealPath());
+    public BaseResult<String> historyMatchIntoDB(@Valid @RequestBody StringRemindParam param) {
+		return lotteryMatchService.historyMatchIntoDB();
     }
 	
 }

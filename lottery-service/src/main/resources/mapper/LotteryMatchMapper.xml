@@ -188,22 +188,25 @@
 	</select>
 	
 	<insert id ="batchInsertHistoryMatch" parameterType="java.util.List" >
-           insert into dl_match(league_addr,changci_id,changci,home_team_abbr,visiting_team_abbr,match_time,show_time,create_time,is_show,is_del,match_sn,status)
+           insert into dl_match(league_addr,changci_id,changci,home_team_abbr,visiting_team_abbr,match_time,show_time,create_time,is_show,is_del,match_sn,status,first_half,whole,is_hot)
            values
             <foreach collection ="list" item="item" index= "index" separator =",">
                 (
-                #{item.league_addr},
-                #{item.changci_id},
+                #{item.leagueAddr},
+                #{item.changciId},
                 #{item.changci},
-                #{item.home_team_abbr},
-                #{item.visiting_team_abbr},
-                #{item.match_time},
-                #{item.show_time},
-                #{item.create_time},
-                #{item.is_show},
-                #{item.is_del},
-                #{item.match_sn},
-                #{item.status}
+                #{item.homeTeamAbbr},
+                #{item.visitingTeamAbbr},
+                #{item.matchTime},
+                #{item.showTime},
+                #{item.createTime},
+                #{item.isShow},
+                #{item.isDel},
+                #{item.matchSn},
+                #{item.status},
+                #{item.whole},
+                #{item.firstHalf},
+                #{item.isHot}
                 )
             </foreach >
     </insert > 
