@@ -35,6 +35,7 @@ import com.dl.lottery.dto.LeagueMatchAsiaDTO;
 import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
 import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
+import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
@@ -391,10 +392,11 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
-		Double orderMoney = betInfo.getMoney();
-		if(orderMoney > 20000) {
+		List<LotteryPrintDTO> collect = betInfo.getLotteryPrints().stream().filter(dto->dto.getMoney() >= 20000).collect(Collectors.toList());
+		if(collect.size() > 0) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
+		Double orderMoney = betInfo.getMoney();
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
 		if(userBonusList != null && userBonusList.size() > 0) {
