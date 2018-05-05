@@ -3,7 +3,7 @@ package com.dl.lottery.enums;
 public enum LotteryResultEnum {
 
 	OPTION_ERROR(303000,"操作失败！"),
-	BET_MONEY_LIMIT(303001,"单笔订单金额不得超过2万元"),
+	BET_MONEY_LIMIT(303001,"单注彩票金额不得超过2万元"),
 	BET_TIME_LIMIT(303002,"您有参赛场次投注时间已过！"),
 	BET_PLAY_ENABLE(303003,"请选择有效的赛事玩法！"),
 	BET_CELL_EMPTY(303004,"请选择有效的参赛场次！"),
