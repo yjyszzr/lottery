@@ -438,9 +438,10 @@ public class LotteryMatchController {
 		dto.setBonusAmount(bonusAmount);
 		dto.setBonusId(bonusId);
 		dto.setSurplus(surplus);
-		double minBonus = betInfo.getMinBonus();
+		/*double minBonus = betInfo.getMinBonus();
 		double maxBonus = betInfo.getMaxBonus();
-		String forecastMoney = String.format("%.2f", minBonus) + "~" + String.format("%.2f", maxBonus);
+		String forecastMoney = String.format("%.2f", minBonus) + "~" + String.format("%.2f", maxBonus);*/
+		String forecastMoney = betInfo.getMinBonus() + "~" + betInfo.getMaxBonus();
 		dto.setForecastMoney(forecastMoney);
 		dto.setThirdPartyPaid(thirdPartyPaid);
 		int requestFrom = 0;

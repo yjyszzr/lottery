@@ -951,7 +951,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param list
 	 * @param betList
 	 */
-	private void betNum1(String str, int num, List<String> list, List<String> betList) {
+	private static void betNum1(String str, int num, List<String> list, List<String> betList) {
 		LinkedList<String> link = new LinkedList<String>(list);
 		while(link.size() > 0) {
 			String remove = link.remove(0);
@@ -963,6 +963,22 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
+	/*public static void main(String[] args) {
+		String str = "";
+		int num = 15;
+		List<String> indexList  = new ArrayList<String>(num);
+		for(int i=0; i< num; i++) {
+			indexList.add(i+"");
+		}
+		List<String> betList = new ArrayList<String>();
+		int betNum = 2;
+		betNum1(str, betNum, indexList, betList);
+		System.out.println("   ddd  " + betList.size());
+		for(String bet: betList) {
+			System.out.println(bet);
+		}
+		System.out.println("   ddd  " + betList.size());
+	}*/
 	/**
 	 * 
 	 * @param playCellMap
@@ -1148,8 +1164,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
-		betInfoDTO.setMaxBonus(Double.valueOf(String.format("%.2f", maxBonus)));
-		betInfoDTO.setMinBonus(Double.valueOf(String.format("%.2f", minBonus)));
+		betInfoDTO.setMaxBonus(String.format("%.2f", maxBonus));
+		betInfoDTO.setMinBonus(String.format("%.2f", minBonus));
 		betInfoDTO.setTimes(param.getTimes());
 		betInfoDTO.setBetNum(betCellList.size());
 		betInfoDTO.setTicketNum(lotteryPrints.size());

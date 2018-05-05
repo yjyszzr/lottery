@@ -10,9 +10,9 @@ import lombok.Data;
 public class DLZQBetInfoDTO implements Serializable{
 
 	@ApiModelProperty("最大奖金")
-	private Double maxBonus;
+	private String maxBonus;
 	@ApiModelProperty("最小奖金")
-	private Double minBonus;
+	private String minBonus;
 	@ApiModelProperty("投注彩票列表,投注方案展示")
 	private List<DLZQOrderLotteryBetInfoDTO> betCells;
 	@ApiModelProperty("倍数")
