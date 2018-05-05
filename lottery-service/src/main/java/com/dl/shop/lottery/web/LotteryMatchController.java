@@ -138,9 +138,9 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
 		//2 1
-		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
+		/*if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
 			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
-		}
+		}*/
 		//校验赛事投注时间
 		MatchBetPlayDTO min = matchBetPlays.get(0);
 		if(matchBetPlays.size() > 1) {
