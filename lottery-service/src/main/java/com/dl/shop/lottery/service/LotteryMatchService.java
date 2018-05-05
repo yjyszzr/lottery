@@ -2,6 +2,8 @@ package com.dl.shop.lottery.service;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -93,6 +95,8 @@ import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -132,6 +136,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Value("${match.url}")
 	private String matchUrl;
+	
+	@Value("${spring.datasource.druid.url}")
+	private String dbUrl;
+	
+	@Value("${spring.datasource.druid.username}")
+	private String dbUserName;
+	
+	@Value("${spring.datasource.druid.password}")
+	private String dbPass;
+	
+	@Value("${spring.datasource.druid.driver-class-name}")
+	private String dbDriver;
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
 
@@ -1700,39 +1716,40 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return filterConditions;
 	}
 	
+
 	/**
 	 * 历史赛事入库
 	 * @throws IOException 
 	 */
 	@Transactional
-	public BaseResult<String> historyMatchIntoDB(String filepath) {
-		String separator = File.separator;
-		File file=new File(filepath);
-		
-		if(!file.exists()) {
-			return ResultGenerator.genSuccessResult("目录不存在");
-		}
-		
-		if(!file.isDirectory()) {
-			return ResultGenerator.genSuccessResult("文件不存在");
-		}
-		
-		List<String> pathsList = new ArrayList<String>();
-		String realPath = "";
-		if(filepath.contains("\\")) {
-			String[] filePathArr = filepath.split("\\");
-			pathsList = Arrays.asList(filePathArr);
-		}
-		
-		if(filepath.contains("/")) {
-			String[] filePathArr = filepath.split("/");
-			pathsList = Arrays.asList(filePathArr);
-		}
-		
-		for(String str:pathsList) {
-			realPath += str + separator;
-		}
-		
+	public BaseResult<String> historyMatchIntoDB() {
+//		String separator = File.separator;
+//		File file=new File(filepath);
+//		
+//		if(!file.exists()) {
+//			return ResultGenerator.genSuccessResult("目录不存在");
+//		}
+//		
+//		if(!file.isDirectory()) {
+//			return ResultGenerator.genSuccessResult("文件不存在");
+//		}
+//		
+//		List<String> pathsList = new ArrayList<String>();
+//		String realPath = "";
+//		if(filepath.contains("\\")) {
+//			String[] filePathArr = filepath.split("\\");
+//			pathsList = Arrays.asList(filePathArr);
+//		}
+//		
+//		if(filepath.contains("/")) {
+//			String[] filePathArr = filepath.split("/");
+//			pathsList = Arrays.asList(filePathArr);
+//		}
+//		
+//		for(String str:pathsList) {
+//			realPath += str + separator;
+//		}
+		String realPath = "D:\\historyMatch.json";
         String content = "";
 		try {
 			content = new String(Files.readAllBytes(Paths.get(realPath)));
@@ -1750,14 +1767,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		
 		List<LotteryMatch> lotteryMatchList = new ArrayList<>();
-		matchList.stream().forEach(s->{
+        int cancleSize = 0;
+		for(Object s:matchList) {
 			JSONObject str = (JSONObject)s;
+			if(!str.getString("code").equals("已完成")) {
+				cancleSize++;
+				continue;
+			}
 			LotteryMatch m = new LotteryMatch();
 			m.setLeagueAddr(str.getString("league_addr"));
-			m.setChangciId(str.getInteger("cangci_id"));
+			m.setChangciId(null == str.getInteger("cangci_id")?1990:str.getInteger("cangci_id"));
 			m.setChangci(str.getString("changci"));
-			m.setHomeTeamAbbr("home_team_abbr");
-			m.setVisitingTeamAbbr("visiting_team_abbr");
+			m.setHomeTeamAbbr(str.getString("home_team_abbr"));
+			m.setVisitingTeamAbbr(str.getString("visiting_team_abbr"));
 			m.setMatchTime(str.getDate("match_time"));
 			m.setShowTime(str.getDate("match_time"));
 			m.setCreateTime(DateUtil.getCurrentTimeLong());
@@ -1770,20 +1792,71 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			m.setIsHot(Integer.valueOf(ProjectConstant.ZERO_NO));
 			
 			lotteryMatchList.add(m);
-		});
-		
-		int historyMatchSize = lotteryMatchList.size();
-		while(historyMatchSize > 0) {
-			int num = matchList.size() > 200?200:historyMatchSize;
-			List<LotteryMatch> lotterySubMatchList =  lotteryMatchList.subList(0, num);
-			int rst = lotteryMatchMapper.batchInsertHistoryMatch(lotteryMatchList);
-			if(rst != lotterySubMatchList.size()) {
-				log.error("历史赛事入库失败");
-			}
-			lotteryMatchList.removeAll(lotterySubMatchList);
 		}
 		
+		int historyMatchSize = lotteryMatchList.size();
+		log.info("历史赛事共"+matchList+"场");
+		log.info("已取消历史赛事共"+cancleSize+"场,不入库");
+		
+//		while(historyMatchSize > 0) {
+//			int num = matchList.size() > 500?500:historyMatchSize;
+//			List<LotteryMatch> lotterySubMatchList =  lotteryMatchList.subList(0, num);
+//			int rst = lotteryMatchMapper.batchInsertHistoryMatch(lotterySubMatchList);
+//			if(rst != lotterySubMatchList.size()) {
+//				log.error("历史赛事入库失败");
+//			}
+//			lotteryMatchList.removeAll(lotterySubMatchList);
+//		}
+		
+		
+		int rst = this.insertBatchHistoryMatch(lotteryMatchList);
+		if(rst != 1) {
+			return ResultGenerator.genFailResult("历史赛事入库失败");
+		}
 		return ResultGenerator.genSuccessResult("历史赛事入库成功");
 	}
+	
+	
+	/**
+	 * 高速批量插入dl_match 10万条数据 18s
+	 * @param list
+	 * @param peroidId
+	 */
+	public int insertBatchHistoryMatch(List<LotteryMatch> list) {
+		try {
+			Class.forName(dbDriver);
+			Connection conn = (Connection) DriverManager.getConnection(dbUrl+"?characterEncoding=utf8", dbUserName, dbPass);
+			conn.setAutoCommit(false);
+			String sql = "insert into dl_match(league_addr,changci_id,changci,home_team_abbr,visiting_team_abbr,match_time,show_time,create_time,is_show,is_del,match_sn,status,first_half,whole,is_hot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+					ResultSet.CONCUR_READ_ONLY);
+			for (LotteryMatch lm:list) {
+				prest.setString(1, lm.getLeagueAddr());
+				prest.setInt(2, null == lm.getChangciId()?1990:lm.getChangciId());
+				prest.setString(3, lm.getChangci());
+				prest.setString(4, lm.getHomeTeamAbbr());
+				prest.setString(5, lm.getVisitingTeamAbbr());
+				prest.setDate(6,new java.sql.Date(lm.getMatchTime().getTime()));
+				prest.setDate(7, new java.sql.Date(lm.getShowTime().getTime()));
+				prest.setInt(8, lm.getCreateTime());
+				prest.setInt(9, lm.getIsShow());
+				prest.setInt(10, lm.getIsDel());
+				prest.setString(11, lm.getMatchSn());
+				prest.setInt(12, lm.getStatus());
+				prest.setString(13, lm.getFirstHalf());
+				prest.setString(14, lm.getWhole());
+				prest.setInt(15, lm.getIsHot());
+				
+				prest.addBatch();
+			}
+			prest.executeBatch();
+			conn.commit();
+			conn.close();
+		} catch (Exception ex) {
+			log.error(ex.getMessage());
+			return -1;
+		}
+		return 1;
+		}
 	
 }
