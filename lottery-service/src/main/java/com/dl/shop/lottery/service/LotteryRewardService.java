@@ -197,9 +197,11 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
 		orderWithUserParam.setStr("");
 		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
+		log.info("派奖getOrderWithUserAndMoney返回数据：code="+result.getCode()+" msg="+result.getMsg());
 		if(result.getCode() == 0) {
 			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
 			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
+				log.info("需要派奖的数据:"+ orderWithUserDTOs.size());
 				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
 				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
 				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
@@ -210,7 +212,8 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 					userIdAndRewardDTOs.add(userIdAndRewardDTO);
 				}
 				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
-			    userAccountService.changeUserAccountByType(userIdAndRewardListParam);
+			    BaseResult<String> changeUserAccountByType = userAccountService.changeUserAccountByType(userIdAndRewardListParam);
+			    log.info("派奖changeUserAccountByType参数数据："+userIdAndRewardDTOs.size()+" 返回的数据:code="+ changeUserAccountByType.getCode()+" msg="+changeUserAccountByType.getMsg());
 			}
 		}
 	}
