@@ -37,4 +37,9 @@
         and dl.lottery_classify_id = #{lotteryClassifyId}
         order by dl.sort asc, dl.create_time desc
   </select>
+  
+  <select id="getAllPlays" resultMap="BaseResultMap">
+  	select * from dl_lottery_play_classify 
+  	where lottery_classify_id=#{lotteryClassifyId}
+  </select>
 </mapper>

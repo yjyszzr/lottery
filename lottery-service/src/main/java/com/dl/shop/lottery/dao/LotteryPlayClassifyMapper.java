@@ -16,4 +16,6 @@ public interface LotteryPlayClassifyMapper extends Mapper<LotteryPlayClassify> {
 	 * @return
 	 */
 	public List<DlPlayClassifyDetailDTO> selectAllData(@Param("lotteryClassifyId")Integer lotteryClassifyId);
+	
+	public List<LotteryPlayClassify> getAllPlays(@Param("lotteryClassifyId")Integer lotteryClassifyId);
 }
