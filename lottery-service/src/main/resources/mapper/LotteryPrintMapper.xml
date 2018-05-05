@@ -142,4 +142,8 @@
   	compared_stakes = #{comparedStakes} 
   	where print_lottery_id = #{printLotteryId}
   </update>
+  
+  <select id="getPrintIngLotterys" resultMap="BaseResultMap">
+  	select * from dl_print_lottery where status=3
+  </select>
 </mapper>

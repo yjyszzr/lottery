@@ -430,5 +430,8 @@ public class ProjectConstant {
     public static final Integer PAY_STATUS_STAY = 0;   //待支付
     public static final Integer PAY_STATUS_ALREADY = 1;//已支付
 	
+    public static final int PRINT_STATUS_SUCCESS = 16;   //出票成功
+    public static final int PRINT_STATUS_FAIL = 17;//出票失败
+    public static final int PRINT_STATUS_PRINT = 8;//出票中
 	
 }

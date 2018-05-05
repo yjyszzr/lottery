@@ -253,7 +253,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				for(LotteryPrint dto: dlOrderDataDTOs) {
 					int printStatus = dto.getPrintStatus();
 					String printSp = dto.getPrintSp();
-					if(printStatus == 16 || StringUtils.isNotBlank(printSp)) {//出票成功
+					if(printStatus == ProjectConstant.PRINT_STATUS_SUCCESS || StringUtils.isNotBlank(printSp)) {//出票成功
 						String orderSn = dto.getOrderSn();
 						String compareStatus = dto.getCompareStatus();
 						if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
@@ -268,7 +268,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 						double realReward = realRewardMoney == null?0:realRewardMoney.doubleValue();
 						double1 = double1==null?realReward:(double1+realReward);
 						map.put(orderSn, double1);
-					}else if(printStatus == 0){
+					}else if(printStatus == ProjectConstant.PRINT_STATUS_FAIL){
 						errorPrints.add(dto);
 					}
 				}

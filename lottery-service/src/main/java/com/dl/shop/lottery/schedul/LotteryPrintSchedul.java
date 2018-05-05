@@ -75,6 +75,9 @@ public class LotteryPrintSchedul {
         log.info("出票定时任务启动");
         lotteryPrintService.goPrintLottery();
         log.info("出票定时任务结束");
+        log.info("彩票出票状态查询定时任务启动");
+        lotteryPrintService.goQueryStake();
+        log.info("彩票出票状态查询定时任务结束");
     }
 
 

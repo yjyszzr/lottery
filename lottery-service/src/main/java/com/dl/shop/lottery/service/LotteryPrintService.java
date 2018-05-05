@@ -146,18 +146,25 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		if(CollectionUtils.isNotEmpty(callbackStakes)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			List<LotteryPrintParam> lotteryPrintParams = new LinkedList<LotteryPrintParam>();
-			List<LotteryPrint> lotteryPrints = new ArrayList<>();
+			List<LotteryPrint> lotteryPrints = new ArrayList<>(callbackStakes.size());
 			for(CallbackStake callbackStake : callbackStakes) {
 				if(ProjectConstant.CALLBACK_STAKE_SUCCESS.equals(callbackStake.getPrintStatus())) {
 					LotteryPrint lotteryPrint = new LotteryPrint();
 					lotteryPrint.setTicketId(callbackStake.getTicketId());
 					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-					if(null != lotteryPrint && lotteryPrint.getStatus() == 3) {
-						lotteryPrint.setStatus(1);
+					if(null != lotteryPrint) {
+						Integer printStatus = callbackStake.getPrintStatus();
+						if(printStatus.equals(ProjectConstant.PRINT_STATUS_FAIL)) {
+							lotteryPrint.setStatus(2);
+						}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_SUCCESS)) {
+							lotteryPrint.setStatus(1);
+						}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
+							lotteryPrint.setStatus(3);
+						} 
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
 						lotteryPrint.setPrintSp(callbackStake.getSp());
-						lotteryPrint.setPrintStatus(callbackStake.getPrintStatus());
+						lotteryPrint.setPrintStatus(printStatus);
 						Date printTime = null;
 						try {
 							String printTimeStr = callbackStake.getPrintTime();
@@ -238,7 +245,80 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrintMapper.updateLotteryPrintByCallBack(print);
 		}
 	}
-	
+	/**
+	 * 定时任务去主动查询发票状态
+	 */
+	public void goQueryStake() {
+		List<LotteryPrint> prints = lotteryPrintMapper.getPrintIngLotterys();
+		log.info("彩票出票状态查询数据："+prints.size());
+		while(prints.size() > 0) {
+			int endIndex = prints.size()>20?20:prints.size();
+			List<LotteryPrint> subList = prints.subList(0, endIndex);
+			List<String> collect = subList.stream().map(print-> print.getTicketId()).collect(Collectors.toList());
+			String[] orders = collect.toArray(new String[collect.size()]);
+			this.goQueryStake(orders);
+		}
+	}
+	private void goQueryStake(String[] orders) {
+		DlQueryStakeParam queryStakeParam = new DlQueryStakeParam();
+		queryStakeParam.setMerchant(merchant);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		queryStakeParam.setTimestamp(sdf.format(new Date()));
+		queryStakeParam.setVersion("1.0");
+		queryStakeParam.setOrders(orders);
+		DlQueryStakeDTO dlQueryStakeDTO = this.queryStake(queryStakeParam);
+		String retCode = dlQueryStakeDTO.getRetCode();
+		if("0".equals(retCode)) {
+			List<BackQueryStake> queryStakes = dlQueryStakeDTO.getOrders();
+			List<LotteryPrint> lotteryPrints = new ArrayList<>(queryStakes.size());
+			List<LotteryPrintParam> lotteryPrintParams = new ArrayList<LotteryPrintParam>(queryStakes.size());
+			for(BackQueryStake stake: queryStakes) {
+				String ticketId = stake.getTicketId();
+				LotteryPrint lotteryPrint = new LotteryPrint();
+				lotteryPrint.setTicketId(ticketId);
+				lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
+				if(null != lotteryPrint) {
+					Integer printStatus = stake.getPrintStatus();
+					if(printStatus.equals(ProjectConstant.PRINT_STATUS_FAIL)) {
+						lotteryPrint.setStatus(2);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_SUCCESS)) {
+						lotteryPrint.setStatus(1);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
+						lotteryPrint.setStatus(3);
+					} 
+					lotteryPrint.setPlatformId(stake.getPlatformId());
+					lotteryPrint.setPrintNo(stake.getPrintNo());
+					lotteryPrint.setPrintSp(stake.getSp());
+					lotteryPrint.setPrintStatus(printStatus);
+					Date printTime = null;
+					try {
+						String printTimeStr = stake.getPrintTime();
+						printTimeStr = printTimeStr.replaceAll("/", "-");
+						printTime = sdf.parse(printTimeStr);
+						lotteryPrint.setPrintTime(printTime);
+					} catch (ParseException e) {
+						e.printStackTrace();
+						log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常");
+						continue;
+					}
+					lotteryPrints.add(lotteryPrint);
+					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+					lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+					lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+					lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+					lotteryPrintParam.setPrintSp(getComparePrintSp(stake.getSp(), stake.getTicketId()));
+					lotteryPrintParams.add(lotteryPrintParam);
+				}
+			}
+			log.info("goQueryStake -> updateLotteryPrintByCallBack size:"+lotteryPrints.size());
+			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
+				updateLotteryPrintByCallBack(lotteryPrints);
+			}
+			if(CollectionUtils.isNotEmpty(lotteryPrintParams)) {
+				orderService.updateOrderInfoByPrint(lotteryPrintParams);
+			}
+		}
+	}
 	
 	/**
 	 * 投注结果查询
