@@ -437,8 +437,8 @@ public class ProjectConstant {
     
     //文章收藏
     //用户已收藏
-    public static final String IS_COLLECTED = "0";
+    public static final String IS_COLLECTED = "1";
     
     //用户未收藏
-    public static final String IS_NOT_COLLECT = "1";
+    public static final String IS_NOT_COLLECT = "0";
 }
