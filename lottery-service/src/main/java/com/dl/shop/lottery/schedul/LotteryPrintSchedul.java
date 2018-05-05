@@ -1,33 +1,12 @@
 package com.dl.shop.lottery.schedul;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.dl.base.result.BaseResult;
-import com.dl.base.util.DateUtil;
-import com.dl.lottery.dto.DlToStakeDTO;
-import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
-import com.dl.lottery.param.DlToStakeParam;
-import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.order.api.IOrderService;
-import com.dl.order.param.OrderSnListGoPrintLotteryParam;
-import com.dl.order.param.UpdateOrderInfoParam;
-import com.dl.shop.lottery.dao.LotteryPrintMapper;
-import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueMatchResultService;
@@ -35,8 +14,6 @@ import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 import com.dl.shop.lottery.service.LotteryRewardService;
-import com.dl.shop.payment.api.IpaymentService;
-import com.dl.shop.payment.param.RollbackOrderAmountParam;
 
 import lombok.extern.slf4j.Slf4j;
 

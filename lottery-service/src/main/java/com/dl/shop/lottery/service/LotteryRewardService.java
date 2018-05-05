@@ -249,7 +249,8 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 				List<LotteryPrint> errorPrints = new ArrayList<LotteryPrint>(0);
 				for(LotteryPrint dto: dlOrderDataDTOs) {
 					int printStatus = dto.getPrintStatus();
-					if(printStatus == 1) {
+					String printSp = dto.getPrintSp();
+					if(printStatus == 16 || StringUtils.isNotBlank(printSp)) {//出票成功
 						String orderSn = dto.getOrderSn();
 						String compareStatus = dto.getCompareStatus();
 						if(StringUtils.isBlank(compareStatus) || !"1".equals(compareStatus)) {
