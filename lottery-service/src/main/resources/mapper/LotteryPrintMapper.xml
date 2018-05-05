@@ -107,7 +107,7 @@
   
   <select id="getPrintLotteryListByOrderSns" resultMap="BaseResultMap">
   	select * from dl_print_lottery 
-  	where status=0 and order_sn in 
+  	where status=1 and order_sn in 
   	 <foreach collection="orderSns" item="orderSn" index="index" open="(" separator="," close=")">
 		#{orderSn}
      </foreach>
