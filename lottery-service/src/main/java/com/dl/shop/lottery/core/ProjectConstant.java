@@ -434,4 +434,11 @@ public class ProjectConstant {
     public static final int PRINT_STATUS_FAIL = 17;//出票失败
     public static final int PRINT_STATUS_PRINT = 8;//出票中
 	
+    
+    //文章收藏
+    //用户已收藏
+    public static final String IS_COLLECTED = "0";
+    
+    //用户未收藏
+    public static final String IS_NOT_COLLECT = "1";
 }
