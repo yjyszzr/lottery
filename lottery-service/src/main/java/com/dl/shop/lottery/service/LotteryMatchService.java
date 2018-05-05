@@ -33,6 +33,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.JSONHelper;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.SNGenerator;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
@@ -129,12 +131,85 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	@Resource
 	private IOrderService orderService;
 	
+	@Resource
+	private StringRedisTemplate stringRedisTemplate;
+	
 	
 	@Value("${match.url}")
 	private String matchUrl;
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
+	
+	private final static String CACHE_MATCH_LIST_KEY = "match_list_key";
+	private final static String CACHE_MATCH_PLAY_LIST_KEY = "match_play_List_key";
 
+	private void refreshCache() {
+		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(null);
+		if(!CollectionUtils.isEmpty(matchList)) {
+			List<Integer> matchIds = matchList.stream().map(match->match.getMatchId()).collect(Collectors.toList());
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByMatchIds(matchIds.toArray(new Integer[matchIds.size()]), null);
+			String matchListStr = JSONHelper.bean2json(matchList);
+			stringRedisTemplate.opsForValue().set(CACHE_MATCH_LIST_KEY, matchListStr);
+			String matchPlayStr = JSONHelper.bean2json(matchPlayList);
+			stringRedisTemplate.opsForValue().set(CACHE_MATCH_PLAY_LIST_KEY, matchPlayStr);
+		}
+	}
+	public DlJcZqMatchListDTO getMatchList1(DlJcZqMatchListParam param) {
+		String leagueId = param.getLeagueId();
+		String playTypeStr = param.getPlayType();
+		Integer playType = Integer.parseInt(playTypeStr);
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
+		String matchListStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_LIST_KEY);
+		if(StringUtils.isBlank(matchListStr)) {
+			return dlJcZqMatchListDTO;
+		}
+		String matchPlayStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_PLAY_LIST_KEY);
+		if(StringUtils.isBlank(matchPlayStr)) {
+			return dlJcZqMatchListDTO;
+		}
+		try {
+			List<LotteryMatch> matchList = JSONHelper.getBeanList(matchListStr, LotteryMatch.class);
+			if(StringUtils.isNotBlank(leagueId)) {
+				final List<String> leagueIds = Arrays.asList(leagueId.split(","));
+				matchList = matchList.stream().filter(match->leagueIds.contains(match.getLeagueId().toString())).collect(Collectors.toList());
+			}
+			List<LotteryMatchPlay> matchPlayList = JSONHelper.getBeanList(matchPlayStr, LotteryMatchPlay.class);
+			Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>(matchList.size());
+			List<Integer> matchIds = matchList.stream().map(match->match.getMatchId()).collect(Collectors.toList());
+			for(LotteryMatchPlay matchPlay: matchPlayList) {
+				if(!matchIds.contains(matchPlay.getMatchId())) {
+					continue;
+				}
+				Integer playType2 = matchPlay.getPlayType();
+				if(playType.equals(6)) {
+					if(!playType2.equals(7)) {
+						Integer matchId = matchPlay.getMatchId();
+						DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+						List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
+						if(dlJcZqMatchPlayDTOs == null){
+							dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+							matchPlayMap.put(matchId, dlJcZqMatchPlayDTOs);
+						}
+						dlJcZqMatchPlayDTOs.add(matchPlayDto);
+					}
+				}else if(playType2.equals(playType)){
+					Integer matchId = matchPlay.getMatchId();
+					DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+					List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
+					if(dlJcZqMatchPlayDTOs == null){
+						dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+						matchPlayMap.put(matchId, dlJcZqMatchPlayDTOs);
+					}
+					dlJcZqMatchPlayDTOs.add(matchPlayDto);
+				}
+			}
+			dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playTypeStr, matchPlayMap);
+		    return dlJcZqMatchListDTO;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
     /**
      * 获取赛事列表
      * @param param
@@ -156,11 +231,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				continue;
 			}
 			Integer matchId = matchPlay.getMatchId();
-			DlJcZqMatchPlayDTO matchPlayDto = new DlJcZqMatchPlayDTO();
-			matchPlayDto.setPlayContent(matchPlay.getPlayContent());
-			matchPlayDto.setPlayType(playType2);
-			initDlJcZqMatchCell(matchPlayDto);
-			matchPlayDto.setPlayContent(null);
+			DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
 			List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
 			if(dlJcZqMatchPlayDTOs == null){
 				dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
@@ -168,6 +239,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			dlJcZqMatchPlayDTOs.add(matchPlayDto);
 		}
+		dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playType, matchPlayMap);
+	    return dlJcZqMatchListDTO;
+	}
+	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
 		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
@@ -260,15 +336,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
-	    return dlJcZqMatchListDTO;
+		return dlJcZqMatchListDTO;
 	}
 	
 	/**
 	 * 初始化球赛类型投注选项
 	 * @param dto
 	 */
-	private void initDlJcZqMatchCell(DlJcZqMatchPlayDTO dto) {
-		Integer playType = dto.getPlayType();
+	private DlJcZqMatchPlayDTO initDlJcZqMatchCell(LotteryMatchPlay matchPlay) {
+		DlJcZqMatchPlayDTO dto = new DlJcZqMatchPlayDTO();
+		dto.setPlayContent(matchPlay.getPlayContent());
+		dto.setPlayType(matchPlay.getPlayType());
+		Integer playType = matchPlay.getPlayType();
 		switch(playType) {
 			case 1:
 				initDlJcZqMatchCell1(dto);
@@ -292,6 +371,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				initDlJcZqMatchCell7(dto);
 				break;
 		}
+		dto.setPlayContent(null);
+		return dto;
 	}
 	/**
 	 * 让球胜平负
@@ -525,6 +606,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		//保存赛事数据
 		saveMatchData(lotteryMatchs, matchPlays);
+		//刷新缓存
+		this.refreshCache();
 	}
 	
 	/**

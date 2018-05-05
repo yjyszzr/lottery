@@ -113,7 +113,7 @@ public class LotteryMatchController {
 	@ApiOperation(value = "获取赛事列表", notes = "获取赛事列表")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
-		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList1(param);
     	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcZqMatchListDTO);
     }
 	
