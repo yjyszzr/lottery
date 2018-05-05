@@ -97,10 +97,10 @@
   	 		#{leagueId}
   	 	</foreach>
   	 </if>
-  	 <if test="issueArr !=null and issueArr.length != 0">
-  	 	and match_sn in
-  	 	<foreach collection="issueArr" item="issue" index="index" open="(" close=")" separator=",">
-  	 		#{issue}
+  	 <if test="matchIdArr !=null and matchIdArr.length != 0">
+  	 	and match_id in
+  	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
+  	 		#{matchId}
   	 	</foreach>
   	 </if>
   	 <if test="matchFinish != null and matchFinish != ''">

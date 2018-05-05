@@ -55,6 +55,7 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.SNGenerator;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DLZQOrderLotteryBetInfoDTO;
@@ -1362,25 +1363,32 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			leagueIdArr = queryMatchParam.getLeagueIds().split(",");
 		}
 		
-		String[] issueArr = new String [] {};
+		String[] matchIdArr = new String [] {};
 		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
-			//我的订单中包含的今天赛事的期次号issue
+			Integer userId = SessionUtil.getUserId();
+			if(null == userId) {
+				return ResultGenerator.genNeedLoginResult("请登录");
+			}
+			//查询 用户当天所下的订单 包含某天的比赛ID集合
 			DateStrParam dateStrParam = new DateStrParam();
 			dateStrParam.setDateStr(queryMatchParam.getDateStr());
-			BaseResult<List<IssueDTO>> issuesDTO = orderDetailService.selectIssuesMatchInTodayOrder(dateStrParam);
-			if(issuesDTO.getCode() != 0) {
-				return ResultGenerator.genResult(issuesDTO.getCode(),issuesDTO.getMsg());
+			BaseResult<List<String>> matchIdsRst = orderDetailService.selectMatchIdsInSomeDayOrder(dateStrParam);
+			if(matchIdsRst.getCode() != 0) {
+				return ResultGenerator.genResult(matchIdsRst.getCode(),matchIdsRst.getMsg());
 			}
 			
-			List<IssueDTO> issueDTOList = issuesDTO.getData();
-			List<String> issueList = issueDTOList.stream().map(s->s.getIssue()).collect(Collectors.toList());
-			if(issueList.size() > 0) {
-				issueArr = (String[])issueList.toArray();
+			List<String> matchIdList = matchIdsRst.getData();
+			if(matchIdList.size() == 0) {
+				return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 			}
+			
+			matchIdArr = matchIdList.stream().toArray(String[]::new);
+//			/matchIdArr = (String[])matchIdList.toArray();
 		}
-				
+		
+
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
-				issueArr,leagueIdArr,queryMatchParam.getMatchFinish());
+				matchIdArr,leagueIdArr,queryMatchParam.getMatchFinish());
 		
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);

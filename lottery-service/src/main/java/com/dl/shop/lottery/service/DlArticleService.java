@@ -14,12 +14,14 @@ import com.dl.base.enums.CommonEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.member.api.IUserCollectService;
 import com.dl.member.param.ArticleIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.github.pagehelper.PageHelper;
@@ -158,6 +160,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	}
 
 	public DLArticleDetailDTO findArticleById(Integer id) {
+		Integer userId = SessionUtil.getUserId();
 		DlArticle article = super.findById(id);
 		if(null == article ) {
 			return null;
@@ -165,16 +168,18 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		DLArticleDetailDTO dto = new DLArticleDetailDTO();
 		
 		//是否收藏
-		String isCollect = "";
-		ArticleIdParam articleIdParam = new ArticleIdParam();
-		articleIdParam.setArticleId(id);
-		BaseResult<Integer> rst =  userCollectService.isCollect(articleIdParam);
-		if(rst.getCode() != 0) {
-			log.error(rst.getMsg());
-			isCollect = "1";
+		String isCollect = ProjectConstant.IS_NOT_COLLECT;
+		if(null != userId) {
+			ArticleIdParam articleIdParam = new ArticleIdParam();
+			articleIdParam.setArticleId(id);
+			BaseResult<Integer> rst =  userCollectService.isCollect(articleIdParam);
+			if(rst.getCode() != 0) {
+				log.error(rst.getMsg());
+				isCollect = ProjectConstant.IS_NOT_COLLECT;
+			}
+			isCollect = String.valueOf(rst.getData());
 		}
 		
-		isCollect = String.valueOf(rst.getData());
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
 		dto.setArticleThumb(article.getArticleThumb());
