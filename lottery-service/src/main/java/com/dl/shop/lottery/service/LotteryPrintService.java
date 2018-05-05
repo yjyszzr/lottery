@@ -160,7 +160,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 							lotteryPrint.setStatus(1);
 						}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
 							lotteryPrint.setStatus(3);
-						} 
+						} else {
+							continue;
+						}
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
 						lotteryPrint.setPrintSp(callbackStake.getSp());
@@ -285,7 +287,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						lotteryPrint.setStatus(1);
 					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
 						lotteryPrint.setStatus(3);
-					} 
+					} else {
+						continue;
+					}
 					lotteryPrint.setPlatformId(stake.getPlatformId());
 					lotteryPrint.setPrintNo(stake.getPrintNo());
 					lotteryPrint.setPrintSp(stake.getSp());
