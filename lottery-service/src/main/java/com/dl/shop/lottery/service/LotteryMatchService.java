@@ -360,6 +360,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			totalNum++;
 		}
 		map.forEach((key, value) ->{
+			value.getPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
 		/*leagueInfoMap.forEach((key,value)->{
