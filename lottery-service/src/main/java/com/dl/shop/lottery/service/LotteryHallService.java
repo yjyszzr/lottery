@@ -71,8 +71,7 @@ public class LotteryHallService {
 		// 获取彩票分类列表
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
 		// //第一版只显示竞彩足球的子列表
-		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper
-				.selectAllData(1);
+		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
 				dto.setLotteryId("1");
@@ -90,15 +89,12 @@ public class LotteryHallService {
 	public DlPlayClassifyDTO getPlayClassifyList(DlPlayClassifyParam param) {
 		DlPlayClassifyDTO dlPlayClassifyDTO = new DlPlayClassifyDTO();
 		DlPlayTitleDTO dlPlayTitleDTO = new DlPlayTitleDTO();
-		LotteryClassify lotteryClassify = lotteryClassifyMapper
-				.selectByPrimaryKey(Integer.valueOf(param
-						.getLotteryClassifyId()));
+		LotteryClassify lotteryClassify = lotteryClassifyMapper.selectByPrimaryKey(Integer.valueOf(param.getLotteryClassifyId()));
 		if (null != lotteryClassify) {
 			dlPlayTitleDTO.setPlayName(lotteryClassify.getLotteryName());
 		}
 		dlPlayClassifyDTO.setDlPlayTitleDTO(dlPlayTitleDTO);
-		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper
-				.selectAllData(Integer.valueOf(param.getLotteryClassifyId()));
+		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(Integer.valueOf(param.getLotteryClassifyId()));
 		dlPlayClassifyDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
 		return dlPlayClassifyDTO;
 	}
@@ -113,16 +109,20 @@ public class LotteryHallService {
 		Condition condition = new Condition(LotteryClassify.class);
 		condition.createCriteria().andCondition("is_show=", 1);
 		condition.setOrderByClause("banner_sort asc");
-		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper
-				.selectByCondition(condition);
+		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
 			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
 				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
 				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
-				dlNavBannerDTO.setBannerImage(lotteryConfig.getBannerShowUrl()
-						+ lotteryNavBanner.getBannerImage());
-				dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink()
-						+ "?cxmxc=scm&" + lotteryNavBanner.getBannerParam());
+				dlNavBannerDTO.setBannerImage(lotteryConfig.getBannerShowUrl() + lotteryNavBanner.getBannerImage());
+				if ("1".equals(lotteryNavBanner.getBannerLink())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerParam());// 资讯链接,后面跟资讯链接
+				} else if ("2".equals(lotteryNavBanner.getBannerLink())) {
+					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerParam());// 活动链接,后面跟活动URL
+				} else {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerParam()); // 赛事链接,后面跟赛事ID
+				}
+
 				dlNavBannerDTOs.add(dlNavBannerDTO);
 			}
 		}
@@ -137,15 +137,8 @@ public class LotteryHallService {
 	private DlActivityDTO getDlActivityDTO() {
 		DlActivityDTO dlActivityDTO = new DlActivityDTO();
 		Condition condition = new Condition(LotteryActivity.class);
-		condition
-				.createCriteria()
-				.andCondition("is_finish=", 0)
-				.andCondition("status=", 1)
-				.andGreaterThan("endTime", DateUtil.getCurrentTimeLong())
-				.andLessThanOrEqualTo("startTime",
-						DateUtil.getCurrentTimeLong());
-		List<LotteryActivity> lotteryActivitys = lotteryActivityMapper
-				.selectByCondition(condition);
+		condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+		List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
 			LotteryActivity lotteryActivity = lotteryActivitys.get(0);
 			if (null != lotteryActivity) {
@@ -165,19 +158,15 @@ public class LotteryHallService {
 	private List<DlWinningLogDTO> getDlWinningLogDTOs() {
 		Condition condition = new Condition(LotteryWinningLogTemp.class);
 		condition.createCriteria().andCondition("is_show=", 1);
-		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper
-				.selectByCondition(condition);
+		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
 		if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
 			for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
 				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 				String phone = winningLog.getPhone();
 				phone = phone.substring(0, 3) + "****" + phone.substring(7);
-				dlWinningLogDTO.setWinningMsg(MessageFormat.format(
-						ProjectConstant.FORMAT_WINNING_MSG, phone, winningLog
-								.getWinningMoney().toString()));
-				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney()
-						.toString());
+				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone, winningLog.getWinningMoney().toString()));
+				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 				dlWinningLogDTOs.add(dlWinningLogDTO);
 			}
 		}
@@ -194,17 +183,13 @@ public class LotteryHallService {
 		Condition condition = new Condition(LotteryClassify.class);
 		condition.createCriteria().andCondition("is_show=", 1);
 		condition.setOrderByClause("sort asc,create_time desc");
-		List<LotteryClassify> lotteryClassifys = lotteryClassifyMapper
-				.selectByCondition(condition);
+		List<LotteryClassify> lotteryClassifys = lotteryClassifyMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryClassifys)) {
 			for (LotteryClassify lotteryClassify : lotteryClassifys) {
 				DlLotteryClassifyDTO dlLotteryClassifyDTO = new DlLotteryClassifyDTO();
-				dlLotteryClassifyDTO.setLotteryId(lotteryClassify
-						.getLotteryClassifyId());
-				dlLotteryClassifyDTO.setLotteryName(lotteryClassify
-						.getLotteryName());
-				dlLotteryClassifyDTO.setLotteryImg(lotteryClassify
-						.getLotteryImg());
+				dlLotteryClassifyDTO.setLotteryId(lotteryClassify.getLotteryClassifyId());
+				dlLotteryClassifyDTO.setLotteryName(lotteryClassify.getLotteryName());
+				dlLotteryClassifyDTO.setLotteryImg(lotteryClassify.getLotteryImg());
 				dlLotteryClassifyDTO.setStatus(lotteryClassify.getStatus());
 				dlLotteryClassifyDTOs.add(dlLotteryClassifyDTO);
 			}

@@ -17,4 +17,12 @@ public class LotteryConfig {
 	@Value("${dl.banner.show.url}")
 	private String bannerShowUrl;
 
+	// banner链接赛事URL
+	@Value("${dl.banner.linkMatch.url}")
+	private String banneLinkMatchUrl;
+
+	// banner链接资讯URL
+	@Value("${dl.banner.linkArticle.url}")
+	private String banneLinkArticleUrl;
+
 }
