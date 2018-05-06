@@ -399,41 +399,48 @@ public class LotteryMatchController {
 		Double orderMoney = betInfo.getMoney();
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
-		if(userBonusList != null && userBonusList.size() > 0) {
-			if(param.getBonusId() != null && param.getBonusId().intValue() != 0) {
-				Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getUserBonusId().equals(param.getBonusId())).findFirst();
-				userBonusDto = findFirst.isPresent()?findFirst.get():null;
-			}else {
+		if(!CollectionUtils.isEmpty(userBonusList)) {
+			if(param.getBonusId() != null && param.getBonusId().intValue() != 0) {//有红包id
+				if(param.getBonusId().intValue() != -1) {
+					Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getUserBonusId().equals(param.getBonusId())).findFirst();
+					userBonusDto = findFirst.isPresent()?findFirst.get():null;
+				}
+			}else {//没有传红包id
 				List<UserBonusDTO> userBonuses = userBonusList.stream().filter(dto->{
 					double minGoodsAmount = dto.getBonusPrice().doubleValue();
 					return orderMoney < minGoodsAmount ? false : true;
 				}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
 						.collect(Collectors.toList());
 				if(userBonuses.size() > 0) {
-					if(null != param.getBonusId()) {
+					/*if(null != param.getBonusId()) {
 						Optional<UserBonusDTO> findFirst = userBonusList.stream().filter(dto->dto.getBonusId()==param.getBonusId()).findFirst();
 						userBonusDto = findFirst.isPresent()?findFirst.get():null;
-					}
-					userBonusDto = userBonusDto == null?userBonuses.get(0):userBonusDto;
+					}*/
+					userBonusDto = userBonuses.get(0);//userBonusDto == null?userBonuses.get(0):userBonusDto;
 				}
 			}
 		}
 		String bonusId = userBonusDto != null?userBonusDto.getUserBonusId().toString():null;
 		Double bonusAmount = userBonusDto!=null?userBonusDto.getBonusPrice().doubleValue():0.0;
-		Double amountTemp = orderMoney - bonusAmount;
-		Double surplus = userTotalMoney>amountTemp?amountTemp:userTotalMoney;
-		Double thirdPartyPaid = amountTemp - surplus;
+		Double amountTemp = orderMoney - bonusAmount;//红包扣款后的金额
+		Double surplus = 0.0;
+		Double thirdPartyPaid = 0.0;
+		if(amountTemp < 0) {//红包大于订单金额
+			bonusAmount = orderMoney;
+		}else {
+			surplus = userTotalMoney>amountTemp?amountTemp:userTotalMoney;
+			thirdPartyPaid = amountTemp - surplus;
+		}
+		
+		//缓存订单支付信息
+		DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO(param);
 		List<DIZQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DIZQUserBetCellInfoDTO>(matchBetPlays.size());
 		for(MatchBetPlayDTO matchCell: matchBetPlays) {
 			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
 		}
-		int betNum = betInfo.getBetNum();
-		int ticketNum = betInfo.getTicketNum();
-		//缓存订单支付信息
-		DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO(param);
 		dto.setUserBetCellInfos(userBetCellInfos);
-		dto.setBetNum(betNum);
-		dto.setTicketNum(ticketNum);
+		dto.setBetNum(betInfo.getBetNum());
+		dto.setTicketNum(betInfo.getTicketNum());
 		dto.setMoney(orderMoney);
 		dto.setBonusAmount(bonusAmount);
 		dto.setBonusId(bonusId);
