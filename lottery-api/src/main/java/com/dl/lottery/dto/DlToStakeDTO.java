@@ -40,5 +40,8 @@ public class DlToStakeDTO implements Serializable{
 		
 		@ApiModelProperty(value = "处理结果", required = true)
 	    private Integer errorCode;
+		
+		@ApiModelProperty(value = "处理结果", required = true)
+		private Integer errorDesc;
 	}
 }
