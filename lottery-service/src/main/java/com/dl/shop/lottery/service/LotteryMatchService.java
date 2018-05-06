@@ -238,6 +238,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      * @return
      */
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
+		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(param.getLeagueId());
 		if(matchList == null || matchList.size() == 0) {
@@ -261,7 +262,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			dlJcZqMatchPlayDTOs.add(matchPlayDto);
 		}
+		long end1 = System.currentTimeMillis();
+		log.info("==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
 		dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playType, matchPlayMap);
+		long end = System.currentTimeMillis();
+		log.info("==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
+		log.info("==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
 	    return dlJcZqMatchListDTO;
 	}
 	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
