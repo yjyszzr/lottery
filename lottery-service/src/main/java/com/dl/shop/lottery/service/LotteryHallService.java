@@ -120,7 +120,7 @@ public class LotteryHallService {
 				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
 					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
 				} else {
-					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkMatchUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
 				}
 
 				dlNavBannerDTOs.add(dlNavBannerDTO);
