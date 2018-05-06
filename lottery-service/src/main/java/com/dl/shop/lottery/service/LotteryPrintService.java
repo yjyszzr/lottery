@@ -168,15 +168,17 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						lotteryPrint.setPrintSp(callbackStake.getSp());
 						lotteryPrint.setPrintStatus(printStatus);
 						Date printTime = null;
-						try {
-							String printTimeStr = callbackStake.getPrintTime();
-							printTimeStr = printTimeStr.replaceAll("/", "-");
-							printTime = sdf.parse(printTimeStr);
-							lotteryPrint.setPrintTime(printTime);
-						} catch (ParseException e) {
-							e.printStackTrace();
-							log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
-							continue;
+						String printTimeStr = callbackStake.getPrintTime();
+						if(StringUtils.isNotBlank(printTimeStr)) {
+							try {
+								printTimeStr = printTimeStr.replaceAll("/", "-");
+								printTime = sdf.parse(printTimeStr);
+								lotteryPrint.setPrintTime(printTime);
+							} catch (ParseException e) {
+								e.printStackTrace();
+								log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
+								continue;
+							}
 						}
 						lotteryPrints.add(lotteryPrint);
 						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
@@ -254,6 +256,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		List<LotteryPrint> prints = lotteryPrintMapper.getPrintIngLotterys();
 		log.info("彩票出票状态查询数据："+prints.size());
 		while(prints.size() > 0) {
+			log.info("彩票出票状态查询数据还有："+prints.size());
 			int endIndex = prints.size()>20?20:prints.size();
 			List<LotteryPrint> subList = prints.subList(0, endIndex);
 			List<String> collect = subList.stream().map(print-> print.getTicketId()).collect(Collectors.toList());
@@ -272,6 +275,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		String retCode = dlQueryStakeDTO.getRetCode();
 		if("0".equals(retCode)) {
 			List<BackQueryStake> queryStakes = dlQueryStakeDTO.getOrders();
+			log.info("查询返回结果数据：size="+queryStakes.size());
 			List<LotteryPrint> lotteryPrints = new ArrayList<>(queryStakes.size());
 			List<LotteryPrintParam> lotteryPrintParams = new ArrayList<LotteryPrintParam>(queryStakes.size());
 			for(BackQueryStake stake: queryStakes) {
@@ -295,15 +299,17 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					lotteryPrint.setPrintSp(stake.getSp());
 					lotteryPrint.setPrintStatus(printStatus);
 					Date printTime = null;
-					try {
-						String printTimeStr = stake.getPrintTime();
-						printTimeStr = printTimeStr.replaceAll("/", "-");
-						printTime = sdf.parse(printTimeStr);
-						lotteryPrint.setPrintTime(printTime);
-					} catch (ParseException e) {
-						e.printStackTrace();
-						log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常");
-						continue;
+					String printTimeStr = stake.getPrintTime();
+					if(StringUtils.isNotBlank(printTimeStr)) {
+						try {
+							printTimeStr = printTimeStr.replaceAll("/", "-");
+							printTime = sdf.parse(printTimeStr);
+							lotteryPrint.setPrintTime(printTime);
+						} catch (ParseException e) {
+							e.printStackTrace();
+							log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常");
+							continue;
+						}
 					}
 					lotteryPrints.add(lotteryPrint);
 					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
@@ -314,7 +320,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					lotteryPrintParams.add(lotteryPrintParam);
 				}
 			}
-			log.info("goQueryStake -> updateLotteryPrintByCallBack size:"+lotteryPrints.size());
+			log.info("goQueryStake orders size=" + orders.length +" -> updateLotteryPrintByCallBack size:"+lotteryPrints.size());
 			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
 				updateLotteryPrintByCallBack(lotteryPrints);
 			}
