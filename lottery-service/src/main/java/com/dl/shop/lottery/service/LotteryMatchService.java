@@ -160,6 +160,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private String dbDriver;
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
+	private final static String MATCH_RESULT_CANCEL = "取消";
 	
 	private final static String CACHE_MATCH_LIST_KEY = "match_list_key";
 	private final static String CACHE_MATCH_PLAY_LIST_KEY = "match_play_List_key";
@@ -1315,6 +1316,25 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						DlToAwardingParam dltoAwardingParm = new DlToAwardingParam();
 						dltoAwardingParm.setIssue(issue);
 						lotteryRewardService.toAwarding(dltoAwardingParm);*/
+						log.info("保存比赛比分结果"+changciId);
+						lotteryMatchMapper.updateMatchResult(lotteryMatch);
+					}
+				}else if(MATCH_RESULT_CANCEL.equals(status)) {
+					String matchDate = tds.get(0).text();
+					String changci = tds.get(1).text();
+					String[] arr = this.matchId(matchs, matchDate, changci);
+					if(null != arr) {
+						String matchId = arr[2];
+						String changciId = arr[3];
+						String issue = arr[4];
+						LotteryMatch lotteryMatch = new  LotteryMatch();
+						lotteryMatch.setMatchId(Integer.valueOf(matchId));
+						lotteryMatch.setFirstHalf("-");
+						lotteryMatch.setWhole("-");
+						lotteryMatch.setStatus(ProjectConstant.MATCH_CANCEL);
+						matchResult.add(lotteryMatch);
+						changciIds.add(changciId);
+						issueList.add(issue);
 						log.info("保存比赛比分结果"+changciId);
 						lotteryMatchMapper.updateMatchResult(lotteryMatch);
 					}
