@@ -1,8 +1,11 @@
 package com.dl.shop.lottery.web;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +21,7 @@ import com.dl.lottery.dto.DlQueryPrizeFileDTO;
 import com.dl.lottery.dto.DlQueryStakeDTO;
 import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
+import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
@@ -109,11 +113,11 @@ public class LotteryPrintController {
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
 		}
-		DLZQBetInfoDTO betInfoByOrderSn = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
-		if(null == betInfoByOrderSn ) {
+		List<LotteryPrintDTO> lotteryPrints = lotteryMatchService.getPrintLotteryListByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
+		if(CollectionUtils.isEmpty(lotteryPrints)) {
 			return ResultGenerator.genFailResult();
 		}
-		return lotteryPrintService.saveLotteryPrintInfo(betInfoByOrderSn.getLotteryPrints(), param.getOrderSn());
+		return lotteryPrintService.saveLotteryPrintInfo(lotteryPrints, param.getOrderSn());
     }
 	
 	@ApiOperation(value = "查询订单对应的出票状态", notes = "查询订单对应的出票状态:1：待出票，2出票失败，3待开奖")
