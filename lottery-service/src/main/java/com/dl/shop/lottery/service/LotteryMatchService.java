@@ -1235,6 +1235,123 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("5计算投注信息用时：" + (end4-start)+ " - "+start);
 		return betInfoDTO;
 	}
+	public DLZQBetInfoDTO getBetProgram(DlJcZqMatchBetParam param) {
+		long start = System.currentTimeMillis();
+		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
+		//读取设胆的索引
+		List<String> indexList = new ArrayList<String>(matchBellCellList.size());
+		List<String> danIndexList = new ArrayList<String>(3);
+		for(int i=0; i< matchBellCellList.size(); i++) {
+			indexList.add(i+"");
+			int isDan = matchBellCellList.get(i).getIsDan();
+			if(isDan != 0) {
+				danIndexList.add(i+"");
+			}
+		}
+		String betTypes = param.getBetType();
+		String[] split = betTypes.split(",");
+		Map<String, List<String>> indexMap = new HashMap<String, List<String>>();
+//		int betNums = 0;
+		for(String betType: split) {
+			char[] charArray = betType.toCharArray();
+			if(charArray.length == 2 && charArray[1] == '1') {
+				int num = Integer.valueOf(String.valueOf(charArray[0]));
+				//计算场次组合
+				List<String> betIndexList = new ArrayList<String>();
+				betNum1("", num, indexList, betIndexList);
+				if(danIndexList.size() > 0) {
+					betIndexList = betIndexList.stream().filter(item->{
+						for(String danIndex: danIndexList) {
+							if(!item.contains(danIndex)) {
+								return false;
+							}
+						}
+						return true;
+					}).collect(Collectors.toList());
+				}
+				indexMap.put(betType, betIndexList);
+			}
+		}
+		long end1 = System.currentTimeMillis();
+		logger.info("1计算投注排列用时：" + (end1-start)+ " - "+start);
+		//
+		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
+		for(String betType: indexMap.keySet()) {
+			List<String> betIndexList = indexMap.get(betType);
+			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
+			for(String str: betIndexList) {
+				String[] strArr = str.split(",");
+				List<String> playCodes = new ArrayList<String>(strArr.length);
+				Map<String, List<MatchBetPlayCellDTO>> playCellMap = new HashMap<String, List<MatchBetPlayCellDTO>>();
+//				List<MatchBetPlayDTO> subList = new ArrayList<MatchBetPlayDTO>(strArr.length);
+				Arrays.asList(strArr).stream().forEach(item->{
+					MatchBetPlayDTO betPlayDto = matchBellCellList.get(Integer.valueOf(item));
+					String playCode = betPlayDto.getPlayCode();
+					List<MatchBetCellDTO> matchBetCells = betPlayDto.getMatchBetCells();
+					List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
+					if(list == null) {
+						list = new ArrayList<MatchBetPlayCellDTO>(matchBetCells.size());
+						playCellMap.put(playCode, list);
+						playCodes.add(playCode);
+					}
+					for(MatchBetCellDTO cell: matchBetCells) {
+						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
+						playCellDto.setPlayType(cell.getPlayType());
+						playCellDto.setBetCells(cell.getBetCells());
+						list.add(playCellDto);
+					}
+				});
+				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
+				matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
+			}
+			betPlayCellMap.put(betType, result);
+		}
+		long end2 = System.currentTimeMillis();
+		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
+		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(param.getLotteryClassifyId());
+		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
+		if(!Collections.isEmpty(allPlays)) {
+			for(LotteryPlayClassify type: allPlays) {
+				playTypeNameMap.put(type.getLotteryPlayClassifyId(), type.getPlayName());
+			}
+		}
+		List<DLZQOrderLotteryBetInfoDTO> orderLotteryBetInfos = new ArrayList<DLZQOrderLotteryBetInfoDTO>();
+		for(String betType: betPlayCellMap.keySet()) {
+			char[] charArray = betType.toCharArray();
+			int num = Integer.valueOf(String.valueOf(charArray[0]));
+			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
+			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
+				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				dto.setBetType(betType);
+				dto.setTimes(param.getTimes());
+				dto.setBetContent("");
+				dto.setBetStakes("");
+				dto.setAmount(2.0*param.getTimes());
+				List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
+				this.betNum(dto, num, subList, betCellList1, playTypeNameMap);
+				String playType1 = subList.get(0).getPlayType();
+				String stakes = subList.stream().map(cdto->{
+					String playCode = cdto.getPlayCode();
+					String playType = cdto.getPlayType();
+					String cellCodes = cdto.getBetCells().stream().map(cell->{
+						return cell.getCellCode();
+					}).collect(Collectors.joining(","));
+					return playType + "|" + playCode + "|" + cellCodes;
+				}).collect(Collectors.joining(";"));
+				orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
+			}
+		}
+		//页面返回信息对象
+		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
+		betInfoDTO.setTimes(param.getTimes());
+		betInfoDTO.setBetType(param.getBetType());
+		betInfoDTO.setPlayType(param.getPlayType());
+		betInfoDTO.setBetCells(orderLotteryBetInfos);//投注方案
+		long end4 = System.currentTimeMillis();
+		logger.info("4计算投注统计信息用时：" + (end4-end2)+ " - "+start);
+		logger.info("5计算投注信息用时：" + (end4-start)+ " - "+start);
+		return betInfoDTO;
+	}
 	/**
 	 * 获取预出票信息
 	 * @param param
@@ -1451,8 +1568,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetContent("");
 				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());
-				Integer oldBetNum = betResult.getBetNum();
+				Integer oldBetNum = betResult.getBetNum();//记录原始值 
 				betNumtemp(dto, num, subList, betResult);
+				dto.setAmount(2.0*param.getTimes());//还原金额
 				betMaxAmount(dto, num, maxList, betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
@@ -1793,7 +1911,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	param.setPlayType(order.getPlayType());
     	param.setTimes(times);
     	param.setMatchBetPlays(matchBetPlays);
-    	DLZQBetInfoDTO betInfo = this.getBetInfo(param);
+    	DLZQBetInfoDTO betInfo = this.getBetProgram(param);
     	
     	List<DLZQOrderLotteryBetInfoDTO> betCells = betInfo.getBetCells();
     	List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
