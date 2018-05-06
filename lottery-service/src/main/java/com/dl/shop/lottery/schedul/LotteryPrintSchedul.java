@@ -93,9 +93,9 @@ public class LotteryPrintSchedul {
 		log.info("当天比赛结果详情拉取开始");
 		matchResultService.pullMatchResultInfos();
 		log.info("当天比赛结果详情拉取完成");
-		log.info("比赛支持率拉取开始");
+		/*log.info("比赛支持率拉取开始");
 		dlMatchSupportService.refreshMatchSupports();
-		log.info("比赛支持率拉取完成");
+		log.info("比赛支持率拉取完成");*/
 	}
 	
 	/**
