@@ -174,6 +174,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 	}
 	public DlJcZqMatchListDTO getMatchList1(DlJcZqMatchListParam param) {
+		long start = System.currentTimeMillis();
 		String leagueId = param.getLeagueId();
 		String playTypeStr = param.getPlayType();
 		Integer playType = Integer.parseInt(playTypeStr);
@@ -222,7 +223,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					dlJcZqMatchPlayDTOs.add(matchPlayDto);
 				}
 			}
+			long end1 = System.currentTimeMillis();
+			logger.info("==============getmatchlist1 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
 			dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playTypeStr, matchPlayMap);
+			long end = System.currentTimeMillis();
+			logger.info("==============getmatchlist1 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
+			logger.info("==============getmatchlist1 用时 ："+(end-start) + " playType="+param.getPlayType());
 		    return dlJcZqMatchListDTO;
 		} catch (Exception e) {
 			e.printStackTrace();
