@@ -962,7 +962,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
-				str.setAmount(amount);
+				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				dto.setAmount(amount);
 				if(num == 1) {
 					betResult.setBetNum(betResult.getBetNum()+1);
 					Double minBonus = betResult.getMinBonus();
@@ -970,7 +971,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						betResult.setMinBonus(amount);
 					}
 				}else {
-					betNumtemp(str,num-1,link, betResult);
+					betNumtemp(dto,num-1,link, betResult);
 				}
 			}
 		}
@@ -982,11 +983,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
-				str.setAmount(amount);
+				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				dto.setAmount(amount);
 				if(num == 1) {
 					betResult.setMaxBonus(betResult.getMaxBonus() + amount);
 				}else {
-					betMaxAmount(str,num-1,link, betResult);
+					betMaxAmount(dto,num-1,link, betResult);
 				}
 			}
 		}
@@ -1010,22 +1012,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
-	/*public static void main(String[] args) {
-		String str = "";
-		int num = 15;
-		List<String> indexList  = new ArrayList<String>(num);
-		for(int i=0; i< num; i++) {
-			indexList.add(i+"");
-		}
-		List<String> betList = new ArrayList<String>();
-		int betNum = 2;
-		betNum1(str, betNum, indexList, betList);
-		System.out.println("   ddd  " + betList.size());
-		for(String bet: betList) {
-			System.out.println(bet);
-		}
-		System.out.println("   ddd  " + betList.size());
-	}*/
 	/**
 	 * 
 	 * @param playCellMap
@@ -1569,9 +1555,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
-				betNumtemp(dto, num, subList, betResult);
+				this.betNumtemp(dto, num, subList, betResult);
 				dto.setAmount(2.0*param.getTimes());//还原金额
-				betMaxAmount(dto, num, maxList, betResult);
+				this.betMaxAmount(dto, num, maxList, betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
 				if(betMoney > maxLotteryMoney) {
