@@ -126,6 +126,15 @@ public class LotteryMatchController {
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
+		//设置投注倍数
+		Integer times = param.getTimes();
+		if(null == times || times < 1) {
+			param.setTimes(1);
+		}
+		if(param.getTimes() >= 99999) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIMES_LIMIT.getCode(), LotteryResultEnum.BET_TIMES_LIMIT.getMsg());
+		}
+		//
 		String playType = param.getPlayType();
 		if(StringUtils.isBlank(playType)) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
@@ -241,13 +250,14 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
 		
-		//设置投注倍数
-		Integer times = param.getTimes();
-		if(null == times || times < 1) {
-			param.setTimes(1);
-		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
-		
+		if(betInfo.getMaxLotteryMoney() >= 20000) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+		}
+		int betNum = betInfo.getBetNum();
+		if(betNum >= 10000) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+		}
 		return ResultGenerator.genSuccessResult("success", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
@@ -256,6 +266,14 @@ public class LotteryMatchController {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
+		}
+		//设置投注倍数
+		Integer times = param.getTimes();
+		if(null == times || times < 1) {
+			param.setTimes(1);
+		}
+		if(param.getTimes() >= 99999) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIMES_LIMIT.getCode(), LotteryResultEnum.BET_TIMES_LIMIT.getMsg());
 		}
 		String playType = param.getPlayType();
 		if(StringUtils.isBlank(playType)) {
@@ -372,11 +390,6 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
 		
-		//设置投注倍数
-		Integer times = param.getTimes();
-		if(null == times || times < 1) {
-			param.setTimes(1);
-		}
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
 		if(userInfoExceptPassRst.getCode() != 0) {
@@ -392,11 +405,15 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
-//		List<LotteryPrintDTO> collect = betInfo.getLotteryPrints().stream().filter(dto->dto.getMoney() >= 20000).collect(Collectors.toList());
 		if(betInfo.getMaxLotteryMoney() >= 20000) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
-		Double orderMoney = betInfo.getMoney();
+		int betNum = betInfo.getBetNum();
+		if(betNum >= 10000) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+		}
+		String betMoney = betInfo.getMoney();
+		Double orderMoney = Double.valueOf(betMoney);
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
 		if(!CollectionUtils.isEmpty(userBonusList)) {
@@ -439,7 +456,7 @@ public class LotteryMatchController {
 			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
 		}
 		dto.setUserBetCellInfos(userBetCellInfos);
-		dto.setBetNum(betInfo.getBetNum());
+		dto.setBetNum(betNum);
 		dto.setTicketNum(betInfo.getTicketNum());
 		dto.setMoney(orderMoney);
 		dto.setBonusAmount(bonusAmount);
@@ -462,7 +479,7 @@ public class LotteryMatchController {
 		betPlayInfoDTO.setBonusAmount(String.format("%.2f", bonusAmount));
 		betPlayInfoDTO.setBonusId(bonusId);
 		betPlayInfoDTO.setBonusList(userBonusList);
-		betPlayInfoDTO.setOrderMoney(String.format("%.2f", orderMoney));
+		betPlayInfoDTO.setOrderMoney(betMoney);
 		betPlayInfoDTO.setSurplus(String.format("%.2f", surplus));
 		betPlayInfoDTO.setThirdPartyPaid(String.format("%.2f", thirdPartyPaid));
 		return ResultGenerator.genSuccessResult("success", betPlayInfoDTO);

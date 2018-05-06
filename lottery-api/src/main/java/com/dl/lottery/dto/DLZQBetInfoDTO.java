@@ -20,7 +20,7 @@ public class DLZQBetInfoDTO implements Serializable{
 	@ApiModelProperty("投注数目")
 	private int betNum;
 	@ApiModelProperty("彩票金额")
-	private Double money;
+	private String money;
 	@ApiModelProperty("投注方式：31")
 	private String betType;
 	@ApiModelProperty("玩法")

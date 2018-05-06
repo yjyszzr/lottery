@@ -1209,7 +1209,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setBetNum(betCellList.size());
 		betInfoDTO.setTicketNum(lotteryPrints.size());
 		Double money = betCellList.size()*param.getTimes()*2.0;
-		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
+		betInfoDTO.setMoney(String.format("%.2f", money));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
 		betInfoDTO.setBetCells(orderLotteryBetInfos);//投注方案
@@ -1577,7 +1577,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setBetNum(betResult.getBetNum());
 		betInfoDTO.setTicketNum(ticketNum);
 		Double money = betResult.getBetNum()*param.getTimes()*2.0;
-		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
+		betInfoDTO.setMoney(String.format("%.2f", money));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
 		//所有选项的最后一个场次编码
