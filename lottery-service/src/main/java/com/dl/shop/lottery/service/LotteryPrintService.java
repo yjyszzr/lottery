@@ -184,7 +184,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
 						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
 						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+						if(printTime != null) {
+							lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+						}
 						lotteryPrintParam.setPrintSp(getComparePrintSp(callbackStake.getSp(), callbackStake.getTicketId()));
 						lotteryPrintParams.add(lotteryPrintParam);
 					}
@@ -316,7 +318,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
 					lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
 					lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-					lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+					if(printTime != null) {
+						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+					}
 					lotteryPrintParam.setPrintSp(getComparePrintSp(stake.getSp(), stake.getTicketId()));
 					lotteryPrintParams.add(lotteryPrintParam);
 				}
