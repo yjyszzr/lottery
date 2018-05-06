@@ -179,9 +179,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String playTypeStr = param.getPlayType();
 		Integer playType = Integer.parseInt(playTypeStr);
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		String matchListStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_LIST_KEY);
+		String matchListStr = null;
+		try {
+			matchListStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_LIST_KEY);
+		} catch (Exception e1) {
+		}
 		if(StringUtils.isBlank(matchListStr)) {
-			return dlJcZqMatchListDTO;
+			return this.getMatchList(param);
 		}
 		String matchPlayStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_PLAY_LIST_KEY);
 		if(StringUtils.isBlank(matchPlayStr)) {
@@ -194,14 +198,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchList = matchList.stream().filter(match->leagueIds.contains(match.getLeagueId().toString())).collect(Collectors.toList());
 			}
 			List<LotteryMatchPlay> matchPlayList = JSONHelper.getBeanList(matchPlayStr, LotteryMatchPlay.class);
-			List<Integer> matchIds = matchList.stream().map(match->match.getMatchId()).collect(Collectors.toList());
 			long end2 = System.currentTimeMillis();
 			logger.info("==============getmatchlist1 缓存读取数据用时 ："+(end2-start) + " playType="+param.getPlayType());
 			Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>(matchList.size());
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				if(!matchIds.contains(matchPlay.getMatchId())) {
-					continue;
-				}
 				Integer playType2 = matchPlay.getPlayType();
 				if(playType.equals(6)) {
 					if(!playType2.equals(7)) {
@@ -279,13 +279,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
-//		Map<Integer, LeagueInfoDTO> leagueInfoMap = new HashMap<Integer, LeagueInfoDTO>();
 		for(LotteryMatch match: matchList) {
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-//			LocalDate localDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
