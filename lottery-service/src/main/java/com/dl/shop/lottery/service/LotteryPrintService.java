@@ -262,6 +262,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			List<String> collect = subList.stream().map(print-> print.getTicketId()).collect(Collectors.toList());
 			String[] orders = collect.toArray(new String[collect.size()]);
 			this.goQueryStake(orders);
+			prints.removeAll(subList);
 		}
 	}
 	private void goQueryStake(String[] orders) {
