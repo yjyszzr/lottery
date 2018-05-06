@@ -115,12 +115,12 @@ public class LotteryHallService {
 				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
 				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
 				dlNavBannerDTO.setBannerImage(lotteryConfig.getBannerShowUrl() + lotteryNavBanner.getBannerImage());
-				if ("1".equals(lotteryNavBanner.getBannerLink())) {
-					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerParam());// 资讯链接,后面跟资讯链接
-				} else if ("2".equals(lotteryNavBanner.getBannerLink())) {
-					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerParam());// 活动链接,后面跟活动URL
+				if ("1".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink());// 资讯链接,后面跟资讯链接
+				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
 				} else {
-					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerParam()); // 赛事链接,后面跟赛事ID
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
 				}
 
 				dlNavBannerDTOs.add(dlNavBannerDTO);
