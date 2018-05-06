@@ -459,12 +459,12 @@ public class LotteryMatchController {
 		//返回页面信息
 		BetPayInfoDTO betPlayInfoDTO = new BetPayInfoDTO();
 		betPlayInfoDTO.setPayToken(key);
-		betPlayInfoDTO.setBonusAmount(bonusAmount);
+		betPlayInfoDTO.setBonusAmount(String.format("%.2f", bonusAmount));
 		betPlayInfoDTO.setBonusId(bonusId);
 		betPlayInfoDTO.setBonusList(userBonusList);
-		betPlayInfoDTO.setOrderMoney(orderMoney);
-		betPlayInfoDTO.setSurplus(surplus);
-		betPlayInfoDTO.setThirdPartyPaid(thirdPartyPaid);
+		betPlayInfoDTO.setOrderMoney(String.format("%.2f", orderMoney));
+		betPlayInfoDTO.setSurplus(String.format("%.2f", surplus));
+		betPlayInfoDTO.setThirdPartyPaid(String.format("%.2f", thirdPartyPaid));
 		return ResultGenerator.genSuccessResult("success", betPlayInfoDTO);
 	}
     

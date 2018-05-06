@@ -13,15 +13,15 @@ public class BetPayInfoDTO {
 	@ApiModelProperty(value="订单信息token")
 	private String payToken;
 	@ApiModelProperty(value="订单金额")
-	private Double orderMoney;
+	private String orderMoney;
 	@ApiModelProperty(value="余额抵扣")
-	private Double surplus;
+	private String surplus;
 	@ApiModelProperty(value="优惠卷抵扣")
-	private Double bonusAmount;
+	private String bonusAmount;
 	@ApiModelProperty(value="当前优惠卷")
 	private String bonusId;
 	@ApiModelProperty(value="需第三方支付")
-	private Double thirdPartyPaid;
+	private String thirdPartyPaid;
 	@ApiModelProperty(value="用户可用优惠卷列表")
 	private List<UserBonusDTO> bonusList;
 }
