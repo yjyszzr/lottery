@@ -172,12 +172,12 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		if(null != userId) {
 			ArticleIdParam articleIdParam = new ArticleIdParam();
 			articleIdParam.setArticleId(id);
-			BaseResult<Integer> rst =  userCollectService.isCollect(articleIdParam);
+			BaseResult<String> rst =  userCollectService.isCollect(articleIdParam);
 			if(rst.getCode() != 0) {
-				log.error(rst.getMsg());
+				log.error("判断是否收藏失败:"+rst.getMsg());
 				isCollect = ProjectConstant.IS_NOT_COLLECT;
 			}
-			isCollect = String.valueOf(rst.getData());
+			isCollect = rst.getData();
 		}
 		
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
