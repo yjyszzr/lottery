@@ -1022,6 +1022,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @return
 	 */
 	public DLZQBetInfoDTO getBetInfo(DlJcZqMatchBetParam param) {
+		long start = System.currentTimeMillis();
 		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
 		//读取设胆的索引
 		List<String> indexList = new ArrayList<String>(matchBellCellList.size());
@@ -1065,6 +1066,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //				betNums += betIndexList.size();
 			}
 		}
+		long end1 = System.currentTimeMillis();
+		logger.info("计算投注排列用时：" + (end1-start));
 		//
 		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
 		for(String betType: indexMap.keySet()) {
@@ -1097,6 +1100,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			betPlayCellMap.put(betType, result);
 		}
+		long end2 = System.currentTimeMillis();
+		logger.info("计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1));
 		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(param.getLotteryClassifyId());
 		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
     	if(!Collections.isEmpty(allPlays)) {
@@ -1162,6 +1167,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryPrints.add(lotteryPrintDTO);
 			}
 		}
+		long end3 = System.currentTimeMillis();
+		logger.info("计算投注基础信息用时：" + (end3-end2));
 		Double maxBonus = maxBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
@@ -1194,6 +1201,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		String issue = matchBellCellList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
 		betInfoDTO.setIssue(issue);
 //		betInfoDTO.setMatchBetList(matchBetList);
+		long end4 = System.currentTimeMillis();
+		logger.info("计算投注统计信息用时：" + (end4-end3));
+		logger.info("计算投注信息用时：" + (end4-start));
 		return betInfoDTO;
 	}
 	/**
