@@ -1,5 +1,7 @@
 package com.dl.shop.lottery.web;
 
+import io.swagger.annotations.ApiOperation;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
@@ -20,49 +22,59 @@ import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
 import com.github.pagehelper.PageInfo;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping("/lottery/hall")
 public class LotteryHallController {
 
 	@Resource
-    private LotteryHallService lotteryHallService;
-	
+	private LotteryHallService lotteryHallService;
+
 	@Resource
-    private DlArticleService articleService;
-	
+	private DlArticleService articleService;
+
 	@ApiOperation(value = "获取彩票大厅数据和咨询列表数据", notes = "获取彩票大厅数据和咨询列表数据")
-    @PostMapping("/getHallMixData")
-    public BaseResult<DlHallMixDTO> getHallDataMix(@Valid @RequestBody PageParam pageParam) {
+	@PostMapping("/getHallMixData")
+	public BaseResult<DlHallMixDTO> getHallDataMix(
+			@Valid @RequestBody PageParam pageParam) {
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
-		if(pageParam.getPageNum() == 1) {
+		if (pageParam.getPageNum() == 1) {
 			dlHallDTO = lotteryHallService.getHallData();
 		}
-		
+
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
-		
+
 		dlHallMixDTO.setDlHallDTO(dlHallDTO);
 		dlHallMixDTO.setDlArticlePage(pageInfo);
-		
-    	return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
-    }
-	
-	
+
+		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
+	}
+
 	@ApiOperation(value = "获取彩票大厅数据", notes = "获取彩票大厅数据")
-    @PostMapping("/getHallData")
-    public BaseResult<DlHallDTO> getHallData() {
-		DlHallDTO dlHallDTO = lotteryHallService.getHallData();
-		
-		
-    	return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
-    }
-	
+	@PostMapping("/getHallData")
+	public BaseResult<DlHallDTO> getHallData(
+			@Valid @RequestBody PageParam pageParam) {
+		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
+		DlHallDTO dlHallDTO = new DlHallDTO();
+		if (pageParam.getPageNum() == 1) {
+			dlHallDTO = lotteryHallService.getHallData();
+		}
+
+		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
+
+		dlHallMixDTO.setDlHallDTO(dlHallDTO);
+		dlHallMixDTO.setDlArticlePage(pageInfo);
+
+		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
+	}
+
 	@ApiOperation(value = "获取彩票玩法列表", notes = "获取彩票玩法列表")
-    @PostMapping("/getPlayClassifyList")
-    public BaseResult<DlPlayClassifyDTO> getPlayClassifyList(@Valid @RequestBody DlPlayClassifyParam param) {
-		DlPlayClassifyDTO dlPlayClassifyDTO = lotteryHallService.getPlayClassifyList(param);
-    	return ResultGenerator.genSuccessResult("获取彩票玩法列表成功", dlPlayClassifyDTO);
-    }
+	@PostMapping("/getPlayClassifyList")
+	public BaseResult<DlPlayClassifyDTO> getPlayClassifyList(
+			@Valid @RequestBody DlPlayClassifyParam param) {
+		DlPlayClassifyDTO dlPlayClassifyDTO = lotteryHallService
+				.getPlayClassifyList(param);
+		return ResultGenerator
+				.genSuccessResult("获取彩票玩法列表成功", dlPlayClassifyDTO);
+	}
 }
