@@ -1054,7 +1054,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param param
 	 * @return
 	 */
-	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param) {
+	public DLZQBetInfoDTO getBetInfo(DlJcZqMatchBetParam param) {
 		long start = System.currentTimeMillis();
 		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
 		//读取设胆的索引
@@ -1239,7 +1239,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("5计算投注信息用时：" + (end4-start)+ " - "+start);
 		return betInfoDTO;
 	}
-	public DLZQBetInfoDTO getBetInfo(DlJcZqMatchBetParam param) {
+	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param) {
 		long start = System.currentTimeMillis();
 		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
 		//读取设胆的索引
