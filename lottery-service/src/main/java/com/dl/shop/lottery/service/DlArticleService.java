@@ -197,7 +197,10 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setContent(article.getContent());
 		dto.setIsCollect(isCollect);
 		dto.setSummary(article.getSummary());
-		List<String> labelList = Arrays.asList(article.getKeywords().split(","));
+		List<String> labelList = new ArrayList<String>();
+		if(!StringUtils.isEmpty(article.getKeywords())) {
+			labelList = Arrays.asList(article.getKeywords().split(","));
+		}
 		dto.setLabelsArr(labelList);
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
 		
