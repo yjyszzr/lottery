@@ -391,9 +391,9 @@ public class LotteryMatchController {
 		if(userBonusListRst.getCode() != 0) {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
-		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
-		List<LotteryPrintDTO> collect = betInfo.getLotteryPrints().stream().filter(dto->dto.getMoney() >= 20000).collect(Collectors.toList());
-		if(collect.size() > 0) {
+		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
+//		List<LotteryPrintDTO> collect = betInfo.getLotteryPrints().stream().filter(dto->dto.getMoney() >= 20000).collect(Collectors.toList());
+		if(betInfo.getMaxLotteryMoney() >= 20000) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
 		Double orderMoney = betInfo.getMoney();
@@ -438,9 +438,6 @@ public class LotteryMatchController {
 		dto.setBonusAmount(bonusAmount);
 		dto.setBonusId(bonusId);
 		dto.setSurplus(surplus);
-		/*double minBonus = betInfo.getMinBonus();
-		double maxBonus = betInfo.getMaxBonus();
-		String forecastMoney = String.format("%.2f", minBonus) + "~" + String.format("%.2f", maxBonus);*/
 		String forecastMoney = betInfo.getMinBonus() + "~" + betInfo.getMaxBonus();
 		dto.setForecastMoney(forecastMoney);
 		dto.setThirdPartyPaid(thirdPartyPaid);
