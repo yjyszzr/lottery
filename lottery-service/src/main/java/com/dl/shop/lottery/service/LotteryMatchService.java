@@ -80,7 +80,6 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.order.api.IOrderDetailService;
 import com.dl.order.api.IOrderService;
-import com.dl.order.dto.IssueDTO;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
@@ -102,9 +101,7 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
 import io.jsonwebtoken.lang.Collections;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @Transactional
 public class LotteryMatchService extends AbstractService<LotteryMatch> {
@@ -263,11 +260,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dlJcZqMatchPlayDTOs.add(matchPlayDto);
 		}
 		long end1 = System.currentTimeMillis();
-		log.info("==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
+		logger.info("==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
 		dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playType, matchPlayMap);
 		long end = System.currentTimeMillis();
-		log.info("==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
-		log.info("==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
+		logger.info("==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
+		logger.info("==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
 	    return dlJcZqMatchListDTO;
 	}
 	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
@@ -630,7 +627,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		map = getTwoSelOneMatchData(map, MatchPlayTypeEnum.PLAY_TYPE_TSO.getMsg());
 		
 		List<LotteryMatch> lotteryMatchs = getLotteryMatchData(matchs);
-//		log.info(lotteryMatchs.toString());
+//		logger.info(lotteryMatchs.toString());
 		
 		//保存赛事数据
 		saveMatchData(lotteryMatchs, matchPlays);
@@ -1241,7 +1238,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(CollectionUtils.isEmpty(matchList)) {
 			return ;
 		}
-		log.info("准备拉取开赛结果 ： size=" + matchList.size());
+		logger.info("准备拉取开赛结果 ： size=" + matchList.size());
 		List<String> matchs = matchList.stream().map(match->{
 			String changci = match.getChangci();
 			Date matchTime = match.getMatchTime();
@@ -1256,7 +1253,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Date miMatchTime = minMatch.getMatchTime();
 		LocalDate localDate = LocalDateTime.ofInstant(miMatchTime.toInstant(), ZoneId.systemDefault()).toLocalDate();
 		String minMatchTimeStr = localDate.toString();
-		log.info("minMatchTimeStr = "+minMatchTimeStr);
+		logger.info("minMatchTimeStr = "+minMatchTimeStr);
         Document doc = null;
         List<String> changciIds = new ArrayList<String>(matchs.size());
         List<String> issueList = new ArrayList<String>(matchs.size());
@@ -1276,7 +1273,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             	this.aa(matchs, doc, changciIds, issueList, matchResult);
             }
         } catch (Exception e) {
-        	log.error(e.getMessage());
+        	logger.error(e.getMessage());
         }
 	}
 
@@ -1309,20 +1306,20 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						matchResult.add(lotteryMatch);
 						changciIds.add(changciId);
 						issueList.add(issue);
-						/*log.info("保存比赛结果详情"+changciId);
+						/*logger.info("保存比赛结果详情"+changciId);
 						matchResultService.refreshMatchResultFromZC(Integer.valueOf(changciId));*/
-						/*log.info("更新订单详情的赛事结果"+issue);
+						/*logger.info("更新订单详情的赛事结果"+issue);
 						LotteryPrintRewardParam lotteryPrintRewardParam = new LotteryPrintRewardParam();
 						lotteryPrintRewardParam.setIssue(issue);
 						int rstCode = orderService.updateOrderInfoByMatchResult(lotteryPrintRewardParam).getCode();
 						if(rstCode != 0) {
 							continue;
 						}*/
-						/*log.info("开奖场次："+issue);
+						/*logger.info("开奖场次："+issue);
 						DlToAwardingParam dltoAwardingParm = new DlToAwardingParam();
 						dltoAwardingParm.setIssue(issue);
 						lotteryRewardService.toAwarding(dltoAwardingParm);*/
-						log.info("保存比赛比分结果"+changciId);
+						logger.info("保存比赛比分结果"+changciId);
 						lotteryMatchMapper.updateMatchResult(lotteryMatch);
 					}
 				}else if(MATCH_RESULT_CANCEL.equals(status)) {
@@ -1341,7 +1338,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						matchResult.add(lotteryMatch);
 						changciIds.add(changciId);
 						issueList.add(issue);
-						log.info("保存比赛比分结果"+changciId);
+						logger.info("保存比赛比分结果"+changciId);
 						lotteryMatchMapper.updateMatchResult(lotteryMatch);
 					}
 				}
@@ -1460,7 +1457,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     		for(String tikcket: tickets) {
     			String[] split = tikcket.split("\\|");
     			if(split.length != 3) {
-    				log.error("getBetInfoByOrderInfo ticket has error, orderSn="+orderSn+ " ticket="+tikcket);
+    				logger.error("getBetInfoByOrderInfo ticket has error, orderSn="+orderSn+ " ticket="+tikcket);
     				continue;
     			}
     			String playType = split[0];
@@ -1910,7 +1907,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				ResultGenerator.genSuccessResult("历史赛事json文件 为空，未进行入库");
 			}
 		} catch (Exception e) {
-			log.error("解析历史赛事json文件出错:"+e.getMessage());
+			logger.error("解析历史赛事json文件出错:"+e.getMessage());
 			return ResultGenerator.genFailResult("解析历史赛事json文件出错");
 		}
 		
@@ -1948,15 +1945,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		
 		int historyMatchSize = lotteryMatchList.size();
-		log.info("历史赛事共"+matchList+"场");
-		log.info("已取消历史赛事共"+cancleSize+"场,不入库");
+		logger.info("历史赛事共"+matchList+"场");
+		logger.info("已取消历史赛事共"+cancleSize+"场,不入库");
 		
 //		while(historyMatchSize > 0) {
 //			int num = matchList.size() > 500?500:historyMatchSize;
 //			List<LotteryMatch> lotterySubMatchList =  lotteryMatchList.subList(0, num);
 //			int rst = lotteryMatchMapper.batchInsertHistoryMatch(lotterySubMatchList);
 //			if(rst != lotterySubMatchList.size()) {
-//				log.error("历史赛事入库失败");
+//				logger.error("历史赛事入库失败");
 //			}
 //			lotteryMatchList.removeAll(lotterySubMatchList);
 //		}
@@ -2006,7 +2003,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			conn.commit();
 			conn.close();
 		} catch (Exception ex) {
-			log.error(ex.getMessage());
+			logger.error(ex.getMessage());
 			return -1;
 		}
 		return 1;
