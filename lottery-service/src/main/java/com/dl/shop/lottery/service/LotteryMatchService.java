@@ -289,7 +289,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
 				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
-			if(betendDateTime.toLocalDate().isBefore(LocalDate.now())) {
+			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 				continue;
 			}
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
