@@ -246,7 +246,7 @@ public class LotteryMatchController {
 		if(null == times || times < 1) {
 			param.setTimes(1);
 		}
-		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo(param);
+		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
 		
 		return ResultGenerator.genSuccessResult("success", betInfo);
 	}

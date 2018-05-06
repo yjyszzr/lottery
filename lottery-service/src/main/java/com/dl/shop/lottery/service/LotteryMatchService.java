@@ -91,6 +91,7 @@ import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
+import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
@@ -954,7 +955,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
-	private void betNumtemp(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> link, Double minBonus, Integer betNum) {
+	private void betNumtemp(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> link, BetResultInfo betResult) {
 		while(link.size() > 0) {
 			MatchBetPlayCellDTO remove = link.remove(0);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
@@ -962,17 +963,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
 				str.setAmount(amount);
 				if(num == 1) {
-					betNum++;
+					betResult.setBetNum(betResult.getBetNum()+1);
+					Double minBonus = betResult.getMinBonus();
 					if(minBonus.doubleValue() > amount.doubleValue() || minBonus.equals(0.0)) {
-						minBonus = amount;
+						betResult.setMinBonus(amount);
 					}
 				}else {
-					betNumtemp(str,num-1,link, minBonus, betNum);
+					betNumtemp(str,num-1,link, betResult);
 				}
 			}
 		}
 	}
-	private void betMaxAmount(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> link, Double maxBonus) {
+	private void betMaxAmount(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> link, BetResultInfo betResult) {
 		while(link.size() > 0) {
 			MatchBetPlayCellDTO remove = link.remove(0);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
@@ -980,9 +982,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
 				str.setAmount(amount);
 				if(num == 1) {
-					maxBonus+=amount;
+					betResult.setMaxBonus(betResult.getMaxBonus() + amount);
 				}else {
-					betMaxAmount(str,num-1,link, maxBonus);
+					betMaxAmount(str,num-1,link, betResult);
 				}
 			}
 		}
@@ -1313,10 +1315,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		long end2 = System.currentTimeMillis();
 		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
+		BetResultInfo betResult = new BetResultInfo();
 		Integer ticketNum = 0;
-		Integer betNum = 0;
-		Double minBonus = 0.0;
-		Double maxBonus = 0.0;
 		for(String betType: betPlayCellMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
@@ -1334,9 +1334,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());
 				LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(subList);
-				betNumtemp(dto, num, link, minBonus, betNum);
+				betNumtemp(dto, num, link, betResult);
 				LinkedList<MatchBetPlayCellDTO> link2 = new LinkedList<MatchBetPlayCellDTO>(maxList);
-				betMaxAmount(dto, num, link2, maxBonus);
+				betMaxAmount(dto, num, link2, betResult);
 				ticketNum++;
 			}
 		}
@@ -1344,12 +1344,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
-		betInfoDTO.setMaxBonus(String.format("%.2f", maxBonus));
-		betInfoDTO.setMinBonus(String.format("%.2f", minBonus));
+		betInfoDTO.setMaxBonus(String.format("%.2f", betResult.getMaxBonus()));
+		betInfoDTO.setMinBonus(String.format("%.2f", betResult.getMinBonus()));
 		betInfoDTO.setTimes(param.getTimes());
-		betInfoDTO.setBetNum(betNum);
+		betInfoDTO.setBetNum(betResult.getBetNum());
 		betInfoDTO.setTicketNum(ticketNum);
-		Double money = betNum*param.getTimes()*2.0;
+		Double money = betResult.getBetNum()*param.getTimes()*2.0;
 		betInfoDTO.setMoney(Double.valueOf(String.format("%.2f", money)));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
