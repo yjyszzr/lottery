@@ -1067,7 +1067,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 		long end1 = System.currentTimeMillis();
-		logger.info("计算投注排列用时：" + (end1-start));
+		logger.info("1计算投注排列用时：" + (end1-start)+ " - "+start);
 		//
 		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
 		for(String betType: indexMap.keySet()) {
@@ -1101,7 +1101,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			betPlayCellMap.put(betType, result);
 		}
 		long end2 = System.currentTimeMillis();
-		logger.info("计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1));
+		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(param.getLotteryClassifyId());
 		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
     	if(!Collections.isEmpty(allPlays)) {
@@ -1168,7 +1168,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 		long end3 = System.currentTimeMillis();
-		logger.info("计算投注基础信息用时：" + (end3-end2));
+		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
 		Double maxBonus = maxBetCellList.stream().map(item->{
 			return item.getAmount();
 		}).reduce(0.0, Double::sum);
@@ -1202,8 +1202,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setIssue(issue);
 //		betInfoDTO.setMatchBetList(matchBetList);
 		long end4 = System.currentTimeMillis();
-		logger.info("计算投注统计信息用时：" + (end4-end3));
-		logger.info("计算投注信息用时：" + (end4-start));
+		logger.info("4计算投注统计信息用时：" + (end4-end3)+ " - "+start);
+		logger.info("5计算投注信息用时：" + (end4-start)+ " - "+start);
 		return betInfoDTO;
 	}
 	/**
