@@ -145,7 +145,10 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		DLArticleDTO dto = new DLArticleDTO();
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
-		List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
+		List<String> picList = new ArrayList<String>();
+		if(!StringUtils.isEmpty(article.getArticleThumb())) {
+			picList = Arrays.asList(article.getArticleThumb().split(","));
+		}
 		dto.setArticleThumb(picList);
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
