@@ -281,7 +281,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
 		for(LotteryMatch match: matchList) {
-			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
@@ -290,6 +289,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
 				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
+			if(betendDateTime.toLocalDate().isBefore(LocalDate.now())) {
+				continue;
+			}
+			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
 			matchDto.setChangciId(match.getChangciId().toString());
@@ -301,14 +304,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setLeagueAddr(match.getLeagueAddr());
 			matchDto.setLeagueId(match.getLeagueId().toString());
 			matchDto.setLeagueName(match.getLeagueName());
-			/*String matchDate = 	localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
-			DayOfWeek dayOfWeek = localDate.getDayOfWeek();
-			int value = dayOfWeek.getValue();
-			String name = LocalWeekDate.getName(value);
-			String matchDay = name + matchDate;
-			if(LocalDate.now().isEqual(localDate)) {
-				matchDay = "今日 " + matchDate;
-			}*/
 			String matchDay =LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 			matchDto.setMatchDay(matchDay);
 			matchDto.setMatchId(match.getMatchId());
@@ -323,13 +318,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			/*if(null == leagueInfoMap.get(match.getLeagueId())) {
-				LeagueInfoDTO leagueInfo = new LeagueInfoDTO();
-				leagueInfo.setLeagueAddr(match.getLeagueAddr());
-				leagueInfo.setLeagueId(match.getLeagueId());
-				leagueInfo.setLeagueName(match.getLeagueName());
-				leagueInfoMap.put(match.getLeagueId(), leagueInfo);
-			}*/
 			
 			if("6".equals(playType) && matchPlays.size() < 5) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
@@ -363,9 +351,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			value.getPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
-		/*leagueInfoMap.forEach((key,value)->{
-			dlJcZqMatchListDTO.getLeagueInfos().add(value);
-		});*/
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
