@@ -354,6 +354,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
+		dlJcZqMatchListDTO.setLotteryClassifyId(1);
+		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(1, Integer.parseInt(playType));
+		Integer lotteryPlayClassifyId = playClassify == null?Integer.parseInt(playType):playClassify.getLotteryPlayClassifyId();
+		dlJcZqMatchListDTO.setLotteryPlayClassifyId(lotteryPlayClassifyId);
 		return dlJcZqMatchListDTO;
 	}
 	
@@ -1113,7 +1117,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
     	if(!Collections.isEmpty(allPlays)) {
     		for(LotteryPlayClassify type: allPlays) {
-    			playTypeNameMap.put(type.getLotteryPlayClassifyId(), type.getPlayName());
+    			playTypeNameMap.put(type.getPlayType(), type.getPlayName());
     		}
     	}
 		for(String betType: betPlayCellMap.keySet()) {
@@ -1284,7 +1288,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
 		if(!Collections.isEmpty(allPlays)) {
 			for(LotteryPlayClassify type: allPlays) {
-				playTypeNameMap.put(type.getLotteryPlayClassifyId(), type.getPlayName());
+				playTypeNameMap.put(type.getPlayType(), type.getPlayName());
 			}
 		}
 		List<DLZQOrderLotteryBetInfoDTO> orderLotteryBetInfos = new ArrayList<DLZQOrderLotteryBetInfoDTO>();

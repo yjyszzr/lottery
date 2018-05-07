@@ -42,4 +42,9 @@
   	select * from dl_lottery_play_classify 
   	where lottery_classify_id=#{lotteryClassifyId}
   </select>
+  
+  <select id="getPlayClassifyByPlayType" resultMap="BaseResultMap">
+  	select * from dl_lottery_play_classify 
+  	where lottery_classify_id=#{lotteryClassifyId} and play_type=#{playType}
+  </select>
 </mapper>

@@ -33,7 +33,7 @@ public class LotteryPlayClassify {
      * 投注类型
      */
     @Column(name = "play_type")
-    private String playType;
+    private Integer playType;
 
     /**
      * 玩法标签id
@@ -147,11 +147,11 @@ public class LotteryPlayClassify {
         this.playImg = playImg;
     }
     
-    public String getPlayType() {
+    public Integer getPlayType() {
 		return playType;
 	}
 
-	public void setPlayType(String playType) {
+	public void setPlayType(Integer playType) {
 		this.playType = playType;
 	}
 
