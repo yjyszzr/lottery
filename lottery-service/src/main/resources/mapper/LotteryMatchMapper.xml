@@ -157,13 +157,15 @@
 	<select id="getByTeamId" resultMap="BaseResultMap">
 		select * 
 		from dl_match 
+		where status=1 and
+		((home_team_id = #{homeTeamId} and visiting_team_id=#{visitingTeamId}) or (home_team_id = #{visitingTeamId} and visiting_team_id=#{homeTeamId}))
+		order by match_time desc limit ${num}
+	</select>
+	<select id="getByTeamIdForhv" resultMap="BaseResultMap">
+		select * 
+		from dl_match 
 		where status=1
-		 <if test="homeTeamId !=null and homeTeamId != ''">
-		 and (home_team_id = #{homeTeamId} or visiting_team_id=#{homeTeamId})
-		</if>
-		<if test="visitingTeamId !=null and visitingTeamId != ''">
-		 and (visiting_team_id=#{visitingTeamId} or home_team_id = #{homeTeamId})
-		</if>
+		 and (home_team_id = #{teamId} or visiting_team_id=#{teamId})
 		order by match_time desc limit ${num}
 	</select>
 	

@@ -2056,7 +2056,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
 		String visitingTeamAbbr = lotteryMatch.getVisitingTeamAbbr();
 		MatchTeamInfoDTO vMatchTeamInfo = new MatchTeamInfoDTO();
-		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamId(null, visitingTeamId, 15);
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForhv(visitingTeamId, 15);
 		if(null != lotteryMatchs) {
 			int win =0, draw = 0, lose = 0;
 			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
@@ -2160,7 +2160,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer homeTeamId = lotteryMatch.getHomeTeamId();
 		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();
 		MatchTeamInfoDTO hMatchTeamInfo = new MatchTeamInfoDTO();
-		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamId(homeTeamId, null, 15);
+		List<LotteryMatch> lotteryMatchs = lotteryMatchMapper.getByTeamIdForhv(homeTeamId, 15);
 		if(null != lotteryMatchs) {
 			int win =0, draw = 0, lose = 0;
 			List<MatchInfoDTO> matchInfos = new ArrayList<MatchInfoDTO>(lotteryMatchs.size());
@@ -2255,6 +2255,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return hMatchTeamInfo;
 	}
+	/**
+	 * 历史交锋
+	 * @param lotteryMatch
+	 * @return
+	 */
 	private MatchTeamInfoDTO hvMatchTeamInfo(LotteryMatch lotteryMatch) {
 		Integer homeTeamId = lotteryMatch.getHomeTeamId();
 		String homeTeamAbbr = lotteryMatch.getHomeTeamAbbr();

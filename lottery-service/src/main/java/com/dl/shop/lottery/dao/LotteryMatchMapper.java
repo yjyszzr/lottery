@@ -54,18 +54,17 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public LotteryMatch getByChangciId(@Param("changciId")Integer changciId);
 
-	/**
-	 * 获取球队相关的比赛
-	 * @param homeTeamId
-	 * @param visitingTeamId
-	 * @return
-	 */
-	public List<LotteryMatch> getByTeamId(@Param("homeTeamId")Integer homeTeamId, @Param("visitingTeamId")Integer visitingTeamId, @Param("num")int num);
 
 	public LotteryMatch getByMatchId(@Param("matchId")Integer matchId);
 
+	//历史交锋
+	public List<LotteryMatch> getByTeamId(@Param("homeTeamId")Integer homeTeamId, @Param("visitingTeamId")Integer visitingTeamId, @Param("num")int num);
+	//球队主场战绩
 	public List<LotteryMatch> getByTeamIdForhh(@Param("teamId")Integer teamId,  @Param("num")int i);
+	//球队客场战绩
 	public List<LotteryMatch> getByTeamIdForvv(@Param("teamId")Integer teamId,  @Param("num")int i);
+	//球队主客占绩
+	public List<LotteryMatch> getByTeamIdForhv(@Param("teamId")Integer teamId,  @Param("num")int i);
 
 	public void updateMatchResult(LotteryMatch match);
 
