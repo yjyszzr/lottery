@@ -118,9 +118,9 @@ public class LotteryHallService {
 				if ("1".equals(lotteryNavBanner.getBannerParam())) {
 					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink());// 资讯链接,后面跟资讯链接
 				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
-					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
-				} else {
 					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkMatchUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
+				} else {
+					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
 				}
 
 				dlNavBannerDTOs.add(dlNavBannerDTO);
