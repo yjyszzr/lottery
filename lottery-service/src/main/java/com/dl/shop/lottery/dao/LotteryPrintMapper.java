@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.model.LotteryThirdApiLog;
 
 public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	
@@ -58,4 +59,10 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public List<LotteryPrint> lotteryPrintsByUnPrint();
 
 	public List<LotteryPrint> getPrintIngLotterys();
+
+	/**
+	 * 添加日志
+	 * @param thirdApiLog
+	 */
+	public void saveLotteryThirdApiLog(LotteryThirdApiLog thirdApiLog);
 }

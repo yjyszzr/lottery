@@ -146,4 +146,9 @@
   <select id="getPrintIngLotterys" resultMap="BaseResultMap">
   	select * from dl_print_lottery where status=3
   </select>
+  
+  <insert id="saveLotteryThirdApiLog">
+  	insert into dl_third_api_log(api_name,api_type,api_param,api_result,api_desc)
+  	values(#{apiName},#{apiType},#{apiParam},#{apiResult},#{apiDesc})
+  </insert>
 </mapper>

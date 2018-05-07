@@ -31,10 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.dl.base.configurer.RestTemplateConfig;
+import com.dl.base.enums.ThirdApiEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.JSONHelper;
 import com.dl.base.util.MD5Utils;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
@@ -65,6 +67,7 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.model.LotteryThirdApiLog;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.dl.shop.payment.api.IpaymentService;
 import com.dl.shop.payment.param.RollbackOrderAmountParam;
@@ -421,7 +424,12 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		String authorization = MD5Utils.MD5(authStr);
 		headers.add("Authorization", authorization);
 		HttpEntity<JSONObject> requestEntity = new HttpEntity<JSONObject>(jo, headers);
-        return rest.postForObject(printTicketUrl + inter, requestEntity, String.class);
+		String requestUrl = printTicketUrl + inter;
+		String response = rest.postForObject(requestUrl, requestEntity, String.class);
+		String requestParam = JSONHelper.bean2json(requestEntity);
+		LotteryThirdApiLog thirdApiLog = new LotteryThirdApiLog(requestUrl, ThirdApiEnum.HE_NAN_LOTTERY.getCode(), requestParam, response);
+        lotteryPrintMapper.saveLotteryThirdApiLog(thirdApiLog);
+		return response;
 	}
 
 	/**
