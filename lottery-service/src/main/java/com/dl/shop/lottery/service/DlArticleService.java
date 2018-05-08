@@ -1,9 +1,12 @@
 package com.dl.shop.lottery.service;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,133 +30,145 @@ import com.dl.shop.lottery.model.DlArticle;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
 @Transactional
 @Slf4j
 public class DlArticleService extends AbstractService<DlArticle> {
-    @Resource
-    private DlArticleMapper dlArticleMapper;
-    
-    @Resource
-    private IUserCollectService userCollectService;
-    
-    @Resource
-    private LotteryConfig lotteryConfig;
+	@Resource
+	private DlArticleMapper dlArticleMapper;
 
-    /**
-     * 全部文章
-     * @return
-     */
+	@Resource
+	private IUserCollectService userCollectService;
+
+	@Resource
+	private LotteryConfig lotteryConfig;
+
+	/**
+	 * 全部文章
+	 * 
+	 * @return
+	 */
 	public PageInfo<DLArticleDTO> findArticles() {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
-		
+
 		List<DlArticle> findAll = dlArticleMapper.findArticles();
-		
+
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
-		
-		if(null == findAll) {
+
+		if (null == findAll) {
 			return new PageInfo<DLArticleDTO>();
 		}
-		for(DlArticle article: findAll) {
+		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
+			List<String> articleThumbDto = dto.getArticleThumb();
+			List<String> articleThumbShow = new ArrayList<String>();
+			for (int i = 0; i < articleThumbDto.size(); i++) {
+				articleThumbShow.add(lotteryConfig.getBannerShowUrl() + articleThumbDto.get(i));
+			}
+			if ("1".equals(article.getExtendCat())) {
+				article.setExtendCat("今日关注");
+			} else if ("2".equals(article.getExtendCat())) {
+				article.setExtendCat("竞彩预测");
+			} else if ("3".equals(article.getExtendCat())) {
+				article.setExtendCat("牛人分析");
+			} else if ("4".equals(article.getExtendCat())) {
+				article.setExtendCat("其它");
+			}
+			dto.setArticleThumb(articleThumbShow);
 			dtos.add(dto);
 		}
-		
+
 		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-		} 
+		}
 		result.setList(dtos);
 		return result;
 	}
-	
-	
+
 	/**
 	 * 根据文章id集合查询所有文章
 	 */
 	public PageInfo<DLArticleDTO> findArticlesByids(List<Integer> articleIds) {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
-		
+
 		List<DlArticle> findAll = dlArticleMapper.findArticlesByIds(articleIds);
-		
+
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
-		
-		if(null == findAll) {
+
+		if (null == findAll) {
 			return new PageInfo<DLArticleDTO>();
 		}
-		for(DlArticle article: findAll) {
+		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
 			dtos.add(dto);
 		}
-		
+
 		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-		} 
+		}
 		result.setList(dtos);
 		return result;
 	}
-	
-	
+
 	/**
 	 * 相关文章
+	 * 
 	 * @param articleCat
 	 * @return
 	 */
-	public PageInfo<DLArticleDTO> findArticlesRelated( ArticleCatParam param) {
-        Integer articleId = Integer.valueOf(param.getCurrentArticleId());
+	public PageInfo<DLArticleDTO> findArticlesRelated(ArticleCatParam param) {
+		Integer articleId = Integer.valueOf(param.getCurrentArticleId());
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		DlArticle curArticle = this.findBy("articleId", articleId);
-		if(null == curArticle) {
+		if (null == curArticle) {
 			return new PageInfo<DLArticleDTO>();
 		}
-		
-    	Integer page = param.getPage();
-    	page = null == page?1:page;
-    	Integer size = param.getSize();
-    	size = null == size?20:size;
-        PageHelper.startPage(page, size);
-		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId,curArticle.getExtendCat());
+
+		Integer page = param.getPage();
+		page = null == page ? 1 : page;
+		Integer size = param.getSize();
+		size = null == size ? 20 : size;
+		PageHelper.startPage(page, size);
+		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId, curArticle.getExtendCat());
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
-		if(null == findAllRelated) {
+		if (null == findAllRelated) {
 			return new PageInfo<DLArticleDTO>();
 		}
-		
-		for(DlArticle article: findAllRelated) {
+
+		for (DlArticle article : findAllRelated) {
 			DLArticleDTO dto = this.articleDto(article);
 			dtos.add(dto);
 		}
-		
+
 		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
 		} catch (Exception e) {
 			log.error(e.getMessage());
-		} 
+		}
 		result.setList(dtos);
 		return result;
 	}
-	
 
 	private DLArticleDTO articleDto(DlArticle article) {
 		DLArticleDTO dto = new DLArticleDTO();
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
 		List<String> picList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(article.getArticleThumb())) {
+		if (!StringUtils.isEmpty(article.getArticleThumb())) {
 			picList = Arrays.asList(article.getArticleThumb().split(","));
 		}
 		dto.setArticleThumb(picList);
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
 		dto.setKeywords(article.getKeywords());
-		dto.setLink(lotteryConfig.getShareInfoUrl()+article.getArticleId());
+		dto.setLink(lotteryConfig.getShareInfoUrl() + article.getArticleId());
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
@@ -165,31 +180,31 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	public DLArticleDetailDTO findArticleById(Integer id) {
 		Integer userId = SessionUtil.getUserId();
 		DlArticle article = super.findById(id);
-		if(null == article ) {
+		if (null == article) {
 			return null;
 		}
 		DLArticleDetailDTO dto = new DLArticleDetailDTO();
-		
-		//是否收藏
+
+		// 是否收藏
 		String isCollect = ProjectConstant.IS_NOT_COLLECT;
-		if(null != userId) {
+		if (null != userId) {
 			ArticleIdParam articleIdParam = new ArticleIdParam();
 			articleIdParam.setArticleId(id);
-			BaseResult<String> rst =  userCollectService.isCollect(articleIdParam);
-			if(rst.getCode() != 0) {
-				log.error("判断是否收藏失败:"+rst.getMsg());
+			BaseResult<String> rst = userCollectService.isCollect(articleIdParam);
+			if (rst.getCode() != 0) {
+				log.error("判断是否收藏失败:" + rst.getMsg());
 				isCollect = ProjectConstant.IS_NOT_COLLECT;
 			}
 			isCollect = rst.getData();
 		}
-		
+
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
 		dto.setArticleThumb(article.getArticleThumb());
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(article.getExtendCat());
 		dto.setKeywords(article.getKeywords());
-		dto.setLink(lotteryConfig.getShareInfoUrl()+article.getArticleId());
+		dto.setLink(lotteryConfig.getShareInfoUrl() + article.getArticleId());
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
@@ -198,21 +213,21 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setIsCollect(isCollect);
 		dto.setSummary(article.getSummary());
 		List<String> labelList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(article.getKeywords())) {
+		if (!StringUtils.isEmpty(article.getKeywords())) {
 			labelList = Arrays.asList(article.getKeywords().split(","));
 		}
 		dto.setLabelsArr(labelList);
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
-		
-		//第一期通过 分类 来关联
+
+		// 第一期通过 分类 来关联
 		PageHelper.startPage(1, 3);
 		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat());
-		for(DlArticle a: findAllRelated) {
+		for (DlArticle a : findAllRelated) {
 			DLArticleDTO d = this.articleDto(a);
 			articles.add(d);
 		}
 		dto.setArticles(articles);
-		
+
 		return dto;
 	}
 
