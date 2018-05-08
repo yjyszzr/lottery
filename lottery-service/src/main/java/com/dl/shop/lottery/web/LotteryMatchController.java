@@ -251,7 +251,7 @@ public class LotteryMatchController {
 		}
 		
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
-		if(betInfo.getMaxLotteryMoney() >= 20000) {
+		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
 //			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
@@ -407,7 +407,7 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
-		if(betInfo.getMaxLotteryMoney() >= 20000) {
+		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
 		int betNum = betInfo.getBetNum();
