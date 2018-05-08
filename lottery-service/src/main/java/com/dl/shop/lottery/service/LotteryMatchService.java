@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -982,10 +983,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
-	private void betNumtemp(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
-		LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(subList);
+	private void betNumtemp(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, List<Integer> subListIndex, BetResultInfo betResult) {
+		LinkedList<Integer> link = new LinkedList<Integer>(subListIndex);
 		while(link.size() > 0) {
-			MatchBetPlayCellDTO remove = link.remove(0);
+			Integer index = link.remove(0);
+			MatchBetPlayCellDTO remove = subList.get(index);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
 				Double amount = srcAmount*Double.valueOf(betCell.getCellOdds());
@@ -996,15 +998,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						betResult.setMinBonus(amount);
 					}
 				}else {
-					betNumtemp(amount,num-1,link, betResult);
+					betNumtemp(amount,num-1,subList, link, betResult);
 				}
 			}
 		}
 	}
-	private void betMaxAmount(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
-		LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(subList);
+	private void betMaxAmount(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, List<Integer> subListIndex, BetResultInfo betResult) {
+		LinkedList<Integer> link = new LinkedList<Integer>(subListIndex);
 		while(link.size() > 0) {
-			MatchBetPlayCellDTO remove = link.remove(0);
+			Integer index = link.remove(0);
+			MatchBetPlayCellDTO remove = subList.get(index);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
 				Double amount = srcAmount*Double.valueOf(betCell.getCellOdds());
@@ -1013,7 +1016,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(num == 1) {
 					betResult.setMaxBonus(betResult.getMaxBonus() + amount);
 				}else {
-					betMaxAmount(amount,num-1,link, betResult);
+					betMaxAmount(amount,num-1,subList,link, betResult);
 				}
 			}
 		}
@@ -1455,9 +1458,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetContent("");
 				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());*/
-				
+				List<Integer> subListIndex = Stream.iterate(0, item -> item+1).limit(subList.size()).collect(Collectors.toList());
 				Integer oldBetNum = betResult.getBetNum();
-				this.betNumtemp(srcMoney, num, subList, betResult);
+				this.betNumtemp(srcMoney, num, subList, subListIndex, betResult);
 				String stakes = subList.stream().map(cdto->{
 					String playCode = cdto.getPlayCode();
 					String playType = cdto.getPlayType();
@@ -1491,6 +1494,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("5计算预出票信息用时：" + (end3-start)+ " - "+start);
 		return lotteryPrints;
 	}
+	
 	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param) {
 		long start = System.currentTimeMillis();
 		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
@@ -1582,10 +1586,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				dto.setBetContent("");
 				dto.setBetStakes("");
 				dto.setAmount(2.0*param.getTimes());*/
+				List<Integer> subListIndex = Stream.iterate(0, item -> item+1).limit(subList.size()).collect(Collectors.toList());
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
-				this.betNumtemp(srcMoney, num, subList, betResult);
+				this.betNumtemp(srcMoney, num, subList, subListIndex, betResult);
 //				dto.setAmount(2.0*param.getTimes());//还原金额
-				this.betMaxAmount(srcMoney, num, maxList, betResult);
+				this.betMaxAmount(srcMoney, num, maxList,subListIndex, betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
 				if(betMoney > maxLotteryMoney) {
