@@ -1590,7 +1590,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
 				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
 //				dto.setAmount(2.0*param.getTimes());//还原金额
-				this.betMaxAmount(srcMoney, num, maxList,subList.size(), betResult);
+				//this.betMaxAmount(srcMoney, num, maxList,subList.size(), betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
 				if(betMoney > maxLotteryMoney) {
