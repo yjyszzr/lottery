@@ -165,7 +165,7 @@ public class LotteryHallService {
 				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 				String phone = winningLog.getPhone();
 				phone = phone.substring(0, 3) + "****" + phone.substring(7);
-				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone, winningLog.getWinningMoney().toString()));
+				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 				dlWinningLogDTOs.add(dlWinningLogDTO);
 			}

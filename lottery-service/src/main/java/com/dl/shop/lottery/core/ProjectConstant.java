@@ -43,7 +43,7 @@ public class ProjectConstant {
     public final static Integer CALLBACK_STAKE_FAIL= 17;   //出票回调失败状态
     public final static Integer CALLBACK_STAKE_ING= 8;   //出票回调出票中状态
     
-    public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖{1}元";
+    public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖";
     
     public final static String CONTENTSPLITEFLAG_ShuXian = "|";
     public final static String CONTENTSPLITEFLAG_DouHao = ",";
