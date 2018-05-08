@@ -252,13 +252,15 @@ public class LotteryMatchController {
 		
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
 		if(betInfo.getMaxLotteryMoney() >= 20000) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+//			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
 		int betNum = betInfo.getBetNum();
 		if(betNum >= 10000) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+//			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
-		return ResultGenerator.genSuccessResult("success", betInfo);
+		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/saveBetInfo")
