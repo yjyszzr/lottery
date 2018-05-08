@@ -143,6 +143,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	@Resource
 	private LotteryPlayClassifyMapper lotteryPlayClassifyMapper;
 	
+	@Resource
+	private  DlLeagueTeamMapper dlLeagueTeamMapper;
+	
 	
 	@Value("${match.url}")
 	private String matchUrl;
@@ -1854,28 +1857,42 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			
 			matchIdArr = matchIdList.stream().toArray(String[]::new);
-//			/matchIdArr = (String[])matchIdList.toArray();
 		}
 		
 
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
 				matchIdArr,leagueIdArr,queryMatchParam.getMatchFinish());
 		
+		
+		//查询球队logo
+		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s->s.getHomeTeamId()).collect(Collectors.toList());
+		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s->s.getVisitingTeamId()).collect(Collectors.toList());
+		homeTeamIdList.addAll(visitingTeamIdList);
+		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);
+		
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 		}
-		
-		lotteryMatchList.forEach(s->{
+	    for(LotteryMatch s:lotteryMatchList) {
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
+			for(DlLeagueTeam ss:leagueList) {
+				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
+					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
+				}
+				if(s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
+					lotteryMatchDTO.setVisitingTeamLogo(ss.getTeamPic());
+				}
+				continue;
+			}
 			lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES.equals(s.getStatus().toString())?ProjectConstant.ONE_YES:ProjectConstant.ZERO_NO);
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
 			lotteryMatchDTOList.add(lotteryMatchDTO);
-		});
+	    }
 		
 		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
-	}
+	}	
 	
 	@Transactional(readOnly=true)
 	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {

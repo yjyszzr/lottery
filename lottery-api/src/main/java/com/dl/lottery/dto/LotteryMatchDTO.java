@@ -34,12 +34,18 @@ public class LotteryMatchDTO {
 
     @ApiModelProperty("主队简称")
     private String homeTeamAbbr;
+    
+    @ApiModelProperty("主队logo")
+    private String homeTeamLogo;
 
     @ApiModelProperty("客队名称")
     private String visitingTeamName;
 
     @ApiModelProperty("客队简称")
     private String visitingTeamAbbr;
+    
+    @ApiModelProperty("客队logo")
+    private String visitingTeamLogo;
 
     @ApiModelProperty("比赛时间")
     private String matchTime;
