@@ -982,40 +982,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
-	private void betNumtemp(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
+	private void betNumtemp(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
 		LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(subList);
 		while(link.size() > 0) {
 			MatchBetPlayCellDTO remove = link.remove(0);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
-				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
-				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setAmount(amount);
+				Double amount = srcAmount*Double.valueOf(betCell.getCellOdds());
 				if(num == 1) {
 					betResult.setBetNum(betResult.getBetNum()+1);
 					Double minBonus = betResult.getMinBonus();
-					if(minBonus.doubleValue() > amount.doubleValue() || minBonus.equals(0.0)) {
+					if(Double.compare(minBonus, amount) > 0 || minBonus.equals(0.0)) {
 						betResult.setMinBonus(amount);
 					}
 				}else {
-					betNumtemp(dto,num-1,link, betResult);
+					betNumtemp(amount,num-1,link, betResult);
 				}
 			}
 		}
 	}
-	private void betMaxAmount(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
+	private void betMaxAmount(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, BetResultInfo betResult) {
 		LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(subList);
 		while(link.size() > 0) {
 			MatchBetPlayCellDTO remove = link.remove(0);
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
-				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
+				Double amount = srcAmount*Double.valueOf(betCell.getCellOdds());
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setAmount(amount);
 				if(num == 1) {
 					betResult.setMaxBonus(betResult.getMaxBonus() + amount);
 				}else {
-					betMaxAmount(dto,num-1,link, betResult);
+					betMaxAmount(amount,num-1,link, betResult);
 				}
 			}
 		}
@@ -1444,20 +1442,22 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		long end2 = System.currentTimeMillis();
 		logger.info("2计算预出票获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		List<LotteryPrintDTO> lotteryPrints = new ArrayList<LotteryPrintDTO>();
+		double srcMoney = 2.0*param.getTimes();
 		BetResultInfo betResult = new BetResultInfo();
 		for(String betType: betPlayCellMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
 			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
-				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				/*DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setBetType(betType);
 				dto.setTimes(param.getTimes());
 				dto.setBetContent("");
 				dto.setBetStakes("");
-				dto.setAmount(2.0*param.getTimes());
+				dto.setAmount(2.0*param.getTimes());*/
+				
 				Integer oldBetNum = betResult.getBetNum();
-				this.betNumtemp(dto, num, subList, betResult);
+				this.betNumtemp(srcMoney, num, subList, betResult);
 				String stakes = subList.stream().map(cdto->{
 					String playCode = cdto.getPlayCode();
 					String playType = cdto.getPlayType();
@@ -1564,6 +1564,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		BetResultInfo betResult = new BetResultInfo();
 		Integer ticketNum = 0;
+		double srcMoney = 2.0*param.getTimes();
 		Double maxLotteryMoney = 0.0;
 		for(String betType: betPlayCellMap.keySet()) {
 			char[] charArray = betType.toCharArray();
@@ -1575,16 +1576,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					MatchBetPlayCellDTO maxBetCell = maxOrMinOddsCell(matchBetCell, true);
 					maxList.add(maxBetCell);
 				});
-				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				/*DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setBetType(betType);
 				dto.setTimes(param.getTimes());
 				dto.setBetContent("");
 				dto.setBetStakes("");
-				dto.setAmount(2.0*param.getTimes());
+				dto.setAmount(2.0*param.getTimes());*/
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
-				this.betNumtemp(dto, num, subList, betResult);
-				dto.setAmount(2.0*param.getTimes());//还原金额
-				this.betMaxAmount(dto, num, maxList, betResult);
+				this.betNumtemp(srcMoney, num, subList, betResult);
+//				dto.setAmount(2.0*param.getTimes());//还原金额
+				this.betMaxAmount(srcMoney, num, maxList, betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
 				if(betMoney > maxLotteryMoney) {
@@ -1596,7 +1597,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
-		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney);
+		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney.toString());
 		betInfoDTO.setMaxBonus(String.format("%.2f", betResult.getMaxBonus()));
 		betInfoDTO.setMinBonus(String.format("%.2f", betResult.getMinBonus()));
 		betInfoDTO.setTimes(param.getTimes());
