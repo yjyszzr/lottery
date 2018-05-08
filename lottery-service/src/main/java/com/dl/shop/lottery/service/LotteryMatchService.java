@@ -1013,8 +1013,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
 				Double amount = srcAmount*Double.valueOf(betCell.getCellOdds());
-				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setAmount(amount);
 				if(num == 1) {
 					betResult.setMaxBonus(betResult.getMaxBonus() + amount);
 				}else {
