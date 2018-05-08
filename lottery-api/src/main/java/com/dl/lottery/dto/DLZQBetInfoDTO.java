@@ -36,6 +36,6 @@ public class DLZQBetInfoDTO implements Serializable{
 	@ApiModelProperty("投注票数")
 	private int ticketNum;
 	@ApiModelProperty("最大投注彩票金额")
-	private Double maxLotteryMoney = 0.0;
+	private String maxLotteryMoney = "0.0";
 	
 }
