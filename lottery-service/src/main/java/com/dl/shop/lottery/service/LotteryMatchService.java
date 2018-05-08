@@ -92,6 +92,7 @@ import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
+import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
@@ -756,13 +757,25 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private List<LotteryMatch> getLotteryMatchData(Map<String, JSONObject> matchs){
 		List<LotteryMatch> lotteryMatchs = new LinkedList<LotteryMatch>();
 		if(null != matchs && matchs.size() > 0) {
+			List<DlLeagueInfo> legueInfos = leagueInfoService.findAll();
+			Map<String, Integer> leagueMap = new HashMap<String, Integer>(legueInfos.size());
+			for(DlLeagueInfo league: legueInfos) {
+				Integer leagueId = league.getLeagueId();
+				String leagueAddr = league.getLeagueAddr();
+				leagueMap.put(leagueAddr, leagueId);
+			}
 			for (Map.Entry<String, JSONObject> entry : matchs.entrySet()) {
-				LotteryMatch lotteryMatch = new LotteryMatch();
 				JSONObject jo = entry.getValue();
-				lotteryMatch.setLeagueId(Integer.parseInt(jo.getString("l_id")));
+				Integer changciId = Integer.parseInt(jo.getString("id"));
+				Integer leagueId = leagueMap.get(jo.getString("l_cn_abbr"));
+				if(leagueId == null) {
+					leagueId = this.getLeagueId(changciId);
+				}
+				LotteryMatch lotteryMatch = new LotteryMatch();
+				lotteryMatch.setLeagueId(leagueId);
 				lotteryMatch.setLeagueName(jo.getString("l_cn"));
 				lotteryMatch.setLeagueAddr(jo.getString("l_cn_abbr"));
-				lotteryMatch.setChangciId(Integer.parseInt(jo.getString("id")));
+				lotteryMatch.setChangciId(changciId);
 				lotteryMatch.setChangci(jo.getString("num"));
 				lotteryMatch.setHomeTeamId(Integer.parseInt(jo.getString("h_id")));
 				lotteryMatch.setHomeTeamName(jo.getString("h_cn"));
@@ -793,7 +806,31 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return lotteryMatchs;
 	}
-	
+	private Integer getLeagueId(Integer changciId) {
+		Integer leagueId = null;
+		JSONObject singleMatch = this.getSingleMatch(changciId);
+		if(singleMatch != null) {
+			leagueId = singleMatch.getInteger("l_id_dc");
+		}
+		return leagueId;
+	}
+	/**
+	 * 获取单场赛事信息
+	 * @param changciId
+	 * @return
+	 */
+	private JSONObject getSingleMatch(Integer changciId) {
+		String requestUrl = "http://i.sporttery.cn/api/fb_match_info/get_match_info";
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mid", changciId);
+		String json = NetWorkUtil.doGet(requestUrl, map, "UTF-8");
+	    if (json.contains("error")) {
+	        throw new ServiceException(RespStatusEnum.FAIL.getCode(), changciId + "赛事查询失败");
+	    }
+	    JSONObject jsonObject = JSONObject.parseObject(json);
+	    JSONObject jo = jsonObject.getJSONObject("result");
+	    return jo;
+	}
 	/**
 	 * 构造场次的公共方法
 	 */
