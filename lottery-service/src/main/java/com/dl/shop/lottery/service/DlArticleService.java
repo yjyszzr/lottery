@@ -183,6 +183,13 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		if (null == article) {
 			return null;
 		}
+		// 点击该文章 增加一次点击数
+		Integer clickNumber = article.getClickNumber();
+		if (clickNumber == null) {
+			clickNumber = 0;
+		}
+		clickNumber += 1;
+		dlArticleMapper.updateClickNumberById(article.getArticleId(), clickNumber);
 		DLArticleDetailDTO dto = new DLArticleDetailDTO();
 
 		// 是否收藏
@@ -230,5 +237,4 @@ public class DlArticleService extends AbstractService<DlArticle> {
 
 		return dto;
 	}
-
 }

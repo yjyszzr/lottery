@@ -59,5 +59,13 @@
   	order by add_time desc
   </select>
   
+  <update  id="updateClickNumberById"  >
+  update 
+  	dl_article  
+  set 
+  	click_number =  #{clickNumber}  
+   where 
+   	article_id = #{articleId}
   
+  </update>
 </mapper>
