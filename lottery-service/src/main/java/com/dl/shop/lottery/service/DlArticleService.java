@@ -219,6 +219,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setContent(article.getContent());
 		dto.setIsCollect(isCollect);
 		dto.setSummary(article.getSummary());
+		dto.setAuthor(article.getAuthor());
 		List<String> labelList = new ArrayList<String>();
 		if (!StringUtils.isEmpty(article.getKeywords())) {
 			labelList = Arrays.asList(article.getKeywords().split(","));
