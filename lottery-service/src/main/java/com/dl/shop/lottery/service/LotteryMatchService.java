@@ -1862,7 +1862,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),
 				matchIdArr,leagueIdArr,queryMatchParam.getMatchFinish());
-		
+
+		if(CollectionUtils.isEmpty(lotteryMatchList)) {
+			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
+		}
 		
 		//查询球队logo
 		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s->s.getHomeTeamId()).collect(Collectors.toList());
@@ -1870,9 +1873,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		homeTeamIdList.addAll(visitingTeamIdList);
 		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);
 		
-		if(CollectionUtils.isEmpty(lotteryMatchList)) {
-			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
-		}
 	    for(LotteryMatch s:lotteryMatchList) {
 			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
