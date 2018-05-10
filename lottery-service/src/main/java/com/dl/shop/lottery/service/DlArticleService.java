@@ -74,6 +74,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			} else if ("4".equals(article.getExtendCat())) {
 				article.setExtendCat("其它");
 			}
+			dto.setAuthor(article.getAuthor());
 			dto.setArticleThumb(articleThumbShow);
 			dtos.add(dto);
 		}
