@@ -1701,14 +1701,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//半全场
 		Optional<MatchBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
 		MatchBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
-		if(crsBetPlay == null && ttgBetPlay != null) {
+		/*if(crsBetPlay == null && ttgBetPlay != null) {
 			crsBetPlay = this.bb(ttgBetPlay);
 		}
 		if(crsBetPlay != null) {
 			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
 		}
-		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
-		/*
+		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);*/
+		
 		List<Double> rst = new ArrayList<Double>();
 		if(crsBetPlay != null) {
 			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
@@ -1732,7 +1732,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			rst.addAll(c);
 		}
 		return rst;
-		*/
+		
 	}
 	private List<Double> cc2(MatchBetPlayCellDTO hhadBetPlay, MatchBetPlayCellDTO hadBetPlay,
 			MatchBetPlayCellDTO hafuBetPlay) {
