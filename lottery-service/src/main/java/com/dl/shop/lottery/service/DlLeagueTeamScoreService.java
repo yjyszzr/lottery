@@ -1,20 +1,16 @@
 package com.dl.shop.lottery.service;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.DLLeagueTeamScoreDTO;
-import com.dl.shop.lottery.dao.DlLeagueTeamScoreMapper;
+import com.dl.shop.lottery.dao2.DlLeagueTeamScoreMapper;
 import com.dl.shop.lottery.model.DlLeagueTeamScore;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlLeagueTeamScoreService extends AbstractService<DlLeagueTeamScore> {
     @Resource
     private DlLeagueTeamScoreMapper dlLeagueTeamScoreMapper;

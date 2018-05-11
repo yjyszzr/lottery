@@ -14,6 +14,8 @@ public class MatchBetPlayCellDTO implements Serializable{
 	
 	@ApiModelProperty(value="赛事id")
 	private Integer matchId;
+	@ApiModelProperty(value="场次id")
+	private Integer changciId;
 	@ApiModelProperty(value = "场次:周三001", required = true)
 	public String changci;
 	@ApiModelProperty(value="是否设胆，0：否，1是")
@@ -32,11 +34,14 @@ public class MatchBetPlayCellDTO implements Serializable{
 	private String playType;
 	@ApiModelProperty(value="投注选项")
 	private List<DlJcZqMatchCellDTO> betCells;
+	@ApiModelProperty("让球数")
+	private String fixedodds;
 	
 	public MatchBetPlayCellDTO() {}
 	
 	public MatchBetPlayCellDTO(MatchBetPlayDTO betPlayDto) {
 		this.matchId = betPlayDto.getMatchId();
+		this.changciId = betPlayDto.getChangciId();
 		this.changci = betPlayDto.getChangci();
 		this.isDan = betPlayDto.getIsDan();
 		this.lotteryClassifyId = betPlayDto.getLotteryClassifyId();

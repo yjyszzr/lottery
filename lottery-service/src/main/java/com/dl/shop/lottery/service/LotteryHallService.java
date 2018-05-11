@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import tk.mybatis.mapper.entity.Condition;
 
@@ -35,6 +36,7 @@ import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
 @Service
+@Transactional(value="transactionManager1")
 public class LotteryHallService {
 
 	@Resource

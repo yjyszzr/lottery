@@ -1,4 +1,4 @@
-package com.dl.shop.lottery.dao;
+package com.dl.shop.lottery.dao2;
 
 import org.apache.ibatis.annotations.Param;
 

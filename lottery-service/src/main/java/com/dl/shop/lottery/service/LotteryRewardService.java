@@ -66,11 +66,11 @@ import com.dl.order.param.OrderQueryParam;
 import com.dl.order.param.OrderWithUserParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
-import com.dl.shop.lottery.dao.LotteryMatchMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.LotteryRewardMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
 import com.dl.shop.lottery.dao.PeriodRewardMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryPrint;
@@ -126,7 +126,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	@Value("${reward.url}")
 	private String rewardUrl;
 	
-	@Value("${spring.datasource.druid.url}")
+	/*@Value("${spring.datasource.druid.url}")
 	private String dbUrl;
 	
 	@Value("${spring.datasource.druid.username}")
@@ -136,7 +136,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	private String dbPass;
 	
 	@Value("${spring.datasource.druid.driver-class-name}")
-	private String dbDriver;
+	private String dbDriver;*/
 	
 	/**
 	 * 根据场次id拉取中奖数据
@@ -800,7 +800,11 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * @param peroidId
 	 */
 	public void insertBatchRewardDetail(List<PeriodRewardDetail> list, String peroidId) {
-		try {
+		for(PeriodRewardDetail detail: list) {
+			detail.setPeroidId(peroidId);
+		}
+		periodRewardDetailService.save(list);
+		/*try {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl, dbUserName, dbPass);
 			conn.setAutoCommit(false);
@@ -822,7 +826,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			log.error(ex.getMessage());
 		} catch (ClassNotFoundException ex) {
 			log.error(ex.getMessage());
-		}
+		}*/
 	}
 	
 }

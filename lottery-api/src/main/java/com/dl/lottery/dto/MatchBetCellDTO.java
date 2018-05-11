@@ -18,4 +18,6 @@ public class MatchBetCellDTO implements Serializable{
 	private List<DlJcZqMatchCellDTO> betCells;
 	@ApiModelProperty(value = "单场，1可以单场，0不可以", required = true)
 	private Integer single;
+	@ApiModelProperty("让球数")
+	private String fixedodds;
 }

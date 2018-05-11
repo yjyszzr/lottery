@@ -2,8 +2,6 @@ package com.dl.shop.lottery.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -21,10 +19,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -38,7 +36,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -87,11 +84,11 @@ import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.DateStrParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
-import com.dl.shop.lottery.dao.DlLeagueTeamMapper;
-import com.dl.shop.lottery.dao.LotteryMatchMapper;
-import com.dl.shop.lottery.dao.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
+import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
@@ -100,13 +97,11 @@ import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
 
 import io.jsonwebtoken.lang.Collections;
 
 @Service
-@Transactional
+//@Transactional
 public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
 	private final static Logger logger = Logger.getLogger(LotteryMatchService.class);
@@ -147,7 +142,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	@Value("${match.url}")
 	private String matchUrl;
 	
-	@Value("${spring.datasource.druid.url}")
+	/*@Value("${spring.datasource.druid.url}")
 	private String dbUrl;
 	
 	@Value("${spring.datasource.druid.username}")
@@ -157,7 +152,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private String dbPass;
 	
 	@Value("${spring.datasource.druid.driver-class-name}")
-	private String dbDriver;
+	private String dbDriver;*/
 	
 	private final static String MATCH_RESULT_OVER = "已完成";
 	private final static String MATCH_RESULT_CANCEL = "取消";
@@ -168,8 +163,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private void refreshCache() {
 		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(null);
 		if(!CollectionUtils.isEmpty(matchList)) {
-			List<Integer> matchIds = matchList.stream().map(match->match.getMatchId()).collect(Collectors.toList());
-			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByMatchIds(matchIds.toArray(new Integer[matchIds.size()]), null);
+			List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), null);
 			String matchListStr = JSONHelper.bean2json(matchList);
 			stringRedisTemplate.opsForValue().set(CACHE_MATCH_LIST_KEY, matchListStr);
 			String matchPlayStr = JSONHelper.bean2json(matchPlayList);
@@ -208,22 +203,22 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				Integer playType2 = matchPlay.getPlayType();
 				if(playType.equals(6)) {
 					if(!playType2.equals(7)) {
-						Integer matchId = matchPlay.getMatchId();
+						Integer changciId = matchPlay.getChangciId();
 						DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-						List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
+						List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
 						if(dlJcZqMatchPlayDTOs == null){
 							dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-							matchPlayMap.put(matchId, dlJcZqMatchPlayDTOs);
+							matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
 						}
 						dlJcZqMatchPlayDTOs.add(matchPlayDto);
 					}
 				}else if(playType2.equals(playType)){
-					Integer matchId = matchPlay.getMatchId();
+					Integer changciId = matchPlay.getChangciId();
 					DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-					List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
+					List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
 					if(dlJcZqMatchPlayDTOs == null){
 						dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-						matchPlayMap.put(matchId, dlJcZqMatchPlayDTOs);
+						matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
 					}
 					dlJcZqMatchPlayDTOs.add(matchPlayDto);
 				}
@@ -252,21 +247,21 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(matchList == null || matchList.size() == 0) {
 			return dlJcZqMatchListDTO;
 		}
-		List<Integer> matchIds = matchList.stream().map(match->match.getMatchId()).collect(Collectors.toList());
+		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 		String playType = param.getPlayType();
-		List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByMatchIds(matchIds.toArray(new Integer[matchIds.size()]), "6".equals(playType)?"":playType);
+		List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 		Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>();
 		for(LotteryMatchPlay matchPlay: matchPlayList) {
 			Integer playType2 = matchPlay.getPlayType();
 			if("6".equals(playType) && playType2 == 7) {
 				continue;
 			}
-			Integer matchId = matchPlay.getMatchId();
+			Integer changciId = matchPlay.getChangciId();
 			DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-			List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(matchId);
+			List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
 			if(dlJcZqMatchPlayDTOs == null){
 				dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-				matchPlayMap.put(matchId, dlJcZqMatchPlayDTOs);
+				matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
 			}
 			dlJcZqMatchPlayDTOs.add(matchPlayDto);
 		}
@@ -316,7 +311,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setVisitingTeamId(match.getVisitingTeamId().toString());
 			matchDto.setVisitingTeamName(match.getVisitingTeamName());
 			matchDto.setVisitingTeamRank(match.getVisitingTeamRank());
-			List<DlJcZqMatchPlayDTO> matchPlays = matchPlayMap.get(match.getMatchId());
+			List<DlJcZqMatchPlayDTO> matchPlays = matchPlayMap.get(match.getChangciId());
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
@@ -602,7 +597,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	/**
 	 * 抓取赛事列表并保存
 	 */
-	@Transactional
+//	@Transactional
 	public void saveMatchList() {
 		//赛事、玩法汇总列表
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -846,10 +841,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param matchPlays
 	 * @return
 	 */
-	private LotteryMatchPlay getLotteryMatchPlayData(JSONObject matchPlay, Integer matchId, String playType){
+	private LotteryMatchPlay getLotteryMatchPlayData(JSONObject matchPlay, Integer changciId, String playType){
 		if(null == matchPlay) return null;
 		LotteryMatchPlay lotteryMatchPlay = new LotteryMatchPlay();
-		lotteryMatchPlay.setMatchId(matchId);
+		lotteryMatchPlay.setChangciId(changciId);
 		lotteryMatchPlay.setPlayContent(matchPlay.getString(playType));
 		lotteryMatchPlay.setPlayType(PlayTypeUtil.getPlayTypeCode(playType));
 		lotteryMatchPlay.setStatus(ProjectConstant.MATCH_PLAY_STATUS_SELLING);
@@ -874,7 +869,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					for(Map<String, Object> map : matchPlays) {
 						for(Map.Entry<String, Object> entry : map.entrySet()) {
 							if(!"playType".equals(entry.getKey()) && lotteryMatch.getChangciId().toString().equals(entry.getKey())) {
-								LotteryMatchPlay lotteryMatchPlay = getLotteryMatchPlayData((JSONObject)map.get(lotteryMatch.getChangciId().toString()), lotteryMatch.getMatchId(), map.get("playType").toString());
+								LotteryMatchPlay lotteryMatchPlay = getLotteryMatchPlayData((JSONObject)map.get(lotteryMatch.getChangciId().toString()), lotteryMatch.getChangciId(), map.get("playType").toString());
 								if(null != lotteryMatchPlay) {
 									lotteryMatchPlays.add(lotteryMatchPlay);
 								}
@@ -895,7 +890,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchPlayMapper.insertList(lotteryMatchPlays);
 		}else {
 			for(LotteryMatchPlay play: lotteryMatchPlays) {
-				LotteryMatchPlay existPlay = lotteryMatchPlayMapper.lotteryMatchPlayByMatchIdAndPlayType(play.getMatchId(), play.getPlayType());
+				LotteryMatchPlay existPlay = lotteryMatchPlayMapper.lotteryMatchPlayByChangciIdAndPlayType(play.getChangciId(), play.getPlayType());
 				if(existPlay == null) {
 					lotteryMatchPlayMapper.insert(play);
 				} else {
@@ -936,12 +931,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			String playType = remove.getPlayType();
 			String playName = playTypeNameMap.get(Integer.valueOf(playType));
 			if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())) {
-				LotteryMatchPlay matchPlay = lotteryMatchPlayMapper.lotteryMatchPlayByMatchIdAndPlayType(remove.getMatchId(), Integer.valueOf(playType));
+				/*LotteryMatchPlay matchPlay = lotteryMatchPlayMapper.lotteryMatchPlayByChangciIdAndPlayType(remove.getChangciId(), Integer.valueOf(playType));
 				if(matchPlay != null && StringUtils.isNotBlank(matchPlay.getPlayContent())) {
 					JSONObject jsonObj = JSON.parseObject(matchPlay.getPlayContent());
 					String fixedOdds = jsonObj.getString("fixedodds");
 					playName = StringUtils.isBlank(fixedOdds)?playName:("["+fixedOdds+"]"+playName);
-				}
+				}*/
+				String fixedodds = remove.getFixedodds();
+				playName = StringUtils.isBlank(fixedodds)?playName:("["+fixedodds+"]"+playName);
 			}
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
@@ -1143,6 +1140,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
 						playCellDto.setPlayType(cell.getPlayType());
 						playCellDto.setBetCells(cell.getBetCells());
+						playCellDto.setFixedodds(cell.getFixedodds());
 						list.add(playCellDto);
 					}
 				});
@@ -1314,6 +1312,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
 						playCellDto.setPlayType(cell.getPlayType());
 						playCellDto.setBetCells(cell.getBetCells());
+						playCellDto.setFixedodds(cell.getFixedodds());
 						list.add(playCellDto);
 					}
 				});
@@ -1436,6 +1435,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
 						playCellDto.setPlayType(cell.getPlayType());
 						playCellDto.setBetCells(cell.getBetCells());
+						playCellDto.setFixedodds(cell.getFixedodds());
 						list.add(playCellDto);
 					}
 				});
@@ -1496,7 +1496,29 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("5计算预出票信息用时：" + (end3-start)+ " - "+start);
 		return lotteryPrints;
 	}
-	
+	private void aa1(Map<String, List<List<Double>>> maxMoneyBetPlayCellsForLottery, List<String> playCodes, int num, BetResultInfo betResult, List<Double> sumList) {
+		LinkedList<String> link = new LinkedList<String>(playCodes);
+		while(link.size() > 0) {
+			String playCode = link.remove(0);
+			List<List<Double>> crsList = maxMoneyBetPlayCellsForLottery.get(playCode);
+			for(List<Double> crsOdds: crsList) {
+				Double sumMax = 0.0;
+				for(Double odds: crsOdds) {
+					Double nOdds = betResult.getMaxBonus()*odds;
+					if(num == 1) {
+						sumMax += nOdds;
+					}else {
+						BetResultInfo nRst = new BetResultInfo();
+						nRst.setMaxBonus(nOdds);
+						aa1(maxMoneyBetPlayCellsForLottery, link, num-1, nRst, sumList);
+					}
+				}
+				if(num == 1) {
+					sumList.add(sumMax);
+				}
+			}
+		}
+	}
 	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param) {
 		long start = System.currentTimeMillis();
 		List<MatchBetPlayDTO> matchBellCellList = param.getMatchBetPlays();
@@ -1537,9 +1559,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("1计算投注排列用时：" + (end1-start)+ " - "+start);
 		//
 		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
+		Double totalMaxMoney = 0.0;
 		for(String betType: indexMap.keySet()) {
+			char[] charArray = betType.toCharArray();
+			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<String> betIndexList = indexMap.get(betType);
 			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
+			List<Double> sumList = new ArrayList<Double>();
 			for(String str: betIndexList) {
 				String[] strArr = str.split(",");
 				List<String> playCodes = new ArrayList<String>(strArr.length);
@@ -1558,14 +1584,30 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
 						playCellDto.setPlayType(cell.getPlayType());
 						playCellDto.setBetCells(cell.getBetCells());
+						playCellDto.setFixedodds(cell.getFixedodds());
 						list.add(playCellDto);
 					}
 				});
 				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
 				matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
+				Double max = this.maxMoneyBetPlayCellsForLottery(playCellMap);
+				Double maxMoney = 2.0*param.getTimes()*max;
+				sumList.add(maxMoney);
+				/*BetResultInfo nRst = new BetResultInfo();
+				nRst.setMaxBonus(2.0*param.getTimes());
+				this.aa1(maxMoneyBetPlayCellsForLottery, playCodes, num, nRst, sumList);*/
 			}
+			if(sumList.size() == 1) {
+				Double maxBetMoney = sumList.get(0);
+				totalMaxMoney+=maxBetMoney;
+			}else if(sumList.size() > 1) {
+				Double maxBetMoney = sumList.stream().max((item1,item2)->item1.compareTo(item2)).get();
+				totalMaxMoney+=maxBetMoney;
+			}
+			
 			betPlayCellMap.put(betType, result);
 		}
+		logger.info("***************"+totalMaxMoney);
 		long end2 = System.currentTimeMillis();
 		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		BetResultInfo betResult = new BetResultInfo();
@@ -1577,22 +1619,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
 			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
-				List<MatchBetPlayCellDTO> maxList = new ArrayList<MatchBetPlayCellDTO>(subList.size());
-				subList.stream().forEach(matchBetCell->{
-					MatchBetPlayCellDTO maxBetCell = maxOrMinOddsCell(matchBetCell, true);
-					maxList.add(maxBetCell);
-				});
-				/*DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
-				dto.setBetType(betType);
-				dto.setTimes(param.getTimes());
-				dto.setBetContent("");
-				dto.setBetStakes("");
-				dto.setAmount(2.0*param.getTimes());*/
-//				List<Integer> subListIndex = Stream.iterate(0, item -> item+1).limit(subList.size()).collect(Collectors.toList());
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
 				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
-//				dto.setAmount(2.0*param.getTimes());//还原金额
-				this.betMaxAmount(srcMoney, num, maxList,maxList.size(), betResult);
 				ticketNum++;
 				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
 				if(betMoney > maxLotteryMoney) {
@@ -1605,7 +1633,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
 		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney.toString());
-		betInfoDTO.setMaxBonus(String.format("%.2f", betResult.getMaxBonus()));
+		betInfoDTO.setMaxBonus(String.format("%.2f", totalMaxMoney));
 		betInfoDTO.setMinBonus(String.format("%.2f", betResult.getMinBonus()));
 		betInfoDTO.setTimes(param.getTimes());
 		betInfoDTO.setBetNum(betResult.getBetNum());
@@ -1621,6 +1649,476 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("4计算投注统计信息用时：" + (end4-end3)+ " - "+start);
 		logger.info("5计算投注信息用时：" + (end4-start)+ " - "+start);
 		return betInfoDTO;
+	}
+	//计算混合玩法最大投注中奖金额
+	private Double maxMoneyBetPlayCellsForLottery(Map<String, List<MatchBetPlayCellDTO>> playCellMap) {
+//		List<Double> maxOdds = new ArrayList<Double>(playCellMap.size());
+		Double maxOdds = 1.0;
+		for(String playCode: playCellMap.keySet()) {
+			List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
+			Set<Integer> playTypes = list.stream().map(dto->Integer.parseInt(dto.getPlayType())).collect(Collectors.toSet());
+			List<Double> maxMoneyBetPlayByCRS = this.maxMoneyBetPlayByCRS(list);
+			String bean2json = JSONHelper.bean2json(maxMoneyBetPlayByCRS);
+			logger.info(playCode + " !@#$%^&*(+#$%^&*()+++++++++++++++" + bean2json);
+			if(maxMoneyBetPlayByCRS.size() ==1) {
+				Double max = maxMoneyBetPlayByCRS.get(0);
+				maxOdds = maxOdds*max;
+			}else {
+				Double max = maxMoneyBetPlayByCRS.stream().max((item1,item2)->item1.compareTo(item2)).get();
+				maxOdds = maxOdds*max;
+			}
+		}
+		return maxOdds;
+	}
+	/**
+	 * 计算混合玩法的排斥后该场次的几种可能 赔率（没有比分，）
+	 * @param list
+	 */
+	private void maxMoneyBetPlayByTTG(List<MatchBetPlayCellDTO> list) {
+		
+	}
+	/**
+	 * 计算混合玩法的排斥后的该场次的几种可能赔率
+	 * @param list 混合玩法 同一场次的所有玩法选项
+	 */
+	private List<Double> maxMoneyBetPlayByCRS(List<MatchBetPlayCellDTO> list) {
+		//比分
+		Optional<MatchBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
+		MatchBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
+		//总进球
+		Optional<MatchBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
+		MatchBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
+		if(crsBetPlay == null && ttgBetPlay != null) {
+			crsBetPlay = this.bb(ttgBetPlay);
+		}
+		//让球胜平负
+		Optional<MatchBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+		MatchBetPlayCellDTO hhadBetPlay = optional2.isPresent()?optional2.get():null;
+		//胜平负
+		Optional<MatchBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode())).findFirst();
+		MatchBetPlayCellDTO hadBetPlay = optional3.isPresent()?optional3.get():null;
+//		logger.info(JSONHelper.bean2json(hadBetPlay));
+		//半全场
+		Optional<MatchBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
+		MatchBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
+		if(crsBetPlay != null) {
+			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+		}
+		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
+	}
+	private List<Double> cc2(MatchBetPlayCellDTO hhadBetPlay, MatchBetPlayCellDTO hadBetPlay,
+			MatchBetPlayCellDTO hafuBetPlay) {
+		List<Double> allBetSumOdds = new ArrayList<Double>(1);
+		//胜平负
+		List<Double> allOdds = new ArrayList<Double>();
+		Double hOdds = null, dOdds = null, aOdds = null;
+		if(hadBetPlay != null){
+			List<DlJcZqMatchCellDTO> betCells = hadBetPlay.getBetCells();
+			for(DlJcZqMatchCellDTO dto: betCells) {
+				Integer cellCode = Integer.parseInt(dto.getCellCode());
+				Double odds = Double.valueOf(dto.getCellOdds());
+				if(MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+					hOdds = odds;
+				} else if(MatchResultHadEnum.HAD_D.getCode().equals(cellCode)) {
+					dOdds = odds;
+				} else if(MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+					aOdds = odds;
+				} 
+			}
+		}
+		//半全场
+		List<Double> hList = new ArrayList<Double>(0), dList = new ArrayList<Double>(0), aList=new ArrayList<Double>(0);
+		if(hafuBetPlay != null) {
+			List<DlJcZqMatchCellDTO> betCells = hafuBetPlay.getBetCells();
+			for(DlJcZqMatchCellDTO dto: betCells) {
+				Integer checkCode = Integer.parseInt(dto.getCellCode().substring(1));
+				Double odds = Double.valueOf(dto.getCellOdds());
+				if(hOdds == null && dOdds == null && aOdds == null) {
+					if(MatchResultHadEnum.HAD_H.getCode().equals(checkCode)) {
+						hList.add(odds);
+					}else if(MatchResultHadEnum.HAD_D.getCode().equals(checkCode)){
+						dList.add(odds);
+					}else if(MatchResultHadEnum.HAD_A.getCode().equals(checkCode)){
+						aList.add(odds);
+					}
+				} else {
+					if(hOdds != null && MatchResultHadEnum.HAD_H.getCode().equals(checkCode)) {
+						hList.add(odds+hOdds);
+					}
+					if(dOdds != null && MatchResultHadEnum.HAD_D.getCode().equals(checkCode)) {
+						dList.add(odds+dOdds);					
+					}
+					if(aOdds != null && MatchResultHadEnum.HAD_A.getCode().equals(checkCode)) {
+						aList.add(odds+aOdds);
+					}
+				}
+			}
+			
+		}
+		//整合前两种
+		boolean ish=false,isd=false,isa=false;
+		if(hOdds != null || hList.size() > 0) {
+			if(hList.size() == 0) {
+				hList.add(hOdds);
+			} 
+			ish = true;
+		}
+		if(dOdds != null || dList.size() > 0) {
+			if(dList.size() == 0) {
+				dList.add(dOdds);
+			}
+			isd = true;
+		}
+		if(aOdds != null || aList.size() > 0) {
+			if(aList.size() == 0) {
+				aList.add(aOdds);
+			}
+			isa = true;
+		}
+		//让球
+//		Double hhOdds = null, hdOdds = null, haOdds = null;
+		if(hhadBetPlay != null) {
+			List<DlJcZqMatchCellDTO> betCells = hhadBetPlay.getBetCells();
+			Integer fixNum = Integer.valueOf(hhadBetPlay.getFixedodds());
+			List<Double> naList = new ArrayList<Double>(aList.size()*3);
+			List<Double> ndList = new ArrayList<Double>(dList.size()*3);
+			List<Double> nhList = new ArrayList<Double>(hList.size()*3);
+			for(DlJcZqMatchCellDTO dto: betCells) {
+				Integer cellCode = Integer.parseInt(dto.getCellCode());
+				Double odds = Double.valueOf(dto.getCellOdds());
+				if(!ish && !isd && !isa) {
+					allOdds.add(odds);
+				} else {
+					if(fixNum > 0) {
+						if(ish && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+						/*	hList.forEach(item->Double.sum(item, odds));
+							nhList.addAll(hList);*/
+							for(Double item: hList) {
+								nhList.add(Double.sum(item, odds));
+							}
+						}
+						if(isd && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+							/*dList.forEach(item->Double.sum(item, odds));
+							ndList.addAll(dList);*/
+							for(Double item: dList) {
+								ndList.add(Double.sum(item, odds));
+							}
+						}
+						if(isa) {
+							List<Double> tnaList = new ArrayList<Double>(aList);
+							for(Double item: tnaList) {
+								naList.add(Double.sum(item, odds));
+							}
+							/*tnaList.forEach(item->Double.sum(item, odds));
+							naList.addAll(tnaList);*/
+						}
+					}else {
+						if(ish) {
+							List<Double> tnhList = new ArrayList<Double>(hList);
+							/*tnhList.forEach(item->Double.sum(item, odds));
+							nhList.addAll(tnhList);*/
+							for(Double item: tnhList) {
+								nhList.add(Double.sum(item, odds));
+							}
+						}
+						if(isd && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+							/*dList.forEach(item->Double.sum(item, odds));
+							ndList.addAll(dList);*/
+							for(Double item: dList) {
+								ndList.add(Double.sum(item, odds));
+							}
+						}
+						if(isa && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+							/*aList.forEach(item->Double.sum(item, odds));
+							naList.addAll(aList);*/
+							for(Double item: aList) {
+								naList.add(Double.sum(item, odds));
+							}
+						}
+					}
+				}
+			}
+			if(nhList != null) {
+				allOdds.addAll(nhList);
+			}
+			if(naList != null) {
+				allOdds.addAll(naList);
+			}
+			if(ndList != null) {
+				allOdds.addAll(ndList);
+			}
+		}else {
+			if(hList != null) {
+				allOdds.addAll(hList);
+			}
+			if(aList != null) {
+				allOdds.addAll(aList);
+			}
+			if(dList != null) {
+				allOdds.addAll(dList);
+			}
+		}
+		logger.info("--------------" + JSONHelper.bean2json(allOdds));
+		allBetSumOdds.addAll(allOdds);
+		return allBetSumOdds;
+	}
+	private List<Double> cc(MatchBetPlayCellDTO crsBetPlay, MatchBetPlayCellDTO ttgBetPlay,
+			MatchBetPlayCellDTO hhadBetPlay, MatchBetPlayCellDTO hadBetPlay, MatchBetPlayCellDTO hafuBetPlay) {
+		//比分的所有项
+		List<DlJcZqMatchCellDTO> betCells = crsBetPlay.getBetCells();//比分的所有选项
+		List<Double> allBetSumOdds = new ArrayList<Double>();
+		for(DlJcZqMatchCellDTO dto: betCells) {
+			String cellCode = dto.getCellCode();
+			String[] arr = cellCode.split("");
+			int m = Integer.parseInt(arr[0]);
+			int n = Integer.parseInt(arr[1]);
+			int sum = m+n;//总进球数
+			int sub = m-n;//进球差数
+			List<Double> allOdds = new ArrayList<Double>();
+			Double cellOdds = Double.valueOf(dto.getCellOdds());
+			if(cellOdds != null) {
+				allOdds.add(cellOdds);
+			}
+			//1.总进球
+			if(ttgBetPlay != null) {
+				List<DlJcZqMatchCellDTO> betCells2 = ttgBetPlay.getBetCells();
+				int sucCode = sum > 7?7:sum;
+				Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+				if(optional.isPresent()) {
+					Double odds = Double.valueOf(optional.get().getCellOdds());//选中的总进球玩法的可用赔率
+					if(allOdds.size() == 0) {
+						allOdds.add(odds);
+					}else {
+						Double old = allOdds.remove(0);
+						allOdds.add(Double.sum(old, odds));
+					}
+				}
+			}
+			//2。让球胜平负
+			if(hhadBetPlay != null) {
+				List<DlJcZqMatchCellDTO> betCells2 = hhadBetPlay.getBetCells();
+				int sucCode = sub + Integer.valueOf(hhadBetPlay.getFixedodds());
+				if(sucCode > 0) {
+					sucCode = MatchResultHadEnum.HAD_H.getCode();
+				}else if(sucCode < 0) {
+					sucCode = MatchResultHadEnum.HAD_A.getCode();
+				}else {
+					sucCode = MatchResultHadEnum.HAD_D.getCode();
+				}
+				final int sucCode1 = sucCode;
+				Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode1).findFirst();
+				if(optional.isPresent()) {
+					Double odds = Double.valueOf(optional.get().getCellOdds());//选中的让球胜平负玩法的可用赔率
+					Double old = allOdds.remove(0);
+					allOdds.add(Double.sum(old, odds));
+				}
+			}
+			//3.胜平负
+			boolean isH=false,isA=false;
+			if(hadBetPlay != null) {
+				List<DlJcZqMatchCellDTO> betCells2 = hadBetPlay.getBetCells();
+				if(sum == 0) {//平
+					int sucCode = MatchResultHadEnum.HAD_D.getCode();
+					Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+					if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
+						Double odds = Double.valueOf(optional.get().getCellOdds());
+						Double old = allOdds.remove(0);
+						allOdds.add(Double.sum(old, odds));
+					}
+				}else if(sum == 1) {//胜，负
+					if(n ==0) {
+						int sucCode = MatchResultHadEnum.HAD_H.getCode();
+						Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+						if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
+							Double odds = Double.valueOf(optional.get().getCellOdds());
+							Double old = allOdds.remove(0);
+							allOdds.add(Double.sum(old, odds));
+							isH=true;
+						}
+					}else {
+						int sucCode = MatchResultHadEnum.HAD_A.getCode();
+						Optional<DlJcZqMatchCellDTO> optional1 = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+						if(optional1.isPresent()) {//选中的胜平负玩法的可用赔率
+							Double odds = Double.valueOf(optional1.get().getCellOdds());
+							Double old = allOdds.remove(0);
+							allOdds.add(Double.sum(old, odds));
+							isA=true;
+						}
+					}
+				}else {
+					if(sub > 0) {//胜
+						int sucCode = MatchResultHadEnum.HAD_H.getCode();
+						Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+						if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
+							Double odds = Double.valueOf(optional.get().getCellOdds());
+							Double old = allOdds.remove(0);
+							allOdds.add(Double.sum(old, odds));
+						}
+					} else if(sub < 0) {//负
+						int sucCode = MatchResultHadEnum.HAD_A.getCode();
+						Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+						if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
+							Double odds = Double.valueOf(optional.get().getCellOdds());
+							Double old = allOdds.remove(0);
+							allOdds.add(Double.sum(old, odds));
+						}
+					}else {//平
+						int sucCode = MatchResultHadEnum.HAD_D.getCode();
+						Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
+						if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
+							Double odds = Double.valueOf(optional.get().getCellOdds());
+							Double old = allOdds.remove(0);
+							allOdds.add(Double.sum(old, odds));
+						}
+					}
+				}
+			}
+			//4.半全场
+			if(hafuBetPlay != null) {
+				List<DlJcZqMatchCellDTO> betCells2 = hafuBetPlay.getBetCells();
+				if(sum == 0) {
+					Optional<DlJcZqMatchCellDTO> optional = betCells2.stream().filter(betCell->MatchResultHafuEnum.HAFU_DD.getCode().equals(betCell.getCellCode())).findFirst();
+					if(optional.isPresent()) {
+						Double odds = Double.valueOf(optional.get().getCellOdds());
+						Double old = allOdds.remove(0);
+						allOdds.add(Double.sum(old, odds));
+					}
+				}else if(sum  == 1) {
+					Double old = allOdds.remove(0);
+					if(isH) {
+						for(DlJcZqMatchCellDTO betCell: betCells2) {
+							String betCellCode = betCell.getCellCode();
+							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DH.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_HH.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+						}
+					}
+					if(isA) {
+						for(DlJcZqMatchCellDTO betCell: betCells2) {
+							String betCellCode = betCell.getCellCode();
+							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DA.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AA.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+						}
+					}
+				}else {
+					Double old = allOdds.remove(0);
+					if(sub > 0) {
+						for(DlJcZqMatchCellDTO betCell: betCells2) {
+							String betCellCode = betCell.getCellCode();
+							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DH.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_HH.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+							if(n != 0 && betCellCode.equals(MatchResultHafuEnum.HAFU_AH.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+						}
+					} else if(sub < 0) {
+						for(DlJcZqMatchCellDTO betCell: betCells2) {
+							String betCellCode = betCell.getCellCode();
+							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DA.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AA.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+							if(n != 0 && betCellCode.equals(MatchResultHafuEnum.HAFU_HA.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+						}
+					}else {
+						for(DlJcZqMatchCellDTO betCell: betCells2) {
+							String betCellCode = betCell.getCellCode();
+							if(betCellCode.equals(MatchResultHafuEnum.HAFU_HD.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_DD.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AD.getCode())) {
+								Double odds = Double.valueOf(betCell.getCellOdds());
+								allOdds.add(Double.sum(old, odds));
+							}
+						}
+					}
+				}
+			}
+			allBetSumOdds.addAll(allOdds);
+		}
+		return allBetSumOdds;
+	}
+	private MatchBetPlayCellDTO bb(MatchBetPlayCellDTO ttgBetPlay) {
+		MatchBetPlayCellDTO crsBetPlay;
+		List<DlJcZqMatchCellDTO> ttgBetCells = ttgBetPlay.getBetCells();
+		List<DlJcZqMatchCellDTO> ncrsBetCells = new ArrayList<DlJcZqMatchCellDTO>();
+		crsBetPlay = new MatchBetPlayCellDTO();
+		crsBetPlay.setBetCells(ncrsBetCells);
+		for(DlJcZqMatchCellDTO matchCellDto: ttgBetCells) {
+			Integer qiuNum = Integer.parseInt(matchCellDto.getCellCode());
+			if(qiuNum == 0) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_00.getCode(), MatchResultCrsEnum.CRS_00.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+			} else if(qiuNum == 1) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_10.getCode(), MatchResultCrsEnum.CRS_10.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_01.getCode(), MatchResultCrsEnum.CRS_01.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+			}else if(qiuNum == 2) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_11.getCode(), MatchResultCrsEnum.CRS_11.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_02.getCode(), MatchResultCrsEnum.CRS_02.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto2 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_20.getCode(), MatchResultCrsEnum.CRS_20.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+				ncrsBetCells.add(nmatchCellDto2);
+			}else if(qiuNum == 3) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_30.getCode(), MatchResultCrsEnum.CRS_30.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_03.getCode(), MatchResultCrsEnum.CRS_03.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto2 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_21.getCode(), MatchResultCrsEnum.CRS_21.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto3 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_12.getCode(), MatchResultCrsEnum.CRS_12.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+				ncrsBetCells.add(nmatchCellDto2);
+				ncrsBetCells.add(nmatchCellDto3);
+			}else if(qiuNum == 4) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_40.getCode(), MatchResultCrsEnum.CRS_40.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_04.getCode(), MatchResultCrsEnum.CRS_04.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto2 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_31.getCode(), MatchResultCrsEnum.CRS_31.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto3 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_13.getCode(), MatchResultCrsEnum.CRS_13.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto4 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_22.getCode(), MatchResultCrsEnum.CRS_22.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+				ncrsBetCells.add(nmatchCellDto2);
+				ncrsBetCells.add(nmatchCellDto3);
+				ncrsBetCells.add(nmatchCellDto4);
+			}else if(qiuNum == 5) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_50.getCode(), MatchResultCrsEnum.CRS_50.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_05.getCode(), MatchResultCrsEnum.CRS_05.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto2 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_41.getCode(), MatchResultCrsEnum.CRS_41.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto3 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_14.getCode(), MatchResultCrsEnum.CRS_14.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto4 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_32.getCode(), MatchResultCrsEnum.CRS_32.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto5 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_23.getCode(), MatchResultCrsEnum.CRS_23.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+				ncrsBetCells.add(nmatchCellDto2);
+				ncrsBetCells.add(nmatchCellDto3);
+				ncrsBetCells.add(nmatchCellDto4);
+				ncrsBetCells.add(nmatchCellDto5);
+			}else if(qiuNum == 6) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_15.getCode(), MatchResultCrsEnum.CRS_15.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_51.getCode(), MatchResultCrsEnum.CRS_51.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto2 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_24.getCode(), MatchResultCrsEnum.CRS_24.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto3 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_42.getCode(), MatchResultCrsEnum.CRS_42.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto4 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_33.getCode(), MatchResultCrsEnum.CRS_33.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+				ncrsBetCells.add(nmatchCellDto2);
+				ncrsBetCells.add(nmatchCellDto3);
+				ncrsBetCells.add(nmatchCellDto4);
+			}else if(qiuNum == 7) {
+				DlJcZqMatchCellDTO nmatchCellDto = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_52.getCode(), MatchResultCrsEnum.CRS_52.getMsg(), null);
+				DlJcZqMatchCellDTO nmatchCellDto1 = new DlJcZqMatchCellDTO(MatchResultCrsEnum.CRS_25.getCode(), MatchResultCrsEnum.CRS_25.getMsg(), null);
+				ncrsBetCells.add(nmatchCellDto);
+				ncrsBetCells.add(nmatchCellDto1);
+			}
+		}
+		return crsBetPlay;
 	}
 	/**
 	 * 获取最大最小赔率的对象
@@ -1877,7 +2375,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}
 	
-	@Transactional(readOnly=true)
+//	@Transactional(readOnly=true)
 	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
 		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();
@@ -1950,7 +2448,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	});
     	return betInfo;
 	}
-	@Transactional(readOnly=true)
+//	@Transactional(readOnly=true)
 	public List<LotteryPrintDTO> getPrintLotteryListByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
 		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();
@@ -2051,7 +2549,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	matchInfo.setVisitingTeamAbbr(lotteryMatch.getVisitingTeamAbbr());
     	Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
 		matchInfo.setVisitingTeamId(visitingTeamId);
-    	List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByMatchIds(new Integer[] {lotteryMatch.getMatchId()}, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode()+"");
+    	List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(new Integer[] {lotteryMatch.getChangciId()}, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode()+"");
     	if(CollectionUtils.isNotEmpty(matchPlayList)) {
     		LotteryMatchPlay lotteryMatchPlay = matchPlayList.get(0);
     		String playContent = lotteryMatchPlay.getPlayContent();
@@ -2367,7 +2865,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * 历史赛事入库
 	 * @throws IOException 
 	 */
-	@Transactional
+//	@Transactional
 	public BaseResult<String> historyMatchIntoDB() {
 //		String separator = File.separator;
 //		File file=new File(filepath);
@@ -2469,7 +2967,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param peroidId
 	 */
 	public int insertBatchHistoryMatch(List<LotteryMatch> list) {
-		try {
+		super.save(list);
+		return 1;
+		/*try {
 			Class.forName(dbDriver);
 			Connection conn = (Connection) DriverManager.getConnection(dbUrl+"?characterEncoding=utf8", dbUserName, dbPass);
 			conn.setAutoCommit(false);
@@ -2502,7 +3002,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			logger.error(ex.getMessage());
 			return -1;
 		}
-		return 1;
+		return 1;*/
 		}
 	
 }

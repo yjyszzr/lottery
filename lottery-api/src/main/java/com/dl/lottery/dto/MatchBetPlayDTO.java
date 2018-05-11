@@ -14,6 +14,8 @@ public class MatchBetPlayDTO implements Serializable{
 	
 	@ApiModelProperty(value="赛事id")
 	private Integer matchId;
+	@ApiModelProperty(value="场次id")
+	private Integer changciId;
 	@ApiModelProperty(value = "场次:周三001", required = true)
 	public String changci;
 	@ApiModelProperty(value="是否设胆，0：否，1是")

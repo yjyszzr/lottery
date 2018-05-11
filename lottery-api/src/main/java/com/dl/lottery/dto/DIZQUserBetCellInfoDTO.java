@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +33,8 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 	public int matchTime;
 	@ApiModelProperty(value = "赛事编码")
 	public String playCode;
+	@ApiModelProperty("让球数")
+	private String fixedodds;
 	
 	public DIZQUserBetCellInfoDTO() {}
 	
@@ -45,6 +49,10 @@ public class DIZQUserBetCellInfoDTO implements Serializable{
 		this.playCode = matchCell.getPlayCode();
 		List<MatchBetCellDTO> matchBetCells = matchCell.getMatchBetCells();
 		this.ticketData = matchBetCells.stream().map(betCell->{
+			String fixed = betCell.getFixedodds();
+			if(StringUtils.isNotBlank(fixedodds)) {
+				fixedodds = fixed;
+			}
 			String ticketData = "0" + betCell.getPlayType() + "|" + playCode + "|";
 			return ticketData + betCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
 					.collect(Collectors.joining(","));

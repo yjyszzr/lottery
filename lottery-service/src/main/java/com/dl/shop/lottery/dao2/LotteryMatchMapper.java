@@ -1,4 +1,4 @@
-package com.dl.shop.lottery.dao;
+package com.dl.shop.lottery.dao2;
 
 import java.util.List;
 
@@ -23,6 +23,10 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public List<LotteryMatch> getMatchList(@Param("leagueIds")String leagueId);
+	
+	public List<LotteryMatch> refreshInfos();
+	public int updateteaminfo(LotteryMatch match);
+	List<LotteryMatch> allmatches();
 	
 	/**
 	 * 获取当天的所有比赛

@@ -18,14 +18,14 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.shop.lottery.core.MatchChangeEnum;
-import com.dl.shop.lottery.dao.DlLeagueMatchEuropeMapper;
+import com.dl.shop.lottery.dao2.DlLeagueMatchEuropeMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchAsia;
 import com.dl.shop.lottery.model.DlLeagueMatchEurope;
 
 import tk.mybatis.mapper.entity.Condition;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlLeagueMatchEuropeService extends AbstractService<DlLeagueMatchEurope> {
 	
 	private final static Logger logger = Logger.getLogger(DlLeagueMatchEuropeService.class);

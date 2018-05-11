@@ -10,7 +10,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager1")
 public class PeriodRewardService extends AbstractService<PeriodReward> {
     @Resource
     private PeriodRewardMapper periodRewardMapper;

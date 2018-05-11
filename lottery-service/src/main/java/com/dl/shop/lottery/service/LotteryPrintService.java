@@ -111,7 +111,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	@Value("${print.ticket.merchantPassword}")
 	private String merchantPassword;
 	
-	@Value("${spring.datasource.druid.url}")
+	/*@Value("${spring.datasource.druid.url}")
 	private String dbUrl;
 	
 	@Value("${spring.datasource.druid.username}")
@@ -121,7 +121,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	private String dbPass;
 	
 	@Value("${spring.datasource.druid.driver-class-name}")
-	private String dbDriver;
+	private String dbDriver;*/
 	
 	/**
 	 * 投注接口（竞彩足球，game参数都是T51）

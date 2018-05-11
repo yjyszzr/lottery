@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dl.shop.lottery.dao.LotteryMatchPlayMapper">
+<mapper namespace="com.dl.shop.lottery.dao2.LotteryMatchPlayMapper">
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryMatchPlay">
     <id column="match_play_id" jdbcType="INTEGER" property="matchPlayId" />
-    <result column="match_id" jdbcType="INTEGER" property="matchId" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
     <result column="play_content" jdbcType="VARCHAR" property="playContent" />
     <result column="play_type" jdbcType="INTEGER" property="playType" />
     <result column="status" jdbcType="INTEGER" property="status" />
@@ -12,14 +12,14 @@
     <result column="update_time" jdbcType="INTEGER" property="updateTime" />
   </resultMap>
   
-  <select id="matchPlayListByMatchIds" resultMap="BaseResultMap">
-  	select match_play_id,match_id,play_content,play_type,status,is_del,create_time,update_time
+  <select id="matchPlayListByChangciIds" resultMap="BaseResultMap">
+  	select match_play_id,changci_id,play_content,play_type,status,is_del,create_time,update_time
   	from dl_match_play
   	where is_del = 0 and status=0 
-  	<if test="matchIds!=null and matchIds != ''">
-  	 	and match_id in
-  	 	<foreach collection="matchIds" item="matchId" open="(" close=")" separator=",">
-  	 		#{matchId}
+  	<if test="changciIds!=null and changciIds != ''">
+  	 	and changci_id in
+  	 	<foreach collection="changciIds" item="changciId" open="(" close=")" separator=",">
+  	 		#{changciId}
   	 	</foreach>
   	 </if> 
   	 <if test="playType!=null and playType != ''">
@@ -27,13 +27,13 @@
   	 </if> 
   </select>
   
-  <select id="lotteryMatchPlayByMatchIdAndPlayType" resultMap="BaseResultMap">
-  	select * from dl_match_play where match_id=#{matchId} and play_type=#{playType}
+  <select id="lotteryMatchPlayByChangciIdAndPlayType" resultMap="BaseResultMap">
+  	select * from dl_match_play where changci_id=#{changciId} and play_type=#{playType}
   </select>
   
   <update id="updatePlayContent">
   	update dl_match_play
   	set play_content = #{playContent},update_time=#{updateTime}
-  	where match_id=#{matchId} and play_type=#{playType}
+  	where changci_id=#{changciId} and play_type=#{playType}
   </update>
 </mapper>

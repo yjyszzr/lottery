@@ -19,14 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.NetWorkUtil;
-import com.dl.shop.lottery.dao.DlLeagueInfoMapper;
-import com.dl.shop.lottery.dao.DlLeagueTeamMapper;
+import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
+import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueInfoTeamRef;
 import com.dl.shop.lottery.model.DlLeagueTeam;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 	
     @Resource

@@ -10,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.LeagueInfoDTO;
-import com.dl.shop.lottery.dao.DlLeagueInfoMapper;
+import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueInfo;
+import com.dl.shop.lottery.model.LotteryMatch;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
     @Resource
     private DlLeagueInfoMapper dlLeagueInfoMapper;
@@ -32,5 +34,4 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			return dto;
 		}).collect(Collectors.toList());
 	}
-
 }

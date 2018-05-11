@@ -18,8 +18,8 @@ import com.dl.base.enums.MatchResultHadEnum;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.NetWorkUtil;
-import com.dl.shop.lottery.dao.DlLeagueMatchResultMapper;
-import com.dl.shop.lottery.dao.LotteryMatchMapper;
+import com.dl.shop.lottery.dao2.DlLeagueMatchResultMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.DlLeagueMatchResultStringDTO;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -28,7 +28,7 @@ import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 @Slf4j
 public class DlLeagueMatchResultService extends AbstractService<DlLeagueMatchResult> {
 	

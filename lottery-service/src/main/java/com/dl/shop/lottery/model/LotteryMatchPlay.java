@@ -14,8 +14,8 @@ public class LotteryMatchPlay {
     /**
      * 赛事id
      */
-    @Column(name = "match_id")
-    private Integer matchId;
+    @Column(name = "changci_id")
+    private Integer changciId;
 
     /**
      * 玩法内容
@@ -80,18 +80,18 @@ public class LotteryMatchPlay {
      *
      * @return match_id - 赛事id
      */
-    public Integer getMatchId() {
-        return matchId;
-    }
+    public Integer getChangciId() {
+		return changciId;
+	}
 
-    /**
+	/**
      * 设置赛事id
      *
      * @param matchId 赛事id
      */
-    public void setMatchId(Integer matchId) {
-        this.matchId = matchId;
-    }
+    public void setChangciId(Integer changciId) {
+		this.changciId = changciId;
+	}
 
     /**
      * 获取玩法内容

@@ -12,10 +12,10 @@ public class DlLeagueMatchPlay {
     private Integer id;
 
     /**
-     * 赛事id
+     * 场次id
      */
-    @Column(name = "match_id")
-    private Integer matchId;
+    @Column(name = "changci_id")
+    private Integer changciId;
 
     /**
      * 玩法类型
@@ -64,18 +64,19 @@ public class DlLeagueMatchPlay {
      *
      * @return match_id - 赛事id
      */
-    public Integer getMatchId() {
-        return matchId;
-    }
+    public Integer getChangciId() {
+		return changciId;
+	}
 
-    /**
+
+	/**
      * 设置赛事id
      *
      * @param matchId 赛事id
      */
-    public void setMatchId(Integer matchId) {
-        this.matchId = matchId;
-    }
+    public void setChangciId(Integer changciId) {
+		this.changciId = changciId;
+	}
 
     /**
      * 获取玩法类型

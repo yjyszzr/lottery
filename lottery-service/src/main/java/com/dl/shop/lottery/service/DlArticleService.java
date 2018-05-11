@@ -31,7 +31,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager1")
 @Slf4j
 public class DlArticleService extends AbstractService<DlArticle> {
 	@Resource

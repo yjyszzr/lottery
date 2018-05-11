@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dl.shop.lottery.dao.LotteryMatchMapper">
+<mapper namespace="com.dl.shop.lottery.dao2.LotteryMatchMapper">
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryMatch">
     <id column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
@@ -212,4 +212,22 @@
                 )
             </foreach >
     </insert > 
+    
+    <select id="refreshInfos" resultMap="BaseResultMap">
+  	select 
+  		m.match_id, 
+  	t.sporttery_teamid home_team_id, 
+  	t.team_name home_team_name, 
+  	t.team_addr home_team_abbr
+	 from dl_match m, dl_league_team t 
+  	where m.home_team_abbr=t.team_addr and m.home_team_id != t.sporttery_teamid and t.sporttery_teamid &gt; 0 
+  	order by show_time asc limit 1000
+  </select>
+  
+  <update id="updateteaminfo">
+  update dl_match set home_team_id=#{homeTeamId}, home_team_name=#{homeTeamName} where match_id=#{matchId}
+  </update>
+  <select id="allmatches" resultMap="BaseResultMap">
+  select * from dl_match where visiting_team_abbr not in(select team_addr from dl_league_team ) order by visiting_team_abbr;
+  </select>
 </mapper>

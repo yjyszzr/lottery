@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager1")
 public class LotteryPlayClassifyService extends AbstractService<LotteryPlayClassify> {
     @Resource
     private LotteryPlayClassifyMapper lotteryPlayClassifyMapper;

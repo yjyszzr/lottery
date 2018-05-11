@@ -1,4 +1,4 @@
-package com.dl.shop.lottery.dao;
+package com.dl.shop.lottery.dao2;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import com.dl.shop.lottery.model.LotteryMatchPlay;
 
 public interface LotteryMatchPlayMapper extends Mapper<LotteryMatchPlay> {
 
-	List<LotteryMatchPlay> matchPlayListByMatchIds(@Param("matchIds")Integer[] matchIds, @Param("playType")String playType);
+	List<LotteryMatchPlay> matchPlayListByChangciIds(@Param("changciIds")Integer[] matchIds, @Param("playType")String playType);
 
 	void updatePlayContent(LotteryMatchPlay play);
 
-	LotteryMatchPlay lotteryMatchPlayByMatchIdAndPlayType(@Param("matchId")Integer matchId, @Param("playType")int playType);
+	LotteryMatchPlay lotteryMatchPlayByChangciIdAndPlayType(@Param("changciId")Integer matchId, @Param("playType")int playType);
 }

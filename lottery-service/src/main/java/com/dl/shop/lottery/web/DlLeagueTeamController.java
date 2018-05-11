@@ -32,7 +32,19 @@ public class DlLeagueTeamController {
 
     @Resource
     private DlLeagueInfoService leagueInfoService;
-    
+  /*  
+    @PostMapping("/refresh")
+    public BaseResult add() {
+    	leagueInfoService.aa();
+//    	List<DlLeagueInfo> getall = leagueInfoService.getall1();
+    	while(getall.size() > 0) {
+    		int end = getall.size() > 100?100:getall.size();
+    		List<DlLeagueInfo> subList = getall.subList(0, end);
+    		leagueInfoService.refreshLeague(subList);
+    		getall.removeAll(subList);
+    	}
+        return ResultGenerator.genSuccessResult();
+    }*/
    /* @ApiOperation(value = "刷新拉取球队信息", notes = "刷新拉取球队信息")
     @PostMapping("/refresh")
     public BaseResult add() {

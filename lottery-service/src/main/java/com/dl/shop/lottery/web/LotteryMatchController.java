@@ -35,7 +35,6 @@ import com.dl.lottery.dto.LeagueMatchAsiaDTO;
 import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
 import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
-import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
@@ -48,7 +47,6 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
-import com.dl.lottery.param.PathParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.StringRemindParam;
 import com.dl.member.api.IUserBonusService;
@@ -115,7 +113,7 @@ public class LotteryMatchController {
 	@ApiOperation(value = "获取赛事列表", notes = "获取赛事列表")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
-		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList1(param);
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
     	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcZqMatchListDTO);
     }
 	
@@ -528,7 +526,7 @@ public class LotteryMatchController {
 		MatchInfoForTeamDTO lotteryMatchForTeam = lotteryMatchService.LotteryMatchForTeam(lotteryMatch);
 		TeamSupportDTO hadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode());
 		TeamSupportDTO hhadTeamSupport = dlMatchSupportService.matchSupports(lotteryMatch, MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode());
-		String fixedOdds = lotteryMatchPlayService.fixedOddsByMatchId(param.getMatchId());
+		String fixedOdds = lotteryMatchPlayService.fixedOddsByChangciId(lotteryMatch.getChangciId());
 		hhadTeamSupport.setFixedOdds(fixedOdds);
 		MatchTeamInfosSumDTO dto = new MatchTeamInfosSumDTO();
 		dto.setHhMatchTeamInfo(matchTeamInfo.getHhMatchTeamInfo());

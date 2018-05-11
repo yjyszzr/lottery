@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
-import com.dl.shop.lottery.dao.DlLeagueMatchDaoXiaoMapper;
+import com.dl.shop.lottery.dao2.DlLeagueMatchDaoXiaoMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchDaoXiao;
 
 import tk.mybatis.mapper.entity.Condition;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlLeagueMatchDaoXiaoService extends AbstractService<DlLeagueMatchDaoXiao> {
     @Resource
     private DlLeagueMatchDaoXiaoMapper dlLeagueMatchDaoXiaoMapper;

@@ -1,8 +1,8 @@
 package com.dl.shop.lottery.service;
+import com.dl.shop.lottery.dao2.DlMatchSupportMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchAsia;
 import com.dl.shop.lottery.model.DlMatchSupport;
 import com.dl.shop.lottery.model.LotteryMatch;
-import com.dl.shop.lottery.dao.DlMatchSupportMapper;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.MatchPlayTypeEnum;
@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 
 @Service
-@Transactional
+@Transactional(value="transactionManager2")
 public class DlMatchSupportService extends AbstractService<DlMatchSupport> {
     @Resource
     private DlMatchSupportMapper dlMatchSupportMapper;
