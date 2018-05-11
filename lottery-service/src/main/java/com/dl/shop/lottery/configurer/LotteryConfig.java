@@ -14,7 +14,7 @@ public class LotteryConfig {
 	private String shareInfoUrl;
 
 	// banner展示
-	@Value("${dl.banner.show.url}")
+	@Value("${dl.lotteryManager.file.url}")
 	private String bannerShowUrl;
 
 	// banner链接赛事URL
