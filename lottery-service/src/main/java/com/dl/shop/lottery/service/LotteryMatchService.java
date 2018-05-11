@@ -1878,9 +1878,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int sum = m+n;//总进球数
 			int sub = m-n;//进球差数
 			List<Double> allOdds = new ArrayList<Double>();
-			Double cellOdds = Double.valueOf(dto.getCellOdds());
-			if(cellOdds != null) {
-				allOdds.add(cellOdds);
+			String cellOdds = dto.getCellOdds();
+			if(StringUtils.isNotBlank(cellOdds)) {
+				allOdds.add(Double.valueOf(cellOdds));
 			}
 			//1.总进球
 			if(ttgBetPlay != null) {
