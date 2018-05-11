@@ -1580,15 +1580,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		});
 		List<Double> maxOddsList = this.maxMoneyBetPlayCellsForLottery(playCellMap);
-		//
-		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
+		long end2 = System.currentTimeMillis();
+		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
+		//计算投票综合信息核心算法
 		Double totalMaxMoney = 0.0;
+		BetResultInfo betResult = new BetResultInfo();
+		Integer ticketNum = 0;
+		double srcMoney = 2.0*param.getTimes();
+		Double maxLotteryMoney = 0.0;
 		for(String betType: indexMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<String> betIndexList = indexMap.get(betType);
 			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
-//			List<Double> sumList = new ArrayList<Double>();
 			for(String str: betIndexList) {//单注组合
 				String[] strArr = str.split(",");
 				Double maxMoney = 2.0*param.getTimes();
@@ -1601,37 +1605,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					maxMoney = maxMoney*double1;
 				}
 				totalMaxMoney+=maxMoney;
-//				sumList.add(maxMoney);
 				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
 				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
-				/*Double max = this.maxMoneyBetPlayCellsForLottery(playCellMap);
-				Double maxMoney = 2.0*param.getTimes()*max;
-				sumList.add(maxMoney);*/
-				/*BetResultInfo nRst = new BetResultInfo();
-				nRst.setMaxBonus(2.0*param.getTimes());
-				this.aa1(maxMoneyBetPlayCellsForLottery, playCodes, num, nRst, sumList);*/
 			}
-			/*if(sumList.size() == 1) {
-				Double maxBetMoney = sumList.get(0);
-				totalMaxMoney+=maxBetMoney;
-			} else if(sumList.size() > 1) {
-				Double maxBetMoney = sumList.stream().max((item1,item2)->item1.compareTo(item2)).get();
-				totalMaxMoney+=maxBetMoney;
-			}*/
-			betPlayCellMap.put(betType, result);
-		}
-		logger.info("***************最大预测奖金"+totalMaxMoney);
-		long end2 = System.currentTimeMillis();
-		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
-		BetResultInfo betResult = new BetResultInfo();
-		Integer ticketNum = 0;
-		double srcMoney = 2.0*param.getTimes();
-		Double maxLotteryMoney = 0.0;
-		for(String betType: betPlayCellMap.keySet()) {
-			char[] charArray = betType.toCharArray();
-			int num = Integer.valueOf(String.valueOf(charArray[0]));
-			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
-			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
+			//计算投票信息
+			for(List<MatchBetPlayCellDTO> subList: result) {
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
 				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
 				ticketNum++;
@@ -1641,6 +1619,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}
 		}
+		logger.info("***************最大预测奖金"+totalMaxMoney);
 		long end3 = System.currentTimeMillis();
 		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
 		//页面返回信息对象
