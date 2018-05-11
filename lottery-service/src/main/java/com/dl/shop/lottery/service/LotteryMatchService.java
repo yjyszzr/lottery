@@ -1691,9 +1691,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//总进球
 		Optional<MatchBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
 		MatchBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
-		if(crsBetPlay == null && ttgBetPlay != null) {
-			crsBetPlay = this.bb(ttgBetPlay);
-		}
 		//让球胜平负
 		Optional<MatchBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
 		MatchBetPlayCellDTO hhadBetPlay = optional2.isPresent()?optional2.get():null;
@@ -1704,10 +1701,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//半全场
 		Optional<MatchBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
 		MatchBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
+		if(crsBetPlay == null && ttgBetPlay != null) {
+			crsBetPlay = this.bb(ttgBetPlay);
+		}
 		if(crsBetPlay != null) {
 			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
 		}
 		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
+		/*
+		List<Double> rst = new ArrayList<Double>();
+		if(crsBetPlay != null) {
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			rst.addAll(cc);
+		}
+		if(ttgBetPlay != null) {
+			crsBetPlay = this.bb(ttgBetPlay);
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			rst.addAll(cc);
+		}
+		if(hadBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
+			rst.addAll(c);
+		}
+		if(hafuBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, null, hafuBetPlay);
+			rst.addAll(c);
+		}
+		if(hhadBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, null, null);
+			rst.addAll(c);
+		}
+		return rst;
+		*/
 	}
 	private List<Double> cc2(MatchBetPlayCellDTO hhadBetPlay, MatchBetPlayCellDTO hadBetPlay,
 			MatchBetPlayCellDTO hafuBetPlay) {

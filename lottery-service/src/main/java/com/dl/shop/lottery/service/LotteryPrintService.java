@@ -437,7 +437,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param list
 	 * @return
 	 */
-	@Transactional
+	@Transactional(value="transactionManager1")
 	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn) {
 		List<LotteryPrint> models = list.stream().map(dto->{
 			LotteryPrint lotteryPrint = new LotteryPrint();
