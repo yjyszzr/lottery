@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DlHallDTO;
@@ -36,7 +37,7 @@ import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
 @Service
-@Transactional(value="transactionManager1")
+@Transactional(value = "transactionManager1")
 public class LotteryHallService {
 
 	@Resource
@@ -109,8 +110,11 @@ public class LotteryHallService {
 	private List<DlNavBannerDTO> getDlNavBannerDTO() {
 		List<DlNavBannerDTO> dlNavBannerDTOs = new LinkedList<DlNavBannerDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
-		condition.createCriteria().andCondition("is_show=", 1);
 		condition.setOrderByClause("banner_sort asc");
+		Criteria criteria = condition.createCriteria();
+		criteria.andCondition("start_time <=", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("is_show=", 1);
 		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
 			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
