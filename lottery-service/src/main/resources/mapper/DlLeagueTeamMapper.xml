@@ -21,4 +21,11 @@
   <select id="getByTeamId" resultMap="BaseResultMap">
   	select * from dl_league_team where team_id=#{teamId}
   </select>
+  
+  <select id="queryLeagueTeamByTeamIds" resultMap="BaseResultMap">
+  	select * from dl_league_team where sporttery_teamid in
+ 	<foreach collection="teamIdList" item="teamId" index="index" open="(" close=")" separator=",">
+ 		#{teamId}
+ 	</foreach>
+  </select>
 </mapper>
