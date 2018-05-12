@@ -252,21 +252,58 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 		String playType = param.getPlayType();
-		List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 		Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>();
-		for(LotteryMatchPlay matchPlay: matchPlayList) {
-			Integer playType2 = matchPlay.getPlayType();
-			if("6".equals(playType) && playType2 == 7) {
-				continue;
+		if("6".equals(playType)) {
+			List<LotteryMatchPlay> hmatchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "1");
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "1");
+			Map<Integer, LotteryMatchPlay> playMap = new HashMap<Integer, LotteryMatchPlay>(matchPlayList.size());
+			matchPlayList.forEach(item->{
+				playMap.put(item.getChangciId(), item);
+			});
+			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
+				Integer changciId = matchPlay.getChangciId();
+				LotteryMatchPlay lotteryMatchPlay = playMap.get(changciId);
+				if(lotteryMatchPlay == null)continue;
+				String playContent = matchPlay.getPlayContent();
+				JSONObject hhadJo = JSON.parseObject(playContent);
+				String fixedodds = hhadJo.getString("fixedodds");
+				if(StringUtils.isBlank(fixedodds)) {
+					continue;
+				}
+				String playContent2 = lotteryMatchPlay.getPlayContent();
+				JSONObject hadJo = JSON.parseObject(playContent2);
+				DlJcZqMatchPlayDTO matchPlayDto = new DlJcZqMatchPlayDTO();
+				if(Integer.parseInt(fixedodds) > 0) {
+					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", hhadJo.getString("h")));
+					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", hadJo.getString("a")));
+				} else if(Integer.parseInt(fixedodds) < 0) {
+					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", hhadJo.getString("a")));
+					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", hadJo.getString("h")));
+				}
+				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
+				if(dlJcZqMatchPlayDTOs == null){
+					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+					matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
+				}
+				matchPlayDto.setFixedOdds(fixedodds);
+				dlJcZqMatchPlayDTOs.add(matchPlayDto);
 			}
-			Integer changciId = matchPlay.getChangciId();
-			DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-			List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
-			if(dlJcZqMatchPlayDTOs == null){
-				dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-				matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
+		}else {
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
+			for(LotteryMatchPlay matchPlay: matchPlayList) {
+				Integer playType2 = matchPlay.getPlayType();
+				if("6".equals(playType) && playType2 == 7) {
+					continue;
+				}
+				Integer changciId = matchPlay.getChangciId();
+				DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
+				if(dlJcZqMatchPlayDTOs == null){
+					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+					matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
+				}
+				dlJcZqMatchPlayDTOs.add(matchPlayDto);
 			}
-			dlJcZqMatchPlayDTOs.add(matchPlayDto);
 		}
 		long end1 = System.currentTimeMillis();
 		logger.info("==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
