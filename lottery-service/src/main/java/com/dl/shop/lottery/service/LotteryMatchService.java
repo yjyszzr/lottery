@@ -1278,8 +1278,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setMaxBonus(String.format("%.2f", maxBonus));
 		betInfoDTO.setMinBonus(String.format("%.2f", minBonus));
 		betInfoDTO.setTimes(param.getTimes());
-		betInfoDTO.setBetNum(betCellList.size());
-		betInfoDTO.setTicketNum(lotteryPrints.size());
+		betInfoDTO.setBetNum(betCellList.size()+"");
+		betInfoDTO.setTicketNum(lotteryPrints.size()+"");
 		Double money = betCellList.size()*param.getTimes()*2.0;
 		betInfoDTO.setMoney(String.format("%.2f", money));
 		betInfoDTO.setBetType(param.getBetType());
@@ -1506,9 +1506,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//计算投票综合信息核心算法
 		Double totalMaxMoney = 0.0;
 		Double minMoney = 1.0;
-		Integer betNums = 0;
+		Long betNums = 0l;
 //		BetResultInfo betResult = new BetResultInfo();
-		Integer ticketNum = 0;
+		Long ticketNum = 0l;
 //		double srcMoney = 2.0*param.getTimes();
 		Double maxLotteryMoney = 0.0;
 //		Map<String, Integer> cellNumsMap = matchBetPlayMap.getCellNumsMap();
@@ -1578,8 +1578,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		betInfoDTO.setMaxBonus(String.format("%.2f", totalMaxMoney));
 		betInfoDTO.setMinBonus(String.format("%.2f", minMoney));
 		betInfoDTO.setTimes(param.getTimes());
-		betInfoDTO.setBetNum(betNums);
-		betInfoDTO.setTicketNum(ticketNum);
+		betInfoDTO.setBetNum(betNums.toString());
+		betInfoDTO.setTicketNum(ticketNum.toString());
 		Double money = betNums*param.getTimes()*2.0;
 		betInfoDTO.setMoney(String.format("%.2f", money));
 		betInfoDTO.setBetType(param.getBetType());
