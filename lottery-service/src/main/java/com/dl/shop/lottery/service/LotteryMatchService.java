@@ -1576,20 +1576,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	//计算混合玩法最大投注中奖金额
 	private List<Double> maxMoneyBetPlayCellsForLottery(Map<String, List<MatchBetPlayCellDTO>> playCellMap) {
 		List<Double> maxOdds = new ArrayList<Double>(playCellMap.size());
-//		Double maxOdds = 1.0;
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
-//			Set<Integer> playTypes = list.stream().map(dto->Integer.parseInt(dto.getPlayType())).collect(Collectors.toSet());
 			List<Double> maxMoneyBetPlayByCRS = this.maxMoneyBetPlayByCRS(list);
 			String bean2json = JSONHelper.bean2json(maxMoneyBetPlayByCRS);
 			logger.info(playCode + " !@#$%^&*(+#$%^&*()+++++++++++++++" + bean2json);
+			if(CollectionUtils.isEmpty(maxMoneyBetPlayByCRS)) {
+				continue;
+			}
 			if(maxMoneyBetPlayByCRS.size() ==1) {
 				Double max = maxMoneyBetPlayByCRS.get(0);
 				maxOdds.add(max);
-//				maxOdds = maxOdds*max;
 			}else {
 				Double max = maxMoneyBetPlayByCRS.stream().max((item1,item2)->item1.compareTo(item2)).get();
-//				maxOdds = maxOdds*max;
 				maxOdds.add(max);
 			}
 		}
