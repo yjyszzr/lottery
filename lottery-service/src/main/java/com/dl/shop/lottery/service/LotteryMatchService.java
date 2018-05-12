@@ -99,9 +99,11 @@ import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 //@Transactional
+@Slf4j
 public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
 	private final static Logger logger = Logger.getLogger(LotteryMatchService.class);
