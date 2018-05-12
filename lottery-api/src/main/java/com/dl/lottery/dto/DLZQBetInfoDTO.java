@@ -18,7 +18,7 @@ public class DLZQBetInfoDTO implements Serializable{
 	@ApiModelProperty("倍数")
 	private int times;
 	@ApiModelProperty("投注数目")
-	private String betNum;
+	private int betNum;
 	@ApiModelProperty("彩票金额")
 	private String money;
 	@ApiModelProperty("投注方式：31")
@@ -34,7 +34,7 @@ public class DLZQBetInfoDTO implements Serializable{
 	@ApiModelProperty("预出票信息列表")
 	private List<LotteryPrintDTO> lotteryPrints;
 	@ApiModelProperty("投注票数")
-	private String ticketNum;
+	private int ticketNum;
 	@ApiModelProperty("最大投注彩票金额")
 	private String maxLotteryMoney = "0.0";
 	

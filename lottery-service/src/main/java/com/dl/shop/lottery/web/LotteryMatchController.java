@@ -257,7 +257,7 @@ public class LotteryMatchController {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
 		int betNum = betInfo.getBetNum();
-		if(betNum >= 10000) {
+		if(betNum >= 10000 || betNum < 0) {
 //			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
@@ -407,7 +407,7 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
 		int betNum = betInfo.getBetNum();
-		if(betNum >= 10000) {
+		if(betNum >= 10000 || betNum < 0) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
 		}
 		String betMoney = betInfo.getMoney();
