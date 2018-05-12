@@ -1498,9 +1498,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer ticketNum = 0;
 		double srcMoney = 2.0*param.getTimes();
 		Double maxLotteryMoney = 0.0;
+		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
 		for(String betType: indexMap.keySet()) {
-			char[] charArray = betType.toCharArray();
-			int num = Integer.valueOf(String.valueOf(charArray[0]));
+			/*char[] charArray = betType.toCharArray();
+			int num = Integer.valueOf(String.valueOf(charArray[0]));*/
 			List<String> betIndexList = indexMap.get(betType);
 			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
 			for(String str: betIndexList) {//单注组合
@@ -1518,8 +1519,26 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
 				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
 			}
+			betPlayCellMap.put(betType, result);
 			//计算投票信息
-			for(List<MatchBetPlayCellDTO> subList: result) {
+			/*for(List<MatchBetPlayCellDTO> subList: result) {
+				Integer oldBetNum = betResult.getBetNum();//记录原始值 
+				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
+				ticketNum++;
+				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
+				if(betMoney > maxLotteryMoney) {
+					maxLotteryMoney = betMoney;
+				}
+			}*/
+		}
+		logger.info("***************最大预测奖金"+totalMaxMoney);
+		long end3 = System.currentTimeMillis();
+		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
+		for(String betType: betPlayCellMap.keySet()) {
+			char[] charArray = betType.toCharArray();
+			int num = Integer.valueOf(String.valueOf(charArray[0]));
+			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
+			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
 				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
 				ticketNum++;
@@ -1529,9 +1548,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}
 		}
-		logger.info("***************最大预测奖金"+totalMaxMoney);
-		long end3 = System.currentTimeMillis();
-		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
 		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney.toString());
