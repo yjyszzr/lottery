@@ -285,6 +285,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
 					matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
 				}
+				matchPlayDto.setPlayType(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode());
 				matchPlayDto.setFixedOdds(fixedodds);
 				dlJcZqMatchPlayDTOs.add(matchPlayDto);
 			}
