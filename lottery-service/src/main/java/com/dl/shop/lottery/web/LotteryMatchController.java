@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.web;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,7 @@ import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
+import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
@@ -399,12 +401,7 @@ public class LotteryMatchController {
 		if(null == userInfoExceptPassRst.getData()) {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
-		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
-		Double userTotalMoney = Double.valueOf(totalMoney);
-		BaseResult<List<UserBonusDTO>> userBonusListRst = userBonusService.queryValidBonusList(strParam);
-		if(userBonusListRst.getCode() != 0) {
-			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
-		}
+
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
 		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
@@ -415,6 +412,16 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
+		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
+		Double userTotalMoney = Double.valueOf(totalMoney);
+		
+		BonusLimitConditionParam bonusLimitConditionParam = new BonusLimitConditionParam();
+		bonusLimitConditionParam.setOrderMoneyPaid(BigDecimal.valueOf(orderMoney));
+		BaseResult<List<UserBonusDTO>> userBonusListRst = userBonusService.queryValidBonusList(bonusLimitConditionParam);
+		if(userBonusListRst.getCode() != 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
+		}
+		
 		List<UserBonusDTO> userBonusList = userBonusListRst.getData();
 		UserBonusDTO userBonusDto = null;
 		if(!CollectionUtils.isEmpty(userBonusList)) {
