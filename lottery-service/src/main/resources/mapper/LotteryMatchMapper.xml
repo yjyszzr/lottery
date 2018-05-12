@@ -231,12 +231,12 @@
   select * from dl_match where visiting_team_abbr not in(select team_addr from dl_league_team ) order by visiting_team_abbr;
   </select>
   
-  <select id="getFilterConditionsToday" resultType="com.dl.lottery.dto.LeagueInfoDTO">
+  <select id="getFilterConditionsSomeDay" parameterType ="java.lang.String" resultType="com.dl.lottery.dto.LeagueInfoDTO">
 	select
 		distinct(league_id) as leagueId,
 		league_name as leagueName,
 		league_addr as leagueAddr
 	from dl_match 
-	where date(match_time) = curdate() and is_del = 0 and is_show=1 order by leagueId
+	where str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and is_del = 0 and is_show=1 order by leagueId
   </select>
 </mapper>

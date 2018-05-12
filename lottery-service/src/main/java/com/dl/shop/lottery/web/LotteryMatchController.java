@@ -42,6 +42,7 @@ import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
+import com.dl.lottery.param.DateStrParam;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -583,9 +584,9 @@ public class LotteryMatchController {
 	
 	
 	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
-    @PostMapping("/getFilterConditionsToday")
-    public BaseResult<List<LeagueInfoDTO>> getFilterConditionsToday(@Valid @RequestBody GetFilterConditionsParam param) {
-		List<LeagueInfoDTO> leagueInfos =  lotteryMatchService.getFilterConditionsToday();
+    @PostMapping("/getFilterConditionsSomeDay")
+    public BaseResult<List<LeagueInfoDTO>> getFilterConditionsSomeDay(@Valid @RequestBody DateStrParam param) {
+		List<LeagueInfoDTO> leagueInfos =  lotteryMatchService.getFilterConditionsSomeDay(param.getDateStr());
 		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
     }
 }

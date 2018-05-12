@@ -98,6 +98,6 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
   	/**
 	 * 筛选当天的比赛的league信息
 	 */
-	public List<LeagueInfoDTO> getFilterConditionsToday();
+	public List<LeagueInfoDTO> getFilterConditionsSomeDay(@Param("dateStr") String dateStr);
 	
 }
