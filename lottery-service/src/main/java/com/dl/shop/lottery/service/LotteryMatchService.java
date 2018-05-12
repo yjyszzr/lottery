@@ -101,9 +101,11 @@ import com.dl.shop.lottery.model.TMatchBetInfoWithMinOddsList;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import io.jsonwebtoken.lang.Collections;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 //@Transactional
+@Slf4j
 public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
 	private final static Logger logger = Logger.getLogger(LotteryMatchService.class);
@@ -2325,6 +2327,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			leagueIdArr = queryMatchParam.getLeagueIds().split(",");
 		}
 		
+		log.info("=========================查询的leagueId:"+JSON.toJSONString(leagueIdArr));
 		String[] matchIdArr = new String [] {};
 		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
 			Integer userId = SessionUtil.getUserId();
