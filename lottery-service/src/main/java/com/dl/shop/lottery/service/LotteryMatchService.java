@@ -2297,6 +2297,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			leagueIdArr = queryMatchParam.getLeagueIds().split(",");
 		}
 		
+		log.info("=========================查询的leagueId:"+JSON.toJSONString(leagueIdArr));
 		String[] matchIdArr = new String [] {};
 		if(queryMatchParam.getIsAlreadyBuyMatch().equals("1")) {
 			Integer userId = SessionUtil.getUserId();
