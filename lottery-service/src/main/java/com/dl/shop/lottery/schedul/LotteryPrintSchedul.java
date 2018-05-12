@@ -17,9 +17,8 @@ import com.dl.shop.lottery.service.LotteryRewardService;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
-/*@Slf4j
 @Configuration
-@EnableScheduling*/
+@EnableScheduling
 public class LotteryPrintSchedul {
 	
 	@Resource
