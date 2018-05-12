@@ -2828,8 +2828,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * 获取当天比赛的league信息
 	 * @return
 	 */
-	public List<LeagueInfoDTO> getFilterConditionsToday() {
-		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditionsToday();
+	public List<LeagueInfoDTO> getFilterConditionsSomeDay(String dateStr) {
+		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditionsSomeDay(dateStr);
 		if(filterConditions == null) {
 			filterConditions = new ArrayList<LeagueInfoDTO>(0);
 		}
