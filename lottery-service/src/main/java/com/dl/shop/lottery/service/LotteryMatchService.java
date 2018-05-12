@@ -253,7 +253,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 		String playType = param.getPlayType();
 		Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>();
-		if("6".equals(playType)) {
+		if("7".equals(playType)) {
 			List<LotteryMatchPlay> hmatchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "1");
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "1");
 			Map<Integer, LotteryMatchPlay> playMap = new HashMap<Integer, LotteryMatchPlay>(matchPlayList.size());
