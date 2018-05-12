@@ -3,6 +3,8 @@ package com.dl.shop.lottery.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -60,11 +62,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		}
 		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
-			List<String> articleThumbDto = dto.getArticleThumb();
 			List<String> articleThumbShow = new ArrayList<String>();
-			for (int i = 0; i < articleThumbDto.size(); i++) {
-				articleThumbShow.add(lotteryConfig.getBannerShowUrl() + articleThumbDto.get(i));
-			}
 			if ("1".equals(article.getExtendCat())) {
 				article.setExtendCat("今日关注");
 			} else if ("2".equals(article.getExtendCat())) {
@@ -75,7 +73,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 				article.setExtendCat("其它");
 			}
 			dto.setAuthor(article.getAuthor());
-			dto.setArticleThumb(articleThumbShow);
+			dto.setArticleThumb(dto.getArticleThumb());
 			dtos.add(dto);
 		}
 
@@ -161,11 +159,14 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		DLArticleDTO dto = new DLArticleDTO();
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
-		List<String> picList = new ArrayList<String>();
+		
+		List<String> articleThumbList = new ArrayList<String>();
 		if (!StringUtils.isEmpty(article.getArticleThumb())) {
-			picList = Arrays.asList(article.getArticleThumb().split(","));
+			List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
+			articleThumbList = picList.stream().map(s->lotteryConfig.getBannerShowUrl()+s.toString()).collect(Collectors.toList());
 		}
-		dto.setArticleThumb(picList);
+		
+		dto.setArticleThumb(articleThumbList);
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
 		dto.setKeywords(article.getKeywords());
@@ -177,7 +178,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setSummary(article.getSummary());
 		return dto;
 	}
-
+	
 	public DLArticleDetailDTO findArticleById(Integer id) {
 		Integer userId = SessionUtil.getUserId();
 		DlArticle article = super.findById(id);

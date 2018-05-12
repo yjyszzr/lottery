@@ -2822,7 +2822,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return filterConditions;
 	}
+
 	
+	/**
+	 * 获取当天比赛的league信息
+	 * @return
+	 */
+	public List<LeagueInfoDTO> getFilterConditionsToday() {
+		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditionsToday();
+		if(filterConditions == null) {
+			filterConditions = new ArrayList<LeagueInfoDTO>(0);
+		}
+		return filterConditions;
+	}
 
 	/**
 	 * 历史赛事入库

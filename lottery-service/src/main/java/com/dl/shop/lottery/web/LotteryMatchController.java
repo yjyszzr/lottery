@@ -581,4 +581,11 @@ public class LotteryMatchController {
 		return lotteryMatchService.historyMatchIntoDB();
     }
 	
+	
+	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
+    @PostMapping("/getFilterConditionsToday")
+    public BaseResult<List<LeagueInfoDTO>> getFilterConditionsToday(@Valid @RequestBody GetFilterConditionsParam param) {
+		List<LeagueInfoDTO> leagueInfos =  lotteryMatchService.getFilterConditionsToday();
+		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
+    }
 }

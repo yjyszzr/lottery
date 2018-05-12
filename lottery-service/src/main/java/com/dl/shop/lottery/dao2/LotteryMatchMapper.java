@@ -95,4 +95,9 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public int batchInsertHistoryMatch(@Param("list") List<LotteryMatch> list);
 	
+  	/**
+	 * 筛选当天的比赛的league信息
+	 */
+	public List<LeagueInfoDTO> getFilterConditionsToday();
+	
 }
