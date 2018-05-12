@@ -1507,41 +1507,37 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Double totalMaxMoney = 0.0;
 		Double minMoney = 1.0;
 		Integer betNums = 0;
-		Integer betNums2 = 0;
-		BetResultInfo betResult = new BetResultInfo();
+//		BetResultInfo betResult = new BetResultInfo();
 		Integer ticketNum = 0;
-		double srcMoney = 2.0*param.getTimes();
+//		double srcMoney = 2.0*param.getTimes();
 		Double maxLotteryMoney = 0.0;
-		Map<String, Integer> cellNumsMap = matchBetPlayMap.getCellNumsMap();
-		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
+//		Map<String, Integer> cellNumsMap = matchBetPlayMap.getCellNumsMap();
+//		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
 		for(String betType: indexMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<String> betIndexList = indexMap.get(betType);
-			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
+//			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
 			for(String str: betIndexList) {//单注组合
 				String[] strArr = str.split(",");
 				Double maxMoney = 2.0*param.getTimes();
-				List<String> playCodes = new ArrayList<String>(strArr.length);
+//				List<String> playCodes = new ArrayList<String>(strArr.length);
 				Integer betNum = 1;
 				for(String item: strArr) {
 					MatchBetPlayDTO betPlayDto = matchBellCellList.get(Integer.valueOf(item));
-					String playCode = betPlayDto.getPlayCode();
+//					String playCode = betPlayDto.getPlayCode();
 					Integer cellNums = betPlayDto.getMatchBetCells().stream().map(item1->item1.getBetCells().size()).reduce(Integer::sum).get();
 					betNum*=cellNums;
-					playCodes.add(playCode);
+//					playCodes.add(playCode);
 					Double double1 = maxOddsList.get(Integer.valueOf(item));
 					maxMoney = maxMoney*double1;
 				}
 				totalMaxMoney+=maxMoney;
-				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
-				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
+//				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
+//				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
 				betNums+=betNum;
 			}
-			betPlayCellMap.put(betType, result);
-			for(List<MatchBetPlayCellDTO> subList: result) {
-				betNums2 +=subList.stream().map(item->cellNumsMap.get(item.getPlayCode())).reduce((odds,item)-> odds*=item).get();
-			}
+//			betPlayCellMap.put(betType, result);
 			//计算投票信息
 			/*for(List<MatchBetPlayCellDTO> subList: result) {
 				Integer oldBetNum = betResult.getBetNum();//记录原始值 
@@ -1559,10 +1555,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("***************最大预测奖金"+totalMaxMoney);
 		logger.info("***************最小预测奖金"+minMoney);
 		logger.info("***************投注数："+betNums);
-		logger.info("***************投注数2："+betNums2);
+//		logger.info("***************投注数2："+betNums2);
 		long end3 = System.currentTimeMillis();
 		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
-		for(String betType: betPlayCellMap.keySet()) {
+		/*for(String betType: betPlayCellMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
@@ -1575,16 +1571,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					maxLotteryMoney = betMoney;
 				}
 			}
-		}
+		}*/
 		//页面返回信息对象
 		DLZQBetInfoDTO betInfoDTO = new DLZQBetInfoDTO();
 		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney.toString());
 		betInfoDTO.setMaxBonus(String.format("%.2f", totalMaxMoney));
-		betInfoDTO.setMinBonus(String.format("%.2f", betResult.getMinBonus()));
+		betInfoDTO.setMinBonus(String.format("%.2f", minMoney));
 		betInfoDTO.setTimes(param.getTimes());
-		betInfoDTO.setBetNum(betResult.getBetNum());
+		betInfoDTO.setBetNum(betNums);
 		betInfoDTO.setTicketNum(ticketNum);
-		Double money = betResult.getBetNum()*param.getTimes()*2.0;
+		Double money = betNums*param.getTimes()*2.0;
 		betInfoDTO.setMoney(String.format("%.2f", money));
 		betInfoDTO.setBetType(param.getBetType());
 		betInfoDTO.setPlayType(param.getPlayType());
@@ -1602,18 +1598,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<Double> minList = new ArrayList<Double>(matchBellCellList.size());
 		Map<String, List<MatchBetPlayCellDTO>> playCellMap = new HashMap<String, List<MatchBetPlayCellDTO>>(matchBellCellList.size());
 		Map<String, Double> minCellOddsMap = new HashMap<String, Double>(matchBellCellList.size());
-		Map<String, Integer> cellNumsMap = new HashMap<String, Integer>(matchBellCellList.size());
+//		Map<String, Integer> cellNumsMap = new HashMap<String, Integer>(matchBellCellList.size());
 		matchBellCellList.forEach(betPlayDto->{
 			String playCode = betPlayDto.getPlayCode();
 			List<MatchBetCellDTO> matchBetCells = betPlayDto.getMatchBetCells();
 			List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
 			Double minCellOdds = minCellOddsMap.get(playCode);
-			Integer cellNums = cellNumsMap.get(playCode);
+//			Integer cellNums = cellNumsMap.get(playCode);
 			if(list == null) {
 				list = new ArrayList<MatchBetPlayCellDTO>(matchBetCells.size());
 				playCellMap.put(playCode, list);
 				minCellOdds = Double.MAX_VALUE;
-				cellNums = 0;
+//				cellNums = 0;
 			}
 			
 			for(MatchBetCellDTO cell: matchBetCells) {
@@ -1631,14 +1627,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					minCellOdds = Double.min(minCellOdds, Double.valueOf(cellOdds));
 				}
 			}
-			cellNums += matchBetCells.size();
+//			cellNums += matchBetCells.size();
 			minCellOddsMap.put(playCode, minCellOdds);
-			cellNumsMap.put(playCode, cellNums);
+//			cellNumsMap.put(playCode, cellNums);
 		});
 		minList.addAll(minCellOddsMap.values());
 		tbml.setMinOddsList(minList);
 		tbml.setPlayCellMap(playCellMap);
-		tbml.setCellNumsMap(cellNumsMap);
+//		tbml.setCellNumsMap(cellNumsMap);
 		return tbml;
 	}
 	//计算混合玩法最大投注中奖金额
