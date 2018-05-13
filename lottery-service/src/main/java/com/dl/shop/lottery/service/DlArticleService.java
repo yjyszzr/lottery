@@ -102,6 +102,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		}
 		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
+			dto.setAddTime(article.getAddTime().toString());
 			dtos.add(dto);
 		}
 
@@ -142,6 +143,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 
 		for (DlArticle article : findAllRelated) {
 			DLArticleDTO dto = this.articleDto(article);
+			dto.setAddTime(article.getAddTime().toString());
 			dtos.add(dto);
 		}
 
