@@ -208,7 +208,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			isCollect = rst.getData();
 		}
 
-		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
+		dto.setAddTime(article.getAddTime().toString());
 		dto.setArticleId(article.getArticleId());
 		dto.setArticleThumb(article.getArticleThumb());
 		dto.setClickNumber(article.getClickNumber());
