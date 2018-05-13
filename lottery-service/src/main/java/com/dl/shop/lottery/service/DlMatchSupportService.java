@@ -116,6 +116,11 @@ public class DlMatchSupportService extends AbstractService<DlMatchSupport> {
 			dto.setDSupport(matchSupport.getPreDraw());
 			dto.setHSupport(matchSupport.getPreWin());
 			dto.setFixedOdds("");
+		}else {
+			dto.setASupport("-");
+			dto.setDSupport("-");
+			dto.setHSupport("-");
+			dto.setFixedOdds("");
 		}
 		return dto;
 	}
