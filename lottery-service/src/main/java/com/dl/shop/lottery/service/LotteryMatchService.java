@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -165,6 +166,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private final static String MATCH_RESULT_CANCEL = "取消";
 	
 	private final static String CACHE_MATCH_LIST_KEY = "match_list_key";
+	private final static long MATCH_EXPRICE_MINUTE = 10;
 	private final static String CACHE_MATCH_PLAY_LIST_KEY = "match_play_List_key";
 
 	private void refreshCache() {
@@ -182,7 +184,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		long start = System.currentTimeMillis();
 		String leagueId = param.getLeagueId();
 		String playTypeStr = param.getPlayType();
-		Integer playType = Integer.parseInt(playTypeStr);
+//		Integer playType = Integer.parseInt(playTypeStr);
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		String matchListStr = null;
 		try {
@@ -190,57 +192,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		} catch (Exception e1) {
 		}
 		if(StringUtils.isBlank(matchListStr)) {
-			return this.getMatchList(param);
-		}
-		String matchPlayStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_PLAY_LIST_KEY);
-		if(StringUtils.isBlank(matchPlayStr)) {
-			return dlJcZqMatchListDTO;
-		}
-		try {
-			List<LotteryMatch> matchList = JSONHelper.getBeanList(matchListStr, LotteryMatch.class);
-			if(StringUtils.isNotBlank(leagueId)) {
-				final List<String> leagueIds = Arrays.asList(leagueId.split(","));
-				matchList = matchList.stream().filter(match->leagueIds.contains(match.getLeagueId().toString())).collect(Collectors.toList());
+			param.setLeagueId("");
+			dlJcZqMatchListDTO = this.getMatchList(param);
+			if(dlJcZqMatchListDTO.getPlayList().size() > 0) {
+				matchListStr = JSONHelper.bean2json(dlJcZqMatchListDTO);
+				stringRedisTemplate.opsForValue().set(CACHE_MATCH_LIST_KEY, matchListStr, MATCH_EXPRICE_MINUTE, TimeUnit.MINUTES);
 			}
-			List<LotteryMatchPlay> matchPlayList = JSONHelper.getBeanList(matchPlayStr, LotteryMatchPlay.class);
-			long end2 = System.currentTimeMillis();
-			logger.info("==============getmatchlist1 缓存读取数据用时 ："+(end2-start) + " playType="+param.getPlayType());
-			Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>(matchList.size());
-			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				Integer playType2 = matchPlay.getPlayType();
-				if(playType.equals(6)) {
-					if(!playType2.equals(7)) {
-						Integer changciId = matchPlay.getChangciId();
-						DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-						List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
-						if(dlJcZqMatchPlayDTOs == null){
-							dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-							matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
-						}
-						dlJcZqMatchPlayDTOs.add(matchPlayDto);
-					}
-				}else if(playType2.equals(playType)){
-					Integer changciId = matchPlay.getChangciId();
-					DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
-					List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
-					if(dlJcZqMatchPlayDTOs == null){
-						dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
-						matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
-					}
-					dlJcZqMatchPlayDTOs.add(matchPlayDto);
+		}
+		long end1 = System.currentTimeMillis();
+		logger.info("==============getmatchlist1 数据获取用时 ："+(end1-start) + " playType="+param.getPlayType());
+		if(StringUtils.isNotBlank(leagueId)) {
+			final List<String> leagueIds = Arrays.asList(leagueId.split(","));
+			List<DlJcZqDateMatchDTO> playList = dlJcZqMatchListDTO.getPlayList();
+			List<DlJcZqMatchDTO> hotPlayList = dlJcZqMatchListDTO.getHotPlayList();
+			int num = 0;
+			if(playList.size() > 0) {
+				for(DlJcZqDateMatchDTO play: playList) {
+					List<DlJcZqMatchDTO> playList2 = play.getPlayList();
+					List<DlJcZqMatchDTO> nPlaylist = playList2.stream().filter(match->leagueIds.contains(match.getLeagueId())).collect(Collectors.toList());
+					play.setPlayList(nPlaylist);
+					num += nPlaylist.size();
 				}
 			}
-			long end1 = System.currentTimeMillis();
-			logger.info("==============getmatchlist1 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
-			dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playTypeStr, matchPlayMap);
-			long end = System.currentTimeMillis();
-			logger.info("==============getmatchlist1 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
-			logger.info("==============getmatchlist1 用时 ："+(end-start) + " playType="+param.getPlayType());
-		    return dlJcZqMatchListDTO;
-		} catch (Exception e) {
-			e.printStackTrace();
+			if(hotPlayList.size() > 0) {
+				List<DlJcZqMatchDTO> nPlaylist = hotPlayList.stream().filter(match->leagueIds.contains(match.getLeagueId())).collect(Collectors.toList());
+				dlJcZqMatchListDTO.setHotPlayList(nPlaylist);
+				num+=nPlaylist.size();
+			}
+			dlJcZqMatchListDTO.setAllMatchCount(num+"");
 		}
-		return null;
+		long end = System.currentTimeMillis();
+		logger.info("==============getmatchlist1 对象过滤用时 ："+(end-end1) + " playType="+param.getPlayType() + "  leagueId="+leagueId);
+		return dlJcZqMatchListDTO;
 	}
     /**
      * 获取赛事列表
