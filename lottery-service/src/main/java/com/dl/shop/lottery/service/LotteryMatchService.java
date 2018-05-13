@@ -273,6 +273,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				} else if(Integer.parseInt(fixedodds) == -1) {
 					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", hhadJo.getString("a")));
 					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", hadJo.getString("h")));
+				}else {
+					continue;
 				}
 				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
 				if(dlJcZqMatchPlayDTOs == null){
