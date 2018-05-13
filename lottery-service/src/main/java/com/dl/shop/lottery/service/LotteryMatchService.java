@@ -277,10 +277,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String playContent2 = lotteryMatchPlay.getPlayContent();
 				JSONObject hadJo = JSON.parseObject(playContent2);
 				DlJcZqMatchPlayDTO matchPlayDto = new DlJcZqMatchPlayDTO();
-				if(Integer.parseInt(fixedodds) > 0) {
+				if(Integer.parseInt(fixedodds) == 1) {
 					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", hhadJo.getString("h")));
 					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", hadJo.getString("a")));
-				} else if(Integer.parseInt(fixedodds) < 0) {
+				} else if(Integer.parseInt(fixedodds) == -1) {
 					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", hhadJo.getString("a")));
 					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", hadJo.getString("h")));
 				}
