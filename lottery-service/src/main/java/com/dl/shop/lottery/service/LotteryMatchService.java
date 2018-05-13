@@ -170,7 +170,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private final static String CACHE_MATCH_PLAY_LIST_KEY = "match_play_List_key";
 
 	private void refreshCache() {
-		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(null);
+		/*List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(null);
 		if(!CollectionUtils.isEmpty(matchList)) {
 			List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), null);
@@ -178,14 +178,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			stringRedisTemplate.opsForValue().set(CACHE_MATCH_LIST_KEY, matchListStr);
 			String matchPlayStr = JSONHelper.bean2json(matchPlayList);
 			stringRedisTemplate.opsForValue().set(CACHE_MATCH_PLAY_LIST_KEY, matchPlayStr);
-		}
+		}*/
 	}
 	public DlJcZqMatchListDTO getMatchList1(DlJcZqMatchListParam param) {
 		long start = System.currentTimeMillis();
 		String leagueId = param.getLeagueId();
-		String playTypeStr = param.getPlayType();
+//		String playTypeStr = param.getPlayType();
 //		Integer playType = Integer.parseInt(playTypeStr);
-		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = null;
 		String matchListStr = null;
 		try {
 			matchListStr = stringRedisTemplate.opsForValue().get(CACHE_MATCH_LIST_KEY);
@@ -198,6 +198,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchListStr = JSONHelper.bean2json(dlJcZqMatchListDTO);
 				stringRedisTemplate.opsForValue().set(CACHE_MATCH_LIST_KEY, matchListStr, MATCH_EXPRICE_MINUTE, TimeUnit.MINUTES);
 			}
+		}else {
+			try {
+				dlJcZqMatchListDTO = JSONHelper.getSingleBean(matchListStr, DlJcZqMatchListDTO.class);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		long end1 = System.currentTimeMillis();
 		logger.info("==============getmatchlist1 数据获取用时 ："+(end1-start) + " playType="+param.getPlayType());
@@ -206,6 +212,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			List<DlJcZqDateMatchDTO> playList = dlJcZqMatchListDTO.getPlayList();
 			List<DlJcZqMatchDTO> hotPlayList = dlJcZqMatchListDTO.getHotPlayList();
 			int num = 0;
+			logger.info("  leagueIds size = "+ leagueIds.size());
 			if(playList.size() > 0) {
 				for(DlJcZqDateMatchDTO play: playList) {
 					List<DlJcZqMatchDTO> playList2 = play.getPlayList();
