@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
@@ -33,7 +32,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 @Service
-@Transactional(value="transactionManager1")
+@Transactional(value = "transactionManager1")
 @Slf4j
 public class DlArticleService extends AbstractService<DlArticle> {
 	@Resource
@@ -73,6 +72,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 				article.setExtendCat("其它");
 			}
 			dto.setAuthor(article.getAuthor());
+			dto.setAddTime(article.getAddTime().toString());
 			dto.setArticleThumb(dto.getArticleThumb());
 			dtos.add(dto);
 		}
@@ -159,13 +159,13 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		DLArticleDTO dto = new DLArticleDTO();
 		dto.setAddTime(DateUtil.getCurrentTimeString(Long.valueOf(article.getAddTime()), DateUtil.time_sdf));
 		dto.setArticleId(article.getArticleId());
-		
+
 		List<String> articleThumbList = new ArrayList<String>();
 		if (!StringUtils.isEmpty(article.getArticleThumb())) {
 			List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
-			articleThumbList = picList.stream().map(s->lotteryConfig.getBannerShowUrl()+s.toString()).collect(Collectors.toList());
+			articleThumbList = picList.stream().map(s -> lotteryConfig.getBannerShowUrl() + s.toString()).collect(Collectors.toList());
 		}
-		
+
 		dto.setArticleThumb(articleThumbList);
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
@@ -175,10 +175,11 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setMatchId(article.getMatchId());
 		dto.setRelatedTeam(article.getRelatedTeam());
 		dto.setTitle(article.getTitle());
+		dto.setAuthor(article.getAuthor());
 		dto.setSummary(article.getSummary());
 		return dto;
 	}
-	
+
 	public DLArticleDetailDTO findArticleById(Integer id) {
 		Integer userId = SessionUtil.getUserId();
 		DlArticle article = super.findById(id);
