@@ -2854,11 +2854,21 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					Integer h = Integer.valueOf(split[0]);
 					Integer a = Integer.valueOf(split[1]);
 					if(h > a) {
-						matchInfo.setMatchRs("胜");
-						win++;
+						if(homeTeamId.equals(match.getHomeTeamId())) {
+							matchInfo.setMatchRs("胜");
+							win++;
+						}else {
+							matchInfo.setMatchRs("负");
+							lose++;
+						}
 					}else if(h < a) {
-						matchInfo.setMatchRs("负");
-						lose++;
+						if(homeTeamId.equals(match.getHomeTeamId())) {
+							matchInfo.setMatchRs("负");
+							lose++;
+						}else {
+							matchInfo.setMatchRs("胜");
+							win++;
+						}
 					}else {
 						matchInfo.setMatchRs("平");
 						draw++;
