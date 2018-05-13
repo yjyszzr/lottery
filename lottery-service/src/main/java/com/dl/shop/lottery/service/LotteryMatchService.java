@@ -229,7 +229,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dlJcZqMatchListDTO.setAllMatchCount(num+"");
 		}
 		long end = System.currentTimeMillis();
-		logger.info("==============getmatchlist1 对象过滤用时 ："+(end-end1) + " playType="+param.getPlayType() + "  leagueId="+leagueId);
+		logger.info("==============getmatchlist1 对象过滤用时 ："+(end-start) + " playType="+param.getPlayType() + "  leagueId="+leagueId);
 		return dlJcZqMatchListDTO;
 	}
     /**
