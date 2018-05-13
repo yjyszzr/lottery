@@ -106,7 +106,7 @@
   	 <if test="matchFinish != null and matchFinish != ''">
   	 	and  status = 1
   	 </if>
-  	 order by match_time
+  	 order by match_sn
   </select>
 
   <update id="updateMatchBatch" parameterType="java.util.List">
