@@ -188,37 +188,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		
 	}
 	
-
-	/**
-	 * 已中奖的用户订单，即订单状态是5-已中奖，派奖中（订单状态是6）的不自动加奖金， 更新用户账户，记录奖金流水
-	 * @param issue
-	 */
-	public void addRewardMoneyToUsers() {
-		OrderWithUserParam orderWithUserParam = new OrderWithUserParam();
-		orderWithUserParam.setStr("");
-		BaseResult<List<OrderWithUserDTO>> result = orderService.getOrderWithUserAndMoney(orderWithUserParam);
-		log.info("派奖getOrderWithUserAndMoney返回数据：code="+result.getCode()+" msg="+result.getMsg());
-		if(result.getCode() == 0) {
-			List<OrderWithUserDTO> orderWithUserDTOs = result.getData();
-			if(CollectionUtils.isNotEmpty(orderWithUserDTOs)) {
-				log.info("需要派奖的数据:"+ orderWithUserDTOs.size());
-				UserIdAndRewardListParam userIdAndRewardListParam = new UserIdAndRewardListParam();
-				List<UserIdAndRewardDTO> userIdAndRewardDTOs = new LinkedList<UserIdAndRewardDTO>();
-				for(OrderWithUserDTO orderWithUserDTO : orderWithUserDTOs) {
-					UserIdAndRewardDTO userIdAndRewardDTO = new UserIdAndRewardDTO();
-					userIdAndRewardDTO.setUserId(orderWithUserDTO.getUserId());
-					userIdAndRewardDTO.setOrderSn(orderWithUserDTO.getOrderSn());
-					userIdAndRewardDTO.setReward(orderWithUserDTO.getRealRewardMoney());
-					userIdAndRewardDTOs.add(userIdAndRewardDTO);
-				}
-				userIdAndRewardListParam.setUserIdAndRewardList(userIdAndRewardDTOs);
-			    BaseResult<String> changeUserAccountByType = userAccountService.changeUserAccountByType(userIdAndRewardListParam);
-			    log.info("派奖changeUserAccountByType参数数据："+userIdAndRewardDTOs.size()+" 返回的数据:code="+ changeUserAccountByType.getCode()+" msg="+changeUserAccountByType.getMsg());
-			}
-		}
-	}
-	
-	
 	/**
 	 * 根据开奖期次更新订单的状态，中奖金额 等
 	 * @param issue
