@@ -333,7 +333,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					String stakes = lotteryPrint.getStakes();
 					String sp = stake.getSp();
 					String comparePrintSp = getComparePrintSp(sp, stake.getTicketId());
-					
+					comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
 					String printSp = this.getPrintSp(stakes, comparePrintSp);
 					
 					lotteryPrint.setPlatformId(stake.getPlatformId());
