@@ -93,7 +93,16 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	public PageInfo<DLArticleDTO> findArticlesByids(List<Integer> articleIds) {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 
-		List<DlArticle> findAll = dlArticleMapper.findArticlesByIds(articleIds);
+		List<DlArticle> findAll = new ArrayList<DlArticle>();
+		List<DlArticle> findAllA = dlArticleMapper.findArticlesByIds(articleIds);
+
+		for (int i = 0; i < articleIds.size(); i++) {
+			for (int j = 0; j < findAllA.size(); j++) {
+				if (articleIds.get(i).equals(findAllA.get(j).getArticleId())) {
+					findAll.add(findAllA.get(j));
+				}
+			}
+		}
 
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
 
