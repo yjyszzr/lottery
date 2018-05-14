@@ -166,9 +166,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						} else {
 							continue;
 						}
+						String stakes = lotteryPrint.getStakes();
+						String sp = callbackStake.getSp();
+						String comparePrintSp = getComparePrintSp(sp, callbackStake.getTicketId());
+						
+						String printSp = this.getPrintSp(stakes, comparePrintSp);
+						
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-						lotteryPrint.setPrintSp(callbackStake.getSp());
+						lotteryPrint.setPrintSp(sp);
 						lotteryPrint.setPrintStatus(printStatus);
 						Date printTime = null;
 						String printTimeStr = callbackStake.getPrintTime();
@@ -190,7 +196,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						if(printTime != null) {
 							lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
 						}
-						lotteryPrintParam.setPrintSp(getComparePrintSp(callbackStake.getSp(), callbackStake.getTicketId()));
+						lotteryPrintParam.setPrintSp(printSp);
 						lotteryPrintParams.add(lotteryPrintParam);
 					}
 				}
@@ -204,7 +210,31 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}
 		}
 	}
-	
+	/**
+	 * 获取我们需要的带玩法的赔率,供订单修改详情赔率计算奖金使用
+	 */
+	private String getPrintSp(String stakes, String spStr) {
+		String[] stakesList = stakes.split(";");
+		Map<String, String> codeTypeMap = new HashMap<String, String>();
+		for(int i=0; i<stakesList.length; i++) {
+			String stake = stakesList[i];
+			String playType = stake.substring(0, stake.indexOf("|"));
+			String playCode = stake.substring(stake.indexOf("|") + 1, stake.lastIndexOf("|"));
+			codeTypeMap.put(playCode, playType);
+		}
+		String[] spArr = spStr.split(";");
+		StringBuffer sbuf = new StringBuffer();
+		for(String sp: spArr) {
+			String[] split = sp.split("\\|");
+			String playCode = split[0];
+			String playType = codeTypeMap.get(playCode);
+			String nsp = playType+"|"+sp;
+			sbuf.append(nsp).append(";");
+		}
+		String printSp = sbuf.substring(0, sbuf.length()-1);
+		return printSp;
+		
+	}
 	/**
 	 * 比较回调和主动查询的赔率是否一致，如果不一致，以主动查询成功的结果为准
 	 * @param callBackSp
@@ -300,9 +330,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					} else {
 						continue;
 					}
+					String stakes = lotteryPrint.getStakes();
+					String sp = stake.getSp();
+					String comparePrintSp = getComparePrintSp(sp, stake.getTicketId());
+					
+					String printSp = this.getPrintSp(stakes, comparePrintSp);
+					
 					lotteryPrint.setPlatformId(stake.getPlatformId());
 					lotteryPrint.setPrintNo(stake.getPrintNo());
-					lotteryPrint.setPrintSp(stake.getSp());
+					lotteryPrint.setPrintSp(sp);
 					lotteryPrint.setPrintStatus(printStatus);
 					Date printTime = null;
 					String printTimeStr = stake.getPrintTime();
@@ -324,7 +360,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					if(printTime != null) {
 						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
 					}
-					lotteryPrintParam.setPrintSp(getComparePrintSp(stake.getSp(), stake.getTicketId()));
+					lotteryPrintParam.setPrintSp(printSp);
 					lotteryPrintParams.add(lotteryPrintParam);
 				}
 			}
