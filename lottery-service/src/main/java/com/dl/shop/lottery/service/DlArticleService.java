@@ -237,6 +237,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat());
 		for (DlArticle a : findAllRelated) {
 			DLArticleDTO d = this.articleDto(a);
+			d.setAddTime(a.getAddTime().toString());
 			articles.add(d);
 		}
 		dto.setArticles(articles);
