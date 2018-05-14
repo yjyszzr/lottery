@@ -144,7 +144,7 @@
   </update>
   
   <select id="getPrintIngLotterys" resultMap="BaseResultMap">
-  	select * from dl_print_lottery where status=3
+  	select * from dl_print_lottery where status=3 order by order_sn
   </select>
   
   <insert id="saveLotteryThirdApiLog">
