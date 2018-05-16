@@ -1497,7 +1497,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("2计算投注排列后获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		//计算投票综合信息核心算法
 		Double totalMaxMoney = 0.0;
-		Double totalMinMoney = 0.0;
+		Double totalMinMoney = Double.MAX_VALUE;
 		int betNums = 0;
 //		BetResultInfo betResult = new BetResultInfo();
 		int ticketNum = 0;
@@ -1510,13 +1510,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<String> betIndexList = indexMap.get(betType);
 //			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
-			for(String str: betIndexList) {//单注组合
+			for(String str: betIndexList) {//所有注组合
 				String[] strArr = str.split(",");
 				Double maxMoney = 2.0*param.getTimes();
 				Double minMoney = 2.0*param.getTimes();
 //				List<String> playCodes = new ArrayList<String>(strArr.length);
 				Integer betNum = 1;
-				for(String item: strArr) {
+				for(String item: strArr) {//单注组合
 					MatchBetPlayDTO betPlayDto = matchBellCellList.get(Integer.valueOf(item));
 //					String playCode = betPlayDto.getPlayCode();
 					Integer cellNums = betPlayDto.getMatchBetCells().stream().map(item1->item1.getBetCells().size()).reduce(Integer::sum).get();
@@ -1528,7 +1528,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					minMoney = minMoney*double2;
 				}
 				totalMaxMoney+=maxMoney;
-				totalMinMoney+=minMoney;
+				totalMinMoney=Double.min(totalMinMoney, minMoney);
 //				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
 //				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
 				betNums+=betNum;
