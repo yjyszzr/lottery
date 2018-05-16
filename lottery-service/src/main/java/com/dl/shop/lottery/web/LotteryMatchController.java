@@ -12,6 +12,7 @@ import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,6 +82,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/lottery/match")
 public class LotteryMatchController {
 	
+	private final static Logger logger = Logger.getLogger(LotteryMatchController.class);
     @Resource
     private LotteryMatchService lotteryMatchService;
     @Resource
@@ -461,7 +463,14 @@ public class LotteryMatchController {
 		DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO(param);
 		List<DIZQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DIZQUserBetCellInfoDTO>(matchBetPlays.size());
 		for(MatchBetPlayDTO matchCell: matchBetPlays) {
-			userBetCellInfos.add(new DIZQUserBetCellInfoDTO(matchCell));
+			DIZQUserBetCellInfoDTO dizqUserBetCellInfoDTO = new DIZQUserBetCellInfoDTO(matchCell);
+			Optional<MatchBetCellDTO> findFirst = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+			if(findFirst.isPresent()) {
+				String fixOdds = findFirst.get().getFixedOdds();
+				logger.info("**************************fixOdds="+fixOdds);
+				dizqUserBetCellInfoDTO.setFixedodds(fixOdds);
+			}
+			userBetCellInfos.add(dizqUserBetCellInfoDTO);
 		}
 		dto.setUserBetCellInfos(userBetCellInfos);
 		dto.setBetNum(betNum);

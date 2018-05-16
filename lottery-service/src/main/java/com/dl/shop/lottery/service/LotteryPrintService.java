@@ -334,7 +334,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					String sp = stake.getSp();
 					String comparePrintSp = getComparePrintSp(sp, stake.getTicketId());
 					comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
-					String printSp = this.getPrintSp(stakes, comparePrintSp);
+					
+					String printSp = null;
+					if(StringUtils.isNotBlank(comparePrintSp)) {
+						printSp = this.getPrintSp(stakes, comparePrintSp);
+					}
 					
 					lotteryPrint.setPlatformId(stake.getPlatformId());
 					lotteryPrint.setPrintNo(stake.getPrintNo());
@@ -354,14 +358,16 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						}
 					}
 					lotteryPrints.add(lotteryPrint);
-					LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
-					lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
-					lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-					if(printTime != null) {
-						lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+					if(printSp != null) {
+						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+						if(printTime != null) {
+							lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+						}
+						lotteryPrintParam.setPrintSp(printSp);
+						lotteryPrintParams.add(lotteryPrintParam);
 					}
-					lotteryPrintParam.setPrintSp(printSp);
-					lotteryPrintParams.add(lotteryPrintParam);
 				}
 			}
 			log.info("goQueryStake orders size=" + orders.length +" -> updateLotteryPrintByCallBack size:"+lotteryPrints.size());

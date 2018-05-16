@@ -964,22 +964,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		while(link.size() > 0) {
 			MatchBetPlayCellDTO remove = link.remove(0);
 			String changci = remove.getChangci();
-			String playCode = remove.getPlayCode();
+//			String playCode = remove.getPlayCode();
 			String playType = remove.getPlayType();
 			String playName = playTypeNameMap.get(Integer.valueOf(playType));
 			if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())) {
-				/*LotteryMatchPlay matchPlay = lotteryMatchPlayMapper.lotteryMatchPlayByChangciIdAndPlayType(remove.getChangciId(), Integer.valueOf(playType));
-				if(matchPlay != null && StringUtils.isNotBlank(matchPlay.getPlayContent())) {
-					JSONObject jsonObj = JSON.parseObject(matchPlay.getPlayContent());
-					String fixedOdds = jsonObj.getString("fixedodds");
-					playName = StringUtils.isBlank(fixedOdds)?playName:("["+fixedOdds+"]"+playName);
-				}*/
 				String fixedodds = remove.getFixedodds();
 				playName = StringUtils.isBlank(fixedodds)?playName:("["+fixedodds+"]"+playName);
 			}
 			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
 			for(DlJcZqMatchCellDTO betCell: betCells) {
- 				String cellCode = betCell.getCellCode();
+// 				String cellCode = betCell.getCellCode();
 				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 				dto.setPlayType(playType);
 				Double amount = str.getAmount()*Double.valueOf(betCell.getCellOdds());
@@ -1177,7 +1171,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						MatchBetPlayCellDTO playCellDto = new MatchBetPlayCellDTO(betPlayDto);
 						playCellDto.setPlayType(cell.getPlayType());
 						playCellDto.setBetCells(cell.getBetCells());
-						playCellDto.setFixedodds(cell.getFixedodds());
+						playCellDto.setFixedodds(cell.getFixedOdds());
 						list.add(playCellDto);
 					}
 				});
@@ -1613,7 +1607,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playCellDto.setPlayType(cell.getPlayType());
 				List<DlJcZqMatchCellDTO> betCells = cell.getBetCells();
 				playCellDto.setBetCells(betCells);
-				playCellDto.setFixedodds(cell.getFixedodds());
+//				logger.info("=====cell.getFixedOdds()============  " + cell.getFixedOdds());
+				playCellDto.setFixedodds(cell.getFixedOdds());
 				list.add(playCellDto);
 				/*if(betCells.size() == 1) {
 					String cellOdds = betCells.get(0).getCellOdds();
@@ -2405,6 +2400,37 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}	
 	
 //	@Transactional(readOnly=true)
+	public DLZQBetInfoDTO getBetInfoByOrderInfo1(String orderSn) {
+		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(1);
+		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
+		if(!Collections.isEmpty(allPlays)) {
+			for(LotteryPlayClassify type: allPlays) {
+				playTypeNameMap.put(type.getPlayType(), type.getPlayName());
+			}
+		}
+		List<LotteryPrint> prints = lotteryPrintMapper.getByOrderSn(orderSn);
+		for(LotteryPrint lPrint: prints) {
+			String printSp = lPrint.getPrintSp();
+			String stakes = lPrint.getStakes();
+			String betType = lPrint.getBetType();
+			int num = Integer.parseInt(betType)/10;
+			DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+			dto.setBetType(betType);
+			dto.setTimes(lPrint.getTimes());
+			dto.setBetContent("");
+			dto.setBetStakes("");
+			dto.setAmount(2.0*lPrint.getTimes());
+			List<MatchBetPlayCellDTO> subList = new ArrayList<MatchBetPlayCellDTO>();
+			MatchBetPlayCellDTO matchBetPlayCellDto = new MatchBetPlayCellDTO();
+			/*matchBetPlayCellDto.setChangci(changci);
+			matchBetPlayCellDto.setPlayType(playType);
+			matchBetPlayCellDto.setFixedodds(fixedodds);*/
+			List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
+			this.betNum(dto, num, subList, betCellList1, playTypeNameMap);
+			
+		}
+		return null;
+	}
 	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
 		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();
