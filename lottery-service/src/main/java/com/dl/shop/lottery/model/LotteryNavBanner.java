@@ -50,7 +50,24 @@ public class LotteryNavBanner {
     @Column(name = "create_time")
     private Integer createTime;
 
+    
     /**
+     * 是否交易版
+     */
+    @Column(name = "is_transaction")
+    private String isTransaction; 
+    
+    
+    
+    public String getIsTransaction() {
+		return isTransaction;
+	}
+
+	public void setIsTransaction(String isTransaction) {
+		this.isTransaction = isTransaction;
+	}
+
+	/**
      * @return id
      */
     public Integer getId() {

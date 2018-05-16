@@ -17,6 +17,7 @@ import com.dl.lottery.dto.DlHallDTO;
 import com.dl.lottery.dto.DlHallMixDTO;
 import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
+import com.dl.lottery.param.HallParam;
 import com.dl.lottery.param.PageParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
@@ -35,11 +36,11 @@ public class LotteryHallController {
 	@ApiOperation(value = "获取彩票大厅数据和咨询列表数据", notes = "获取彩票大厅数据和咨询列表数据")
 	@PostMapping("/getHallMixData")
 	public BaseResult<DlHallMixDTO> getHallDataMix(
-			@Valid @RequestBody PageParam pageParam) {
+			@Valid @RequestBody HallParam hallParam) {
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
-		if (pageParam.getPageNum() == 1) {
-			dlHallDTO = lotteryHallService.getHallData();
+		if (hallParam.getPageNum() == 1) {
+			dlHallDTO = lotteryHallService.getHallData(hallParam);
 		}
 
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
@@ -54,10 +55,11 @@ public class LotteryHallController {
 	@PostMapping("/getHallData")
 	public BaseResult<DlHallDTO> getHallData(
 			@Valid @RequestBody PageParam pageParam) {
+		HallParam hallParam = new HallParam();
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		if (pageParam.getPageNum() == 1) {
-			dlHallDTO = lotteryHallService.getHallData();
+			dlHallDTO = lotteryHallService.getHallData(hallParam);
 		}
 
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();

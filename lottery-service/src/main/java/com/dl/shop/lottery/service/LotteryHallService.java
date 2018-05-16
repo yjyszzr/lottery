@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
+import com.alibaba.druid.util.StringUtils;
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DlHallDTO;
 import com.dl.lottery.dto.DlHallDTO.DlActivityDTO;
@@ -24,6 +25,7 @@ import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
 import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
+import com.dl.lottery.param.HallParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
@@ -63,10 +65,10 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
-	public DlHallDTO getHallData() {
+	public DlHallDTO getHallData(HallParam hallParam) {
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
-		dlHallDTO.setNavBanners(getDlNavBannerDTO());
+		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
 		dlHallDTO.setActivity(getDlActivityDTO());
 		// 获取中奖信息列表
@@ -107,7 +109,7 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
-	private List<DlNavBannerDTO> getDlNavBannerDTO() {
+	private List<DlNavBannerDTO> getDlNavBannerDTO(HallParam hallParam) {
 		List<DlNavBannerDTO> dlNavBannerDTOs = new LinkedList<DlNavBannerDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
 		condition.setOrderByClause("banner_sort asc");
@@ -115,6 +117,10 @@ public class LotteryHallService {
 		criteria.andCondition("start_time <=", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("is_show=", 1);
+		if(!StringUtils.isEmpty(hallParam.getIsTransaction())) {
+			criteria.andCondition("is_transaction =",hallParam.getIsTransaction());
+		}
+		
 		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
 			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
