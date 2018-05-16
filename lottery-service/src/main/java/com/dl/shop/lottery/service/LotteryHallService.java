@@ -118,7 +118,7 @@ public class LotteryHallService {
 		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("is_show=", 1);
 		if(!StringUtils.isEmpty(hallParam.getIsTransaction())) {
-			criteria.andCondition("is_transaction =",hallParam.getIsTransaction());
+			criteria.andCondition("is_transaction =",Integer.valueOf(hallParam.getIsTransaction()));
 		}
 		
 		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
