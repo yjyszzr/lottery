@@ -2473,7 +2473,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dto.setBetStakes("");
 			dto.setAmount(2.0*lPrint.getTimes());
 			this.betNum2(dto, num, subList, betCellList1, playTypeNameMap);
-			orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
+			orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1, lPrint.getStatus()));
 		}
 		DLZQBetInfoDTO dto = new DLZQBetInfoDTO();
 		dto.setBetCells(orderLotteryBetInfos);

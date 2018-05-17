@@ -22,4 +22,9 @@ public class DLZQOrderLotteryBetInfoDTO implements Serializable{
 		this.stakes = stakes;
 		this.betCells = betCells;
 	}
+	public DLZQOrderLotteryBetInfoDTO(String stakes, List<DLBetMatchCellDTO> betCells, Integer status){
+		this.stakes = stakes;
+		this.betCells = betCells;
+		this.status = status;
+	}
 }
