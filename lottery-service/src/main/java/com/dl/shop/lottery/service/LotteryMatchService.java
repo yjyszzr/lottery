@@ -2456,7 +2456,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String playCode = arr[1];
 				String cells = StringUtils.isBlank(map.get(playCode))?arr[2]:map.get(playCode);
 				List<DlJcZqMatchCellDTO> betCells = this.betCells(cells.split(","), playType);
-				int weekNum = Integer.parseInt(String.valueOf(playCode.charAt(9)));
+				int weekNum = Integer.parseInt(String.valueOf(playCode.charAt(8)));
 				String changci = DateUtil.weekDays[weekNum-1] + playCode.substring(9);
 				MatchBetPlayCellDTO matchBetPlayCellDto = new MatchBetPlayCellDTO();
 				matchBetPlayCellDto.setChangci(changci);
