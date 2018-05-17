@@ -2480,6 +2480,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	private Map<String, String> printspMap(String printSp) {
 		Map<String, String> map = new HashMap<String, String>();
+		if(StringUtils.isBlank(printSp)) {
+			return map;
+		}
 		String[] split = printSp.split(";");
 		for(String str: split) {
 			String[] split2 = str.split("\\|");
