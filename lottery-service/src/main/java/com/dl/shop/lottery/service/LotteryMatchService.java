@@ -1038,7 +1038,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(num == 1) {
 					betList.add(dto);
 				}else {
-					betNum(dto,num-1,link, betList, playTypeNameMap);
+					betNum2(dto,num-1,link, betList, playTypeNameMap);
 				}
 			}
 		}
@@ -2463,6 +2463,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchBetPlayCellDto.setPlayType(playType);
 //				matchBetPlayCellDto.setFixedodds(fixedodds);
 				matchBetPlayCellDto.setBetCells(betCells);
+				subList.add(matchBetPlayCellDto);
 			}
 			List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
 			DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
