@@ -2440,6 +2440,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playTypeNameMap.put(type.getPlayType(), type.getPlayName());
 			}
 		}
+		List<DLZQOrderLotteryBetInfoDTO> orderLotteryBetInfos = new ArrayList<DLZQOrderLotteryBetInfoDTO>();
 		List<LotteryPrint> prints = lotteryPrintMapper.getByOrderSn(orderSn);
 		for(LotteryPrint lPrint: prints) {
 			String printSp = lPrint.getPrintSp();
@@ -2471,8 +2472,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dto.setBetStakes("");
 			dto.setAmount(2.0*lPrint.getTimes());
 			this.betNum2(dto, num, subList, betCellList1, playTypeNameMap);
+			orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1));
 		}
-		return null;
+		DLZQBetInfoDTO dto = new DLZQBetInfoDTO();
+		dto.setBetCells(orderLotteryBetInfos);
+		return dto;
 	}
 	private Map<String, String> printspMap(String printSp) {
 		Map<String, String> map = new HashMap<String, String>();

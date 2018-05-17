@@ -521,13 +521,14 @@ public class LotteryMatchController {
 		if(StringUtils.isBlank(param.getOrderSn())) {
 			return ResultGenerator.genFailResult();
 		}
-		OrderSnParam orderSnParam = new OrderSnParam();
+		/*OrderSnParam orderSnParam = new OrderSnParam();
 		orderSnParam.setOrderSn(param.getOrderSn());
 		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
 		}
-		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
+		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());*/
+		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo1( param.getOrderSn());
     	return ResultGenerator.genSuccessResult("success",dto);
     }
 	
