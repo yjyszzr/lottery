@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -1000,6 +999,39 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //					betStakes = betStakes.substring(0, betStakes.length()-1);
 				}
 //				dto.setBetStakes(betStakes);
+				dto.setBetContent(betContent);
+				dto.setBetType(str.getBetType());
+				dto.setTimes(str.getTimes());
+				if(num == 1) {
+					betList.add(dto);
+				}else {
+					betNum(dto,num-1,link, betList, playTypeNameMap);
+				}
+			}
+		}
+	}
+	private void betNum2(DLBetMatchCellDTO str, int num, List<MatchBetPlayCellDTO> list, List<DLBetMatchCellDTO> betList, Map<Integer, String> playTypeNameMap) {
+		LinkedList<MatchBetPlayCellDTO> link = new LinkedList<MatchBetPlayCellDTO>(list);
+		while(link.size() > 0) {
+			MatchBetPlayCellDTO remove = link.remove(0);
+			String changci = remove.getChangci();
+			String playType = remove.getPlayType();
+			String playName = playTypeNameMap.get(Integer.valueOf(playType));
+			if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())) {
+				String fixedodds = remove.getFixedodds();
+				playName = StringUtils.isBlank(fixedodds)?playName:("["+fixedodds+"]"+playName);
+			}
+			List<DlJcZqMatchCellDTO> betCells = remove.getBetCells();
+			for(DlJcZqMatchCellDTO betCell: betCells) {
+				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				dto.setPlayType(playType);
+				String cellOdds = betCell.getCellOdds();
+				cellOdds = StringUtils.isBlank(cellOdds)?"-":cellOdds;
+				String betContent = str.getBetContent() + changci + "(" + playName + "_"+ betCell.getCellName() + " " + cellOdds +")X";
+				
+				if(num == 1) {
+					betContent = betContent.substring(0, betContent.length()-1);
+				}
 				dto.setBetContent(betContent);
 				dto.setBetType(str.getBetType());
 				dto.setTimes(str.getTimes());
@@ -2414,22 +2446,81 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			String stakes = lPrint.getStakes();
 			String betType = lPrint.getBetType();
 			int num = Integer.parseInt(betType)/10;
+			String[] stakeList = stakes.split(";");
+			Map<String, String> map = this.printspMap(printSp);
+			List<MatchBetPlayCellDTO> subList = new ArrayList<MatchBetPlayCellDTO>(stakeList.length);
+			for(String stake: stakeList) {
+				String[] arr = stake.split("\\|");
+				String playType = arr[0];
+				String playCode = arr[1];
+				String cells = StringUtils.isBlank(map.get(playCode))?arr[2]:map.get(playCode);
+				List<DlJcZqMatchCellDTO> betCells = this.betCells(cells.split(","), playType);
+				int weekNum = Integer.parseInt(String.valueOf(playCode.charAt(9)));
+				String changci = DateUtil.weekDays[weekNum-1] + playCode.substring(9);
+				MatchBetPlayCellDTO matchBetPlayCellDto = new MatchBetPlayCellDTO();
+				matchBetPlayCellDto.setChangci(changci);
+				matchBetPlayCellDto.setPlayType(playType);
+//				matchBetPlayCellDto.setFixedodds(fixedodds);
+				matchBetPlayCellDto.setBetCells(betCells);
+			}
+			List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
 			DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
 			dto.setBetType(betType);
 			dto.setTimes(lPrint.getTimes());
 			dto.setBetContent("");
 			dto.setBetStakes("");
 			dto.setAmount(2.0*lPrint.getTimes());
-			List<MatchBetPlayCellDTO> subList = new ArrayList<MatchBetPlayCellDTO>();
-			MatchBetPlayCellDTO matchBetPlayCellDto = new MatchBetPlayCellDTO();
-			/*matchBetPlayCellDto.setChangci(changci);
-			matchBetPlayCellDto.setPlayType(playType);
-			matchBetPlayCellDto.setFixedodds(fixedodds);*/
-			List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
-			this.betNum(dto, num, subList, betCellList1, playTypeNameMap);
-			
+			this.betNum2(dto, num, subList, betCellList1, playTypeNameMap);
 		}
 		return null;
+	}
+	private Map<String, String> printspMap(String printSp) {
+		Map<String, String> map = new HashMap<String, String>();
+		String[] split = printSp.split(";");
+		for(String str: split) {
+			String[] split2 = str.split("\\|");
+			map.put(split2[0], split2[1]);
+		}
+		return map;
+	}
+	private List<DlJcZqMatchCellDTO> betCells(String[] cells, String playTypeStr) {
+		int playType = Integer.parseInt(playTypeStr);
+		List<DlJcZqMatchCellDTO> dtos = new ArrayList<DlJcZqMatchCellDTO>(cells.length);
+		for(String cell: cells) {
+			DlJcZqMatchCellDTO dto = new DlJcZqMatchCellDTO();
+			String cellName = cell;
+			if(cell.contains("@")) {
+				String[] split = cell.split("@");
+				cellName = split[0];
+				dto.setCellOdds(split[1]);
+			}
+			dto.setCellCode(cellName);
+			if(playType == MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode()) {
+				String name = MatchResultHadEnum.getName(Integer.parseInt(cellName));
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode()) {
+				String name = MatchResultHadEnum.getName(Integer.parseInt(cellName));
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode()) {
+				String name = MatchResultCrsEnum.getName(cellName);
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode()) {
+				String name = cellName;
+				if(cellName.equals("7")) {
+					name = "7+";
+				}
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode()) {
+				String name = MatchResultHafuEnum.getName(cellName);
+				dto.setCellName(name);
+				dtos.add(dto);
+			}
+		}
+		return dtos;
 	}
 	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();

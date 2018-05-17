@@ -30,4 +30,6 @@ public class DlJcZqMatchCellDTO implements Serializable{
 		this.cellName = cellName;
 		this.cellOdds = cellOdds;
 	}
+	
+	public DlJcZqMatchCellDTO() {}
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
+import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ArticleIdsParam;
@@ -48,6 +50,9 @@ public class DlArticleController {
 	@PostMapping("/detail")
 	public BaseResult<DLArticleDetailDTO> detail(@RequestBody ArticleDetailParam param) {
 		DLArticleDetailDTO dlArticle = dlArticleService.findArticleById(param.getArticleId());
+		if(dlArticle == null) {
+			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_NULL.getCode(), LotteryResultEnum.ARTICLE_NULL.getMsg());
+		}
 		String extendCatValue = dlArticle.getExtendCat();
 		if ("1".equals(extendCatValue)) {
 			dlArticle.setExtendCat("今日关注");
@@ -82,6 +87,9 @@ public class DlArticleController {
 	@ApiOperation(value = "相关文章", notes = "相关文章")
 	@PostMapping("/relatedArticles")
 	public BaseResult<PageInfo<DLArticleDTO>> relatedArticles(@RequestBody ArticleCatParam param) {
+		if(StringUtils.isBlank(param.getCurrentArticleId())) {
+			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_ID_NULL.getCode(), LotteryResultEnum.ARTICLE_ID_NULL.getMsg());
+		}
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(param);
 		return ResultGenerator.genSuccessResult(null, rst);
 	}

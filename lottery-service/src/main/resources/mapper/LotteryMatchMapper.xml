@@ -62,6 +62,20 @@
   	 order by match_time
   </select>
   
+  <select id="getMatchListByPlayCodes" resultMap="BaseResultMap">
+	select
+		match_id,league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
+		home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
+		is_show,is_del,match_sn,is_hot
+	from
+	dl_match 
+	where  match_sn in
+  	 	<foreach collection="playCodes" item="playCode" open="(" close=")" separator=",">
+  	 		#{playCode}
+  	 	</foreach>
+  	 order by match_time
+  </select>
+  
   <select id="getFilterConditions" resultType="com.dl.lottery.dto.LeagueInfoDTO">
 	select
 		distinct(league_id) as leagueId,
