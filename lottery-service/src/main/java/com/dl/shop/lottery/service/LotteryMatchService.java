@@ -1438,18 +1438,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				
 				int times = param.getTimes();
-				Double money = (betResult.getBetNum() - oldBetNum)*times*2.0;
-				String playType = param.getPlayType();
-				LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
-				lotteryPrintDTO.setBetType(betType);
-				lotteryPrintDTO.setIssue(issue);
-				lotteryPrintDTO.setMoney(money);
-				lotteryPrintDTO.setPlayType(playType);
-				lotteryPrintDTO.setStakes(stakes);
-				String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
-				lotteryPrintDTO.setTicketId(ticketId);
-				lotteryPrintDTO.setTimes(times);
-				lotteryPrints.add(lotteryPrintDTO);
+				int n = times/99;
+				int m = times%99;
+				if(n > 0) {
+					for(int i=0; i< n; i++) {
+						Double money = (betResult.getBetNum() - oldBetNum)*99*2.0;
+						String playType = param.getPlayType();
+						LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
+						lotteryPrintDTO.setBetType(betType);
+						lotteryPrintDTO.setIssue(issue);
+						lotteryPrintDTO.setMoney(money);
+						lotteryPrintDTO.setPlayType(playType);
+						lotteryPrintDTO.setStakes(stakes);
+						String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
+						lotteryPrintDTO.setTicketId(ticketId);
+						lotteryPrintDTO.setTimes(99);
+						lotteryPrints.add(lotteryPrintDTO);
+					}
+				}
+				if(m > 0) {
+					Double money = (betResult.getBetNum() - oldBetNum)*m*2.0;
+					String playType = param.getPlayType();
+					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
+					lotteryPrintDTO.setBetType(betType);
+					lotteryPrintDTO.setIssue(issue);
+					lotteryPrintDTO.setMoney(money);
+					lotteryPrintDTO.setPlayType(playType);
+					lotteryPrintDTO.setStakes(stakes);
+					String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
+					lotteryPrintDTO.setTicketId(ticketId);
+					lotteryPrintDTO.setTimes(m);
+					lotteryPrints.add(lotteryPrintDTO);
+				}
 			}
 		}
 		long end3 = System.currentTimeMillis();
