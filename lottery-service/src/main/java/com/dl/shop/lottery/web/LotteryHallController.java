@@ -21,6 +21,7 @@ import com.dl.lottery.param.HallParam;
 import com.dl.lottery.param.PageParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 @RestController
@@ -39,10 +40,11 @@ public class LotteryHallController {
 			@Valid @RequestBody HallParam hallParam) {
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
-		if (hallParam.getPageNum() == 1) {
+		if (hallParam.getPage() == 1) {
 			dlHallDTO = lotteryHallService.getHallData(hallParam);
 		}
 
+		PageHelper.startPage(hallParam.getPage(), hallParam.getSize());
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
 
 		dlHallMixDTO.setDlHallDTO(dlHallDTO);
@@ -62,6 +64,8 @@ public class LotteryHallController {
 			dlHallDTO = lotteryHallService.getHallData(hallParam);
 		}
 
+		
+		PageHelper.startPage(pageParam.getPageNum(), pageParam.getPageSize());
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles();
 
 		dlHallMixDTO.setDlHallDTO(dlHallDTO);

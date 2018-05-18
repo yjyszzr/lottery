@@ -18,4 +18,5 @@
     <result column="status" jdbcType="BIT" property="status" />
     <result column="use_range" jdbcType="BIT" property="useRange" />
   </resultMap>
+  
 </mapper>
