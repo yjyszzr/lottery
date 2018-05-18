@@ -1436,13 +1436,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(subList.size() > 1) {
 					issue = subList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
 				}
-				
+				int betNum = betResult.getBetNum() - oldBetNum;
+				int maxTime = 10000/betNum > 99? 99:10000/betNum;
 				int times = param.getTimes();
-				int n = times/99;
-				int m = times%99;
+				int n = times/maxTime;
+				int m = times%maxTime;
 				if(n > 0) {
 					for(int i=0; i< n; i++) {
-						Double money = (betResult.getBetNum() - oldBetNum)*99*2.0;
+						Double money = betNum*maxTime*2.0;
 						String playType = param.getPlayType();
 						LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
 						lotteryPrintDTO.setBetType(betType);
@@ -1452,12 +1453,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						lotteryPrintDTO.setStakes(stakes);
 						String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
 						lotteryPrintDTO.setTicketId(ticketId);
-						lotteryPrintDTO.setTimes(99);
+						lotteryPrintDTO.setTimes(maxTime);
 						lotteryPrints.add(lotteryPrintDTO);
 					}
 				}
 				if(m > 0) {
-					Double money = (betResult.getBetNum() - oldBetNum)*m*2.0;
+					Double money = betNum*m*2.0;
 					String playType = param.getPlayType();
 					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
 					lotteryPrintDTO.setBetType(betType);
@@ -1572,6 +1573,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					maxMoney = maxMoney*double1;
 					Double double2 = minOddsList.get(Integer.valueOf(item));
 					minMoney = minMoney*double2;
+				}
+				if(betNum > 10000) {
+					Double betMoney = betNum*param.getTimes()*2.0;
+					if(betMoney > maxLotteryMoney) {
+						maxLotteryMoney = betMoney;
+					}
 				}
 				totalMaxMoney+=maxMoney;
 				totalMinMoney=Double.min(totalMinMoney, minMoney);
