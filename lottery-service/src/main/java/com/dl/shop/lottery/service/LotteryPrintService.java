@@ -565,12 +565,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		//
 		List<LotteryPrint> updates = new ArrayList<LotteryPrint>(lotteryPrints.size());
-		for(String playCode: resultMap.keySet()) {
+		for(String playCode: playCodes) {
 			boolean isCancel = false;
 			if(canCelPlayCodes.contains(playCode)) {
 				isCancel = true;
 			}
 			List<DlLeagueMatchResult> matchResultList = resultMap.get(playCode);
+			if(!isCancel && CollectionUtils.isEmpty(matchResultList)) {
+				continue;
+			}
 			for(LotteryPrint print: lotteryPrints) {
 				String stakes = print.getStakes();
 				String comparedStakes = print.getComparedStakes()==null?"":print.getComparedStakes();
