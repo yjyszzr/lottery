@@ -73,6 +73,7 @@ import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 
@@ -541,24 +542,26 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		//获取赛事结果
 		List<String> playCodes = new ArrayList<String>(unPlayCodes.size());
-    	playCodes.addAll(unPlayCodes);
+		playCodes.addAll(unPlayCodes);
+		List<String> canCelPlayCodes = lotteryMatchMapper.getCancelMatches(playCodes);
 		List<DlLeagueMatchResult> matchResults = matchResultService.queryMatchResultsByPlayCodes(playCodes);
-		if(CollectionUtils.isEmpty(matchResults)) {
-			log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 没有获取到相应的赛事结果信息");
+		if(CollectionUtils.isEmpty(matchResults) && Collections.isEmpty(canCelPlayCodes)) {
+			log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 没有获取到相应的赛事结果信息也没有取消的赛事");
 			return;
 		}
-		List<String> canCelPlayCodes = lotteryMatchMapper.getCancelMatches(playCodes);
 		log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 获取到相应的赛事结果信息数："+matchResults.size() + "  已取消赛事"+canCelPlayCodes.size());
 		
 		Map<String, List<DlLeagueMatchResult>> resultMap = new HashMap<String, List<DlLeagueMatchResult>>();
-		for(DlLeagueMatchResult dto: matchResults) {
-			String playCode = dto.getPlayCode();
-			List<DlLeagueMatchResult> list = resultMap.get(playCode);
-			if(list == null) {
-				list = new ArrayList<DlLeagueMatchResult>(5);
-				resultMap.put(playCode, list);
+		if(!CollectionUtils.isEmpty(matchResults)) {
+			for(DlLeagueMatchResult dto: matchResults) {
+				String playCode = dto.getPlayCode();
+				List<DlLeagueMatchResult> list = resultMap.get(playCode);
+				if(list == null) {
+					list = new ArrayList<DlLeagueMatchResult>(5);
+					resultMap.put(playCode, list);
+				}
+				list.add(dto);
 			}
-			list.add(dto);
 		}
 		//
 		List<LotteryPrint> updates = new ArrayList<LotteryPrint>(lotteryPrints.size());
