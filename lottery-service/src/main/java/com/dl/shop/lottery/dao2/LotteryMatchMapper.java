@@ -101,5 +101,12 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * 筛选当天的比赛的league信息
 	 */
 	public List<LeagueInfoDTO> getFilterConditionsSomeDay(@Param("dateStr") String dateStr);
+
+	/**
+	 * 获取取消的赛事编码
+	 * @param playCodes
+	 * @return
+	 */
+	public List<String> getCancelMatches(@Param("playCodes") List<String> playCodes);
 	
 }
