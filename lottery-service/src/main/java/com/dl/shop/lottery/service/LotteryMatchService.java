@@ -3067,6 +3067,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return filterConditions;
 	}
+	/**
+	 * 获取取消赛事
+	 * @param playCodes
+	 * @return
+	 */
+	public List<String> getCancelMatches(List<String> playCodes) {
+		List<String> filterConditions = lotteryMatchMapper.getCancelMatches(playCodes);
+		if(filterConditions == null) {
+			filterConditions = new ArrayList<String>(0);
+		}
+		return filterConditions;
+	}
 
 	/**
 	 * 历史赛事入库

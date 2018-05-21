@@ -48,6 +48,7 @@ import com.dl.lottery.param.DateStrParam;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
+import com.dl.lottery.param.GetCancelMatchesParam;
 import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
@@ -59,8 +60,6 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
-import com.dl.order.dto.OrderInfoAndDetailDTO;
-import com.dl.order.param.OrderSnParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
@@ -606,4 +605,11 @@ public class LotteryMatchController {
 		List<LeagueInfoDTO> leagueInfos =  lotteryMatchService.getFilterConditionsSomeDay(param.getDateStr());
 		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
     }
+	
+	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
+	@PostMapping("/getCancelMatches")
+	public BaseResult<List<String>> getCancelMatches(@Valid @RequestBody GetCancelMatchesParam param) {
+		List<String> leagueInfos =  lotteryMatchService.getCancelMatches(param.getPlayCodes());
+		return ResultGenerator.genSuccessResult("success", leagueInfos);
+	}
 }
