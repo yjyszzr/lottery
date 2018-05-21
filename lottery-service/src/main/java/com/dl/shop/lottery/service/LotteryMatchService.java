@@ -1401,6 +1401,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		long end2 = System.currentTimeMillis();
 		logger.info("2计算预出票获取不同投注的赛事信息用时：" + (end2-end1)+ " - "+start);
 		//计算核心
+		String playType = param.getPlayType();
 		List<LotteryPrintDTO> lotteryPrints = new ArrayList<LotteryPrintDTO>();
 		double srcMoney = 2.0*param.getTimes();
 		BetResultInfo betResult = new BetResultInfo();
@@ -1426,12 +1427,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
 				String stakes = subList.stream().map(cdto->{
 					String playCode = cdto.getPlayCode();
-					String playType = cdto.getPlayType();
+					String playType1 = cdto.getPlayType();
 					String cellCodes = cdto.getBetCells().stream().map(cell->{
 						return cell.getCellCode();
 					}).collect(Collectors.joining(","));
-					return playType + "|" + playCode + "|" + cellCodes;
+					return playType1 + "|" + playCode + "|" + cellCodes;
 				}).collect(Collectors.joining(";"));
+				Set<Integer> collect = subList.stream().map(cdto->Integer.parseInt(cdto.getPlayType())).collect(Collectors.toSet());
+				if(Integer.parseInt(playType) == 6 && collect.size() == 1) {
+					playType = "0"+collect.toArray(new Integer[1])[0].toString();
+				}
 				String issue = subList.get(0).getPlayCode();
 				if(subList.size() > 1) {
 					issue = subList.stream().max((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode())).get().getPlayCode();
@@ -1444,7 +1449,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(n > 0) {
 					for(int i=0; i< n; i++) {
 						Double money = betNum*maxTime*2.0;
-						String playType = param.getPlayType();
 						LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
 						lotteryPrintDTO.setBetType(betType);
 						lotteryPrintDTO.setIssue(issue);
@@ -1459,7 +1463,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				if(m > 0) {
 					Double money = betNum*m*2.0;
-					String playType = param.getPlayType();
+//					String playType = param.getPlayType();
 					LotteryPrintDTO lotteryPrintDTO = new LotteryPrintDTO();
 					lotteryPrintDTO.setBetType(betType);
 					lotteryPrintDTO.setIssue(issue);
