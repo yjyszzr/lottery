@@ -65,6 +65,7 @@ import com.dl.order.param.UpdateOrderInfoParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
@@ -83,6 +84,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
 	@Resource
 	private LotteryPrintMapper lotteryPrintMapper;
+	
+	@Resource
+	private LotteryMatchMapper lotteryMatchMapper;
 	
 	@Resource
 	private RestTemplateConfig restTemplateConfig;
@@ -548,7 +552,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 没有获取到相应的赛事结果信息");
 			return;
 		}
-		log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 获取到相应的赛事结果信息数："+matchResults.size());
+		List<String> canCelPlayCodes = lotteryMatchMapper.getCancelMatches(playCodes);
+		log.info("updatePrintLotteryCompareStatus 准备获取赛事结果的场次数："+playCodes.size() +" 获取到相应的赛事结果信息数："+matchResults.size() + "  已取消赛事"+canCelPlayCodes.size());
+		
 		Map<String, List<DlLeagueMatchResult>> resultMap = new HashMap<String, List<DlLeagueMatchResult>>();
 		for(DlLeagueMatchResult dto: matchResults) {
 			String playCode = dto.getPlayCode();
@@ -562,6 +568,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		//
 		List<LotteryPrint> updates = new ArrayList<LotteryPrint>(lotteryPrints.size());
 		for(String playCode: resultMap.keySet()) {
+			boolean isCancel = false;
+			if(canCelPlayCodes.contains(playCode)) {
+				isCancel = true;
+			}
 			List<DlLeagueMatchResult> matchResultList = resultMap.get(playCode);
 			for(LotteryPrint print: lotteryPrints) {
 				String stakes = print.getStakes();
@@ -585,19 +595,31 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						if(stake.contains(playCode)) {
 							String playTypeStr = split[0];
 							List<String> cellCodes = Arrays.asList(split[2].split(","));
-							//比赛结果获取中奖信息
-							for(DlLeagueMatchResult rst : matchResultList) {
-								if(rst.getPlayType().equals(Integer.valueOf(playTypeStr))) {
-									String cellCode = rst.getCellCode();
-									if(cellCodes.contains(cellCode)) {
-										Map<String, String> aa = this.aa(print.getPrintSp());
-										String key = rst.getPlayCode() + "|" + rst.getCellCode();
-										String odds = aa.get(key);
-										if(StringUtils.isNotBlank(odds)) {
-											sbuf.append(";").append("0").append(rst.getPlayType()).append("|")
-											.append(key)
-											.append("@").append(odds);
-											break;
+							if(isCancel) {
+								sbuf.append(";").append(playTypeStr).append("|")
+								.append(playCode).append("|");
+								for(int i=0; i< cellCodes.size(); i++) {
+									if(i > 0) {
+										sbuf.append(",");
+									}
+									String cellCode = cellCodes.get(i);
+									sbuf.append(cellCode).append("@").append("1.00");
+								}
+							}else {
+								//比赛结果获取中奖信息
+								for(DlLeagueMatchResult rst : matchResultList) {
+									if(rst.getPlayType().equals(Integer.valueOf(playTypeStr))) {
+										String cellCode = rst.getCellCode();
+										if(cellCodes.contains(cellCode)) {
+											Map<String, String> aa = this.aa(print.getPrintSp());
+											String key = rst.getPlayCode() + "|" + rst.getCellCode();
+											String odds = aa.get(key);
+											if(StringUtils.isNotBlank(odds)) {
+												sbuf.append(";").append("0").append(rst.getPlayType()).append("|")
+												.append(key)
+												.append("@").append(odds);
+												break;
+											}
 										}
 									}
 								}
@@ -618,7 +640,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 							//彩票中奖金额
 							//log.info(reward);
 							List<String> spList = Arrays.asList(reward.split(";"));
-							List<Double> winSPList = spList.stream().map(s -> Double.valueOf(s.substring(s.indexOf("@") + 1))).collect(Collectors.toList());
+							List<List<Double>> winSPList = spList.stream().map(s -> {
+								String cells = s.split("\\|")[2];
+								String[] split = cells.split(",");
+								List<Double> list = new ArrayList<Double>(split.length);
+								for(String str: split) {
+									list.add(Double.valueOf(str.substring(str.indexOf("@"))));
+								}
+								return list;
+							}).collect(Collectors.toList());
 							List<Double> rewardList = new ArrayList<Double>();
 							this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
 							double rewardSum = rewardList.stream().reduce(0.00, Double::sum);
@@ -686,15 +716,17 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param list:赔率
 	 * @param rewardList:组合后的中奖金额list
 	 */
-	private void groupByRewardList(Double amount, int num, List<Double> list, List<Double> rewardList) {
-		LinkedList<Double> link = new LinkedList<Double>(list);
+	private void groupByRewardList(Double amount, int num, List<List<Double>> list, List<Double> rewardList) {
+		LinkedList<List<Double>> link = new LinkedList<List<Double>>(list);
 		while(link.size() > 0) {
-			Double remove = link.remove(0);
-			Double item = amount*remove;
-			if(num == 1) {
-				rewardList.add(item);
-			} else {
-				groupByRewardList(item,num-1,link, rewardList);
+			List<Double> removes = link.remove(0);
+			for(Double remove: removes) {
+				Double item = amount*remove;
+				if(num == 1) {
+					rewardList.add(item);
+				} else {
+					groupByRewardList(item,num-1,link, rewardList);
+				}
 			}
 		}		
 	}

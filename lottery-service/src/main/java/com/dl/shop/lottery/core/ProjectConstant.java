@@ -395,7 +395,7 @@ public class ProjectConstant {
     
     public static int MATCH_NOT_FINISH = 0;//比赛未结束
     public static int MATCH_FINISH = 1;//比赛结束
-    public static int MATCH_CANCEL = 2;//比赛结束
+    public static int MATCH_CANCEL = 2;//比赛取消
     
     
     /**

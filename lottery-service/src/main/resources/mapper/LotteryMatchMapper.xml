@@ -253,4 +253,17 @@
 	from dl_match 
 	where str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and is_del = 0 and is_show=1 order by leagueId
   </select>
+  
+   <select id="getCancelMatches" resultMap="string">
+	select
+		match_sn
+	from
+	dl_match 
+	where status=2 and match_sn in
+  	 	<foreach collection="playCodes" item="playCode" open="(" close=")" separator=",">
+  	 		#{playCode}
+  	 	</foreach>
+  	 order by match_time
+  </select>
+  
 </mapper>
