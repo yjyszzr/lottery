@@ -69,8 +69,6 @@ import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
-import com.dl.shop.payment.api.IpaymentService;
-import com.dl.shop.payment.param.RollbackOrderAmountParam;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
@@ -92,9 +90,6 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
 	@Resource
 	private RestTemplate restTemplate; 
-	
-	@Resource
-	 private IpaymentService paymentService;
 	
 	@Resource
 	private DlLeagueMatchResultService matchResultService;

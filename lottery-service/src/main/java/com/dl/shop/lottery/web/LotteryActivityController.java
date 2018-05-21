@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Condition;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +30,7 @@ public class LotteryActivityController {
     private LotteryActivityService lotteryActivityService;
 	
 	@ApiOperation(value = "根据活动类型查询有效的活动", notes = "根据活动类型查询有效的活动")
-	@RequestMapping(path="/queryActivityByActType", method=RequestMethod.POST)
+    @PostMapping("/queryActivityByActType")	
     public BaseResult<List<ActivityDTO>> queryActivityByActType(@RequestBody ActTypeParam actTypeParam){
 		return lotteryActivityService.queryActivityByActType(actTypeParam);
 	}

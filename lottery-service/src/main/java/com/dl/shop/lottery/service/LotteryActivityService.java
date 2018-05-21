@@ -43,7 +43,7 @@ public class LotteryActivityService extends AbstractService<LotteryActivity> {
 			lotteryActivitys.forEach(s->{
 				ActivityDTO activityDTO = new ActivityDTO();
 				activityDTO.setTitle(s.getActTitle());
-				activityDTO.setDetail("");
+				activityDTO.setDetail("0014-00");
 				activityDTO.setIcon(s.getActImg());
 				activityDTO.setActUrl(s.getActUrl());
 				lotteryActivityDTOs.add(activityDTO);

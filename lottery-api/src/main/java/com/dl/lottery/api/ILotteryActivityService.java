@@ -9,8 +9,6 @@ import com.dl.base.result.BaseResult;
 import com.dl.lottery.dto.ActivityDTO;
 import com.dl.lottery.param.ActTypeParam;
 
-import io.swagger.annotations.ApiOperation;
-
 @FeignClient(value="lottery-service")
 public interface ILotteryActivityService {
 
