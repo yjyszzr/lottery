@@ -442,4 +442,10 @@ public class ProjectConstant {
     
     //用户未收藏
     public static final String IS_NOT_COLLECT = "0";
+    
+    //咨询版
+    public static final String INFO_VERSION = "1";
+    
+    //交易版
+    public static final String DEAL_VERSION = "2";
 }

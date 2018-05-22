@@ -139,16 +139,17 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			return new PageInfo<DLArticleDTO>();
 		}
 
-		Integer page = param.getPage();
-		page = null == page ? 1 : page;
-		Integer size = param.getSize();
-		size = null == size ? 20 : size;
-		PageHelper.startPage(page, size);
-		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(articleId, curArticle.getExtendCat());
-		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
-		if (null == findAllRelated) {
-			return new PageInfo<DLArticleDTO>();
+		List<DlArticle> findAllRelated = null;
+		if(null != curArticle.getExtendCat() && null != articleId) {
+			//PageHelper.startPage(param.getPage(), param.getSize());
+		    try{
+		    	findAllRelated = dlArticleMapper.findArticlesRelated(articleId, curArticle.getExtendCat(),(param.getPage()-1)*param.getSize(), param.getSize());
+		    } finally {
+		        PageHelper.clearPage();
+		    }
 		}
+
+		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
 
 		for (DlArticle article : findAllRelated) {
 			DLArticleDTO dto = this.articleDto(article);
@@ -242,8 +243,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
 
 		// 第一期通过 分类 来关联
-		PageHelper.startPage(1, 3);
-		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat());
+		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat(),1,3);
 		for (DlArticle a : findAllRelated) {
 			DLArticleDTO d = this.articleDto(a);
 			d.setAddTime(a.getAddTime().toString());
