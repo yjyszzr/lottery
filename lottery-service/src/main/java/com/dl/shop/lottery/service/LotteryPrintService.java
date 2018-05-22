@@ -646,7 +646,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 								String[] split = cells.split(",");
 								List<Double> list = new ArrayList<Double>(split.length);
 								for(String str: split) {
-									list.add(Double.valueOf(str.substring(str.indexOf("@"))));
+									list.add(Double.valueOf(str.substring(str.indexOf("@")+1)));
 								}
 								return list;
 							}).collect(Collectors.toList());
