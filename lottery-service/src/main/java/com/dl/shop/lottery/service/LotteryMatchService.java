@@ -254,6 +254,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playMap.put(item.getChangciId(), item);
 			});
 			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
+				if(this.isStop(matchPlay)) {
+					continue;
+				}
 				Integer changciId = matchPlay.getChangciId();
 				LotteryMatchPlay lotteryMatchPlay = playMap.get(changciId);
 				if(lotteryMatchPlay == null)continue;
@@ -287,6 +290,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}else {
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
+				if(this.isStop(matchPlay)) {
+					continue;
+				}
 				Integer playType2 = matchPlay.getPlayType();
 				if("6".equals(playType) && playType2 == 7) {
 					continue;
@@ -308,6 +314,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
 		logger.info("==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
 	    return dlJcZqMatchListDTO;
+	}
+	//判断是否停售
+	private boolean isStop(LotteryMatchPlay matchPlay) {
+		String playContent = matchPlay.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String cbtValue = jsonObj.getString("cbt");
+		if("2".equals(cbtValue)) {
+			return true;
+		}
+		return false;
 	}
 	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
