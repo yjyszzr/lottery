@@ -47,7 +47,7 @@
   <select id="findArticlesRelated"  resultMap="BaseResultMap">
   	select * from dl_article
   	where status=1 and article_id != #{articleId} and extend_cat=#{extendCat}
-  	order by add_time desc
+  	order by add_time desc limit #{page},#{size}
   </select>
   
   <select id="findArticlesByIds" parameterType="java.util.List" resultMap="BaseResultMap">

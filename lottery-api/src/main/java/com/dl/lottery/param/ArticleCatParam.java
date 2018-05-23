@@ -9,9 +9,9 @@ import lombok.Data;
 public class ArticleCatParam {
 	
 	@ApiModelProperty(value="页码")
-	Integer page;
+	private Integer page;
 	@ApiModelProperty(value="每页显示数量，默认10")
-	Integer size;
+	private Integer size;
 	
 	@ApiModelProperty(value="当前文章id")
 	@NotNull(message = "当前文章id不能为空")

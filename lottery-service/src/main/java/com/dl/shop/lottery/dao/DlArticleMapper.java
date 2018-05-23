@@ -13,7 +13,8 @@ public interface DlArticleMapper extends Mapper<DlArticle> {
 
 	List<DlArticle> findArticlesByIds(@Param("articleIds") List<Integer> articleIds);
 
-	List<DlArticle> findArticlesRelated(@Param("articleId") Integer articleId, @Param("extendCat") String extendCat);
+	List<DlArticle> findArticlesRelated(@Param("articleId") Integer articleId, @Param("extendCat") String extendCat,
+			@Param("page") Integer page,@Param("size") Integer size);
 
 	void updateClickNumberById(@Param("articleId") Integer articleId, @Param("clickNumber") Integer clickNumber);
 
