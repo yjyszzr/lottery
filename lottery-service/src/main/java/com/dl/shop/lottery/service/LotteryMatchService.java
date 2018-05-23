@@ -1933,12 +1933,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			if(nhList != null) {
 				allOdds.addAll(nhList);
+			}else {
+				allOdds.addAll(hList);
 			}
 			if(naList != null) {
 				allOdds.addAll(naList);
+			}else {
+				allOdds.addAll(aList);
 			}
 			if(ndList != null) {
 				allOdds.addAll(ndList);
+			}else {
+				allOdds.addAll(dList);
 			}
 		}else {
 			if(hList != null) {
