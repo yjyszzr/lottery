@@ -1715,7 +1715,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
 			List<Double> allbetComOdds = this.allbetComOdds(list);
-			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
+//			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
 			if(CollectionUtils.isEmpty(allbetComOdds)) {
 				continue;
 			}
@@ -1730,8 +1730,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				minOdds.add(min);
 			}
 		}
-		log.info("allbetComOdds is maxOdds: "+ maxOdds);
-		log.info("allbetComOdds is minOdds: "+ minOdds);
+//		log.info("allbetComOdds is maxOdds: "+ maxOdds);
+//		log.info("allbetComOdds is minOdds: "+ minOdds);
 		tem.setMaxOddsList(maxOdds);
 		tem.setMinOddsList(minOdds);
 		return tem;
@@ -1784,7 +1784,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		if(hadBetPlay != null) {
 			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
-			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
+//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
 			rst.addAll(c);
 		}
 		if(hafuBetPlay != null) {
@@ -1793,7 +1793,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		if(hhadBetPlay != null) {
 			List<Double> c = this.cc2(hhadBetPlay, null, null);
-			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
+//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
 			rst.addAll(c);
 		}
 		return rst;
@@ -1952,7 +1952,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				allOdds.addAll(dList);
 			}
 		}
-		logger.info("--------------" + JSONHelper.bean2json(allOdds));
+//		logger.info("--------------" + JSONHelper.bean2json(allOdds));
 		allBetSumOdds.addAll(allOdds);
 		return allBetSumOdds;
 	}
