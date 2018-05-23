@@ -1933,20 +1933,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			if(nhList != null) {
 				allOdds.addAll(nhList);
-			}else {
-				allOdds.addAll(hList);
 			}
 			if(naList != null) {
 				allOdds.addAll(naList);
-			}else {
-				allOdds.addAll(aList);
 			}
 			if(ndList != null) {
 				allOdds.addAll(ndList);
-			}else {
-				allOdds.addAll(dList);
 			}
-		}else {
+		}
+		if(allOdds.size() == 0){
 			if(hList != null) {
 				allOdds.addAll(hList);
 			}
@@ -1957,7 +1952,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				allOdds.addAll(dList);
 			}
 		}
-//		logger.info("--------------" + JSONHelper.bean2json(allOdds));
+		logger.info("--------------" + JSONHelper.bean2json(allOdds));
 		allBetSumOdds.addAll(allOdds);
 		return allBetSumOdds;
 	}
