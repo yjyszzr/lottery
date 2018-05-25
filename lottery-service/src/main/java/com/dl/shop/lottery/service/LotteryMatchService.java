@@ -354,7 +354,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setLeagueAddr(match.getLeagueAddr());
 			matchDto.setLeagueId(match.getLeagueId().toString());
 			matchDto.setLeagueName(match.getLeagueName());
-			String matchDay =LocalDateTime.ofInstant(showTime.toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+			String matchDay =LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 			matchDto.setMatchDay(matchDay);
 			matchDto.setMatchId(match.getMatchId());
 			matchDto.setMatchTime(matchTime);
