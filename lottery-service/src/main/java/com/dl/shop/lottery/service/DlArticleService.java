@@ -59,9 +59,12 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		if (null == findAll) {
 			return new PageInfo<DLArticleDTO>();
 		}
+		List<DlArticle> collect = findAll.stream().filter(item->item.getIsStick()==1).sorted((item1,item2)->item2.getStickTime().compareTo(item1.getStickTime())).collect(Collectors.toList());
+		findAll.removeAll(collect);
+		findAll.addAll(0, collect);
 		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
-			List<String> articleThumbShow = new ArrayList<String>();
+//			List<String> articleThumbShow = new ArrayList<String>();
 			if ("1".equals(article.getExtendCat())) {
 				article.setExtendCat("今日关注");
 			} else if ("2".equals(article.getExtendCat())) {
