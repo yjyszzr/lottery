@@ -335,7 +335,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
-			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
 			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {

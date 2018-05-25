@@ -838,13 +838,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				}
 				long end = System.currentTimeMillis();
 				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() +" rst size="+ num+ "  times=" + (end-start));
-//				lotteryPrintService.updateBatchErrorByTicketId(lotteryPrintErrors);
 			}
 			if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
 				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
 				long start = System.currentTimeMillis();
 				int num = 0;
-//				lotteryPrintService.updateBatchSuccessByTicketId(lotteryPrintSuccess);
 				for(LotteryPrint lotteryPrint:lotteryPrintSuccess) {
 					int rst = this.updatePrintStatusByTicketId(lotteryPrint);
 					num+=rst<0?0:rst;
