@@ -117,6 +117,7 @@ public class LotteryHallService {
 		criteria.andCondition("start_time <=", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("is_show=", 1);
+		criteria.andCondition("show_position=", 0);
 		if(!StringUtils.isEmpty(hallParam.getIsTransaction()) && hallParam.getIsTransaction().equals(ProjectConstant.INFO_VERSION)) {//资讯版仅仅展示资讯版，交易版全部展示
 			criteria.andCondition("is_transaction =",Integer.valueOf(ProjectConstant.INFO_VERSION));
 		}

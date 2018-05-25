@@ -2,6 +2,9 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,10 +17,13 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
+import com.dl.lottery.dto.DLFindListDTO;
+import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ArticleIdsParam;
+import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.github.pagehelper.PageHelper;
@@ -74,8 +80,26 @@ public class DlArticleController {
 		Integer size = param.getSize();
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
-		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles();
+		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles("-1");
 		return ResultGenerator.genSuccessResult(null, rst);
+	}
+	
+	@ApiOperation(value = "发现页", notes = "发现页")
+	@PostMapping("/findList")
+	public BaseResult<DLFindListDTO> findList(@RequestBody CatArticleParam param) {
+		List<DlNavBannerDTO> navBanners = new ArrayList<>();
+		
+		Integer page = param.getPage();
+		page = null == page ? 1 : page;
+		Integer size = param.getSize();
+		size = null == size ? 20 : size;
+		PageHelper.startPage(page, size);
+		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
+		
+		DLFindListDTO findListDTO = new DLFindListDTO();
+		findListDTO.setNavBanners(navBanners);
+		findListDTO.setDlArticlePage(rst);
+		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 
 	/**
