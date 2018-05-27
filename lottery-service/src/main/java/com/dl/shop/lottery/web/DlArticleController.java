@@ -24,6 +24,8 @@ import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
 import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
+import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.enums.CatEnums;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
@@ -136,11 +138,27 @@ public class DlArticleController {
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
 		DLFindListDTO findListDTO = new DLFindListDTO();
+		
+		findListDTO.setInfoCatList(createCat());
 		findListDTO.setNavBanners(navBanners);
 		findListDTO.setDlArticlePage(rst);
 		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 
+	/**
+	 * 目前没有对咨询分类建立表
+	 * @return
+	 */
+	public List<InfoCatDTO> createCat() {
+		List<InfoCatDTO> infoCatList = new ArrayList<>();
+		for(CatEnums e:CatEnums.values()) {
+			InfoCatDTO infoCatDTO = new InfoCatDTO();
+			infoCatDTO.setCat(e.getCode());
+			infoCatDTO.setCatName(e.getMsg());
+			infoCatList.add(infoCatDTO);
+		}
+		return infoCatList;
+	}
 	/**
 	 * 根据当前文章的分类查找相关文章
 	 * 
