@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,13 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			findAll = dlArticleMapper.findArticlesByCat(catArticle);
 		}
 
+		List<DlArticle> collect = findAll.stream().filter(item->1 == item.getIsStick()).collect(Collectors.toList());
+		if(CollectionUtils.isNotEmpty(collect)) {
+			collect.sort((item1,item2)->item2.getStickTime().compareTo(item1.getStickTime()));
+			findAll.removeAll(collect);
+			findAll.addAll(0, collect);
+		}
+		
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
 
 		if (null == findAll) {
