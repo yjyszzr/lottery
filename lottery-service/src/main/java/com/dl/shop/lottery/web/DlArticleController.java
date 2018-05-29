@@ -129,7 +129,9 @@ public class DlArticleController {
 				navBanners.add(dlNavBannerDTO);
 			}
 		}		
-		
+		if("1".equals(param.getExtendCat())) {
+			param.setExtendCat("-1");
+		}
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
