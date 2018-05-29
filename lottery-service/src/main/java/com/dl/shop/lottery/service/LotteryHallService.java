@@ -29,6 +29,7 @@ import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.member.api.IUserService;
+import com.dl.member.dto.ChannelDistributorBindDTO;
 import com.dl.member.dto.ChannelDistributorDTO;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.UserIdParam;
@@ -165,13 +166,11 @@ public class LotteryHallService {
 		}else {
 			UserIdParam userIdParam = new UserIdParam();
 			userIdParam.setUserId(userId);
-			BaseResult<ChannelDistributorDTO> channelDistributorDTORst = userService.queryUserInfoListByUserIds(userIdParam);
-			ChannelDistributorDTO channelDistributorDTO = new ChannelDistributorDTO();
+			BaseResult<ChannelDistributorBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
 			if(channelDistributorDTORst.getCode() != 0) {
 				return null;
 			}
 			
-			channelDistributorDTO = channelDistributorDTORst.getData();
 			Condition condition = new Condition(LotteryActivity.class);
 			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
 			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
@@ -182,6 +181,8 @@ public class LotteryHallService {
 					dlActivityDTO.setActImg(lotteryActivity.getActImg());
 					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
 				}
+			}else {
+				return null;
 			}
 		}
 		
