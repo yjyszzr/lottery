@@ -1,12 +1,16 @@
 package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,16 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
 import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
+import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.enums.CatEnums;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ArticleIdsParam;
 import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.ListArticleParam;
+import com.dl.shop.lottery.configurer.LotteryConfig;
+import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.model.LotteryClassify;
+import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -37,6 +48,12 @@ import com.github.pagehelper.PageInfo;
 public class DlArticleController {
 	@Resource
 	private DlArticleService dlArticleService;
+
+	@Resource
+	private LotteryNavBannerMapper lotteryNavBannerMapper;
+	
+	@Resource
+	private LotteryConfig lotteryConfig;
 
 	/*
 	 * @PostMapping("/add") public BaseResult add(DlArticle dlArticle) {
@@ -87,7 +104,31 @@ public class DlArticleController {
 	@ApiOperation(value = "发现页", notes = "发现页")
 	@PostMapping("/findList")
 	public BaseResult<DLFindListDTO> findList(@RequestBody CatArticleParam param) {
-		List<DlNavBannerDTO> navBanners = new ArrayList<>();
+		List<DlNavBannerDTO> navBanners = new LinkedList<DlNavBannerDTO>();
+		Condition condition = new Condition(LotteryClassify.class);
+		condition.setOrderByClause("banner_sort asc");
+		Criteria criteria = condition.createCriteria();
+		criteria.andCondition("start_time <=", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("is_show=", 1);
+		criteria.andCondition("show_position=", 1);
+		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
+
+		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
+			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
+				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
+				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
+				dlNavBannerDTO.setBannerImage(lotteryConfig.getBannerShowUrl() + lotteryNavBanner.getBannerImage());
+				if ("1".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink());// 资讯链接,后面跟资讯链接
+				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkMatchUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
+				} else {
+					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
+				}
+				navBanners.add(dlNavBannerDTO);
+			}
+		}		
 		
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
@@ -97,11 +138,27 @@ public class DlArticleController {
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
 		DLFindListDTO findListDTO = new DLFindListDTO();
+		
+		findListDTO.setInfoCatList(createCat());
 		findListDTO.setNavBanners(navBanners);
 		findListDTO.setDlArticlePage(rst);
 		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 
+	/**
+	 * 目前没有对咨询分类建立表
+	 * @return
+	 */
+	public List<InfoCatDTO> createCat() {
+		List<InfoCatDTO> infoCatList = new ArrayList<>();
+		for(CatEnums e:CatEnums.values()) {
+			InfoCatDTO infoCatDTO = new InfoCatDTO();
+			infoCatDTO.setCat(e.getCode());
+			infoCatDTO.setCatName(e.getMsg());
+			infoCatList.add(infoCatDTO);
+		}
+		return infoCatList;
+	}
 	/**
 	 * 根据当前文章的分类查找相关文章
 	 * 

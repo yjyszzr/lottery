@@ -13,6 +13,9 @@ public class DLFindListDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
+	@ApiModelProperty(value = "咨讯分类标题")
+	public List<InfoCatDTO> infoCatList;	
+	
 	@ApiModelProperty(value = "咨讯轮播图列表")
 	public List<DlNavBannerDTO> navBanners;
 	
