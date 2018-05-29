@@ -171,7 +171,12 @@ public class DlArticleController {
 		if(StringUtils.isBlank(param.getCurrentArticleId())) {
 			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_ID_NULL.getCode(), LotteryResultEnum.ARTICLE_ID_NULL.getMsg());
 		}
-
+		if(param.getPage() == null) {
+			param.setPage(1);
+		}
+		if(param.getSize() == null) {
+			param.setSize(10);
+		}
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(param);
 		return ResultGenerator.genSuccessResult(null, rst);
 	}
