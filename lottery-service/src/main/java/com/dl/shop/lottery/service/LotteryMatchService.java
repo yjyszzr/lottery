@@ -370,7 +370,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			String matchDay = showTimeDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
 			DayOfWeek dayOfWeek = showTimeDate.getDayOfWeek();
 			String displayName = LocalWeekDate.getName(dayOfWeek.getValue());
-			matchDto.setMatchDay(displayName + " " + matchDay);
+			String showMatchDay = displayName + " " + matchDay;
+			matchDto.setMatchDay(matchDay);
 			matchDto.setMatchId(match.getMatchId());
 			matchDto.setMatchTime(matchTime);
 			matchDto.setPlayCode(match.getMatchSn());
@@ -401,7 +402,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			DlJcZqDateMatchDTO dlJcZqMatchDTO = map.get(matchDay);
 			if(null == dlJcZqMatchDTO) {
 				dlJcZqMatchDTO = new DlJcZqDateMatchDTO();
-				dlJcZqMatchDTO.setMatchDay(matchDay);
+				dlJcZqMatchDTO.setSortMatchDay(matchDay);
+				dlJcZqMatchDTO.setMatchDay(showMatchDay);
 				map.put(matchDay, dlJcZqMatchDTO);
 			}
 			//初始化投注选项
@@ -417,7 +419,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
 		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
-		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getMatchDay().compareTo(item2.getMatchDay()));
+		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getSortMatchDay().compareTo(item2.getSortMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
 		dlJcZqMatchListDTO.setLotteryClassifyId(1);
 		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(1, Integer.parseInt(playType));
