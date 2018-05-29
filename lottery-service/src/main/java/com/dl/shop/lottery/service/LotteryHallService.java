@@ -168,9 +168,10 @@ public class LotteryHallService {
 			BaseResult<ChannelDistributorDTO> channelDistributorDTORst = userService.queryUserInfoListByUserIds(userIdParam);
 			ChannelDistributorDTO channelDistributorDTO = new ChannelDistributorDTO();
 			if(channelDistributorDTORst.getCode() != 0) {
-				channelDistributorDTO = channelDistributorDTORst.getData();
+				return null;
 			}
 			
+			channelDistributorDTO = channelDistributorDTORst.getData();
 			Condition condition = new Condition(LotteryActivity.class);
 			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
 			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
