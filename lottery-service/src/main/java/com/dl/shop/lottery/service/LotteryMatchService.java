@@ -12,12 +12,14 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -329,6 +331,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
+		Locale defaultLocal = Locale.getDefault();
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
@@ -363,8 +366,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setLeagueAddr(match.getLeagueAddr());
 			matchDto.setLeagueId(match.getLeagueId().toString());
 			matchDto.setLeagueName(match.getLeagueName());
-			String matchDay =LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
-			matchDto.setMatchDay(matchDay);
+			LocalDate showTimeDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate();
+			String matchDay = showTimeDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			DayOfWeek dayOfWeek = showTimeDate.getDayOfWeek();
+			String displayName = LocalWeekDate.getName(dayOfWeek.getValue());
+			matchDto.setMatchDay(displayName + " " + matchDay);
 			matchDto.setMatchId(match.getMatchId());
 			matchDto.setMatchTime(matchTime);
 			matchDto.setPlayCode(match.getMatchSn());
