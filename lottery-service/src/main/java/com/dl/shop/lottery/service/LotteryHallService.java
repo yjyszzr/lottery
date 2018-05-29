@@ -15,7 +15,9 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 import com.alibaba.druid.util.StringUtils;
+import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlHallDTO;
 import com.dl.lottery.dto.DlHallDTO.DlActivityDTO;
 import com.dl.lottery.dto.DlHallDTO.DlLotteryClassifyDTO;
@@ -26,6 +28,10 @@ import com.dl.lottery.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
 import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
+import com.dl.member.api.IUserService;
+import com.dl.member.dto.ChannelDistributorDTO;
+import com.dl.member.dto.UserDTO;
+import com.dl.member.param.UserIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
@@ -56,9 +62,12 @@ public class LotteryHallService {
 
 	@Resource
 	private LotteryPlayClassifyMapper lotteryPlayClassifyMapper;
-
+	
 	@Resource
 	private LotteryConfig lotteryConfig;
+	
+	@Resource
+	private IUserService userService;
 
 	/**
 	 * 获取彩票大厅数据
@@ -66,11 +75,12 @@ public class LotteryHallService {
 	 * @return
 	 */
 	public DlHallDTO getHallData(HallParam hallParam) {
+		Integer userId = SessionUtil.getUserId();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
-		dlHallDTO.setActivity(getDlActivityDTO());
+		dlHallDTO.setActivity(getDlActivityDTO(userId));
 		// 获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
@@ -147,19 +157,33 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
-	private DlActivityDTO getDlActivityDTO() {
+	private DlActivityDTO getDlActivityDTO(Integer userId) {
+		//该用户与店员绑定过才展示活动数据
 		DlActivityDTO dlActivityDTO = new DlActivityDTO();
-		Condition condition = new Condition(LotteryActivity.class);
-		condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
-		List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
-		if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
-			LotteryActivity lotteryActivity = lotteryActivitys.get(0);
-			if (null != lotteryActivity) {
-				dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
-				dlActivityDTO.setActImg(lotteryActivity.getActImg());
-				dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+		if(null == userId) {
+			return null;
+		}else {
+			UserIdParam userIdParam = new UserIdParam();
+			userIdParam.setUserId(userId);
+			BaseResult<ChannelDistributorDTO> channelDistributorDTORst = userService.queryUserInfoListByUserIds(userIdParam);
+			ChannelDistributorDTO channelDistributorDTO = new ChannelDistributorDTO();
+			if(channelDistributorDTORst.getCode() != 0) {
+				channelDistributorDTO = channelDistributorDTORst.getData();
+			}
+			
+			Condition condition = new Condition(LotteryActivity.class);
+			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
+				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+				if (null != lotteryActivity) {
+					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+					dlActivityDTO.setActImg(lotteryActivity.getActImg());
+					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+				}
 			}
 		}
+		
 		return dlActivityDTO;
 	}
 
