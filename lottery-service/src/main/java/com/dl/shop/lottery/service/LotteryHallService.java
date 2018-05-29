@@ -29,6 +29,7 @@ import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.member.api.IUserService;
+import com.dl.member.dto.ChannelCustomerBindDTO;
 import com.dl.member.dto.ChannelDistributorBindDTO;
 import com.dl.member.dto.ChannelDistributorDTO;
 import com.dl.member.dto.UserDTO;
@@ -166,7 +167,7 @@ public class LotteryHallService {
 		}else {
 			UserIdParam userIdParam = new UserIdParam();
 			userIdParam.setUserId(userId);
-			BaseResult<ChannelDistributorBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
+			BaseResult<ChannelCustomerBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
 			if(channelDistributorDTORst.getCode() != 0) {
 				return null;
 			}
