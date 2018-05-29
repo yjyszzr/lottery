@@ -1,5 +1,8 @@
 package com.dl.shop.lottery.schedul;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Configuration;
@@ -74,11 +77,16 @@ public class LotteryPrintSchedul {
         log.info("出票定时任务启动");
         lotteryPrintService.goPrintLottery();
         log.info("出票定时任务结束");
-        log.info("彩票出票状态查询定时任务启动");
-        lotteryPrintService.goQueryStake();
-        log.info("彩票出票状态查询定时任务结束");
+        //每天9点前不作查询处理，只作出票处理
+        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int hour = localTime.getHour();
+        if(hour >= 9) {
+        	log.info("彩票出票状态查询定时任务启动");
+        	lotteryPrintService.goQueryStake();
+        	log.info("彩票出票状态查询定时任务结束");
+        }
     }
-
+	
 
 	 /**
 	  * 抓取已完成比赛的比赛分数 （每10分钟执行一次）
