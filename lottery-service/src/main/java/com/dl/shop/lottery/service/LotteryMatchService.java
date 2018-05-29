@@ -336,9 +336,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+			//第二天比赛时间
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
+			//0-9点的赛事在当天不能投注
+			LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+	        int nowHour = localTime.getHour();
+	        int betHour = betendDateTime.getHour();
+			if(betHour < 9 && betendDateTime.toLocalDate().isEqual(LocalDate.now()) && nowHour < 9){
+				continue;
+			}
+			//投注结束
 			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 				continue;
 			}
