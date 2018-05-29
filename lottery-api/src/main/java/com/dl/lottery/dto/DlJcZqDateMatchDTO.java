@@ -17,6 +17,9 @@ public class DlJcZqDateMatchDTO implements Serializable{
 	@ApiModelProperty(value = "当日比赛日期", required = true)
 	public String matchDay;
 	
+	@ApiModelProperty(value = "用来排序的字段 ", required = true)
+	public String sortMatchDay;
+	
 	//@ApiModelProperty(value = "当日比赛场数", required = true)
 	//public String matchCount;
 	
