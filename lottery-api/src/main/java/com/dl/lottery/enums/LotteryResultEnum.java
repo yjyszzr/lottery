@@ -13,7 +13,7 @@ public enum LotteryResultEnum {
 	BET_CELL_DAN_ERR(303008,"参赛设胆场次有误，请核对！"),
 	ONLY_ONE_CONDITION(303009,"只看已购对阵和赛事筛选为互斥关系,只能选择一种"),
 	BET_NUMBER_LIMIT(303010,"彩票总注数不得超过10000注"),
-	BET_TIMES_LIMIT(303011,"彩票总倍数不得超过99999注"),
+	BET_TIMES_LIMIT(303011,"彩票总倍数不得超过99999倍"),
 	ARTICLE_NULL(303012,"资讯已过期！"),
 	ARTICLE_ID_NULL(303013,"请选择有郊的文章！"),
 	BET_MONEY_other(303100,"");

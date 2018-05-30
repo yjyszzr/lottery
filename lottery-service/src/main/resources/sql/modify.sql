@@ -547,8 +547,60 @@ CREATE TABLE `dl_league_match_daoxiao` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='大小球数据';
 
+-- 2018-05-30 世界杯
 
-
+-- 世界杯国家 --
+DROP TABLE IF EXISTS `dl_world_cup_contry`;
+CREATE TABLE `dl_world_cup_contry` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `country_id` int(11) NOT NULL COMMENT '国家id',
+  `contry_name` varchar(64) NOT NULL COMMENT '联赛国家名称',
+  `contry_pic` varchar(256) NOT NULL COMMENT '联赛国家图标',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='世界杯国家信息';
+-- 世界杯冠军信息 --
+DROP TABLE IF EXISTS `dl_world_cup_gj`;
+CREATE TABLE `dl_world_cup_gj` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `country_id` int(11) NOT NULL COMMENT '国家id',
+  `contry_name` varchar(64) NOT NULL COMMENT '国家名称',
+  `contry_pic` varchar(256)  COMMENT '国家图标',
+  `bet_status` tinyint(1) default 0 COMMENT '状态0开售，1停售',
+  `bet_odds` varchar(16) NOT NULL COMMENT '奖金',
+  `bet_prob` varchar(16) NOT NULL COMMENT '概率',
+  `p_id` int(11) NOT NULL COMMENT 'id',
+  `sort_id` int(11) NOT NULL COMMENT '编号',
+  `play_code` int(11) NOT NULL COMMENT '比赛号',
+  `league_id` int(11) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
+  `league_name` varchar(64) NOT NULL COMMENT '联赛名称，如：2018世界杯',
+  `create_time` int(11) NOT NULL COMMENT '创建时间',
+  `update_time` int(11) NOT NULL COMMENT '更新时间',
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COMMENT='世界杯冠军信息';
+-- 世界杯冠亚军信息 --
+DROP TABLE IF EXISTS `dl_world_cup_gyj`;
+CREATE TABLE `dl_world_cup_gyj` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '编号',
+  `home_country_id` int(11) default -1 NOT NULL COMMENT '国家id',
+  `home_contry_name` varchar(64) NOT NULL COMMENT '国家名称',
+  `home_contry_pic` varchar(256)  COMMENT '国家图标',
+  `visitor_country_id` int(11) default -1 NOT NULL COMMENT '国家id',
+  `visitor_contry_name` varchar(64) NOT NULL COMMENT '国家名称',
+  `visitor_contry_pic` varchar(256)  COMMENT '国家图标',
+  `bet_status` tinyint(1) default 0 COMMENT '状态0开售，1停售',
+  `bet_odds` varchar(16) NOT NULL COMMENT '奖金',
+  `bet_prob` varchar(16) NOT NULL COMMENT '概率',
+  `p_id` int(11) NOT NULL COMMENT 'id',
+  `sort_id` int(11) NOT NULL COMMENT '编号',
+  `play_code` int(11) NOT NULL COMMENT '比赛号',
+  `league_id` int(11) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
+  `league_name` varchar(64) NOT NULL COMMENT '联赛名称，如：2018世界杯',
+  `create_time` int(11) NOT NULL COMMENT '创建时间',
+  `update_time` int(11) NOT NULL COMMENT '更新时间',
+  `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COMMENT='世界杯冠亚军信息';
 
 
 
