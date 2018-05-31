@@ -174,8 +174,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						String stakes = lotteryPrint.getStakes();
 						String sp = callbackStake.getSp();
 						String comparePrintSp = getComparePrintSp(sp, callbackStake.getTicketId());
-						
-						String printSp = this.getPrintSp(stakes, comparePrintSp);
+						String game = lotteryPrint.getGame();
+						String printSp = null;
+						if("T51".equals(game)) {
+							printSp = this.getPrintSp(stakes, comparePrintSp);
+						} else if("T56".equals(game)) {
+							printSp = comparePrintSp;
+						}
 						
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
