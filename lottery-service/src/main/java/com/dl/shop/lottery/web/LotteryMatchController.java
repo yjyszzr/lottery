@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.enums.MatchPlayTypeEnum;
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
@@ -393,13 +394,10 @@ public class LotteryMatchController {
 		if(danNum > danEnableNum) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
-		
+		//用户信息
 		StrParam strParam = new StrParam();
 		BaseResult<UserDTO> userInfoExceptPassRst = userService.userInfoExceptPass(strParam);
-		if(userInfoExceptPassRst.getCode() != 0) {
-			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
-		}
-		if(null == userInfoExceptPassRst.getData()) {
+		if(userInfoExceptPassRst.getCode() != 0 || null == userInfoExceptPassRst.getData()) {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 
@@ -416,6 +414,7 @@ public class LotteryMatchController {
 		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
 		Double userTotalMoney = Double.valueOf(totalMoney);
 		
+		//红包包
 		BonusLimitConditionParam bonusLimitConditionParam = new BonusLimitConditionParam();
 		bonusLimitConditionParam.setOrderMoneyPaid(BigDecimal.valueOf(orderMoney));
 		BaseResult<List<UserBonusDTO>> userBonusListRst = userBonusService.queryValidBonusList(bonusLimitConditionParam);
@@ -481,7 +480,11 @@ public class LotteryMatchController {
 		String forecastMoney = betInfo.getMinBonus() + "~" + betInfo.getMaxBonus();
 		dto.setForecastMoney(forecastMoney);
 		dto.setThirdPartyPaid(thirdPartyPaid);
-		int requestFrom = 0;
+		String requestFrom = "0";
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		if(userDevice != null) {
+			requestFrom = userDevice.getPlat();
+		}
 		dto.setRequestFrom(requestFrom);
 		dto.setUserId(SessionUtil.getUserId());
 		dto.setIssue(betInfo.getIssue());

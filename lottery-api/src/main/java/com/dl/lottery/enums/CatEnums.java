@@ -1,7 +1,5 @@
 package com.dl.lottery.enums;
 
-import com.dl.lottery.dto.InfoCatDTO;
-
 public enum CatEnums {
 	Today_Focus("1","今日关注"),
 	Buy_Forcast("2","竞彩预测"),

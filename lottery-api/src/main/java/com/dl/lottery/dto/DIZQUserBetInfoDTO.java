@@ -40,7 +40,7 @@ public class DIZQUserBetInfoDTO implements Serializable{
 	@ApiModelProperty(value="需第三方支付")
 	private Double thirdPartyPaid;
 	@ApiModelProperty(value="1:android,2:ios")
-	private int requestFrom;
+	private String requestFrom;
 	@ApiModelProperty(value="用户id")
 	private Integer userId;
 	@ApiModelProperty("期次")
