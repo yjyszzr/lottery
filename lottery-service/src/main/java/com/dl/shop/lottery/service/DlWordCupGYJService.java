@@ -14,7 +14,6 @@ import com.dl.shop.lottery.dao.DlWordCupGYJMapper;
 import com.dl.shop.lottery.model.DlWordCupGYJ;
 
 @Service
-@Transactional
 public class DlWordCupGYJService extends AbstractService<DlWordCupGYJ> {
     @Resource
     private DlWordCupGYJMapper dlWordCupGYJMapper;
