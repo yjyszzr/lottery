@@ -68,7 +68,7 @@ public class DlWordCupGYJController {
     @ApiOperation(value = "获取冠亚军列表", notes = "获取冠亚军列表")
     @PostMapping("/gyjs")
     public BaseResult<List<DlWordCupGYJDTO>> list(@RequestBody ListWCgyjParam param) {
-        List<DlWordCupGYJDTO> list = dlWordCupGYJService.getMatchList(param.getCountryIds());
+        List<DlWordCupGYJDTO> list = dlWordCupGYJService.getMatchList("1801", param.getCountryIds());
         return ResultGenerator.genSuccessResult("success",list);
     }
     

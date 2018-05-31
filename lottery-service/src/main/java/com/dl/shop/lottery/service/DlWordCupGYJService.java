@@ -19,9 +19,9 @@ public class DlWordCupGYJService extends AbstractService<DlWordCupGYJ> {
     @Resource
     private DlWordCupGYJMapper dlWordCupGYJMapper;
 
-    public List<DlWordCupGYJDTO> getMatchList(String countryIds) {
+    public List<DlWordCupGYJDTO> getMatchList(String issue, String countryIds) {
     	List<DlWordCupGYJDTO> dtos = new ArrayList<DlWordCupGYJDTO>(0);
-    	List<DlWordCupGYJ> wordcupgyjList = dlWordCupGYJMapper.getMatchList("1801", countryIds);
+    	List<DlWordCupGYJ> wordcupgyjList = dlWordCupGYJMapper.getMatchList(issue, countryIds);
     	if(CollectionUtils.isNotEmpty(wordcupgyjList)) {
     		dtos = new ArrayList<DlWordCupGYJDTO>(wordcupgyjList.size());
     		for(DlWordCupGYJ gyj: wordcupgyjList) {
