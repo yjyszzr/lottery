@@ -174,9 +174,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						String stakes = lotteryPrint.getStakes();
 						String sp = callbackStake.getSp();
 						String comparePrintSp = getComparePrintSp(sp, callbackStake.getTicketId());
+						comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
+						
 						String game = lotteryPrint.getGame();
 						String printSp = null;
-						if("T51".equals(game)) {
+						if("T51".equals(game)  && StringUtils.isNotBlank(comparePrintSp)) {
 							printSp = this.getPrintSp(stakes, comparePrintSp);
 						} else if("T56".equals(game)) {
 							printSp = comparePrintSp;
@@ -344,10 +346,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					String sp = stake.getSp();
 					String comparePrintSp = getComparePrintSp(sp, stake.getTicketId());
 					comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
-					
+
+					String game = lotteryPrint.getGame();
 					String printSp = null;
-					if(StringUtils.isNotBlank(comparePrintSp)) {
+					if("T51".equals(game) && StringUtils.isNotBlank(comparePrintSp)) {
 						printSp = this.getPrintSp(stakes, comparePrintSp);
+					} else if("T56".equals(game)) {
+						printSp = comparePrintSp;
 					}
 					
 					lotteryPrint.setPlatformId(stake.getPlatformId());
