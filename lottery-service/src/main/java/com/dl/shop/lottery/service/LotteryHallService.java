@@ -155,39 +155,40 @@ public class LotteryHallService {
 	}
 
 	/**
-	 * 获取活动数据
+	 * 获取活动数据,此活动暂时不展示
 	 * 
 	 * @return
 	 */
 	private DlActivityDTO getDlActivityDTO(Integer userId) {
+		return null;
 		//该用户与店员绑定过才展示活动数据
-		DlActivityDTO dlActivityDTO = new DlActivityDTO();
-		if(null == userId) {
-			return null;
-		}else {
-			UserIdParam userIdParam = new UserIdParam();
-			userIdParam.setUserId(userId);
-			BaseResult<ChannelCustomerBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
-			if(channelDistributorDTORst.getCode() != 0) {
-				return null;
-			}
-			
-			Condition condition = new Condition(LotteryActivity.class);
-			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
-			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
-			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
-				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
-				if (null != lotteryActivity) {
-					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
-					dlActivityDTO.setActImg(lotteryActivity.getActImg());
-					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
-				}
-			}else {
-				return null;
-			}
-		}
-		
-		return dlActivityDTO;
+//		DlActivityDTO dlActivityDTO = new DlActivityDTO();
+//		if(null == userId) {
+//			return null;
+//		}else {
+//			UserIdParam userIdParam = new UserIdParam();
+//			userIdParam.setUserId(userId);
+//			BaseResult<ChannelCustomerBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
+//			if(channelDistributorDTORst.getCode() != 0) {
+//				return null;
+//			}
+//			
+//			Condition condition = new Condition(LotteryActivity.class);
+//			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+//			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+//			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
+//				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+//				if (null != lotteryActivity) {
+//					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+//					dlActivityDTO.setActImg(lotteryActivity.getActImg());
+//					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+//				}
+//			}else {
+//				return null;
+//			}
+//		}
+//		
+//		return dlActivityDTO;
 	}
 
 	/**
