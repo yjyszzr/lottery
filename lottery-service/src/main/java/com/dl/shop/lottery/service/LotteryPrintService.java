@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.dl.base.configurer.RestTemplateConfig;
+import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.enums.ThirdApiEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
@@ -38,6 +39,7 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.MD5Utils;
+import com.dl.base.util.SNGenerator;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO.QueryIssue;
@@ -59,6 +61,9 @@ import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderDetailDataDTO;
+import com.dl.order.dto.OrderInfoAndDetailDTO;
+import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.LotteryPrintParam;
 import com.dl.order.param.OrderSnListGoPrintLotteryParam;
 import com.dl.order.param.UpdateOrderInfoParam;
@@ -503,6 +508,41 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			return lotteryPrint;
 		}).collect(Collectors.toList());
 		super.save(models);
+		return ResultGenerator.genSuccessResult();
+	}
+	@Transactional(value="transactionManager1")
+	public BaseResult<String> saveLotteryPrintInfo(OrderInfoAndDetailDTO data, String orderSn) {
+		List<OrderDetailDataDTO> orderDetailDataDTOs = data.getOrderDetailDataDTOs();
+		OrderInfoDTO orderInfoDTO = data.getOrderInfoDTO();
+		String betType = orderInfoDTO.getPassType();
+		String playType = orderInfoDTO.getPlayType();
+		Integer times = orderInfoDTO.getCathectic();
+		OrderDetailDataDTO orderDetailDataDTO = orderDetailDataDTOs.get(0);
+		Double money = orderDetailDataDTOs.size()*2.0*times;
+		String stakes = orderDetailDataDTOs.stream().map(item->item.getTicketData().split("@")[0]).collect(Collectors.joining(","));
+		String game = orderDetailDataDTO.getChangci();
+		String issue = orderDetailDataDTO.getIssue();
+		//orderDetailDataDTO.get
+		String ticketId = SNGenerator.nextSN(SNBusinessCodeEnum.TICKET_SN.getCode());
+		LotteryPrint lotteryPrint = new LotteryPrint();
+		lotteryPrint.setGame(game);
+		lotteryPrint.setMerchant(merchant);
+		lotteryPrint.setTicketId(ticketId);
+		lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
+		lotteryPrint.setBettype(betType);
+		lotteryPrint.setMoney(BigDecimal.valueOf(money*100));
+		lotteryPrint.setIssue(issue);
+		lotteryPrint.setPlaytype(playType);
+		lotteryPrint.setTimes(times);
+		lotteryPrint.setStakes(stakes);
+		lotteryPrint.setOrderSn(orderSn);
+		lotteryPrint.setRealRewardMoney(BigDecimal.valueOf(0.00));
+		lotteryPrint.setThirdPartRewardMoney(BigDecimal.valueOf(0.00));
+		lotteryPrint.setCompareStatus("0");
+		lotteryPrint.setComparedStakes("");
+		lotteryPrint.setRewardStakes("");
+		lotteryPrint.setStatus(0);
+		super.save(lotteryPrint);
 		return ResultGenerator.genSuccessResult();
 	}
 	

@@ -117,13 +117,12 @@ public class DlWordCupGYJController {
     			dto.setMatchId(item.getId());
     			Integer sortId = item.getSortId();
     			String sortIdStr = sortId<10?"0"+sortId.toString():sortId.toString();
-//    			dto.setChangci(sortIdStr);
+    			dto.setChangci(item.getGame());
     			dto.setPlayCode(item.getIssue());
-    			dto.setTicketData(sortIdStr);
+    			dto.setTicketData(sortIdStr + "@" + item.getBetOdds());
     			dto.setFixedodds("");
     			dto.setIsDan(0);
     			dto.setMatchTime(0);
-    			dto.setChangci("");
     			userBetCellInfos.add(dto);
     		});
     	} else if(isGj ==0) {
@@ -144,13 +143,12 @@ public class DlWordCupGYJController {
     			dto.setMatchId(item.getId());
     			Integer sortId = item.getSortId();
     			String sortIdStr = sortId<10?"0"+sortId.toString():sortId.toString();
-    			dto.setChangci(sortIdStr);
+    			dto.setChangci(item.getGame());
     			dto.setPlayCode(item.getIssue());
     			dto.setTicketData(sortIdStr + "@" + item.getBetOdds());
     			dto.setFixedodds("");
     			dto.setIsDan(0);
     			dto.setMatchTime(0);
-    			dto.setChangci("");
     			userBetCellInfos.add(dto);
     		});
     	}else {
@@ -207,7 +205,7 @@ public class DlWordCupGYJController {
     	DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO();
     	dto.setTimes(times);
     	dto.setBetType("01");
-    	dto.setPlayType("00");
+    	dto.setPlayType("0");
     	dto.setLotteryClassifyId(lotteryClassifyId);
     	dto.setLotteryPlayClassifyId(lotteryPlayClassifyId);
     	dto.setUserBetCellInfos(userBetCellInfos);

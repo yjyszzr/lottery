@@ -113,7 +113,13 @@ public class LotteryPrintController {
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
 		}
-		List<LotteryPrintDTO> lotteryPrints = lotteryMatchService.getPrintLotteryListByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());
+		OrderInfoAndDetailDTO data = orderWithDetailByOrderSn.getData();
+		Integer lotteryClassifyId = data.getOrderInfoDTO().getLotteryClassifyId();
+		Integer lotteryPlayClassifyId = data.getOrderInfoDTO().getLotteryPlayClassifyId();
+		if(1== lotteryClassifyId && 8 == lotteryPlayClassifyId) {
+			return lotteryPrintService.saveLotteryPrintInfo(data, param.getOrderSn());
+		}
+		List<LotteryPrintDTO> lotteryPrints = lotteryMatchService.getPrintLotteryListByOrderInfo(data, param.getOrderSn());
 		if(CollectionUtils.isEmpty(lotteryPrints)) {
 			return ResultGenerator.genFailResult();
 		}
