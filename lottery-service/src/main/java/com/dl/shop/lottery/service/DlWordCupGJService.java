@@ -32,6 +32,7 @@ public class DlWordCupGJService extends AbstractService<DlWordCupGJ> {
 				dto.setGame(gj.getGame());
 				dto.setIssue(gj.getIssue());
 				dto.setSortId(gj.getSortId());
+				dto.setGjId(gj.getId());
 				dtos.add(dto);
 			}
 		}

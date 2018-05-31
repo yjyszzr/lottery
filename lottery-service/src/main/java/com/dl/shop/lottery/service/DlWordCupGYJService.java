@@ -35,6 +35,7 @@ public class DlWordCupGYJService extends AbstractService<DlWordCupGYJ> {
     			dto.setVisitorContryName(gyj.getVisitorContryName());
     			dto.setVisitorContryPic(gyj.getVisitorContryPic());
     			dto.setVisitorCountryId(gyj.getVisitorCountryId());
+    			dto.setGyjId(gyj.getId());
     			dtos.add(dto);
     		}
     	}
