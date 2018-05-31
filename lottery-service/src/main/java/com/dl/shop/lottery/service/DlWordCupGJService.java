@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.DlWordCupGJDTO;
-import com.dl.shop.lottery.dao.DlWordCupGJMapper;
+import com.dl.shop.lottery.dao2.DlWordCupGJMapper;
 import com.dl.shop.lottery.model.DlWordCupGJ;
 
 @Service
