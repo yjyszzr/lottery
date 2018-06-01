@@ -550,6 +550,18 @@ CREATE TABLE `dl_league_match_daoxiao` (
 -- 2018-05-30 世界杯
 
 -- 世界杯国家 --
+DROP TABLE IF EXISTS `dl_world_cup_info`;
+CREATE TABLE `dl_world_cup_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `league_id` int(11) NOT NULL COMMENT '联赛id',
+  `league_name` varchar(32) NOT NULL COMMENT '联赛名称',
+  `issue` varchar(32) NOT NULL COMMENT '联赛期次',
+  `gj_p_id` varchar(16)  COMMENT '联赛冠军pid',
+  `gyj_p_id` varchar(16)  COMMENT '联赛冠亚军pid',
+  `gj_rst` varchar(16)  COMMENT '联赛冠军结果',
+  `gyj_rst` varchar(16)  COMMENT '联赛冠亚军结果',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='世界杯国家信息';
 DROP TABLE IF EXISTS `dl_world_cup_contry`;
 CREATE TABLE `dl_world_cup_contry` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -568,10 +580,10 @@ CREATE TABLE `dl_world_cup_gj` (
   `bet_status` tinyint(1) default 0 COMMENT '状态0开售，1停售',
   `bet_odds` varchar(16) NOT NULL COMMENT '奖金',
   `bet_prob` varchar(16) NOT NULL COMMENT '概率',
-  `p_id` int(11) NOT NULL COMMENT 'id',
-  `sort_id` int(11) NOT NULL COMMENT '编号',
-  `play_code` int(11) NOT NULL COMMENT '比赛号',
-  `league_id` int(11) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
+  `p_id` varchar(16) NOT NULL COMMENT 'id',
+  `sort_id` varchar(16) NOT NULL COMMENT '编号',
+  `play_code` varchar(16) NOT NULL COMMENT '比赛号',
+  `league_id` varchar(16) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
   `league_name` varchar(64) NOT NULL COMMENT '联赛名称，如：2018世界杯',
   `game` varchar(16) NOT NULL COMMENT '玩法,投注用',
   `issue` varchar(16) NOT NULL COMMENT '期次号,投注用',
@@ -593,10 +605,10 @@ CREATE TABLE `dl_world_cup_gyj` (
   `bet_status` tinyint(1) default 0 COMMENT '状态0开售，1停售',
   `bet_odds` varchar(16) NOT NULL COMMENT '奖金',
   `bet_prob` varchar(16) NOT NULL COMMENT '概率',
-  `p_id` int(11) NOT NULL COMMENT 'id',
-  `sort_id` int(11) NOT NULL COMMENT '编号',
-  `play_code` int(11) NOT NULL COMMENT '比赛号',
-  `league_id` int(11) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
+  `p_id` varchar(16) NOT NULL COMMENT 'id',
+  `sort_id` varchar(16) NOT NULL COMMENT '编号',
+  `play_code` varchar(16) NOT NULL COMMENT '比赛号',
+  `league_id` varchar(16) NOT NULL COMMENT '联赛id，如竞彩网2018世界杯对应id',
   `league_name` varchar(64) NOT NULL COMMENT '联赛名称，如：2018世界杯',
   `game` varchar(16) NOT NULL COMMENT '玩法,投注用',
   `issue` varchar(16) NOT NULL COMMENT '期次号,投注用',
