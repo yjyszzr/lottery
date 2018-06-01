@@ -64,7 +64,6 @@ public class LotteryHallController {
 			dlHallDTO = lotteryHallService.getHallData(hallParam);
 		}
 
-		
 		PageHelper.startPage(pageParam.getPageNum(), pageParam.getPageSize());
 		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles("-1");
 

@@ -14,5 +14,7 @@
     <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="start_time" jdbcType="INTEGER" property="startTime" />
+    <result column="end_time" jdbcType="INTEGER" property="endTime" />
   </resultMap>
 </mapper>

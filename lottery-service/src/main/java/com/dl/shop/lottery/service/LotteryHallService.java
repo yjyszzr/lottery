@@ -147,7 +147,8 @@ public class LotteryHallService {
 				} else {
 					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
 				}
-
+				dlNavBannerDTO.setStartTime(lotteryNavBanner.getStartTime());
+				dlNavBannerDTO.setEndTime(lotteryNavBanner.getEndTime());
 				dlNavBannerDTOs.add(dlNavBannerDTO);
 			}
 		}

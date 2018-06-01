@@ -49,7 +49,20 @@ public class LotteryNavBanner {
      */
     @Column(name = "create_time")
     private Integer createTime;
-
+    
+    /**
+     * 开始时间
+     */
+    @Column(name = "start_time")
+    private Integer startTime;
+    
+    
+    /**
+     * 结束时间
+     */
+    @Column(name = "end_time")
+    private Integer endTime;
+    
     
     /**
      * 是否交易版
@@ -57,9 +70,23 @@ public class LotteryNavBanner {
     @Column(name = "is_transaction")
     private String isTransaction; 
     
-    
-    
-    public String getIsTransaction() {
+    public Integer getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Integer startTime) {
+		this.startTime = startTime;
+	}
+
+	public Integer getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(Integer endTime) {
+		this.endTime = endTime;
+	}
+
+	public String getIsTransaction() {
 		return isTransaction;
 	}
 
