@@ -27,6 +27,10 @@ public class DlWordCupGYJDTO {
 	@ApiModelProperty(value="玩法，投注用")
 	private String game;
 	@ApiModelProperty(value="期次号，投注用")
-    private String issue;
-	
+	private String issue;
+	@ApiModelProperty(value="运营状态，0开售1停售")
+	private Integer isSell;
+	@ApiModelProperty(value="竞彩网状态，0开售1停售")
+	private Integer betStatus;
+
 }

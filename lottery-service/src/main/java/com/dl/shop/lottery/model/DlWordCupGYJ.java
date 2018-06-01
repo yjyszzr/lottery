@@ -122,8 +122,19 @@ public class DlWordCupGYJ {
      */
     @Column(name = "league_from")
     private Integer leagueFrom;
+    
+    @Column(name = "sell")
+    private Integer isSell;
 
-    /**
+    public Integer getIsSell() {
+		return isSell;
+	}
+
+	public void setIsSell(Integer isSell) {
+		this.isSell = isSell;
+	}
+
+	/**
      * 获取编号
      *
      * @return id - 编号

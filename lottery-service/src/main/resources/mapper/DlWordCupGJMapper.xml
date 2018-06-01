@@ -19,11 +19,12 @@
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="update_time" jdbcType="INTEGER" property="updateTime" />
     <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
+    <result column="sell" jdbcType="INTEGER" property="isSell" />
   </resultMap>
   
   <select id="getMatchList" resultMap="BaseResultMap"> 
   	select * from dl_world_cup_gj
-  	where sell = 0 and bet_status = 0 and issue=#{issue} 
+  	where issue=#{issue} 
   	order by sort_id
   </select>
   
