@@ -90,10 +90,8 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			} else if ("3".equals(article.getExtendCat())) {
 				article.setExtendCat("牛人分析");
 			} else if ("4".equals(article.getExtendCat())) {
-				article.setExtendCat("世界杯");
-			} else if("5".equals(article.getExtendCat())) {
 				article.setExtendCat("其他");
-			}
+			} 
 			dto.setAuthor(article.getAuthor());
 			dto.setAddTime(article.getAddTime().toString());
 			dto.setArticleThumb(dto.getArticleThumb());

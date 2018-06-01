@@ -38,6 +38,12 @@ public class DlHallDTO implements Serializable{
 		
 		@ApiModelProperty(value = "图片跳转链接")
 		public String bannerLink;
+		
+		@ApiModelProperty(value = "banner图生效起始时间")
+		public Integer startTime;
+		
+		@ApiModelProperty(value = "banner图生效截止时间")
+		public Integer endTime;
 	}
 	
 	@Data

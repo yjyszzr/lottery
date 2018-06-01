@@ -161,6 +161,7 @@ public class DlArticleController {
 		}
 		return infoCatList;
 	}
+	
 	/**
 	 * 根据当前文章的分类查找相关文章
 	 * 
