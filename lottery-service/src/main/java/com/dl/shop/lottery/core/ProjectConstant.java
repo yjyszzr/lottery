@@ -407,8 +407,8 @@ public class ProjectConstant {
     public static final String FINISH_COMPARE ="1";
     
     
-    //投注提前时间，单位为秒
-    public static final int BET_PRESET_TIME = 780;
+    //投注提前时间，单位为秒2018-06-01杨洲游 改13分为7分
+    public static final int BET_PRESET_TIME = 420;
   //彩票信息的缓存时长,单位分
     public final static long BET_INFO_EXPIRE_TIME = 10;
     

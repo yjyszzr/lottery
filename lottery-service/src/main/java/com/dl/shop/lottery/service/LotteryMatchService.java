@@ -331,24 +331,35 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
-		Locale defaultLocal = Locale.getDefault();
+//		Locale defaultLocal = Locale.getDefault();
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
+			LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+			int matchHour = matchDateTime.getHour();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
 			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
-			//第二天比赛时间
+			//今天展示第二天比赛时间
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
-				betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				if(matchWeekDay < 6 && matchHour < 9) {
+					betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 53, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 53, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				}
 			}
 			//0-9点的赛事在当天不能投注
 			LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
 	        int nowHour = localTime.getHour();
 	        int betHour = betendDateTime.getHour();
-			if(betHour < 9 && betendDateTime.toLocalDate().isEqual(LocalDate.now()) && nowHour < 9){
-				continue;
+			if(betendDateTime.toLocalDate().isEqual(LocalDate.now()) && nowHour < 9 && betHour < 9){
+				if(matchWeekDay < 6) {
+					continue;
+				} else if(matchWeekDay > 5 && betHour > 0 ) {
+					continue;
+				}
 			}
 			//投注结束
 			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
