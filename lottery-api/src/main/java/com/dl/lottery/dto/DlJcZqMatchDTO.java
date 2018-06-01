@@ -40,7 +40,7 @@ public class DlJcZqMatchDTO implements Serializable{
 	@ApiModelProperty(value = "主队名称", required = true)
 	public String homeTeamAbbr;
 	
-	@ApiModelProperty(value = "主队名称", required = true)
+	@ApiModelProperty(value = "主队排名", required = true)
 	public String homeTeamRank;
 	
 	@ApiModelProperty(value = "客队id", required = true)
@@ -52,7 +52,7 @@ public class DlJcZqMatchDTO implements Serializable{
 	@ApiModelProperty(value = "客队名称", required = true)
 	public String visitingTeamAbbr;
 	
-	@ApiModelProperty(value = "客队名称", required = true)
+	@ApiModelProperty(value = "客队排名", required = true)
 	public String visitingTeamRank;
 	
 	@ApiModelProperty(value = "比赛日期", required = true)
