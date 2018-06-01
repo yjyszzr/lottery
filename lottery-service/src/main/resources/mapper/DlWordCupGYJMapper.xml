@@ -26,7 +26,7 @@
   
   <select id="getMatchList" resultMap="BaseResultMap"> 
   	select * from dl_world_cup_gyj
-  	where bet_status = 0 and issue=#{issue} 
+  	where sell = 0 and bet_status = 0 and issue=#{issue} 
   	<if test="countryIds !=null and countryIds != ''">
   	 	and (home_country_id in
   	 	<foreach collection="countryIds.split(',')" item="countryId" open="(" close=")" separator=",">

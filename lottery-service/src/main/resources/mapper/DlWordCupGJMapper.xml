@@ -23,7 +23,7 @@
   
   <select id="getMatchList" resultMap="BaseResultMap"> 
   	select * from dl_world_cup_gj
-  	where bet_status = 0 and issue=#{issue} 
+  	where sell = 0 and bet_status = 0 and issue=#{issue} 
   	order by sort_id
   </select>
   
