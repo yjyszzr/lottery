@@ -2776,6 +2776,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	matchInfo.setHomeTeamAbbr(lotteryMatch.getHomeTeamAbbr());
     	Integer homeTeamId = lotteryMatch.getHomeTeamId();
 		matchInfo.setHomeTeamId(homeTeamId);
+		matchInfo.setHomeTeamRank(lotteryMatch.getHomeTeamRank());
     	matchInfo.setLeagueAddr(lotteryMatch.getLeagueAddr());
     	matchInfo.setMatchId(lotteryMatch.getMatchId());
     	Date matchTimeDate = lotteryMatch.getMatchTime();
@@ -2785,6 +2786,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     	matchInfo.setVisitingTeamAbbr(lotteryMatch.getVisitingTeamAbbr());
     	Integer visitingTeamId = lotteryMatch.getVisitingTeamId();
 		matchInfo.setVisitingTeamId(visitingTeamId);
+		matchInfo.setVisitingTeamRank(lotteryMatch.getVisitingTeamRank());
     	List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(new Integer[] {lotteryMatch.getChangciId()}, MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode()+"");
     	if(CollectionUtils.isNotEmpty(matchPlayList)) {
     		LotteryMatchPlay lotteryMatchPlay = matchPlayList.get(0);

@@ -27,6 +27,9 @@ public class MatchInfoForTeamDTO implements Serializable{
 	@ApiModelProperty(value = "主队名称", required = true)
 	public String homeTeamAbbr;
 	
+	@ApiModelProperty(value = "主队排名", required = true)
+	public String homeTeamRank;
+	
 	@ApiModelProperty(value = "主队图标", required = true)
 	public String homeTeamPic;
 	
@@ -35,6 +38,9 @@ public class MatchInfoForTeamDTO implements Serializable{
 	
 	@ApiModelProperty(value = "客队名称", required = true)
 	public String visitingTeamAbbr;
+	
+	@ApiModelProperty(value = "客队排名", required = true)
+	public String visitingTeamRank;
 	
 	@ApiModelProperty(value = "客队图标", required = true)
 	public String visitingTeamPic;
