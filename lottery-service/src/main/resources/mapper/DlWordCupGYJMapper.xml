@@ -9,19 +9,19 @@
     <result column="visitor_country_id" jdbcType="INTEGER" property="visitorCountryId" />
     <result column="visitor_contry_name" jdbcType="VARCHAR" property="visitorContryName" />
     <result column="visitor_contry_pic" jdbcType="VARCHAR" property="visitorContryPic" />
-    <result column="bet_status" jdbcType="BIT" property="betStatus" />
+    <result column="bet_status" jdbcType="INTEGER" property="betStatus" />
     <result column="bet_odds" jdbcType="VARCHAR" property="betOdds" />
     <result column="bet_prob" jdbcType="VARCHAR" property="betProb" />
-    <result column="p_id" jdbcType="INTEGER" property="pId" />
+    <result column="p_id" jdbcType="VARCHAR" property="pId" />
     <result column="sort_id" jdbcType="INTEGER" property="sortId" />
-    <result column="play_code" jdbcType="INTEGER" property="playCode" />
-    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="play_code" jdbcType="VARCHAR" property="playCode" />
+    <result column="league_id" jdbcType="VARCHAR" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
     <result column="game" jdbcType="VARCHAR" property="game" />
     <result column="issue" jdbcType="VARCHAR" property="issue" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="update_time" jdbcType="INTEGER" property="updateTime" />
-    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+    <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
   </resultMap>
   
   <select id="getMatchList" resultMap="BaseResultMap"> 

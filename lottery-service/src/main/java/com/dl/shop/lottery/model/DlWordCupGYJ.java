@@ -69,7 +69,7 @@ public class DlWordCupGYJ {
      * id
      */
     @Column(name = "p_id")
-    private Integer pId;
+    private String pId;
 
     /**
      * 编号
@@ -81,13 +81,13 @@ public class DlWordCupGYJ {
      * 比赛号
      */
     @Column(name = "play_code")
-    private Integer playCode;
+    private String playCode;
 
     /**
      * 联赛id，如竞彩网2018世界杯对应id
      */
     @Column(name = "league_id")
-    private Integer leagueId;
+    private String leagueId;
 
     /**
      * 联赛名称，如：2018世界杯
@@ -308,7 +308,7 @@ public class DlWordCupGYJ {
      *
      * @return p_id - id
      */
-    public Integer getpId() {
+    public String getpId() {
         return pId;
     }
 
@@ -317,7 +317,7 @@ public class DlWordCupGYJ {
      *
      * @param pId id
      */
-    public void setpId(Integer pId) {
+    public void setpId(String pId) {
         this.pId = pId;
     }
 
@@ -344,7 +344,7 @@ public class DlWordCupGYJ {
      *
      * @return play_code - 比赛号
      */
-    public Integer getPlayCode() {
+    public String getPlayCode() {
         return playCode;
     }
 
@@ -353,7 +353,7 @@ public class DlWordCupGYJ {
      *
      * @param playCode 比赛号
      */
-    public void setPlayCode(Integer playCode) {
+    public void setPlayCode(String playCode) {
         this.playCode = playCode;
     }
 
@@ -362,7 +362,7 @@ public class DlWordCupGYJ {
      *
      * @return league_id - 联赛id，如竞彩网2018世界杯对应id
      */
-    public Integer getLeagueId() {
+    public String getLeagueId() {
         return leagueId;
     }
 
@@ -371,7 +371,7 @@ public class DlWordCupGYJ {
      *
      * @param leagueId 联赛id，如竞彩网2018世界杯对应id
      */
-    public void setLeagueId(Integer leagueId) {
+    public void setLeagueId(String leagueId) {
         this.leagueId = leagueId;
     }
 

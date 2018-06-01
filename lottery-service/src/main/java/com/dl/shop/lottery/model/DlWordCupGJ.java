@@ -33,7 +33,7 @@ public class DlWordCupGJ {
      * 状态0开售，1停售
      */
     @Column(name = "bet_status")
-    private Boolean betStatus;
+    private Integer betStatus;
 
     /**
      * 奖金
@@ -51,7 +51,7 @@ public class DlWordCupGJ {
      * id
      */
     @Column(name = "p_id")
-    private Integer pId;
+    private String pId;
 
     /**
      * 编号
@@ -63,13 +63,13 @@ public class DlWordCupGJ {
      * 比赛号
      */
     @Column(name = "play_code")
-    private Integer playCode;
+    private String playCode;
 
     /**
      * 联赛id，如竞彩网2018世界杯对应id
      */
     @Column(name = "league_id")
-    private Integer leagueId;
+    private String leagueId;
 
     /**
      * 联赛名称，如：2018世界杯
@@ -103,7 +103,7 @@ public class DlWordCupGJ {
      * 拉取平台:0竞彩
      */
     @Column(name = "league_from")
-    private Boolean leagueFrom;
+    private Integer leagueFrom;
 
     /**
      * 获取编号
@@ -182,7 +182,7 @@ public class DlWordCupGJ {
      *
      * @return bet_status - 状态0开售，1停售
      */
-    public Boolean getBetStatus() {
+    public Integer getBetStatus() {
         return betStatus;
     }
 
@@ -191,7 +191,7 @@ public class DlWordCupGJ {
      *
      * @param betStatus 状态0开售，1停售
      */
-    public void setBetStatus(Boolean betStatus) {
+    public void setBetStatus(Integer betStatus) {
         this.betStatus = betStatus;
     }
 
@@ -236,7 +236,7 @@ public class DlWordCupGJ {
      *
      * @return p_id - id
      */
-    public Integer getpId() {
+    public String getpId() {
         return pId;
     }
 
@@ -245,7 +245,7 @@ public class DlWordCupGJ {
      *
      * @param pId id
      */
-    public void setpId(Integer pId) {
+    public void setpId(String pId) {
         this.pId = pId;
     }
 
@@ -272,7 +272,7 @@ public class DlWordCupGJ {
      *
      * @return play_code - 比赛号
      */
-    public Integer getPlayCode() {
+    public String getPlayCode() {
         return playCode;
     }
 
@@ -281,7 +281,7 @@ public class DlWordCupGJ {
      *
      * @param playCode 比赛号
      */
-    public void setPlayCode(Integer playCode) {
+    public void setPlayCode(String playCode) {
         this.playCode = playCode;
     }
 
@@ -290,7 +290,7 @@ public class DlWordCupGJ {
      *
      * @return league_id - 联赛id，如竞彩网2018世界杯对应id
      */
-    public Integer getLeagueId() {
+    public String getLeagueId() {
         return leagueId;
     }
 
@@ -299,7 +299,7 @@ public class DlWordCupGJ {
      *
      * @param leagueId 联赛id，如竞彩网2018世界杯对应id
      */
-    public void setLeagueId(Integer leagueId) {
+    public void setLeagueId(String leagueId) {
         this.leagueId = leagueId;
     }
 
@@ -398,7 +398,7 @@ public class DlWordCupGJ {
      *
      * @return league_from - 拉取平台:0竞彩
      */
-    public Boolean getLeagueFrom() {
+    public Integer getLeagueFrom() {
         return leagueFrom;
     }
 
@@ -407,7 +407,7 @@ public class DlWordCupGJ {
      *
      * @param leagueFrom 拉取平台:0竞彩
      */
-    public void setLeagueFrom(Boolean leagueFrom) {
+    public void setLeagueFrom(Integer leagueFrom) {
         this.leagueFrom = leagueFrom;
     }
 }
