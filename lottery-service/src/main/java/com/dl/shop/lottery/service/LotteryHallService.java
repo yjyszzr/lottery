@@ -11,12 +11,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-
 import com.alibaba.druid.util.StringUtils;
 import com.dl.base.model.UserDeviceInfo;
-import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlHallDTO;
@@ -30,11 +26,6 @@ import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.member.api.IUserService;
-import com.dl.member.dto.ChannelCustomerBindDTO;
-import com.dl.member.dto.ChannelDistributorBindDTO;
-import com.dl.member.dto.ChannelDistributorDTO;
-import com.dl.member.dto.UserDTO;
-import com.dl.member.param.UserIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
@@ -42,10 +33,12 @@ import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
-import com.dl.shop.lottery.model.LotteryActivity;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
+
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Service
 @Transactional(value = "transactionManager1")
