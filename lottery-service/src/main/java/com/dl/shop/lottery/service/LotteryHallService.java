@@ -222,6 +222,9 @@ public class LotteryHallService {
 			for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
 				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 				String phone = winningLog.getPhone();
+				if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+					continue;
+				}
 				phone = phone.substring(0, 3) + "****" + phone.substring(7);
 				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
