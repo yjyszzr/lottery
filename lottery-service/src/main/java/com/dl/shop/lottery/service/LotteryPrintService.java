@@ -701,8 +701,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 								return list;
 							}).collect(Collectors.toList());
 							List<Double> rewardList = new ArrayList<Double>();
-							this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
-							double rewardSum = rewardList.stream().reduce(0.00, Double::sum);
+							/*this.groupByRewardList(Double.valueOf(2 * print.getTimes()), Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
+							double rewardSum = rewardList.stream().reduce(0.00, Double::sum);*/
+							//2018-06-04计算税
+							this.groupByRewardList(2.0, Integer.valueOf(print.getBetType()) / 10,winSPList, rewardList);
+							double rewardSum = rewardList.stream().reduce(0.00, Double::sum)*print.getTimes();
 							updatePrint.setRealRewardMoney(BigDecimal.valueOf(rewardSum));
 							// 保存第三方给计算的单张彩票的价格
 							PeriodRewardDetail periodRewardDetail = new PeriodRewardDetail();
@@ -774,6 +777,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			for(Double remove: removes) {
 				Double item = amount*remove;
 				if(num == 1) {
+					//start对大于等于10000的单注奖金进行20%税收，：单注彩票奖金大于或者等于1万元时，扣除20%的偶然所得税后再派奖
+					if(item.doubleValue() >= 10000) {
+						item = item*0.8;
+					}
+					//end
 					rewardList.add(item);
 				} else {
 					groupByRewardList(item,num-1,link, rewardList);
