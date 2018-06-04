@@ -15,6 +15,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 import com.alibaba.druid.util.StringUtils;
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
@@ -88,10 +89,25 @@ public class LotteryHallService {
 		// 获取彩票分类列表
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
 		// //第一版只显示竞彩足球的子列表
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		boolean isShowWorldCup = true;
+		if(userDevice != null) {
+			String appv = userDevice.getAppv();
+			if(appv.compareTo("1.0.4") <= 0) {
+				isShowWorldCup = false;
+			}
+		}
 		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
+			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
 				dto.setLotteryId("1");
+				if("8".equals(dto.getPlayClassifyId())) {
+					wcDTO = dto;
+				}
+			}
+			if(wcDTO != null && !isShowWorldCup) {
+				dlPlayClassifyDetailDTOs.remove(wcDTO);
 			}
 		}
 		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
