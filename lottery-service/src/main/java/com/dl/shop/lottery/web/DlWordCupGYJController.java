@@ -104,8 +104,8 @@ public class DlWordCupGYJController {
     		bteNum = findByIds.size();
     		betMoney = bteNum*2.0*times;
     		issue = findByIds.get(0).getIssue();
-    		String minOdds = findByIds.stream().min((item1,item2)->item1.getBetOdds().compareTo(item2.getBetOdds())).get().getBetOdds();
-    		String maxOdds = findByIds.stream().max((item1,item2)->item1.getBetOdds().compareTo(item2.getBetOdds())).get().getBetOdds();
+    		String minOdds = findByIds.stream().min((item1,item2)->Double.valueOf(item1.getBetOdds()).compareTo(Double.valueOf(item2.getBetOdds()))).get().getBetOdds();
+    		String maxOdds = findByIds.stream().max((item1,item2)->Double.valueOf(item1.getBetOdds()).compareTo(Double.valueOf(item2.getBetOdds()))).get().getBetOdds();
     		Double min = Double.valueOf(minOdds)*2*times;
     		Double max = Double.valueOf(maxOdds)*2*times;
     		forecastMoney = String.format("%.2f", min) + "~" + String.format("%.2f", max);
