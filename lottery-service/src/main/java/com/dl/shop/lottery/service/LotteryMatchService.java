@@ -429,7 +429,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			value.getPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 			dlJcZqMatchListDTO.getPlayList().add(value);
 		});
-		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->(item1.getMatchTime() < item2.getMatchTime()) ? -1 : ((item1.getMatchTime() == item2.getMatchTime()) ? 0 : 1));
+		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getSortMatchDay().compareTo(item2.getSortMatchDay()));
 		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
 		dlJcZqMatchListDTO.setLotteryClassifyId(1);
