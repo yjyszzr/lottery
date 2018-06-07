@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_DIR" value="/data/dl/logs" />
+	<property name="LOG_DIR" value="/a/logs/app/lottery" />
 	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
@@ -39,7 +39,7 @@
 	<logger name="com.dl.shop.lottery" level="INFO" />
 	<logger name="org.springframework" level="INFO"/>
 	<logger name="com.dl.base.mapper" level="INFO" />
-	<logger name="com.alibaba.druid" level="WARN" />
+	<logger name="com.alibaba.druid" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="console" />

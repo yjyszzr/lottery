@@ -590,6 +590,7 @@ CREATE TABLE `dl_world_cup_gj` (
   `create_time` int(11) NOT NULL COMMENT '创建时间',
   `update_time` int(11) NOT NULL COMMENT '更新时间',
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+    `sell` tinyint(2) DEFAULT 0 COMMENT '停赛1,开赛0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COMMENT='世界杯冠军信息';
 -- 世界杯冠亚军信息 --
@@ -615,6 +616,7 @@ CREATE TABLE `dl_world_cup_gyj` (
   `create_time` int(11) NOT NULL COMMENT '创建时间',
   `update_time` int(11) NOT NULL COMMENT '更新时间',
   `league_from` tinyint(1) default 0 COMMENT '拉取平台:0竞彩',
+    `sell` tinyint(2) DEFAULT 0 COMMENT '停赛1,开赛0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COMMENT='世界杯冠亚军信息';
 
