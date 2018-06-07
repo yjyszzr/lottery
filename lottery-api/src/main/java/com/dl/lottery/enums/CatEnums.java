@@ -2,7 +2,7 @@ package com.dl.lottery.enums;
 
 public enum CatEnums {
 	Today_Focus("1","今日关注"),
-	Buy_Forcast("2","竞彩预测"),
+	Buy_Forcast("2","重心推荐"),
 	Good_Analysis("3","牛人分析"),
 	World_Cup("4","其他");
 	
