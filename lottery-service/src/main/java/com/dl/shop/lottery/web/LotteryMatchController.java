@@ -434,7 +434,7 @@ public class LotteryMatchController {
 				List<UserBonusDTO> userBonuses = userBonusList.stream().filter(dto->{
 					double minGoodsAmount = dto.getBonusPrice().doubleValue();
 					return orderMoney < minGoodsAmount ? false : true;
-				}).sorted((n1,n2)->n1.getBonusPrice().compareTo(n2.getBonusPrice()))
+				}).sorted((n1,n2)->n2.getBonusPrice().compareTo(n1.getBonusPrice()))
 						.collect(Collectors.toList());
 				if(userBonuses.size() > 0) {
 					/*if(null != param.getBonusId()) {
