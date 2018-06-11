@@ -90,7 +90,14 @@ public class DlWordCupGYJController {
     	if(isGj == null) {
     		return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
     	}
+    	//设置投注倍数
     	Integer times = param.getTimes();
+    	if(null == times || times < 1) {
+    		param.setTimes(1);
+    	}
+    	if(param.getTimes() >= 99999) {
+    		return ResultGenerator.genResult(LotteryResultEnum.BET_TIMES_LIMIT.getCode(), LotteryResultEnum.BET_TIMES_LIMIT.getMsg());
+    	}
     	int lotteryClassifyId = param.getLotteryClassifyId();
     	int lotteryPlayClassifyId = param.getLotteryPlayClassifyId();
 
@@ -103,6 +110,12 @@ public class DlWordCupGYJController {
     		List<DlWordCupGYJ> findByIds = dlWordCupGYJService.findByIds(betIds);
     		bteNum = findByIds.size();
     		betMoney = bteNum*2.0*times;
+    		if(betMoney >= 20000) {
+    			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+    		}
+    		if(bteNum >= 10000 || bteNum < 0) {
+    			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+    		}
     		issue = findByIds.get(0).getIssue();
     		String minOdds = findByIds.stream().min((item1,item2)->Double.valueOf(item1.getBetOdds()).compareTo(Double.valueOf(item2.getBetOdds()))).get().getBetOdds();
     		String maxOdds = findByIds.stream().max((item1,item2)->Double.valueOf(item1.getBetOdds()).compareTo(Double.valueOf(item2.getBetOdds()))).get().getBetOdds();
@@ -129,6 +142,12 @@ public class DlWordCupGYJController {
     		List<DlWordCupGJ> findByIds = dlWordCupGJService.findByIds(betIds);
     		bteNum = findByIds.size();
     		betMoney = bteNum*2.0*times;
+    		if(betMoney >= 20000) {
+    			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+    		}
+    		if(bteNum >= 10000 || bteNum < 0) {
+    			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+    		}
     		issue = findByIds.get(0).getIssue();
     		String minOdds = findByIds.stream().min((item1,item2)->item1.getBetOdds().compareTo(item2.getBetOdds())).get().getBetOdds();
     		String maxOdds = findByIds.stream().max((item1,item2)->item1.getBetOdds().compareTo(item2.getBetOdds())).get().getBetOdds();
