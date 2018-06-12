@@ -84,7 +84,9 @@ public class LotteryHallService {
 		// //第一版只显示竞彩足球的子列表
 		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
 		boolean isShowWorldCup = true;
+		String channel = null;
 		if(userDevice != null) {
+			channel = userDevice.getChannel();
 			String appv = userDevice.getAppv();
 			if(appv.compareTo("1.0.4") <= 0) {
 				isShowWorldCup = false;
@@ -96,6 +98,10 @@ public class LotteryHallService {
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
 				dto.setLotteryId("1");
 				if("8".equals(dto.getPlayClassifyId())) {
+					String redirectUrl = dto.getRedirectUrl();
+					channel = channel == null?"":channel;
+					redirectUrl = redirectUrl + "&channel="+channel;
+					dto.setRedirectUrl(redirectUrl);
 					wcDTO = dto;
 				}
 			}
