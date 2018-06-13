@@ -33,6 +33,7 @@ import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
+import com.dl.shop.lottery.model.LotteryActivity;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
@@ -76,7 +77,7 @@ public class LotteryHallService {
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
-		dlHallDTO.setActivity(getDlActivityDTO(userId));
+		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
 		// 获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
@@ -175,36 +176,25 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
-	private DlActivityDTO getDlActivityDTO(Integer userId) {
-		return null;
-		//该用户与店员绑定过才展示活动数据
-//		DlActivityDTO dlActivityDTO = new DlActivityDTO();
-//		if(null == userId) {
-//			return null;
-//		}else {
-//			UserIdParam userIdParam = new UserIdParam();
-//			userIdParam.setUserId(userId);
-//			BaseResult<ChannelCustomerBindDTO> channelDistributorDTORst = userService.queryChannelDistributorByUserId(userIdParam);
-//			if(channelDistributorDTORst.getCode() != 0) {
-//				return null;
-//			}
-//			
-//			Condition condition = new Condition(LotteryActivity.class);
-//			condition.createCriteria().andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
-//			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
-//			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
-//				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
-//				if (null != lotteryActivity) {
-//					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
-//					dlActivityDTO.setActImg(lotteryActivity.getActImg());
-//					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
-//				}
-//			}else {
-//				return null;
-//			}
-//		}
-//		
-//		return dlActivityDTO;
+	private DlActivityDTO getDlActivityDTO(HallParam hallParam) {
+		DlActivityDTO dlActivityDTO = new DlActivityDTO();
+		String isTransaction = hallParam.getIsTransaction();
+		if("2".equals(isTransaction) || null == isTransaction) {	
+			Condition condition = new Condition(LotteryActivity.class);
+			condition.createCriteria().andCondition("act_type=", 0).andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
+				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+				if (null != lotteryActivity) {
+					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+					dlActivityDTO.setActImg(lotteryActivity.getActImg());
+					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+				}
+			}else {
+				return null;
+			}
+		}
+		return dlActivityDTO;
 	}
 
 	/**
