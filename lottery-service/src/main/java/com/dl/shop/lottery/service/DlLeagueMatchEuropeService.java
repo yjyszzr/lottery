@@ -127,6 +127,7 @@ public class DlLeagueMatchEuropeService extends AbstractService<DlLeagueMatchEur
 	public List<LeagueMatchEuropeDTO> leagueMatchEuropes(Integer changciId) {
 		Condition condition = new Condition(DlLeagueMatchAsia.class);
         condition.and().andEqualTo("changciId", changciId);
+        condition.setOrderByClause("orderNum");
         List<DlLeagueMatchEurope> list = super.findByCondition(condition);
        /* if(list.size() == 0) {
         	 this.refreshMatchEuropeInfoFromZC(changciId);
