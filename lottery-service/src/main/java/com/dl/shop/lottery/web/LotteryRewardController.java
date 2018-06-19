@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dl.base.constant.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.LotteryRewardByIssueDTO;
 import com.dl.lottery.param.DlLotteryRewardByIssueParam;
 import com.dl.lottery.param.DlRewardParam;
 import com.dl.lottery.param.DlToAwardingParam;
-import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.service.LotteryRewardService;
 
 import io.swagger.annotations.ApiOperation;
@@ -53,5 +53,12 @@ public class LotteryRewardController {
 		LotteryRewardByIssueDTO lotteryRewardByIssueDTO = lotteryRewardService.queryRewardByIssue(param);
     	return ResultGenerator.genSuccessResult("根据期次，查询审核通过的开奖数据成功", lotteryRewardByIssueDTO);
     }
+	
+	@ApiOperation(value = "更新待开奖的订单,提供给定时任务用", notes = "更新待开奖的订单,提供给定时任务用")
+	@PostMapping("/updateOrderAfterOpenReward")
+    public BaseResult<String> updateOrderAfterOpenReward(@RequestBody EmptyParam emptyParam) {
+    	return ResultGenerator.genSuccessResult("更新待开奖的订单成功", lotteryRewardService.updateOrderAfterOpenReward());
+	}
+
 	
 }

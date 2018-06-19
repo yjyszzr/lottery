@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -933,4 +935,23 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		return -1;
 	}
+	
+	
+	/**
+	 * 出票任务 ,调用第三方接口出票定时任务,提供给定时任务调用
+	 */
+    public String printLottery() {
+        log.info("出票定时任务启动");
+        this.goPrintLottery();
+        log.info("出票定时任务结束");
+        //每天9点前不作查询处理，只作出票处理
+        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int hour = localTime.getHour();
+        if(hour >= 9) {
+        	log.info("彩票出票状态查询定时任务启动");
+        	this.goQueryStake();
+        	log.info("彩票出票状态查询定时任务结束");
+        }
+        return "";
+    }
 }

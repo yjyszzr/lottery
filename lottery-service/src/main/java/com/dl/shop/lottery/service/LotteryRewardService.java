@@ -192,7 +192,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 	 * 根据开奖期次更新订单的状态，中奖金额 等
 	 * @param issue
 	 */
-	public void updateOrderAfterOpenReward() {
+	public String updateOrderAfterOpenReward() {
 		
 		//查询订单状态是待开奖的，查询是否每笔订单锁包含的彩票都已经比对完成
 		OrderQueryParam orderQueryParam = new OrderQueryParam();
@@ -202,13 +202,13 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 		log.info("获取待开奖订单返回：code="+rst.getCode()+" msg="+rst.getMsg());
 		if(rst.getCode() != 0) {
 			log.error(rst.getMsg());
-			return;
+			return "获取待开奖订单返回：code="+rst.getCode()+" msg="+rst.getMsg();
 		}
 		
 		List<String> orderSnList = rst.getData();
 		log.info("待开奖数据： size="+orderSnList.size());
 		if(CollectionUtils.isEmpty(orderSnList)) {
-			return;
+			return "待开奖数据： size="+orderSnList.size();
 		}		
 		while(orderSnList.size() > 0) {
 			int num = orderSnList.size()>20?20:orderSnList.size();
@@ -282,6 +282,7 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			}
 			orderSnList.removeAll(subList);
 		}
+		return "success";
 	}
 	/**
 	 * 根据期次，查询审核通过的开奖数据
@@ -797,5 +798,6 @@ public class LotteryRewardService extends AbstractService<LotteryReward> {
 			log.error(ex.getMessage());
 		}*/
 	}
+	
 	
 }

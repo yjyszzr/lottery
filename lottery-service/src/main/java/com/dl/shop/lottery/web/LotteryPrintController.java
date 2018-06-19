@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dl.base.constant.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
@@ -131,6 +131,20 @@ public class LotteryPrintController {
     public BaseResult<Integer> printLotteryStatusByOrderSn(@Valid @RequestBody PrintLotteryStatusByOrderSnParam param) {
 		Integer status = lotteryPrintService.printLotteryStatusByOrderSn(param.getOrderSn());
 		return ResultGenerator.genSuccessResult("success", status);
+	}
+	
+	@ApiOperation(value = "出票任务 ,调用第三方接口出票定时任务", notes = "出票任务 ,调用第三方接口出票定时任务")
+    @PostMapping("/printLottery")
+    public BaseResult<String> printLottery(@RequestBody EmptyParam emptyParam) {
+		lotteryPrintService.printLottery();
+		return ResultGenerator.genSuccessResult("sucess");
+	}
+	
+	@ApiOperation(value = "更新彩票信息,给定时任务调用", notes = "更新彩票信息,给定时任务调用")
+    @PostMapping("/updatePrintLotteryCompareStatus")
+    public BaseResult<String> updatePrintLotteryCompareStatus(@RequestBody EmptyParam emptyParam) {
+		lotteryPrintService.updatePrintLotteryCompareStatus();
+		return ResultGenerator.genSuccessResult("sucess");
 	}
 	
 }
