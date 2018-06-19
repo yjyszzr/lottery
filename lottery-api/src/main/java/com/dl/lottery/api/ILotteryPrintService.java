@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.dl.base.constant.EmptyParam;
+import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.lottery.param.PrintLotteryStatusByOrderSnParam;
 import com.dl.lottery.param.SaveLotteryPrintInfoParam;
