@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.dl.base.mapper.Mapper;
-import com.dl.lottery.dto.DlOrderDataDTO;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
 
