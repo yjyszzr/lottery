@@ -15,9 +15,9 @@ public enum LotteryResultEnum {
 	BET_NUMBER_LIMIT(303010,"彩票总注数不得超过10000注"),
 	BET_TIMES_LIMIT(303011,"彩票总倍数不得超过99999倍"),
 	ARTICLE_NULL(303012,"资讯已过期！"),
-	ARTICLE_ID_NULL(303013,"请选择有郊的文章！"),
+	ARTICLE_ID_NULL(303013,"请选择有效的文章！"),
 	BET_MATCH_STOP(303014,"暂停销售！"),
-	BET_MATCH_WC(303015,"世界杯期间投注量较大，为保证出票，最少投注100元！"),
+	BET_MATCH_WC(303015,"最低投注100元！"),
 	BET_MONEY_other(303100,"");
 	
 	
