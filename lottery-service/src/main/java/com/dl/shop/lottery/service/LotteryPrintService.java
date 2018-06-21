@@ -958,15 +958,18 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		log.info("计算出票失败退款金额开始。。。。");
 		PrintLotteryRefundDTO printLotteryRefundDTO = null;
 		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+		log.info("计算出票失败退款金额1.0");
 		if(CollectionUtils.isEmpty(byOrderSn)){//订单不存在
 			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoOrder,-1,1);
 			return printLotteryRefundDTO;
 		}
 	    Set<Integer> status = byOrderSn.stream().map(obj->obj.getStatus()).collect(Collectors.toSet());
+	    log.info("计算出票失败退款金额2.0");
 		if(status.contains(0)||status.contains(3)) {//尚未出票完成
 			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoFinish,1,1);
 			return printLotteryRefundDTO;
 		}else if(status.contains(2)) {//出票完成包含出票失败
+			log.info("计算出票失败退款金额3.0");
 			int failCount=0;
 			BigDecimal refundAmount=new BigDecimal(0);
 			for(LotteryPrint print:byOrderSn){
@@ -975,6 +978,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					refundAmount = refundAmount.add(print.getMoney());
 				}
 			}
+			log.info("计算出票失败退款金额4.0");
 			if(failCount==byOrderSn.size()){//全额退款
 				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundFullRefund,2,3);
 				printLotteryRefundDTO.setRefundAmount(refundAmount);
@@ -985,6 +989,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				return printLotteryRefundDTO;
 			}
 		}else{
+			log.info("计算出票失败退款金额5.0");
 			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoRefund,3,4);
 			return printLotteryRefundDTO;
 		}
