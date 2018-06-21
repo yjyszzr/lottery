@@ -65,4 +65,8 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	 * @param thirdApiLog
 	 */
 	public void saveLotteryThirdApiLog(LotteryThirdApiLog thirdApiLog);
+	//获取可投注金额
+	public int canBetMoney(@Param("startTime") Integer startTime);
+	//获取是否可投注
+	public int shutDownBetValue();
 }

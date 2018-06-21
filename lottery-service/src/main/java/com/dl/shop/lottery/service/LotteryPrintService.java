@@ -367,8 +367,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 							printTime = sdf.parse(printTimeStr);
 							lotteryPrint.setPrintTime(printTime);
 						} catch (ParseException e) {
-							e.printStackTrace();
-							log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常");
+							log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常", e);
 							continue;
 						}
 					}
@@ -927,7 +926,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				return 1;
 			}else if(status.contains(1)) {//有成功出票
 				return 3;
-			}else {
+			}else {//2出票失败
 				return 2;
 			}
 		}

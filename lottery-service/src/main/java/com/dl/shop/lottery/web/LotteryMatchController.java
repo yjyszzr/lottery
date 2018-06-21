@@ -107,7 +107,7 @@ public class LotteryMatchController {
     private DlMatchSupportService dlMatchSupportService;
     @Resource
     private LotteryMatchPlayService lotteryMatchPlayService;
-	
+    
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
@@ -125,6 +125,9 @@ public class LotteryMatchController {
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+		if(lotteryMatchService.isShutDownBet()) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -255,19 +258,26 @@ public class LotteryMatchController {
 		
 		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
 		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
 		int betNum = betInfo.getBetNum();
 		if(betNum >= 10000 || betNum < 0) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
+		}
+		String betMoney = betInfo.getMoney();
+		Double orderMoney = Double.valueOf(betMoney);
+		int canBetMoney = lotteryMatchService.canBetMoney();
+		if(orderMoney > canBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
 		}
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/saveBetInfo")
 	public BaseResult<BetPayInfoDTO> saveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+		if(lotteryMatchService.isShutDownBet()) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -411,6 +421,10 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
+		int canBetMoney = lotteryMatchService.canBetMoney();
+		if(orderMoney > canBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
 		Double userTotalMoney = Double.valueOf(totalMoney);
 		

@@ -16,6 +16,7 @@ public enum LotteryResultEnum {
 	BET_TIMES_LIMIT(303011,"彩票总倍数不得超过99999倍"),
 	ARTICLE_NULL(303012,"资讯已过期！"),
 	ARTICLE_ID_NULL(303013,"请选择有郊的文章！"),
+	BET_MATCH_STOP(303014,"暂停销售！"),
 	BET_MONEY_other(303100,"");
 	
 	

@@ -151,4 +151,12 @@
   	insert into dl_third_api_log(api_name,api_type,api_param,api_result,api_desc)
   	values(#{apiName},#{apiType},#{apiParam},#{apiResult},#{apiDesc})
   </insert>
+  
+  <select id="canBetMoney" resultType="int">
+  	select value-sum(money) from dl_print_lottery,dl_sys_config where business_id=2 and accept_time > #{startTime};
+  </select>
+  
+  <select id="shutDownBetValue" resultType="int">
+  		select value from dl_sys_config where business_id=1;
+  </select>
 </mapper>
