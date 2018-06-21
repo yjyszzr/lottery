@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import io.jsonwebtoken.lang.Collections;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -973,7 +974,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			for(LotteryPrint print:byOrderSn){
 				if(print.getStatus()==2){
 					failCount++;
-					refundAmount = refundAmount.add(print.getMoney());
+					refundAmount = refundAmount.add(print.getMoney().divide(new BigDecimal(100)).setScale(2,RoundingMode.HALF_EVEN));
 				}
 			}
 			if(failCount==byOrderSn.size()){//全额退款
