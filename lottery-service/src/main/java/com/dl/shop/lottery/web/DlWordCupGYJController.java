@@ -64,6 +64,7 @@ public class DlWordCupGYJController {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    private final static boolean isShutDown = true;
 
     @ApiOperation(value = "获取冠亚军列表", notes = "获取冠亚军列表")
     @PostMapping("/gyjs")
@@ -82,6 +83,9 @@ public class DlWordCupGYJController {
     @ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/saveBetInfo")
 	public BaseResult<BetPayInfoDTO> saveWcBetInfo(@Valid @RequestBody SaveWcBetInfoParam param) {
+    	if(isShutDown) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
     	String betIds = param.getBetIds();
     	if(StringUtils.isBlank(betIds)) {
     		return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
