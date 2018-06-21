@@ -264,7 +264,7 @@ public class LotteryMatchController {
 		if(betNum >= 10000 || betNum < 0) {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
-		String betMoney = betInfo.getMoney();
+		/*String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
 		if(orderMoney < 100) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
@@ -272,7 +272,7 @@ public class LotteryMatchController {
 		int canBetMoney = lotteryMatchService.canBetMoney();
 		if(orderMoney > canBetMoney) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-		}
+		}*/
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
