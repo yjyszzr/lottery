@@ -3241,40 +3241,20 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public int insertBatchHistoryMatch(List<LotteryMatch> list) {
 		super.save(list);
 		return 1;
-		/*try {
-			Class.forName(dbDriver);
-			Connection conn = (Connection) DriverManager.getConnection(dbUrl+"?characterEncoding=utf8", dbUserName, dbPass);
-			conn.setAutoCommit(false);
-			String sql = "insert into dl_match(league_addr,changci_id,changci,home_team_abbr,visiting_team_abbr,match_time,show_time,create_time,is_show,is_del,match_sn,status,first_half,whole,is_hot) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-			PreparedStatement prest = (PreparedStatement) conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-			for (LotteryMatch lm:list) {
-				prest.setString(1, lm.getLeagueAddr());
-				prest.setInt(2, null == lm.getChangciId()?1990:lm.getChangciId());
-				prest.setString(3, lm.getChangci());
-				prest.setString(4, lm.getHomeTeamAbbr());
-				prest.setString(5, lm.getVisitingTeamAbbr());
-				prest.setDate(6,new java.sql.Date(lm.getMatchTime().getTime()));
-				prest.setDate(7, new java.sql.Date(lm.getShowTime().getTime()));
-				prest.setInt(8, lm.getCreateTime());
-				prest.setInt(9, lm.getIsShow());
-				prest.setInt(10, lm.getIsDel());
-				prest.setString(11, lm.getMatchSn());
-				prest.setInt(12, lm.getStatus());
-				prest.setString(13, lm.getFirstHalf());
-				prest.setString(14, lm.getWhole());
-				prest.setInt(15, lm.getIsHot());
-				
-				prest.addBatch();
-			}
-			prest.executeBatch();
-			conn.commit();
-			conn.close();
-		} catch (Exception ex) {
-			logger.error(ex.getMessage());
-			return -1;
+	}
+	//获取今天的可投注金额
+	public int canBetMoney() {
+		Long zero = (System.currentTimeMillis()/(1000*3600*24)*(1000*3600*24) - TimeZone.getDefault().getRawOffset())/1000;
+		int startTime = zero.intValue();
+		return lotteryPrintMapper.canBetMoney(startTime);
+	}
+	//是否停售
+	public boolean isShutDownBet() {
+		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
+		if(shutDownBetValue == 1) {
+			return true;
 		}
-		return 1;*/
-		}
+		return false;
+	}
 	
 }
