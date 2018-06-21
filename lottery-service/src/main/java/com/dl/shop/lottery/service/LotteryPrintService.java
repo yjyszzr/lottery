@@ -955,9 +955,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
      * @return
      */
 	public PrintLotteryRefundDTO printLotterysRefundsByOrderSn(String orderSn) {
+		log.info("计算出票失败退款金额开始。。。。");
 		PrintLotteryRefundDTO printLotteryRefundDTO = null;
 		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
-		if(CollectionUtils.isNotEmpty(byOrderSn)){//订单不存在
+		if(CollectionUtils.isEmpty(byOrderSn)){//订单不存在
 			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoOrder,-1,1);
 			return printLotteryRefundDTO;
 		}
