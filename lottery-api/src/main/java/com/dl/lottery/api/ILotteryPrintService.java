@@ -22,7 +22,7 @@ public interface ILotteryPrintService {
 	@RequestMapping(path="/lottery/print/printLotteryStatusByOrderSn", method=RequestMethod.POST)
     public BaseResult<Integer> printLotteryStatusByOrderSn( PrintLotteryStatusByOrderSnParam param) ;
 	
-	@RequestMapping(path="/lottery/print/printLotterysRefundsByOrderSn", method=RequestMethod.POST)
+	@RequestMapping(path="/lottery/print/printLotteryRefunds", method=RequestMethod.POST)
     public BaseResult<PrintLotteryRefundDTO> printLotterysRefundsByOrderSn(@RequestBody PrintLotterysRefundsByOrderSnParam param) ;
 	
     @PostMapping("/lottery/print/printLottery")
