@@ -976,10 +976,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}
 			if(failCount==byOrderSn.size()){//全额退款
 				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundFullRefund,2,3);
+				printLotteryRefundDTO.setRefundAmount(refundAmount);
 				return printLotteryRefundDTO;
 			}else{//部分退款
 				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundPartRefund,3,2);
-				printLotteryRefundDTO.setPartRefundAmount(refundAmount);
+				printLotteryRefundDTO.setRefundAmount(refundAmount);
 				return printLotteryRefundDTO;
 			}
 		}else{
