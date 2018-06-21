@@ -268,7 +268,7 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
-		if(orderMoney >= 100) {
+		if(orderMoney < 100) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
 		}
 		int canBetMoney = lotteryMatchService.canBetMoney();
@@ -426,7 +426,7 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
-		if(orderMoney >= 100) {
+		if(orderMoney < 100) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
 		}
 		int canBetMoney = lotteryMatchService.canBetMoney();
