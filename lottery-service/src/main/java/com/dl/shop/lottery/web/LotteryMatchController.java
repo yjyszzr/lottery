@@ -263,6 +263,15 @@ public class LotteryMatchController {
 //			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
+		String betMoney = betInfo.getMoney();
+		Double orderMoney = Double.valueOf(betMoney);
+		if(orderMoney >= 100) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
+		}
+		int canBetMoney = lotteryMatchService.canBetMoney();
+		if(orderMoney > canBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
@@ -411,6 +420,13 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
+		if(orderMoney >= 100) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
+		}
+		int canBetMoney = lotteryMatchService.canBetMoney();
+		if(orderMoney > canBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
 		Double userTotalMoney = Double.valueOf(totalMoney);
 		
