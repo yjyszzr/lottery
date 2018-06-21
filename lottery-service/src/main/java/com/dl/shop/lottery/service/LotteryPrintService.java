@@ -1,11 +1,13 @@
 package com.dl.shop.lottery.service;
 
+import io.jsonwebtoken.lang.Collections;
+
 import java.math.BigDecimal;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -18,6 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,23 +55,21 @@ import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.lottery.dto.LotteryPrintDTO;
-import com.dl.lottery.dto.MatchResultDTO;
+import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
-import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
+import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.LotteryPrintParam;
-import com.dl.order.param.OrderSnListGoPrintLotteryParam;
-import com.dl.order.param.UpdateOrderInfoParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
@@ -75,12 +78,6 @@ import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
-import io.jsonwebtoken.lang.Collections;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
 
 @Slf4j
 @Service
@@ -932,5 +929,68 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}
 		}
 		return -1;
+	}
+	
+	
+	/**
+	 * 出票任务 ,调用第三方接口出票定时任务,提供给定时任务调用
+	 */
+    public String printLottery() {
+        log.info("出票定时任务启动");
+        this.goPrintLottery();
+        log.info("出票定时任务结束");
+        //每天9点前不作查询处理，只作出票处理
+        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int hour = localTime.getHour();
+        if(hour >= 9) {
+        	log.info("彩票出票状态查询定时任务启动");
+        	this.goQueryStake();
+        	log.info("彩票出票状态查询定时任务结束");
+        }
+        return "";
+    }
+
+    /**
+     * 获取制定订单的出票失败的退款信息
+     * @param orderSn
+     * @return
+     */
+	public PrintLotteryRefundDTO printLotterysRefundsByOrderSn(String orderSn) {
+		PrintLotteryRefundDTO printLotteryRefundDTO = null;
+		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+		if(CollectionUtils.isEmpty(byOrderSn)){//订单不存在
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoOrder,-1,1);
+			log.debug("orderSn={} 订单不存在对应的出票信息",orderSn);
+			return printLotteryRefundDTO;
+		}
+	    Set<Integer> status = byOrderSn.stream().map(obj->obj.getStatus()).collect(Collectors.toSet());
+		if(status.contains(0)||status.contains(3)) {//尚未出票完成
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoFinish,1,1);
+			log.debug("orderSn={} 尚在出票中",orderSn);
+			return printLotteryRefundDTO;
+		}else if(status.contains(2)) {//出票完成包含出票失败
+			int failCount=0;
+			BigDecimal refundAmount=new BigDecimal(0);
+			for(LotteryPrint print:byOrderSn){
+				if(print.getStatus()==2){
+					failCount++;
+					refundAmount = refundAmount.add(print.getMoney().divide(new BigDecimal(100)).setScale(2,RoundingMode.HALF_EVEN));
+				}
+			}
+			if(failCount==byOrderSn.size()){//全额退款
+				log.debug("orderSn={} 全部失败全部退款",orderSn);
+				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundFullRefund,2,3);
+			}else{//部分退款
+				log.debug("orderSn={} 部分出票失败退款",orderSn);
+				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundPartRefund,3,2);
+			}
+			log.debug("orderSn={} ，退款金额={}",orderSn,refundAmount);
+			printLotteryRefundDTO.setRefundAmount(refundAmount);
+			return printLotteryRefundDTO;
+		}else{
+			log.debug("orderSn={} 没有出票失败退款",orderSn);
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoRefund,3,4);
+			return printLotteryRefundDTO;
+		}
 	}
 }
