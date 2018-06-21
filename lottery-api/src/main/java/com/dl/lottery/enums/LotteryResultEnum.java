@@ -17,6 +17,7 @@ public enum LotteryResultEnum {
 	ARTICLE_NULL(303012,"资讯已过期！"),
 	ARTICLE_ID_NULL(303013,"请选择有郊的文章！"),
 	BET_MATCH_STOP(303014,"暂停销售！"),
+	BET_MATCH_WC(303015,"世界杯期间投注量较大，为保证出票，最少投注100元！"),
 	BET_MONEY_other(303100,"");
 	
 	
