@@ -153,9 +153,10 @@
   </insert>
   
   <select id="canBetMoney" resultType="int">
-  	select value-sum(money)/100 
-  	from dl_print_lottery,dl_sys_config 
-  	where business_id=2 and status!=2 and accept_time &gt; #{startTime};
+  	 select value-amount/100 
+  	 from dl_sys_config, 
+	(select  IFNULL(sum(money),0) as amount from dl_print_lottery where status!=2 and accept_time &gt; #{startTime} ) as l 
+	where business_id=2
   </select>
   
   <select id="shutDownBetValue" resultType="int">
