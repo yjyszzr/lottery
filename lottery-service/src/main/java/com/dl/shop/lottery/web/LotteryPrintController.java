@@ -128,7 +128,7 @@ public class LotteryPrintController {
 		int printLotteryRoutAmount = lotteryMatchService.printLotteryRoutAmount();
 		int printLotteryCom = 1 ;//河南出票公司
 		log.info("save printLotteryCom orderSn={},ticketAmount={},canBetMoney={}",param.getOrderSn(),data.getOrderInfoDTO().getTicketAmount(),printLotteryRoutAmount);
-		if(data.getOrderInfoDTO().getTicketAmount().intValue()-printLotteryRoutAmount>=0){
+		if(data.getOrderInfoDTO().getTicketAmount().intValue()-printLotteryRoutAmount<0){
 			log.info("orderSn={},设置出票公司为西安出票公司",param.getOrderSn());
 			printLotteryCom = 2;//西安出票公司
 		}
