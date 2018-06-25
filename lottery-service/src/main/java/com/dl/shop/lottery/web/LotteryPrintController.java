@@ -1,9 +1,13 @@
 package com.dl.shop.lottery.web;
 
+import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
@@ -37,10 +40,9 @@ import com.dl.order.param.OrderSnParam;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping("/lottery/print")
+@Slf4j
 public class LotteryPrintController {
 
 	@Resource
@@ -55,7 +57,7 @@ public class LotteryPrintController {
 	@ApiOperation(value = "投注接口", notes = "投注接口")
     @PostMapping("/toStake")
     public BaseResult<DlToStakeDTO> toStake(@Valid @RequestBody DlToStakeParam param) {
-		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStake(param);
+		DlToStakeDTO dlToStakeDTO = lotteryPrintService.toStakeHenan(param);
     	return ResultGenerator.genSuccessResult("投注成功", dlToStakeDTO);
     }
 	
@@ -69,7 +71,7 @@ public class LotteryPrintController {
 	@ApiOperation(value = "投注结果查询", notes = "投注结果查询")
     @PostMapping("/queryStake")
     public BaseResult<DlQueryStakeDTO> queryStake(@Valid @RequestBody DlQueryStakeParam param) {
-		DlQueryStakeDTO dlQueryStakeDTO = lotteryPrintService.queryStake(param);
+		DlQueryStakeDTO dlQueryStakeDTO = lotteryPrintService.queryStakeHenan(param);
     	return ResultGenerator.genSuccessResult("投注结果查询成功", dlQueryStakeDTO);
     }
 	
@@ -123,7 +125,14 @@ public class LotteryPrintController {
 		if(CollectionUtils.isEmpty(lotteryPrints)) {
 			return ResultGenerator.genFailResult();
 		}
-		return lotteryPrintService.saveLotteryPrintInfo(lotteryPrints, param.getOrderSn());
+		int printLotteryRoutAmount = lotteryMatchService.printLotteryRoutAmount();
+		int printLotteryCom = 1 ;//河南出票公司
+		log.info("save printLotteryCom orderSn={},ticketAmount={},canBetMoney={}",param.getOrderSn(),data.getOrderInfoDTO().getTicketAmount(),printLotteryRoutAmount);
+		if(data.getOrderInfoDTO().getTicketAmount().intValue()-printLotteryRoutAmount>=0){
+			log.info("orderSn={},设置出票公司为西安出票公司",param.getOrderSn());
+			printLotteryCom = 2;//西安出票公司
+		}
+		return lotteryPrintService.saveLotteryPrintInfo(lotteryPrints, param.getOrderSn(),printLotteryCom);
     }
 	
 	@ApiOperation(value = "查询订单对应的出票状态", notes = "查询订单对应的出票状态:1：待出票，2出票失败，3待开奖")

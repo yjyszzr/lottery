@@ -1,9 +1,8 @@
 package com.dl.shop.lottery.service;
 
+import io.jsonwebtoken.lang.Collections;
+
 import java.math.BigDecimal;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +17,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,23 +52,24 @@ import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.lottery.dto.LotteryPrintDTO;
-import com.dl.lottery.dto.MatchResultDTO;
+import com.dl.lottery.dto.XianDlQueryStakeDTO;
+import com.dl.lottery.dto.XianDlQueryStakeDTO.XianBackQueryStake;
+import com.dl.lottery.dto.XianDlToStakeDTO;
+import com.dl.lottery.dto.XianDlToStakeDTO.XianBackOrderDetail;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
-import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
 import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
+import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.LotteryPrintParam;
-import com.dl.order.param.OrderSnListGoPrintLotteryParam;
-import com.dl.order.param.UpdateOrderInfoParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
@@ -75,12 +78,6 @@ import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
-
-import io.jsonwebtoken.lang.Collections;
-import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
 
 @Slf4j
 @Service
@@ -116,6 +113,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	@Value("${print.ticket.merchantPassword}")
 	private String merchantPassword;
 	
+	@Value("${print.ticket.xian.url}")
+	private String printTicketXianUrl;
+	
+	@Value("${print.ticket.xian.merchant}")
+	private String xianMerchant;
+	
+	@Value("${print.ticket.xian.merchantPassword}")
+	private String xianMerchantPassword;
+	
 	/*@Value("${spring.datasource.druid.url}")
 	private String dbUrl;
 	
@@ -132,15 +138,30 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 投注接口（竞彩足球，game参数都是T51）
 	 * @return
 	 */
-	public DlToStakeDTO toStake(DlToStakeParam param) {
+	public DlToStakeDTO toStakeHenan(DlToStakeParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/stake");
+		String backStr = getBackDateByJsonDataHenan(jo, "/stake");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		@SuppressWarnings("rawtypes")
 		Map<String,Class> mapClass = new HashMap<String,Class>();
 		mapClass.put("orders", BackOrderDetail.class);
 		DlToStakeDTO dlToStakeDTO = (DlToStakeDTO) JSONObject.toBean(backJo, DlToStakeDTO.class, mapClass); 
+		return dlToStakeDTO;
+	}
+	/**
+	 * 投注接口（竞彩足球，game参数都是T51）
+	 * @return
+	 */
+	public XianDlToStakeDTO toStakeXian(DlToStakeParam param) {
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonDataXian(jo, "/order/create");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		@SuppressWarnings("rawtypes")
+		Map<String,Class> mapClass = new HashMap<String,Class>();
+		mapClass.put("orders", XianBackOrderDetail.class);
+		XianDlToStakeDTO dlToStakeDTO = (XianDlToStakeDTO) JSONObject.toBean(backJo, XianDlToStakeDTO.class, mapClass); 
 		return dlToStakeDTO;
 	}
 	
@@ -173,7 +194,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						}
 						String stakes = lotteryPrint.getStakes();
 						String sp = callbackStake.getSp();
-						String comparePrintSp = getComparePrintSp(sp, callbackStake.getTicketId());
+						String comparePrintSp = getComparePrintSpHenan(sp, callbackStake.getTicketId());
 						comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
 						
 						String game = lotteryPrint.getGame();
@@ -253,7 +274,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param issue
 	 * @return
 	 */
-	private String getComparePrintSp(String callBackSp, String ticketId) {
+	private String getComparePrintSpHenan(String callBackSp, String ticketId) {
 		DlQueryStakeParam param = new DlQueryStakeParam();
 		param.setMerchant(merchant);
 		String[] orders = new String[1];
@@ -262,7 +283,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		param.setTimestamp(sdf.format(new Date()));
 		param.setVersion("1.0");
-		DlQueryStakeDTO dlQueryStakeDTO = queryStake(param);
+		DlQueryStakeDTO dlQueryStakeDTO = queryStakeHenan(param);
 		if(!dlQueryStakeDTO.getRetCode().equals("0")) {
 			return callBackSp;
 		}
@@ -271,6 +292,45 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			return callBackSp;
 		}
 		BackQueryStake backQueryStake = backQueryStakes.get(0);
+		if(null == backQueryStake || backQueryStake.getPrintStatus() != 16) {
+			return callBackSp;
+		}
+		if(StringUtils.isNotEmpty(callBackSp) && StringUtils.isNotEmpty(backQueryStake.getSp())) {
+			if(callBackSp.equals(backQueryStake.getSp())) {
+				return callBackSp;
+			} else {
+				return backQueryStake.getSp();
+			}
+		} else if(StringUtils.isNotEmpty(callBackSp)) {
+			return callBackSp;
+		}
+		
+		return backQueryStake.getSp();
+	}
+	/**
+	 * 比较回调和主动查询的赔率是否一致，如果不一致，以主动查询成功的结果为准
+	 * @param callBackSp
+	 * @param issue
+	 * @return
+	 */
+	private String getComparePrintSpXian(String callBackSp, String ticketId) {
+		DlQueryStakeParam param = new DlQueryStakeParam();
+		param.setMerchant(xianMerchant);
+		String[] orders = new String[1];
+		orders[0] = ticketId;
+		param.setOrders(orders);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		param.setTimestamp(sdf.format(new Date()));
+		param.setVersion("1.0");
+		XianDlQueryStakeDTO dlQueryStakeDTO = queryStakeXian(param);
+		if(!dlQueryStakeDTO.getRetCode().equals("0")) {
+			return callBackSp;
+		}
+		List<XianBackQueryStake> backQueryStakes = dlQueryStakeDTO.getOrders();
+		if(CollectionUtils.isEmpty(backQueryStakes)) {
+			return callBackSp;
+		}
+		XianBackQueryStake backQueryStake = backQueryStakes.get(0);
 		if(null == backQueryStake || backQueryStake.getPrintStatus() != 16) {
 			return callBackSp;
 		}
@@ -299,8 +359,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	/**
 	 * 定时任务去主动查询发票状态
 	 */
-	public void goQueryStake() {
-		List<LotteryPrint> prints = lotteryPrintMapper.getPrintIngLotterys();
+	public void goQueryStakeHenan() {
+		List<LotteryPrint> prints = lotteryPrintMapper.getPrintIngLotterysHenan();
 		log.info("彩票出票状态查询数据："+prints.size());
 		while(prints.size() > 0) {
 			log.info("彩票出票状态查询数据还有："+prints.size());
@@ -308,18 +368,115 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			List<LotteryPrint> subList = prints.subList(0, endIndex);
 			List<String> collect = subList.stream().map(print-> print.getTicketId()).collect(Collectors.toList());
 			String[] orders = collect.toArray(new String[collect.size()]);
-			this.goQueryStake(orders);
+			this.goQueryStakeHenan(orders);
 			prints.removeAll(subList);
 		}
 	}
-	private void goQueryStake(String[] orders) {
+	/**
+	 * 定时任务去主动查询发票状态
+	 */
+	public void goQueryStakeXian() {
+		List<LotteryPrint> prints = lotteryPrintMapper.getPrintIngLotterysXian();
+		log.info("西安 彩票出票状态查询数据："+prints.size());
+		while(prints.size() > 0) {
+			log.info("西安 彩票出票状态查询数据还有："+prints.size());
+			int endIndex = prints.size()>20?20:prints.size();
+			List<LotteryPrint> subList = prints.subList(0, endIndex);
+			List<String> collect = subList.stream().map(print-> print.getTicketId()).collect(Collectors.toList());
+			String[] orders = collect.toArray(new String[collect.size()]);
+			this.goQueryStakeXian(orders);
+			prints.removeAll(subList);
+		}
+	}
+	private void goQueryStakeXian(String[] orders) {
+		DlQueryStakeParam queryStakeParam = new DlQueryStakeParam();
+		queryStakeParam.setMerchant(xianMerchant);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		queryStakeParam.setTimestamp(sdf.format(new Date()));
+		queryStakeParam.setVersion("1.0");
+		queryStakeParam.setOrders(orders);
+		XianDlQueryStakeDTO dlQueryStakeDTO = this.queryStakeXian(queryStakeParam);
+		String retCode = dlQueryStakeDTO.getRetCode();
+		if("0".equals(retCode)) {
+			List<XianBackQueryStake> queryStakes = dlQueryStakeDTO.getOrders();
+			log.info("西安  查询返回结果数据：size="+queryStakes.size());
+			List<LotteryPrint> lotteryPrints = new ArrayList<>(queryStakes.size());
+			List<LotteryPrintParam> lotteryPrintParams = new ArrayList<LotteryPrintParam>(queryStakes.size());
+			for(XianBackQueryStake stake: queryStakes) {
+				String ticketId = stake.getTicketId();
+				LotteryPrint lotteryPrint = new LotteryPrint();
+				lotteryPrint.setTicketId(ticketId);
+				lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
+				if(null != lotteryPrint) {
+					Integer printStatus = stake.getPrintStatus();
+					if(printStatus.equals(ProjectConstant.PRINT_STATUS_FAIL)) {
+						lotteryPrint.setStatus(2);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_SUCCESS)) {
+						lotteryPrint.setStatus(1);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
+						lotteryPrint.setStatus(3);
+					} else {
+						continue;
+					}
+					String stakes = lotteryPrint.getStakes();
+					String sp = stake.getSp();
+					String comparePrintSp = getComparePrintSpXian(sp, stake.getTicketId());
+					comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
+
+					String game = lotteryPrint.getGame();
+					String printSp = null;
+					if("T51".equals(game) && StringUtils.isNotBlank(comparePrintSp)) {
+						printSp = this.getPrintSp(stakes, comparePrintSp);
+					} else if("T56".equals(game)) {
+						printSp = comparePrintSp;
+					}
+					
+					lotteryPrint.setPlatformId(stake.getPlatformId());
+					lotteryPrint.setPrintNo(stake.getPrintNo());
+					lotteryPrint.setPrintSp(sp);
+					lotteryPrint.setPrintStatus(printStatus);
+					Date printTime = null;
+					String printTimeStr = stake.getPrintTime();
+					if(StringUtils.isNotBlank(printTimeStr)) {
+						try {
+							printTimeStr = printTimeStr.replaceAll("/", "-");
+							printTime = sdf.parse(printTimeStr);
+							lotteryPrint.setPrintTime(printTime);
+						} catch (ParseException e) {
+							log.error("订单编号：" + stake.getTicketId() + "，出票回调，时间转换异常", e);
+							continue;
+						}
+					}
+					lotteryPrints.add(lotteryPrint);
+					if(printSp != null) {
+						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
+						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
+						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
+						if(printTime != null) {
+							lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
+						}
+						lotteryPrintParam.setPrintSp(printSp);
+						lotteryPrintParams.add(lotteryPrintParam);
+					}
+				}
+			}
+			log.info("goQueryStake orders size=" + orders.length +" -> updateLotteryPrintByCallBack size:"+lotteryPrints.size());
+			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
+				updateLotteryPrintByCallBack(lotteryPrints);
+			}
+			if(CollectionUtils.isNotEmpty(lotteryPrintParams)) {
+				orderService.updateOrderInfoByPrint(lotteryPrintParams);
+			}
+		}
+	}
+	private void goQueryStakeHenan(String[] orders) {
 		DlQueryStakeParam queryStakeParam = new DlQueryStakeParam();
 		queryStakeParam.setMerchant(merchant);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		queryStakeParam.setTimestamp(sdf.format(new Date()));
 		queryStakeParam.setVersion("1.0");
 		queryStakeParam.setOrders(orders);
-		DlQueryStakeDTO dlQueryStakeDTO = this.queryStake(queryStakeParam);
+		DlQueryStakeDTO dlQueryStakeDTO = this.queryStakeHenan(queryStakeParam);
 		String retCode = dlQueryStakeDTO.getRetCode();
 		if("0".equals(retCode)) {
 			List<BackQueryStake> queryStakes = dlQueryStakeDTO.getOrders();
@@ -344,7 +501,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					}
 					String stakes = lotteryPrint.getStakes();
 					String sp = stake.getSp();
-					String comparePrintSp = getComparePrintSp(sp, stake.getTicketId());
+					String comparePrintSp = getComparePrintSpHenan(sp, stake.getTicketId());
 					comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
 
 					String game = lotteryPrint.getGame();
@@ -398,10 +555,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 投注结果查询
 	 * @return
 	 */
-	public DlQueryStakeDTO queryStake(DlQueryStakeParam param) {
+	public DlQueryStakeDTO queryStakeHenan(DlQueryStakeParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/stake_query");
+		String backStr = getBackDateByJsonDataHenan(jo, "/stake_query");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		@SuppressWarnings("rawtypes")
 		Map<String,Class> mapClass = new HashMap<String,Class>();
@@ -409,7 +566,21 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		DlQueryStakeDTO dlQueryStakeDTO = (DlQueryStakeDTO) JSONObject.toBean(backJo, DlQueryStakeDTO.class, mapClass); 
 		return dlQueryStakeDTO;
 	}
-	
+	/**
+	 * 投注结果查询
+	 * @return
+	 */
+	public XianDlQueryStakeDTO queryStakeXian(DlQueryStakeParam param) {
+		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
+		JSONObject jo = JSONObject.fromObject(param);
+		String backStr = getBackDateByJsonDataXian(jo, "/order/query");
+		JSONObject backJo = JSONObject.fromObject(backStr);
+		@SuppressWarnings("rawtypes")
+		Map<String,Class> mapClass = new HashMap<String,Class>();
+		mapClass.put("orders", XianBackQueryStake.class);
+		XianDlQueryStakeDTO dlQueryStakeDTO = (XianDlQueryStakeDTO) JSONObject.toBean(backJo, XianDlQueryStakeDTO.class, mapClass); 
+		return dlQueryStakeDTO;
+	}
 	/**
 	 * 期次查询（暂时不支持）
 	 * @return
@@ -417,7 +588,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public DlQueryIssueDTO queryIssue(DlQueryIssueParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/issue_query");
+		String backStr = getBackDateByJsonDataHenan(jo, "/issue_query");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		@SuppressWarnings("rawtypes")
 		Map<String,Class> mapClass = new HashMap<String,Class>();
@@ -433,7 +604,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public DlQueryAccountDTO queryAccount(DlQueryAccountParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/account");
+		String backStr = getBackDateByJsonDataHenan(jo, "/account");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		DlQueryAccountDTO dlQueryAccountDTO = (DlQueryAccountDTO) JSONObject.toBean(backJo, DlQueryAccountDTO.class); 
 		return dlQueryAccountDTO;
@@ -446,7 +617,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public DlQueryStakeFileDTO queryStakeFile(DlQueryStakeFileParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/ticket_file");
+		String backStr = getBackDateByJsonDataHenan(jo, "/ticket_file");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		DlQueryStakeFileDTO dlQueryStakeFileDTO = (DlQueryStakeFileDTO) JSONObject.toBean(backJo, DlQueryStakeFileDTO.class); 
 		return dlQueryStakeFileDTO;
@@ -459,7 +630,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public DlQueryPrizeFileDTO queryPrizeFile(DlQueryPrizeFileParam param) {
 		param.setTimestamp(DateUtil.getCurrentTimeString(DateUtil.getCurrentTimeLong().longValue(), DateUtil.datetimeFormat));
 		JSONObject jo = JSONObject.fromObject(param);
-		String backStr = getBackDateByJsonData(jo, "/prize_file");
+		String backStr = getBackDateByJsonDataHenan(jo, "/prize_file");
 		JSONObject backJo = JSONObject.fromObject(backStr);
 		DlQueryPrizeFileDTO dlQueryPrizeFileDTO = (DlQueryPrizeFileDTO) JSONObject.toBean(backJo, DlQueryPrizeFileDTO.class); 
 		return dlQueryPrizeFileDTO;
@@ -470,7 +641,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param jo
 	 * @return
 	 */
-	private String getBackDateByJsonData(JSONObject jo, String inter) {
+	private String getBackDateByJsonDataHenan(JSONObject jo, String inter) {
 		String authStr = merchant + merchantPassword + jo.toString();
 		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
 		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
@@ -487,18 +658,41 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
         lotteryPrintMapper.saveLotteryThirdApiLog(thirdApiLog);
 		return response;
 	}
+	/**
+	 * 获取返回信息
+	 * @param jo
+	 * @return
+	 */
+	private String getBackDateByJsonDataXian(JSONObject jo, String inter) {
+		String authStr = xianMerchant + xianMerchantPassword + jo.toString();
+		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
+		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
+		HttpHeaders headers = new HttpHeaders();
+		MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+		headers.setContentType(type);
+		String authorization = MD5Utils.MD5(authStr);
+		headers.add("Authorization", authorization);
+		HttpEntity<JSONObject> requestEntity = new HttpEntity<JSONObject>(jo, headers);
+		String requestUrl = printTicketXianUrl + inter;
+		String response = rest.postForObject(requestUrl, requestEntity, String.class);
+		String requestParam = JSONHelper.bean2json(requestEntity);
+		LotteryThirdApiLog thirdApiLog = new LotteryThirdApiLog(requestUrl, ThirdApiEnum.HE_NAN_LOTTERY.getCode(), requestParam, response);
+        lotteryPrintMapper.saveLotteryThirdApiLog(thirdApiLog);
+		return response;
+	}
 
 	/**
 	 * 保存预出票信息
 	 * @param list
+	 * @param printLotteryCom 
 	 * @return
 	 */
 	@Transactional(value="transactionManager1")
-	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn) {
+	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn, int printLotteryCom) {
 		List<LotteryPrint> models = list.stream().map(dto->{
 			LotteryPrint lotteryPrint = new LotteryPrint();
 			lotteryPrint.setGame("T51");
-			lotteryPrint.setMerchant(merchant);
+			lotteryPrint.setMerchant(printLotteryCom==1?merchant:xianMerchant);
 			lotteryPrint.setTicketId(dto.getTicketId());
 			lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
 			lotteryPrint.setBettype(dto.getBetType());
@@ -514,6 +708,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setComparedStakes("");
 			lotteryPrint.setRewardStakes("");
 			lotteryPrint.setStatus(0);
+			lotteryPrint.setPrintLotteryCom(printLotteryCom);
 			return lotteryPrint;
 		}).collect(Collectors.toList());
 		super.save(models);
@@ -813,7 +1008,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * 出票定时任务
 	 */
 	public void goPrintLottery() {
-        List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.lotteryPrintsByUnPrint();
+		doHenanPrintLotterys();
+        doXianPrintLotterys();
+	}
+	/**
+	 * 河南出票处理
+	 */
+	private void doHenanPrintLotterys() {
+		List<LotteryPrint> lotteryPrintList = lotteryPrintMapper.lotteryPrintsHenanByUnPrint();
         log.info("goPrintLottery 未出票数："+lotteryPrintList.size());
         if(CollectionUtils.isNotEmpty(lotteryPrintList)) {
         	log.info("lotteryPrintList size="+lotteryPrintList.size());
@@ -827,7 +1029,27 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
         	}
         }
 	}
-	
+
+	/**
+	 * 西安出票处理
+	 */
+	private void doXianPrintLotterys() {
+//      西安
+      List<LotteryPrint> lotteryPrintXianList = lotteryPrintMapper.lotteryPrintsXianByUnPrint();
+      log.info("西安 goPrintLottery 未出票数："+lotteryPrintXianList.size());
+      if(CollectionUtils.isNotEmpty(lotteryPrintXianList)) {
+      	log.info("西安 lotteryPrintList size="+lotteryPrintXianList.size());
+      	while(lotteryPrintXianList.size() > 0) {
+      		int toIndex = lotteryPrintXianList.size() > 50?50:lotteryPrintXianList.size();
+      		List<LotteryPrint> lotteryPrints = lotteryPrintXianList.subList(0, toIndex);
+      		log.info("西安 go tostake size="+lotteryPrints.size());
+      		Set<String> errOrderSns = this.gotoStakXian(lotteryPrints);
+      		log.info("西安出票失败订单数："+errOrderSns.size());
+      		lotteryPrintXianList.removeAll(lotteryPrints);
+      	}
+      }
+	}
+
 	/**
 	 * 调用第三方出票
 	 * @param successOrderSn
@@ -859,12 +1081,95 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			allOrderSns.add(lp.getOrderSn());
 		});
 		dlToStakeParam.setOrders(printTicketOrderParams);
-		DlToStakeDTO dlToStakeDTO = this.toStake(dlToStakeParam);
+		DlToStakeDTO dlToStakeDTO = this.toStakeHenan(dlToStakeParam);
 		if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
 			log.info("inf tostake orders");
 			List<LotteryPrint> lotteryPrintErrors = new LinkedList<LotteryPrint>();
 			List<LotteryPrint> lotteryPrintSuccess = new LinkedList<LotteryPrint>();
 			for(BackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
+				LotteryPrint lotteryPrint = new LotteryPrint();
+				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
+				Integer errorCode = backOrderDetail.getErrorCode();
+				if(errorCode != 0) {
+					if(3002 == errorCode) {
+						successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
+					}else {
+						lotteryPrint.setErrorCode(errorCode);
+						//出票失败
+						lotteryPrint.setStatus(2);
+						lotteryPrint.setPrintTime(new Date());
+						lotteryPrintErrors.add(lotteryPrint);
+					}
+				} else {
+					//出票中
+					successOrderSn.add(ticketIdOrderSnMap.get(backOrderDetail.getTicketId()));
+					lotteryPrint.setStatus(3);
+					lotteryPrintSuccess.add(lotteryPrint);
+				}
+			}
+			if(CollectionUtils.isNotEmpty(lotteryPrintErrors)) {
+				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size());
+				long start = System.currentTimeMillis();
+				int num = 0;
+				for(LotteryPrint lotteryPrint:lotteryPrintErrors) {
+					int rst = this.updatePrintStatusByTicketId(lotteryPrint);
+					num+=rst<0?0:rst;
+				}
+				long end = System.currentTimeMillis();
+				log.info("lotteryPrintErrors size = "+lotteryPrintErrors.size() +" rst size="+ num+ "  times=" + (end-start));
+			}
+			if(CollectionUtils.isNotEmpty(lotteryPrintSuccess)) {
+				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size());
+				long start = System.currentTimeMillis();
+				int num = 0;
+				for(LotteryPrint lotteryPrint:lotteryPrintSuccess) {
+					int rst = this.updatePrintStatusByTicketId(lotteryPrint);
+					num+=rst<0?0:rst;
+				}
+				long end = System.currentTimeMillis();
+				log.info("lotteryPrintSuccess size="+lotteryPrintSuccess.size()+" rst size="+ num + "  times=" + (end-start));
+			}
+		}
+		allOrderSns.removeAll(successOrderSn);
+		return allOrderSns;
+	}
+	/**
+	 * 调用第三方出票
+	 * @param successOrderSn
+	 * @param lotteryPrintList
+	 * @return 返回
+	 */
+	private Set<String> gotoStakXian(List<LotteryPrint> lotteryPrints) {
+		DlToStakeParam dlToStakeParam = new DlToStakeParam();
+		dlToStakeParam.setMerchant(xianMerchant);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		dlToStakeParam.setTimestamp(sdf.format(new Date()));
+		dlToStakeParam.setVersion("1.0");
+		List<PrintTicketOrderParam> printTicketOrderParams = new LinkedList<PrintTicketOrderParam>();
+		Map<String, String> ticketIdOrderSnMap = new HashMap<String, String>();
+		Set<String> allOrderSns = new HashSet<String>(lotteryPrints.size());
+		Set<String> successOrderSn = new HashSet<String>(lotteryPrints.size());
+		lotteryPrints.forEach(lp->{
+			PrintTicketOrderParam printTicketOrderParam = new PrintTicketOrderParam();
+			printTicketOrderParam.setTicketId(lp.getTicketId());
+			printTicketOrderParam.setGame(lp.getGame());
+			printTicketOrderParam.setIssue(lp.getIssue());
+			printTicketOrderParam.setPlayType(lp.getPlayType());
+			printTicketOrderParam.setBetType(lp.getBetType());
+			printTicketOrderParam.setTimes(lp.getTimes());
+			printTicketOrderParam.setMoney(lp.getMoney().intValue());
+			printTicketOrderParam.setStakes(lp.getStakes());
+			printTicketOrderParams.add(printTicketOrderParam);
+			ticketIdOrderSnMap.put(lp.getTicketId(), lp.getOrderSn());
+			allOrderSns.add(lp.getOrderSn());
+		});
+		dlToStakeParam.setOrders(printTicketOrderParams);
+		XianDlToStakeDTO dlToStakeDTO = this.toStakeXian(dlToStakeParam);
+		if(null != dlToStakeDTO && CollectionUtils.isNotEmpty(dlToStakeDTO.getOrders())) {
+			log.info("inf tostake orders");
+			List<LotteryPrint> lotteryPrintErrors = new LinkedList<LotteryPrint>();
+			List<LotteryPrint> lotteryPrintSuccess = new LinkedList<LotteryPrint>();
+			for(XianBackOrderDetail backOrderDetail : dlToStakeDTO.getOrders()) {
 				LotteryPrint lotteryPrint = new LotteryPrint();
 				lotteryPrint.setTicketId(backOrderDetail.getTicketId());
 				Integer errorCode = backOrderDetail.getErrorCode();

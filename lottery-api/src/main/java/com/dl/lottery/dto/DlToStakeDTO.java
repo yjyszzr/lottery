@@ -43,5 +43,9 @@ public class DlToStakeDTO implements Serializable{
 		
 		@ApiModelProperty(value = "处理结果", required = true)
 		private Integer errorDesc;
+		@ApiModelProperty(value = "出错信息(西安出票俩个错误信息)", required = true)
+		private Integer errorMsg;
+		@ApiModelProperty(value = "出错信息(西安出票俩个错误信息)", required = true)
+		private Integer errMsg;
 	}
 }

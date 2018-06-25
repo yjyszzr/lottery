@@ -82,11 +82,12 @@ public class LotteryPrintSchedul {
         int hour = localTime.getHour();
         if(hour >= 9) {
         	log.info("彩票出票状态查询定时任务启动");
-        	lotteryPrintService.goQueryStake();
+        	lotteryPrintService.goQueryStakeHenan();
+        	lotteryPrintService.goQueryStakeXian();
         	log.info("彩票出票状态查询定时任务结束");
+        	
         }
     }
-	
 
 	 /**
 	  * 抓取已完成比赛的比赛分数 （每10分钟执行一次）

@@ -55,9 +55,13 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	
 	public int updateBatchLotteryPrint(LotteryPrint lotteryPrint);
 	
-	public List<LotteryPrint> lotteryPrintsByUnPrint();
+	public List<LotteryPrint> lotteryPrintsHenanByUnPrint();
+	
+	public List<LotteryPrint> lotteryPrintsXianByUnPrint();
 
-	public List<LotteryPrint> getPrintIngLotterys();
+	public List<LotteryPrint> getPrintIngLotterysHenan();
+	
+	public List<LotteryPrint> getPrintIngLotterysXian();
 
 	/**
 	 * 添加日志
@@ -68,4 +72,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public int canBetMoney(@Param("startTime") Integer startTime);
 	//获取是否可投注
 	public int shutDownBetValue();
+
+	public int printLotteryRoutAmount();
 }

@@ -154,6 +154,11 @@ public class LotteryPrint {
      */
     @Column(name = "compared_stakes")
     private String comparedStakes;
+    /**
+     * print_lottery_com
+     */
+    @Column(name = "print_lottery_com")
+    private Integer printLotteryCom;
     
     public String getComparedStakes() {
 		return comparedStakes;
@@ -466,4 +471,12 @@ public class LotteryPrint {
     public void setPlatformId(String platformId) {
         this.platformId = platformId;
     }
+
+	public Integer getPrintLotteryCom() {
+		return printLotteryCom;
+	}
+
+	public void setPrintLotteryCom(Integer printLotteryCom) {
+		this.printLotteryCom = printLotteryCom;
+	}
 }

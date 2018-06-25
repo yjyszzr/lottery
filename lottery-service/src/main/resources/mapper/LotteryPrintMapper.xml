@@ -29,6 +29,7 @@
     <result column="third_part_reward_money" jdbcType="DECIMAL" property="thirdPartRewardMoney" />
     <result column="compare_status" jdbcType="VARCHAR" property="compareStatus" />
     <result column="compared_stakes" jdbcType="VARCHAR" property="comparedStakes" />
+    <result column="print_lottery_com" jdbcType="INTEGER" property="printLotteryCom" />
   </resultMap>
   
   <update id="updateLotteryPrintByCallBack">
@@ -114,9 +115,14 @@
      order by order_sn
   </select>
   
-  <select id="lotteryPrintsByUnPrint" resultMap="BaseResultMap">
+  <select id="lotteryPrintsHenanByUnPrint" resultMap="BaseResultMap">
   	select * from dl_print_lottery 
-  	where status=0 
+  	where status=0 and print_lottery_com = 1
+     order by order_sn
+  </select>
+  <select id="lotteryPrintsXianByUnPrint" resultMap="BaseResultMap">
+  	select * from dl_print_lottery 
+  	where status=0 and print_lottery_com = 2
      order by order_sn
   </select>
   
@@ -143,8 +149,11 @@
   	where print_lottery_id = #{printLotteryId}
   </update>
   
-  <select id="getPrintIngLotterys" resultMap="BaseResultMap">
-  	select * from dl_print_lottery where status=3 order by order_sn
+  <select id="getPrintIngLotterysHenan" resultMap="BaseResultMap">
+  	select * from dl_print_lottery where status=3 and print_lottery_com=1 order by order_sn
+  </select>
+  <select id="getPrintIngLotterysXian" resultMap="BaseResultMap">
+  	select * from dl_print_lottery where status=3 and print_lottery_com=2 order by order_sn
   </select>
   
   <insert id="saveLotteryThirdApiLog">
@@ -158,7 +167,10 @@
 	(select  IFNULL(sum(money),0) as amount from dl_print_lottery where status!=2 and accept_time &gt; #{startTime} ) as l 
 	where business_id=2
   </select>
-  
+   <select id="printLotteryRoutAmount" resultType="int">
+  	 select value 
+	where business_id=10
+  </select>
   <select id="shutDownBetValue" resultType="int">
   		select value from dl_sys_config where business_id=1;
   </select>

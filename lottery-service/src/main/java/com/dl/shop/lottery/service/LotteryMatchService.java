@@ -1,4 +1,6 @@
 package com.dl.shop.lottery.service;
+import io.jsonwebtoken.lang.Collections;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,6 +29,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -100,9 +104,6 @@ import com.dl.shop.lottery.model.LotteryPlayClassify;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.TMatchBetMaxAndMinOddsList;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
-
-import io.jsonwebtoken.lang.Collections;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 //@Transactional
@@ -3254,5 +3255,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			return true;
 		}
 		return false;
+	}
+	public int printLotteryRoutAmount() {
+		return lotteryPrintMapper.printLotteryRoutAmount();
 	}
 }
