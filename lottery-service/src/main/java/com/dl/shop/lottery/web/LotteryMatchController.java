@@ -424,8 +424,9 @@ public class LotteryMatchController {
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
-		if(orderMoney < 100) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), LotteryResultEnum.BET_MATCH_WC.getMsg());
+		Double minBetMoney = lotteryMatchService.getMinBetMoney();
+		if(orderMoney < minBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
 		}
 		int canBetMoney = lotteryMatchService.canBetMoney();
 		if(orderMoney > canBetMoney) {
