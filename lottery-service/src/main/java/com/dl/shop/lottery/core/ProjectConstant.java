@@ -409,7 +409,9 @@ public class ProjectConstant {
     
     //投注提前时间，单位为秒2018-06-01杨洲游 改13分为7分
     //2018-06-20 河南出票公司 提前2个小时加7分
-    public static final int BET_PRESET_TIME = 7620;
+    //2018-06-22 河南出票公司 提前2个半小时加7分
+    //2018-06-22 河南出票公司 提前1个小时加7分
+    public static final int BET_PRESET_TIME = 4020;
   //彩票信息的缓存时长,单位分
     public final static long BET_INFO_EXPIRE_TIME = 10;
     
