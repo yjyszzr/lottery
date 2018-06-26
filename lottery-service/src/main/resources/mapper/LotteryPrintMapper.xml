@@ -168,8 +168,7 @@
 	where business_id=2
   </select>
    <select id="printLotteryRoutAmount" resultType="int">
-  	 select value 
-	where business_id=10
+  	 select value from dl_sys_config where business_id=10;
   </select>
   <select id="shutDownBetValue" resultType="int">
   		select value from dl_sys_config where business_id=1;
