@@ -67,27 +67,26 @@ public class LotteryPrintSchedul {
 		 int end = DateUtil.getCurrentTimeLong();
 		 log.info("结束拉取赔率信息, time="+(end-start));
 	 }*/
-//	TODO 胡贺东 20180626 为了配合测试出票失败订单，临时注释
-//	/**
-//	 * 出票任务 （每5分钟执行一次）
-//	 * 调用第三方接口出票定时任务
-//	 */
-//	@Scheduled(cron = "0 0/1 * * * ?")
-//    public void printLottery() {
-//        log.info("出票定时任务启动");
-//        lotteryPrintService.goPrintLottery();
-//        log.info("出票定时任务结束");
-//        //每天9点前不作查询处理，只作出票处理
-//        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
-//        int hour = localTime.getHour();
-//        if(hour >= 9) {
-//        	log.info("彩票出票状态查询定时任务启动");
-//        	lotteryPrintService.goQueryStakeHenan();
-//        	lotteryPrintService.goQueryStakeXian();
-//        	log.info("彩票出票状态查询定时任务结束");
-//        	
-//        }
-//    }
+	/**
+	 * 出票任务 （每5分钟执行一次）
+	 * 调用第三方接口出票定时任务
+	 */
+	@Scheduled(cron = "0 0/1 * * * ?")
+    public void printLottery() {
+        log.info("出票定时任务启动");
+        lotteryPrintService.goPrintLottery();
+        log.info("出票定时任务结束");
+        //每天9点前不作查询处理，只作出票处理
+        LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int hour = localTime.getHour();
+        if(hour >= 9) {
+        	log.info("彩票出票状态查询定时任务启动");
+        	lotteryPrintService.goQueryStakeHenan();
+        	lotteryPrintService.goQueryStakeXian();
+        	log.info("彩票出票状态查询定时任务结束");
+        	
+        }
+    }
 
 	 /**
 	  * 抓取已完成比赛的比赛分数 （每10分钟执行一次）
