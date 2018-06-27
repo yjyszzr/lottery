@@ -3255,8 +3255,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return false;
 	}
+	//获取最小投注金额
 	public Double getMinBetMoney() {
-		return null;
+		Double minBetMoney = lotteryPrintMapper.getMinBetMoney();
+		if(minBetMoney == null) {
+			minBetMoney = 0.0;
+		}
+		return minBetMoney;
 	}
 	
 }
