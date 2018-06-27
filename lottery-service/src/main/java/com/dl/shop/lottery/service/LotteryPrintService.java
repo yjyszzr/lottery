@@ -1271,12 +1271,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					refundAmount = refundAmount.add(print.getMoney().divide(new BigDecimal(100)).setScale(2,RoundingMode.HALF_EVEN));
 				}
 			}
-			printLotteryRefundDTO.setRefundAmount(refundAmount);
+			
 			if(failCount==byOrderSn.size()){//全额退款
 				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundFullRefund,2,3);
+				printLotteryRefundDTO.setRefundAmount(refundAmount);
 				return printLotteryRefundDTO;
 			}else{//部分退款
 				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundPartRefund,3,2);
+				printLotteryRefundDTO.setRefundAmount(refundAmount);
 				return printLotteryRefundDTO;
 			}
 		}else{
