@@ -689,6 +689,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 */
 	@Transactional(value="transactionManager1")
 	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn, int printLotteryCom) {
+		List<LotteryPrint> printLotterysByOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+		if(CollectionUtils.isNotEmpty(printLotterysByOrderSn)) {
+			return ResultGenerator.genSuccessResult("已创建");
+		}
 		List<LotteryPrint> models = list.stream().map(dto->{
 			LotteryPrint lotteryPrint = new LotteryPrint();
 			lotteryPrint.setGame("T51");
