@@ -3255,5 +3255,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return false;
 	}
+	public Double getMinBetMoney() {
+		return null;
+	}
 	
 }
