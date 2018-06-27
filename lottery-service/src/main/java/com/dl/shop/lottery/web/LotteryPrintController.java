@@ -36,6 +36,7 @@ import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.param.OrderSnParam;
+import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
 
@@ -114,6 +115,10 @@ public class LotteryPrintController {
 		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
+		}
+		List<LotteryPrint> printLotterysByOrderSn = lotteryPrintService.printLotterysByOrderSn(param.getOrderSn());
+		if(CollectionUtils.isNotEmpty(printLotterysByOrderSn)) {
+			return ResultGenerator.genSuccessResult("已创建");
 		}
 		OrderInfoAndDetailDTO data = orderWithDetailByOrderSn.getData();
 		Integer lotteryClassifyId = data.getOrderInfoDTO().getLotteryClassifyId();
