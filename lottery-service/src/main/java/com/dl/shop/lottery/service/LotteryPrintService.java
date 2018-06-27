@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import io.jsonwebtoken.lang.Collections;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
 import com.dl.lottery.dto.LotteryPrintDTO;
+import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.dto.XianDlQueryStakeDTO;
 import com.dl.lottery.dto.XianDlQueryStakeDTO.XianBackQueryStake;
 import com.dl.lottery.dto.XianDlToStakeDTO;
@@ -1237,4 +1239,46 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		return -1;
 	}
+
+    /**
+     * 获取制定订单的出票失败的退款信息
+     * @param orderSn
+     * @return
+     */
+    public PrintLotteryRefundDTO printLotterysRefundsByOrderSn(String orderSn) {
+        log.info("计算出票失败退款金额开始。。。。");
+        PrintLotteryRefundDTO printLotteryRefundDTO = null;
+        List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+        if(CollectionUtils.isEmpty(byOrderSn)){//订单不存在
+            printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoOrder,-1,1);
+            log.debug("orderSn={} 订单不存在对应的出票信息",orderSn);
+            return printLotteryRefundDTO;
+        }
+        Set<Integer> status = byOrderSn.stream().map(obj->obj.getStatus()).collect(Collectors.toSet());
+        if(status.contains(0)||status.contains(3)) {//尚未出票完成
+            printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoFinish,1,1);
+            return printLotteryRefundDTO;
+        }else if(status.contains(2)) {//出票完成包含出票失败
+            int failCount=0;
+            BigDecimal refundAmount=new BigDecimal(0);
+            for(LotteryPrint print:byOrderSn){
+                if(print.getStatus()==2){
+                    failCount++;
+                    refundAmount = refundAmount.add(print.getMoney().divide(new BigDecimal(100)).setScale(2,RoundingMode.HALF_EVEN));
+                }
+            }
+            printLotteryRefundDTO.setRefundAmount(refundAmount);
+            if(failCount==byOrderSn.size()){//全额退款
+                printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundFullRefund,2,3);
+                return printLotteryRefundDTO;
+            }else{//部分退款
+                printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundPartRefund,3,2);
+                return printLotteryRefundDTO;
+            }
+        }else{
+            printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoRefund,3,4);
+            return printLotteryRefundDTO;
+        }
+}
+
 }

@@ -25,6 +25,7 @@ import com.dl.lottery.dto.DlQueryStakeDTO;
 import com.dl.lottery.dto.DlQueryStakeFileDTO;
 import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
+import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
@@ -33,6 +34,7 @@ import com.dl.lottery.param.DlQueryStakeFileParam;
 import com.dl.lottery.param.DlQueryStakeParam;
 import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.PrintLotteryStatusByOrderSnParam;
+import com.dl.lottery.param.PrintLotterysRefundsByOrderSnParam;
 import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
@@ -141,5 +143,10 @@ public class LotteryPrintController {
 		Integer status = lotteryPrintService.printLotteryStatusByOrderSn(param.getOrderSn());
 		return ResultGenerator.genSuccessResult("success", status);
 	}
-	
+	@ApiOperation(value = "获取订单出票失败退款总金额", notes = "获取订单出票失败总金额:noOrder订单出票任务不存在，noFinish:尚未完全出票,noRefund:已全部出票不需退款,fullRefund:全部出票失败退款,xx.xx:该订单部分出票失败的总金额")
+    @PostMapping("/printLotterysRefundsByOrderSn")
+    public BaseResult<PrintLotteryRefundDTO> printLotterysRefundsByOrderSn(@Valid @RequestBody PrintLotterysRefundsByOrderSnParam param) {
+		PrintLotteryRefundDTO printLotteryRefundDTO = lotteryPrintService.printLotterysRefundsByOrderSn(param.getOrderSn());
+		return ResultGenerator.genSuccessResult("success", printLotteryRefundDTO);
+	}
 }
