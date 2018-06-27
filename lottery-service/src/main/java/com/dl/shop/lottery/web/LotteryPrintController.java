@@ -1,13 +1,9 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +33,12 @@ import com.dl.lottery.param.SaveLotteryPrintInfoParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.param.OrderSnParam;
+import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.service.LotteryPrintService;
+
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/lottery/print")
@@ -114,6 +114,10 @@ public class LotteryPrintController {
 		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
 		if(orderWithDetailByOrderSn.getCode() != 0) {
 			return ResultGenerator.genFailResult();
+		}
+		List<LotteryPrint> printLotterysByOrderSn = lotteryPrintService.printLotterysByOrderSn(param.getOrderSn());
+		if(CollectionUtils.isNotEmpty(printLotterysByOrderSn)) {
+			return ResultGenerator.genSuccessResult("已创建");
 		}
 		OrderInfoAndDetailDTO data = orderWithDetailByOrderSn.getData();
 		Integer lotteryClassifyId = data.getOrderInfoDTO().getLotteryClassifyId();
