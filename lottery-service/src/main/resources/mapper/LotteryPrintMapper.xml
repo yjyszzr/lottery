@@ -162,4 +162,8 @@
   <select id="shutDownBetValue" resultType="int">
   		select value from dl_sys_config where business_id=1;
   </select>
+  
+  <select id="getMinBetMoney" resultType="java.lang.Double">
+  		select value from dl_sys_config where business_id=3
+  </select>
 </mapper>
