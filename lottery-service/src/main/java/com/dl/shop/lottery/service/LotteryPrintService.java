@@ -993,4 +993,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			return printLotteryRefundDTO;
 		}
 	}
+	
+	/**
+	 * 查询所有出票信息
+	 * @param orderSn
+	 * @return
+	 */
+	public List<LotteryPrint> printLotterysByOrderSn(String orderSn) {
+		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
+		return byOrderSn;
+	}
 }
