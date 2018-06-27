@@ -1254,13 +1254,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		PrintLotteryRefundDTO printLotteryRefundDTO = null;
 		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
 		if(CollectionUtils.isEmpty(byOrderSn)){//订单不存在
-			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoOrder,-1,1);
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundNoOrder,-1,1);
 			log.debug("orderSn={} 订单不存在对应的出票信息",orderSn);
 			return printLotteryRefundDTO;
 		}
 		Set<Integer> status = byOrderSn.stream().map(obj->obj.getStatus()).collect(Collectors.toSet());
 		if(status.contains(0)||status.contains(3)) {//尚未出票完成
-			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoFinish,1,1);
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundNoFinish,1,1);
 			return printLotteryRefundDTO;
 		}else if(status.contains(2)) {//出票完成包含出票失败
 			int failCount=0;
@@ -1273,14 +1273,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			}
 			printLotteryRefundDTO.setRefundAmount(refundAmount);
 			if(failCount==byOrderSn.size()){//全额退款
-				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundFullRefund,2,3);
+				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundFullRefund,2,3);
 				return printLotteryRefundDTO;
 			}else{//部分退款
-				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundPartRefund,3,2);
+				printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundPartRefund,3,2);
 				return printLotteryRefundDTO;
 			}
 		}else{
-			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(printLotteryRefundDTO.refundNoRefund,3,4);
+			printLotteryRefundDTO = PrintLotteryRefundDTO.instanceByPrintLotteryRefund(PrintLotteryRefundDTO.refundNoRefund,3,4);
 			return printLotteryRefundDTO;
 		}
 	}
