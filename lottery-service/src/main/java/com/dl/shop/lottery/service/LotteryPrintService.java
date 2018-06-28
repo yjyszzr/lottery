@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -581,8 +582,86 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		Map<String,Class> mapClass = new HashMap<String,Class>();
 		mapClass.put("orders", XianBackQueryStake.class);
 		XianDlQueryStakeDTO dlQueryStakeDTO = (XianDlQueryStakeDTO) JSONObject.toBean(backJo, XianDlQueryStakeDTO.class, mapClass); 
+//		转化 一些特定参数例如利率，票号
+		for(XianBackQueryStake stake : dlQueryStakeDTO.getOrders()){
+			praseXianPrintSpToOurSp(stake);
+//			暂时西安公司说没有对该字段处理，所以不用处理
+//			prasePrintNo(stake);
+		}
 		return dlQueryStakeDTO;
 	}
+	/**
+	 * 转化票号字段信息
+	 * @param stake
+	 */
+	private void prasePrintNo(XianBackQueryStake stake) {
+		log.info("西安赔率处理 ticketId={},sp={}",stake.getTicketId(),stake.getPrintNo());
+		String ourPrintNo = parseStakeIssues(stake.getPrintNo(),Boolean.FALSE);
+		log.info("转化后的printNo格式是={}",ourPrintNo);
+		stake.setSp(ourPrintNo);
+	}
+	/**
+	 * 对赔率字段特殊处理
+	 * @param xianStake
+	 */
+	private void praseXianPrintSpToOurSp(XianBackQueryStake xianStake) {
+		log.info("西安赔率处理 ticketId={},sp={}",xianStake.getTicketId(),xianStake.getSp());
+		String ourSp = parseStakeIssues(xianStake.getSp(),Boolean.TRUE);
+		log.info("转化后的赔率格式是={}",ourSp);
+		xianStake.setSp(ourSp);
+	}
+//	public static void main(String[] args) {
+//		String sp = "05|201806273043|1:3@26.00;05|201806273042|0:3@28.00";
+//		String praseResult = parseStakeIssues(sp,Boolean.FALSE);
+//		System.out.println(praseResult);
+//	}
+	/**
+	 * 处理投注信息转化
+	 * @param stakeIssues
+	 * @param removePlayCode
+	 * @return
+	 */
+	private static String parseStakeIssues(String stakeIssues,Boolean removePlayCode){
+		StringBuffer ourStakeSpResult = new StringBuffer();
+		if(StringUtils.isNotEmpty(stakeIssues)){
+			TreeMap<String, String> ourStakes = new TreeMap<String, String>();
+			stakeIssues = stakeIssues.replace(":", "");//替换掉冒号
+			String[] xianSpList = stakeIssues.split(";");
+			for(int i=0;i<xianSpList.length;i++){
+				String one = xianSpList[i];
+				String[] issueStakes = one.split("\\|");
+				if(issueStakes.length==3){// 玩法|场次|赔率					
+//					统一场次只存一个
+					String playAndIssue = issueStakes[0]+"|"+issueStakes[1];
+					if(ourStakes.containsKey(playAndIssue)){
+						String result = ourStakes.get(playAndIssue);
+						ourStakes.put(playAndIssue, result+","+issueStakes[2]);
+					}else{
+						ourStakes.put(playAndIssue, issueStakes[2]);
+					}
+				}else{
+					log.info("西安返回的赔率格式异常sp={}",stakeIssues);
+				}
+			}
+			log.info("prase keymap={}",ourStakes.toString());
+			for(String key : ourStakes.keySet()){
+				if(ourStakeSpResult.length()>0){//除第一条数据外，其他的都要加上分号
+					ourStakeSpResult.append(";");
+				}
+				if(removePlayCode){
+					String[] playCodeAndeIssueArr = key.split("\\|");
+					ourStakeSpResult.append(playCodeAndeIssueArr[1]);
+				}else{					
+					ourStakeSpResult.append(key);
+				}
+				ourStakeSpResult.append("|");
+				ourStakeSpResult.append(ourStakes.get(key));
+			}
+		}
+		return ourStakeSpResult.length()==0?"":ourStakeSpResult.toString();
+	}
+	
+	
 	/**
 	 * 期次查询（暂时不支持）
 	 * @return
