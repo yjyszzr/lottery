@@ -327,6 +327,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return false;
 	}
 	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
+		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
@@ -365,6 +366,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				continue;
 			}
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
+			matchDto.setIsShutDown(shutDownBetValue);
 			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
 			matchDto.setChangciId(match.getChangciId().toString());

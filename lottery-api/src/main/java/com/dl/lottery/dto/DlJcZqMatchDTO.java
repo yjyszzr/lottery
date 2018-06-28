@@ -79,6 +79,7 @@ public class DlJcZqMatchDTO implements Serializable{
 	@ApiModelProperty(value = "玩法信息", required = true)
 	private List<DlJcZqMatchPlayDTO> matchPlays;
 	
-	
+	@ApiModelProperty(value = "是否停售，0正常1停售", required = true)
+	private int isShutDown=0;
 	
 }
