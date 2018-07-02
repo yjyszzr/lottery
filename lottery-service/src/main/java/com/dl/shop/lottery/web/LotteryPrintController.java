@@ -1,9 +1,12 @@
 package com.dl.shop.lottery.web;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +47,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/lottery/print")
+@Slf4j
 public class LotteryPrintController {
 
 	@Resource
@@ -130,7 +134,14 @@ public class LotteryPrintController {
 		if(CollectionUtils.isEmpty(lotteryPrints)) {
 			return ResultGenerator.genFailResult();
 		}
-		return lotteryPrintService.saveLotteryPrintInfo(lotteryPrints, param.getOrderSn());
+		Double printLotteryRoutAmount = lotteryMatchService.printLotteryRoutAmount();
+        int printLotteryCom = 1 ;//河南出票公司
+        log.info("save printLotteryCom orderSn={},ticketAmount={},canBetMoney={}",param.getOrderSn(),data.getOrderInfoDTO().getTicketAmount(),printLotteryRoutAmount);
+        if(data.getOrderInfoDTO().getTicketAmount().subtract(new BigDecimal(printLotteryRoutAmount)).compareTo(BigDecimal.ZERO)>=0){
+            log.info("orderSn={},设置出票公司为西安出票公司",param.getOrderSn());
+            printLotteryCom = 2;//西安出票公司
+        }
+        return lotteryPrintService.saveLotteryPrintInfo(lotteryPrints, param.getOrderSn(),printLotteryCom);
     }
 	
 	@ApiOperation(value = "查询订单对应的出票状态", notes = "查询订单对应的出票状态:1：待出票，2出票失败，3待开奖")

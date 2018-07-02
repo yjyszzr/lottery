@@ -71,4 +71,6 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public int shutDownBetValue();
 	//获取最小投注金额
 	public Double getMinBetMoney();
+
+	public Double printLotteryRoutAmount();
 }

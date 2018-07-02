@@ -29,6 +29,7 @@
     <result column="third_part_reward_money" jdbcType="DECIMAL" property="thirdPartRewardMoney" />
     <result column="compare_status" jdbcType="VARCHAR" property="compareStatus" />
     <result column="compared_stakes" jdbcType="VARCHAR" property="comparedStakes" />
+    <result column="print_lottery_com" jdbcType="INTEGER" property="printLotteryCom" />
   </resultMap>
   
   <update id="updateLotteryPrintByCallBack">
@@ -165,5 +166,8 @@
   
   <select id="getMinBetMoney" resultType="java.lang.Double">
   		select value from dl_sys_config where business_id=3
+  </select>
+  <select id="printLotteryRoutAmount" resultType="java.lang.Double">
+  	 select value from dl_sys_config where business_id=10;
   </select>
 </mapper>

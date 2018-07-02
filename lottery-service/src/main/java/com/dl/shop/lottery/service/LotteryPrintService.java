@@ -110,6 +110,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	@Value("${print.ticket.merchant}")
 	private String merchant;
 	
+	@Value("${print.ticket.xian.merchant}")
+	private String xianMerchant;
+	
 	@Value("${print.ticket.merchantPassword}")
 	private String merchantPassword;
 	
@@ -492,7 +495,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @return
 	 */
 	@Transactional(value="transactionManager1")
-	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn) {
+	public BaseResult<String> saveLotteryPrintInfo(List<LotteryPrintDTO> list, String orderSn,int printLotteryCom) {
 		List<LotteryPrint> printLotterysByOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
 		if(CollectionUtils.isNotEmpty(printLotterysByOrderSn)) {
 			return ResultGenerator.genSuccessResult("已创建");
@@ -500,7 +503,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		List<LotteryPrint> models = list.stream().map(dto->{
 			LotteryPrint lotteryPrint = new LotteryPrint();
 			lotteryPrint.setGame("T51");
-			lotteryPrint.setMerchant(merchant);
+			lotteryPrint.setMerchant(printLotteryCom==1?merchant:xianMerchant);
 			lotteryPrint.setTicketId(dto.getTicketId());
 			lotteryPrint.setAcceptTime(DateUtil.getCurrentTimeLong());
 			lotteryPrint.setBettype(dto.getBetType());
@@ -516,6 +519,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			lotteryPrint.setComparedStakes("");
 			lotteryPrint.setRewardStakes("");
 			lotteryPrint.setStatus(0);
+			lotteryPrint.setPrintLotteryCom(printLotteryCom);
 			return lotteryPrint;
 		}).collect(Collectors.toList());
 		super.save(models);

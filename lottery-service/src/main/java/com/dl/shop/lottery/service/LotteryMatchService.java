@@ -3265,5 +3265,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return minBetMoney;
 	}
+	public Double printLotteryRoutAmount() {
+		return lotteryPrintMapper.printLotteryRoutAmount();
+	}
 	
 }
