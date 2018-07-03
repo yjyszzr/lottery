@@ -125,10 +125,11 @@ public class DlLeagueMatchEuropeService extends AbstractService<DlLeagueMatchEur
 	 * @return
 	 */
 	public List<LeagueMatchEuropeDTO> leagueMatchEuropes(Integer changciId) {
-		Condition condition = new Condition(DlLeagueMatchAsia.class);
+		/*Condition condition = new Condition(DlLeagueMatchAsia.class);
         condition.and().andEqualTo("changciId", changciId);
         condition.setOrderByClause("orderNum");
-        List<DlLeagueMatchEurope> list = super.findByCondition(condition);
+        List<DlLeagueMatchEurope> list = super.findByCondition(condition);*/
+        List<DlLeagueMatchEurope> list = dlLeagueMatchEuropeMapper.getAllByChangciId(changciId);
        /* if(list.size() == 0) {
         	 this.refreshMatchEuropeInfoFromZC(changciId);
         	 list = super.findByCondition(condition);
