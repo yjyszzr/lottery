@@ -36,6 +36,10 @@
   	select count(id) from dl_league_match_europe where changci_id = #{changciId}
   </select>
   
+  <select id="getAllByChangciId" resultMap="BaseResultMap">
+  	select * from dl_league_match_europe where changci_id = #{changciId} order by order_num
+  </select>
+  
   <update id="updateMatchEurope">
   	update dl_league_match_europe 
   	set order_num= #{orderNum},
