@@ -24,38 +24,26 @@ public class LeagueMatchDaoXiaoDTO implements Serializable{
 	private String comName;
 
 	@ApiModelProperty(value="排名")
-	private Integer orderNum;
-
-	@ApiModelProperty(value="排名")
-	private Double initWin;
+	private String initWin;
 
 	@ApiModelProperty(value="初始奖金平")
-	private Double initDraw;
+	private String initDraw;
 
 	@ApiModelProperty(value="初始奖金负")
-	private Double initLose;
+	private String initLose;
 
 	@ApiModelProperty(value="即时奖金胜")
-	private Double realWin;
+	private String realWin;
 
 	@ApiModelProperty(value="即时奖金平")
-	private Double realDraw;
+	private String realDraw;
 
 	@ApiModelProperty(value="即时奖金负")
-	private Double realLose;
-
-	@ApiModelProperty(value="胜变化趋势:0equal,1up,2down")
-	private Integer winChange;
-
-	@ApiModelProperty(value="平变化趋势:0equal,1up,2down")
-	private Integer drawChange;
-
-	@ApiModelProperty(value="负变化趋势:0equal,1up,2down")
-	private Integer loseChange;
+	private String realLose;
 
 	@ApiModelProperty(value="初始变化 时间")
-	private Integer initTime;
+	private String initTime;
 
 	@ApiModelProperty(value="即时变化 时间")
-	private Integer realTime;
+	private String realTime;
 }

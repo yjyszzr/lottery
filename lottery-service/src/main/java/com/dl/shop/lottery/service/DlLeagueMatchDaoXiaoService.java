@@ -21,9 +21,7 @@ public class DlLeagueMatchDaoXiaoService extends AbstractService<DlLeagueMatchDa
     private DlLeagueMatchDaoXiaoMapper dlLeagueMatchDaoXiaoMapper;
 
     public List<LeagueMatchDaoXiaoDTO> leagueMatchDaoXiaos(Integer changciId) {
-    	Condition condition = new Condition(DlLeagueMatchDaoXiao.class);
-        condition.and().andEqualTo("changciId", changciId);
-        List<DlLeagueMatchDaoXiao> list = super.findByCondition(condition);
+        List<DlLeagueMatchDaoXiao> list = dlLeagueMatchDaoXiaoMapper.getAllByChangciId(changciId);
         List<LeagueMatchDaoXiaoDTO> dtos = new ArrayList<LeagueMatchDaoXiaoDTO>(0);
         if(null != list) {
         	dtos = new ArrayList<LeagueMatchDaoXiaoDTO>(list.size());
@@ -31,16 +29,12 @@ public class DlLeagueMatchDaoXiaoService extends AbstractService<DlLeagueMatchDa
         		LeagueMatchDaoXiaoDTO dto = new LeagueMatchDaoXiaoDTO();
         		dto.setChangciId(changciId);
         		dto.setComName(daoxiao.getComName());
-        		dto.setDrawChange(daoxiao.getDrawChange());
         		dto.setInitDraw(daoxiao.getInitDraw());
         		dto.setInitLose(daoxiao.getInitLose());
         		dto.setInitWin(daoxiao.getInitWin());
-        		dto.setLoseChange(daoxiao.getLoseChange());
-        		dto.setOrderNum(daoxiao.getOrderNum());
         		dto.setRealDraw(daoxiao.getRealDraw());
         		dto.setRealLose(daoxiao.getRealLose());
         		dto.setRealWin(daoxiao.getRealWin());
-        		dto.setWinChange(daoxiao.getWinChange());
         		dto.setDaoxiaoId(daoxiao.getDaoxiaoId());
         		dto.setInitTime(daoxiao.getInitTime());
         		dto.setRealTime(daoxiao.getRealTime());
