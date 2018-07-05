@@ -29,54 +29,77 @@ public class DlLeagueMatchDaoXiao {
     @Column(name = "com_name")
     private String comName;
 
+    /**
+     * 排名
+     */
+    @Column(name = "order_num")
+    private Integer orderNum;
 
     /**
      * 初始奖金大
      */
     @Column(name = "init_win")
-    private String initWin;
+    private Double initWin;
 
     /**
      * 初始奖金盘
      */
     @Column(name = "init_draw")
-    private String initDraw;
+    private Double initDraw;
 
     /**
      * 初始奖金小
      */
     @Column(name = "init_lose")
-    private String initLose;
+    private Double initLose;
 
     /**
      * 即时奖金大
      */
     @Column(name = "real_win")
-    private String realWin;
+    private Double realWin;
 
     /**
      * 即时奖金盘
      */
     @Column(name = "real_draw")
-    private String realDraw;
+    private Double realDraw;
 
     /**
      * 即时奖金小
      */
     @Column(name = "real_lose")
-    private String realLose;
+    private Double realLose;
+
+    /**
+     * 胜变化趋势:0equal,1up,2down
+     */
+    @Column(name = "win_change")
+    private Integer winChange;
+
+    /**
+     * 平变化趋势:0equal,1up,2down
+     */
+    @Column(name = "draw_change")
+    private Integer drawChange;
+
+    /**
+     * 负变化趋势:0equal,1up,2down
+     */
+    @Column(name = "lose_change")
+    private Integer loseChange;
 
     /**
      * 初始变化 时间
      */
     @Column(name = "init_time")
-    private String initTime;
+    private Integer initTime;
 
     /**
      * 即时变化时间
      */
     @Column(name = "real_time")
-    private String realTime;
+    private Integer realTime;
 
     /**
      * 创建时间
@@ -96,124 +119,345 @@ public class DlLeagueMatchDaoXiao {
     @Column(name = "league_from")
     private Integer leagueFrom;
 
-	public Integer getId() {
-		return id;
-	}
+    /**
+     * 获取ID
+     *
+     * @return id - ID
+     */
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    /**
+     * 设置ID
+     *
+     * @param id ID
+     */
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getChangciId() {
-		return changciId;
-	}
+    /**
+     * 获取赛事场次id
+     *
+     * @return changci_id - 赛事场次id
+     */
+    public Integer getChangciId() {
+        return changciId;
+    }
 
-	public void setChangciId(Integer changciId) {
-		this.changciId = changciId;
-	}
+    /**
+     * 设置赛事场次id
+     *
+     * @param changciId 赛事场次id
+     */
+    public void setChangciId(Integer changciId) {
+        this.changciId = changciId;
+    }
 
-	public Integer getDaoxiaoId() {
-		return daoxiaoId;
-	}
+    /**
+     * 获取id
+     *
+     * @return daoxiao_id - id
+     */
+    public Integer getDaoxiaoId() {
+        return daoxiaoId;
+    }
 
-	public void setDaoxiaoId(Integer daoxiaoId) {
-		this.daoxiaoId = daoxiaoId;
-	}
+    /**
+     * 设置id
+     *
+     * @param daoxiaoId id
+     */
+    public void setDaoxiaoId(Integer daoxiaoId) {
+        this.daoxiaoId = daoxiaoId;
+    }
 
-	public String getComName() {
-		return comName;
-	}
+    /**
+     * 获取公司名称
+     *
+     * @return com_name - 公司名称
+     */
+    public String getComName() {
+        return comName;
+    }
 
-	public void setComName(String comName) {
-		this.comName = comName;
-	}
+    /**
+     * 设置公司名称
+     *
+     * @param comName 公司名称
+     */
+    public void setComName(String comName) {
+        this.comName = comName;
+    }
 
-	public String getInitWin() {
-		return initWin;
-	}
+    /**
+     * 获取排名
+     *
+     * @return order_num - 排名
+     */
+    public Integer getOrderNum() {
+        return orderNum;
+    }
 
-	public void setInitWin(String initWin) {
-		this.initWin = initWin;
-	}
+    /**
+     * 设置排名
+     *
+     * @param orderNum 排名
+     */
+    public void setOrderNum(Integer orderNum) {
+        this.orderNum = orderNum;
+    }
 
-	public String getInitDraw() {
-		return initDraw;
-	}
+    /**
+     * 获取初始奖金大
+     *
+     * @return init_win - 初始奖金大
+     */
+    public Double getInitWin() {
+        return initWin;
+    }
 
-	public void setInitDraw(String initDraw) {
-		this.initDraw = initDraw;
-	}
+    /**
+     * 设置初始奖金大
+     *
+     * @param initWin 初始奖金大
+     */
+    public void setInitWin(Double initWin) {
+        this.initWin = initWin;
+    }
 
-	public String getInitLose() {
-		return initLose;
-	}
+    /**
+     * 获取初始奖金盘
+     *
+     * @return init_draw - 初始奖金盘
+     */
+    public Double getInitDraw() {
+        return initDraw;
+    }
 
-	public void setInitLose(String initLose) {
-		this.initLose = initLose;
-	}
+    /**
+     * 设置初始奖金盘
+     *
+     * @param initDraw 初始奖金盘
+     */
+    public void setInitDraw(Double initDraw) {
+        this.initDraw = initDraw;
+    }
 
-	public String getRealWin() {
-		return realWin;
-	}
+    /**
+     * 获取初始奖金小
+     *
+     * @return init_lose - 初始奖金小
+     */
+    public Double getInitLose() {
+        return initLose;
+    }
 
-	public void setRealWin(String realWin) {
-		this.realWin = realWin;
-	}
+    /**
+     * 设置初始奖金小
+     *
+     * @param initLose 初始奖金小
+     */
+    public void setInitLose(Double initLose) {
+        this.initLose = initLose;
+    }
 
-	public String getRealDraw() {
-		return realDraw;
-	}
+    /**
+     * 获取即时奖金大
+     *
+     * @return real_win - 即时奖金大
+     */
+    public Double getRealWin() {
+        return realWin;
+    }
 
-	public void setRealDraw(String realDraw) {
-		this.realDraw = realDraw;
-	}
+    /**
+     * 设置即时奖金大
+     *
+     * @param realWin 即时奖金大
+     */
+    public void setRealWin(Double realWin) {
+        this.realWin = realWin;
+    }
 
-	public String getRealLose() {
-		return realLose;
-	}
+    /**
+     * 获取即时奖金盘
+     *
+     * @return real_draw - 即时奖金盘
+     */
+    public Double getRealDraw() {
+        return realDraw;
+    }
 
-	public void setRealLose(String realLose) {
-		this.realLose = realLose;
-	}
+    /**
+     * 设置即时奖金盘
+     *
+     * @param realDraw 即时奖金盘
+     */
+    public void setRealDraw(Double realDraw) {
+        this.realDraw = realDraw;
+    }
 
-	public String getInitTime() {
-		return initTime;
-	}
+    /**
+     * 获取即时奖金小
+     *
+     * @return real_lose - 即时奖金小
+     */
+    public Double getRealLose() {
+        return realLose;
+    }
 
-	public void setInitTime(String initTime) {
-		this.initTime = initTime;
-	}
+    /**
+     * 设置即时奖金小
+     *
+     * @param realLose 即时奖金小
+     */
+    public void setRealLose(Double realLose) {
+        this.realLose = realLose;
+    }
 
-	public String getRealTime() {
-		return realTime;
-	}
+    /**
+     * 获取胜变化趋势:0equal,1up,2down
+     *
+     * @return win_change - 胜变化趋势:0equal,1up,2down
+     */
+    public Integer getWinChange() {
+        return winChange;
+    }
 
-	public void setRealTime(String realTime) {
-		this.realTime = realTime;
-	}
+    /**
+     * 设置胜变化趋势:0equal,1up,2down
+     *
+     * @param winChange 胜变化趋势:0equal,1up,2down
+     */
+    public void setWinChange(Integer winChange) {
+        this.winChange = winChange;
+    }
 
-	public Integer getCreateTime() {
-		return createTime;
-	}
+    /**
+     * 获取平变化趋势:0equal,1up,2down
+     *
+     * @return draw_change - 平变化趋势:0equal,1up,2down
+     */
+    public Integer getDrawChange() {
+        return drawChange;
+    }
 
-	public void setCreateTime(Integer createTime) {
-		this.createTime = createTime;
-	}
+    /**
+     * 设置平变化趋势:0equal,1up,2down
+     *
+     * @param drawChange 平变化趋势:0equal,1up,2down
+     */
+    public void setDrawChange(Integer drawChange) {
+        this.drawChange = drawChange;
+    }
 
-	public Integer getUpdateTime() {
-		return updateTime;
-	}
+    /**
+     * 获取负变化趋势:0equal,1up,2down
+     *
+     * @return lose_change - 负变化趋势:0equal,1up,2down
+     */
+    public Integer getLoseChange() {
+        return loseChange;
+    }
 
-	public void setUpdateTime(Integer updateTime) {
-		this.updateTime = updateTime;
-	}
+    /**
+     * 设置负变化趋势:0equal,1up,2down
+     *
+     * @param loseChange 负变化趋势:0equal,1up,2down
+     */
+    public void setLoseChange(Integer loseChange) {
+        this.loseChange = loseChange;
+    }
 
-	public Integer getLeagueFrom() {
-		return leagueFrom;
-	}
+    /**
+     * 获取初始变化 时间
+     *
+     * @return init_time - 初始变化 时间
+     */
+    public Integer getInitTime() {
+        return initTime;
+    }
 
-	public void setLeagueFrom(Integer leagueFrom) {
-		this.leagueFrom = leagueFrom;
-	}
+    /**
+     * 设置初始变化 时间
+     *
+     * @param initTime 初始变化 时间
+     */
+    public void setInitTime(Integer initTime) {
+        this.initTime = initTime;
+    }
 
+    /**
+     * 获取即时变化时间
+     *
+     * @return real_time - 即时变化时间
+     */
+    public Integer getRealTime() {
+        return realTime;
+    }
+
+    /**
+     * 设置即时变化时间
+     *
+     * @param realTime 即时变化时间
+     */
+    public void setRealTime(Integer realTime) {
+        this.realTime = realTime;
+    }
+
+    /**
+     * 获取创建时间
+     *
+     * @return create_time - 创建时间
+     */
+    public Integer getCreateTime() {
+        return createTime;
+    }
+
+    /**
+     * 设置创建时间
+     *
+     * @param createTime 创建时间
+     */
+    public void setCreateTime(Integer createTime) {
+        this.createTime = createTime;
+    }
+
+    /**
+     * 获取更新时间
+     *
+     * @return update_time - 更新时间
+     */
+    public Integer getUpdateTime() {
+        return updateTime;
+    }
+
+    /**
+     * 设置更新时间
+     *
+     * @param updateTime 更新时间
+     */
+    public void setUpdateTime(Integer updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    /**
+     * 获取拉取平台:0竞彩1 500万
+     *
+     * @return league_from - 拉取平台:0竞彩1 500万
+     */
+    public Integer getLeagueFrom() {
+        return leagueFrom;
+    }
+
+    /**
+     * 设置拉取平台:0竞彩1 500万
+     *
+     * @param leagueFrom 拉取平台:0竞彩1 500万
+     */
+    public void setLeagueFrom(Integer leagueFrom) {
+        this.leagueFrom = leagueFrom;
+    }
 }
