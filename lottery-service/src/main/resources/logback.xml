@@ -39,7 +39,7 @@
 	<logger name="com.dl.shop.lottery" level="INFO" />
 	<logger name="org.springframework" level="INFO"/>
 	<logger name="com.dl.base.mapper" level="INFO" />
-	<logger name="com.alibaba.druid" level="WARN" />
+	<logger name="com.alibaba.druid" level="INFO" />
 
 	<root level="INFO">
 		<appender-ref ref="console" />
