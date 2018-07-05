@@ -153,7 +153,6 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		List<CallbackStake> callbackStakes = param.getOrders();
 		if(CollectionUtils.isNotEmpty(callbackStakes)) {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			List<LotteryPrintParam> lotteryPrintParams = new LinkedList<LotteryPrintParam>();
 			List<LotteryPrint> lotteryPrints = new ArrayList<>(callbackStakes.size());
 			for(CallbackStake callbackStake : callbackStakes) {
 				if(ProjectConstant.CALLBACK_STAKE_SUCCESS.equals(callbackStake.getPrintStatus())) {
@@ -171,19 +170,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						} else {
 							continue;
 						}
-						String stakes = lotteryPrint.getStakes();
 						String sp = callbackStake.getSp();
-						String comparePrintSp = getComparePrintSp(sp, callbackStake.getTicketId());
-						comparePrintSp = StringUtils.isBlank(comparePrintSp)?sp:comparePrintSp;
-						
-						String game = lotteryPrint.getGame();
-						String printSp = null;
-						if("T51".equals(game)  && StringUtils.isNotBlank(comparePrintSp)) {
-							printSp = this.getPrintSp(stakes, comparePrintSp);
-						} else if("T56".equals(game)) {
-							printSp = comparePrintSp;
-						}
-						
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
 						lotteryPrint.setPrintSp(sp);
@@ -202,23 +189,12 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 							}
 						}
 						lotteryPrints.add(lotteryPrint);
-						LotteryPrintParam lotteryPrintParam = new LotteryPrintParam();
-						lotteryPrintParam.setOrderSn(lotteryPrint.getOrderSn());
-						lotteryPrintParam.setAcceptTime(lotteryPrint.getAcceptTime());
-						if(printTime != null) {
-							lotteryPrintParam.setTicketTime(DateUtil.getCurrentTimeLong(printTime.getTime()/1000));
-						}
-						lotteryPrintParam.setPrintSp(printSp);
-						lotteryPrintParams.add(lotteryPrintParam);
 					}
 				}
 			}
 			log.info("updateLotteryPrintByCallBack size:"+lotteryPrints.size());
 			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
 				updateLotteryPrintByCallBack(lotteryPrints);
-			}
-			if(CollectionUtils.isNotEmpty(lotteryPrintParams)) {
-				orderService.updateOrderInfoByPrint(lotteryPrintParams);
 			}
 		}
 	}
