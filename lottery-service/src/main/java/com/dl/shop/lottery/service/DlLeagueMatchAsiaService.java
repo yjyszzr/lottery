@@ -34,10 +34,7 @@ public class DlLeagueMatchAsiaService extends AbstractService<DlLeagueMatchAsia>
     private DlLeagueMatchAsiaMapper dlLeagueMatchAsiaMapper;
 
     public List<LeagueMatchAsiaDTO> leagueMatchAsias(Integer changciId) {
-    	Condition condition = new Condition(DlLeagueMatchAsia.class);
-        condition.and().andEqualTo("changciId", changciId);
-        condition.setOrderByClause("id");
-        List<DlLeagueMatchAsia> list = super.findByCondition(condition);
+        List<DlLeagueMatchAsia> list = dlLeagueMatchAsiaMapper.getListByChangciId(changciId);
        /* if(list.size() == 0) {//这里转到爬虫处理
         	 this.refreshMatchAsiaInfoFromZC(changciId);
         	 list = super.findByCondition(condition);

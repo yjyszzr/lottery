@@ -24,7 +24,7 @@
     <result column="league_from" jdbcType="BIT" property="leagueFrom" />
   </resultMap>
   
-  <select id="getList">
+  <select id="getList" resultMap="BaseResultMap">
   	select * from dl_future_match 
   	where (home_team_id=#{teamId} or visitor_team_id=#{teamId}) and match_date &gt; CURRENT_DATE 
   	order by match_date, match_time limit 3

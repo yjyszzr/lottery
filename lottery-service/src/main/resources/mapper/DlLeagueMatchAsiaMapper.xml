@@ -28,6 +28,11 @@
   	select count(id) from dl_league_match_asia where changci_id = #{changciId}
   </select>
   
+  <select id="getListByChangciId" resultMap="BaseResultMap">
+  	select *  from dl_league_match_asia 
+  	where changci_id = #{changciId} order by id
+  </select>
+  
   <update id="updateMatchAsia">
   	update dl_league_match_asia 
   	set real_odds1= #{realOdds1},
