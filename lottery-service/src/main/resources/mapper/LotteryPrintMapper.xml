@@ -168,6 +168,9 @@
   		select value from dl_sys_config where business_id=3
   </select>
   <select id="printLotteryRoutAmount" resultType="java.lang.Double">
-  	 select value from dl_sys_config where business_id=10;
+  	 select value from dl_sys_config where business_id=10
+  </select>
+  <select id="getBetPreTime" resultType="int">
+  	 select value from dl_sys_config where business_id=4
   </select>
 </mapper>
