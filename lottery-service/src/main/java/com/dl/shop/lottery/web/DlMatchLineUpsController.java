@@ -19,6 +19,8 @@ import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.DlMatchLineUpsService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 
+import io.swagger.annotations.ApiOperation;
+
 /**
 * Created by CodeGenerator on 2018/07/06.
 */
@@ -31,6 +33,7 @@ public class DlMatchLineUpsController {
     private LotteryMatchService lotteryMatchService;
 
 
+    @ApiOperation(value = "比赛阵容", notes = "比赛阵容")
     @PostMapping("/info")
     public BaseResult<MatchLineUpInfosDTO> matchLineUpInfo(@RequestBody GetMatchLineUpInfoParam param) {
     	LotteryMatch lotteryMatch = lotteryMatchService.findById(param.getMatchId());
