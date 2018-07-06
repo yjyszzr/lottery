@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlMatchLiveMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlMatchLive">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="match_live_info" jdbcType="LONGVARCHAR" property="matchLiveInfo" />
+  </resultMap>
+  
+  <select id="getByChangciId" resultMap="BaseResultMap">
+  	select * from dl_match_live where changci_id=#{changciId}
+  </select>
+  
+</mapper>

@@ -24,16 +24,17 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
     @Resource
     private DlMatchLineUpsMapper dlMatchLineUpsMapper;
 
+    //獲取比分信息
     public MatchLineUpInfosDTO getMatchLineUps(Integer changciId) {
     	MatchLineUpInfosDTO matchLineUpInfosDTO = new  MatchLineUpInfosDTO();
     	DlMatchLineUps matchLineUps = dlMatchLineUpsMapper.getByChangciId(changciId);
     	if(matchLineUps != null) {
     		String matchLineups2 = matchLineUps.getMatchLineups();
-    		parseMatchLineups(matchLineups2, matchLineUpInfosDTO);
+    		this.parseMatchLineups(matchLineups2, matchLineUpInfosDTO);
     	}
     	return matchLineUpInfosDTO;
     }
-
+    //解析比分信息
 	private void parseMatchLineups(String matchLineups, MatchLineUpInfosDTO matchLineUpInfosDTO) {
 		JSONObject dataObj = null;
 		JSONObject injuriesObj = null; 
