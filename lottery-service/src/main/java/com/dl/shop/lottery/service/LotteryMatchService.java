@@ -339,7 +339,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
 			int matchHour = matchDateTime.getHour();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-			int betEndTime = matchTime - ProjectConstant.BET_PRESET_TIME;
+			int betEndTime = matchTime - this.getBetPreTime();
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
 			//今天展示第二天比赛时间
@@ -3269,4 +3269,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return lotteryPrintMapper.printLotteryRoutAmount();
 	}
 	
+	public Integer getBetPreTime() {
+		Integer betPreTime = lotteryPrintMapper.getBetPreTime();
+		if(betPreTime == null || betPreTime <= 0) {
+			betPreTime = ProjectConstant.BET_PRESET_TIME;
+		}
+		return betPreTime;
+	}
 }
