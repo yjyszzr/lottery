@@ -21,21 +21,21 @@ public class DlLeagueTeamScoreService extends AbstractService<DlLeagueTeamScore>
     	if(null != score) {
 			dto.setBallIn(score.getBallIn());
 			dto.setBallLose(score.getBallLose());
-			dto.setFlag(score.getFlag());
+//			dto.setFlag(score.getFlag());
 			dto.setMatchD(score.getMatchD());
 			dto.setMatchH(score.getMatchH());
 			dto.setMatchL(score.getMatchL());
 			dto.setMatchNum(score.getMatchNum());
-			dto.setPreH(score.getPreH());
+			/*dto.setPreH(score.getPreH());
 			dto.setPreL(score.getPreL());
 			dto.setRatioD(score.getRatioD());
 			dto.setRatioH(score.getRatioH());
-			dto.setRatioL(score.getRatioL());
+			dto.setRatioL(score.getRatioL());*/
 			dto.setScore(score.getScore());
 			dto.setTeamId(score.getTeamId());
 			dto.setTeamName(score.getTeamName());
 			dto.setBallClean(score.getBallClean());
-			dto.setRank(score.getRank());
+//			dto.setRank(score.getRank());
     	}
     	return dto;
     }

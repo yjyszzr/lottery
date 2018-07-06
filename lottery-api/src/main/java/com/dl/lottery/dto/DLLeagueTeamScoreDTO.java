@@ -40,28 +40,10 @@ public class DLLeagueTeamScoreDTO implements Serializable{
 	@ApiModelProperty(value="净球数")
     private Integer ballClean;
 
-	@ApiModelProperty(value="均得")
-    private Double preH;
-
-	@ApiModelProperty(value="均失")
-    private Double preL;
-
-	@ApiModelProperty(value="胜率")
-    private String ratioH;
-
-	@ApiModelProperty(value="平率")
-    private String ratioD;
-
-	@ApiModelProperty(value="负率")
-    private String ratioL;
-
 	@ApiModelProperty(value="积分")
     private Integer score;
-
-	@ApiModelProperty(value="0总1主2客")
-    private Integer flag;
 	
-	@ApiModelProperty(value="排名")
-	private Integer rank;
+	/*@ApiModelProperty(value="排名")
+	private Integer teamOrder;*/
 
 }

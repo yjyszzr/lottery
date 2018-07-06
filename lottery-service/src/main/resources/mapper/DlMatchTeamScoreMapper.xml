@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlMatchTeamScoreMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlMatchTeamScore">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="team_name" jdbcType="VARCHAR" property="teamName" />
+    <result column="team_order" jdbcType="VARCHAR" property="teamOrder" />
+    <result column="l_match_num" jdbcType="INTEGER" property="lMatchNum" />
+    <result column="l_match_h" jdbcType="INTEGER" property="lMatchH" />
+    <result column="l_match_d" jdbcType="INTEGER" property="lMatchD" />
+    <result column="l_match_a" jdbcType="INTEGER" property="lMatchA" />
+    <result column="l_ball_in" jdbcType="INTEGER" property="lBallIn" />
+    <result column="l_ball_lose" jdbcType="INTEGER" property="lBallLose" />
+    <result column="l_ball_clean" jdbcType="INTEGER" property="lBallClean" />
+    <result column="l_score" jdbcType="INTEGER" property="lScore" />
+    <result column="h_match_num" jdbcType="INTEGER" property="hMatchNum" />
+    <result column="h_match_h" jdbcType="INTEGER" property="hMatchH" />
+    <result column="h_match_d" jdbcType="INTEGER" property="hMatchD" />
+    <result column="h_match_a" jdbcType="INTEGER" property="hMatchA" />
+    <result column="h_ball_in" jdbcType="INTEGER" property="hBallIn" />
+    <result column="h_ball_lose" jdbcType="INTEGER" property="hBallLose" />
+    <result column="h_ball_clean" jdbcType="INTEGER" property="hBallClean" />
+    <result column="h_score" jdbcType="INTEGER" property="hScore" />
+    <result column="v_match_num" jdbcType="INTEGER" property="vMatchNum" />
+    <result column="v_match_h" jdbcType="INTEGER" property="vMatchH" />
+    <result column="v_match_d" jdbcType="INTEGER" property="vMatchD" />
+    <result column="v_match_a" jdbcType="INTEGER" property="vMatchA" />
+    <result column="v_ball_in" jdbcType="INTEGER" property="vBallIn" />
+    <result column="v_ball_lose" jdbcType="INTEGER" property="vBallLose" />
+    <result column="v_ball_clean" jdbcType="INTEGER" property="vBallClean" />
+    <result column="v_score" jdbcType="INTEGER" property="vScore" />
+    <result column="league_from" jdbcType="BIT" property="leagueFrom" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <select id="getByTeamId"  resultMap="BaseResultMap">
+  	select *
+  	from dl_match_team_score 
+  	where team_id=#{teamId}
+  </select>
+  
+</mapper>

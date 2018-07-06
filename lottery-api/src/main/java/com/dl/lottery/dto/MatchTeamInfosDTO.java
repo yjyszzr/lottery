@@ -42,4 +42,9 @@ public class MatchTeamInfosDTO implements Serializable{
 	@ApiModelProperty(value = "大小球", required = true)
 	List<LeagueMatchDaoXiaoDTO> leagueMatchDaoxiaos ;
 	
+	@ApiModelProperty(value = "主队未来赛事", required = true)
+	List<DLFutureMatchDTO> hFutureMatchInfos;
+	
+	@ApiModelProperty(value = "客队示来赛事", required = true)
+	List<DLFutureMatchDTO> vFutureMatchInfos;
 }

@@ -28,7 +28,7 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BetPayInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetInfoDTO;
-import com.dl.lottery.dto.DLLeagueTeamScoreDTO;
+import com.dl.lottery.dto.DLFutureMatchDTO;
 import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
@@ -63,12 +63,13 @@ import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.model.LotteryMatch;
+import com.dl.shop.lottery.service.DlFutureMatchService;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
-import com.dl.shop.lottery.service.DlLeagueTeamScoreService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
+import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchPlayService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
@@ -98,7 +99,7 @@ public class LotteryMatchController {
     @Resource
     private DlLeagueMatchAsiaService dlLeagueMatchAsiaService;
     @Resource
-    private DlLeagueTeamScoreService dlLeagueTeamScoreService;
+    private DlMatchTeamScoreService dlMatchTeamScoreService;
     @Resource
     private DlLeagueMatchEuropeService dlLeagueMatchEuropeService;
     @Resource
@@ -107,6 +108,8 @@ public class LotteryMatchController {
     private DlMatchSupportService dlMatchSupportService;
     @Resource
     private LotteryMatchPlayService lotteryMatchPlayService;
+    @Resource
+    private DlFutureMatchService dlFutureMatchService;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -602,19 +605,17 @@ public class LotteryMatchController {
 		matchTeamInfo.setHomeTeamScoreInfo(homeTeamScoreInfo);
 		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
 		matchTeamInfo.setVisitingTeamScoreInfo(visitingTeamScoreInfo);
+		List<DLFutureMatchDTO> hFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(lotteryMatch.getHomeTeamId());
+		matchTeamInfo.setHFutureMatchInfos(hFutureMatchInfos);
+		List<DLFutureMatchDTO> vFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(lotteryMatch.getVisitingTeamId());
+		matchTeamInfo.setVFutureMatchInfos(vFutureMatchInfos);
 		return ResultGenerator.genSuccessResult("success", matchTeamInfo);
 	}
 
 	private DLLeagueTeamScoreInfoDTO teamScoreInfo(Integer teamId, String teamAbbr) {
-		DLLeagueTeamScoreDTO tteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 0);
-		DLLeagueTeamScoreDTO hteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 1);
-		DLLeagueTeamScoreDTO lteamScore = dlLeagueTeamScoreService.getTeamScores(teamId, 2);
-		DLLeagueTeamScoreInfoDTO teamScoreInfo = new DLLeagueTeamScoreInfoDTO();
+		DLLeagueTeamScoreInfoDTO teamScoreInfo = dlMatchTeamScoreService.getTeamScores(teamId);
 		teamScoreInfo.setTeamId(teamId);
 		teamScoreInfo.setTeamName(teamAbbr);
-		teamScoreInfo.setHteamScore(hteamScore);
-		teamScoreInfo.setTteamScore(tteamScore);
-		teamScoreInfo.setHteamScore(hteamScore);
 		return teamScoreInfo;
 	}
 	
