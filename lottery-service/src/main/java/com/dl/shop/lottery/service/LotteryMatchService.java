@@ -331,6 +331,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
 		Integer totalNum = 0;
+		Integer betPreTime = this.getBetPreTime();
 //		Locale defaultLocal = Locale.getDefault();
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
@@ -339,7 +340,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
 			int matchHour = matchDateTime.getHour();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-			int betEndTime = matchTime - this.getBetPreTime();
+			int betEndTime = matchTime - betPreTime;
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
 			//今天展示第二天比赛时间
