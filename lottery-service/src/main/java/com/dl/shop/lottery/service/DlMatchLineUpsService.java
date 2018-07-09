@@ -42,21 +42,44 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		JSONObject hLineupsObj = null; 
 		JSONObject aLineupsObj = null; 
 		if(StringUtils.isNotBlank(matchLineups)) {
-			dataObj = JSON.parseObject(matchLineups);
+			try {
+				dataObj = JSON.parseObject(matchLineups);
+			} catch (Exception e) {
+			}
 		}
 		//解析data对象
 		if(dataObj != null) {
-			injuriesObj = dataObj.getJSONObject("injuries_info");
-			suspensionObj = dataObj.getJSONObject("suspension_info");
-			hLineupsObj = dataObj.getJSONObject("h_lineups_info");
-			aLineupsObj = dataObj.getJSONObject("a_lineups_info");
+			try {
+				injuriesObj = dataObj.getJSONObject("injuries_info");
+			} catch (Exception e) {
+			}
+			try {
+				suspensionObj = dataObj.getJSONObject("suspension_info");
+			} catch (Exception e) {
+			}
+			try {
+				hLineupsObj = dataObj.getJSONObject("h_lineups_info");
+			} catch (Exception e) {
+			}
+			try {
+				aLineupsObj = dataObj.getJSONObject("a_lineups_info");
+			} catch (Exception e) {
+			}
 		}
 		//解析主队
 		List<MatchLineUpPersonDTO> hlineupPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> hbenchPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		if(hLineupsObj != null) {
-			JSONArray bArray = hLineupsObj.getJSONArray("lineups_bench");
-			JSONArray lArray = hLineupsObj.getJSONArray("lineups");
+			JSONArray bArray = null;
+			try {
+				bArray = hLineupsObj.getJSONArray("lineups_bench");
+			} catch (Exception e) {
+			}
+			JSONArray lArray = null;
+			try {
+				lArray = hLineupsObj.getJSONArray("lineups");
+			} catch (Exception e) {
+			}
 			if(bArray != null) {
 				hbenchPersons = new ArrayList<MatchLineUpPersonDTO>(bArray.size());
 				for(int i=0; i<bArray.size();i++) {
@@ -100,8 +123,16 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		List<MatchLineUpPersonDTO> alineupPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> abenchPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		if(aLineupsObj != null) {
-			JSONArray bArray = aLineupsObj.getJSONArray("lineups_bench");
-			JSONArray lArray = aLineupsObj.getJSONArray("lineups");
+			JSONArray bArray = null;
+			try {
+				bArray = aLineupsObj.getJSONArray("lineups_bench");
+			} catch (Exception e) {
+			}
+			JSONArray lArray = null;
+			try {
+				lArray = aLineupsObj.getJSONArray("lineups");
+			} catch (Exception e) {
+			}
 			if(bArray != null) {
 				abenchPersons = new ArrayList<MatchLineUpPersonDTO>(bArray.size());
 				for(int i=0; i<bArray.size();i++) {
@@ -145,8 +176,16 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		List<MatchLineUpPersonDTO> hInjureiesPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> aInjureiesPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		if(injuriesObj != null) {
-			JSONArray hArray = injuriesObj.getJSONArray("h_injuries");
-			JSONArray aArray = injuriesObj.getJSONArray("a_injuries");
+			JSONArray hArray = null;
+			try {
+				hArray = injuriesObj.getJSONArray("h_injuries");
+			} catch (Exception e) {
+			}
+			JSONArray aArray = null;
+			try {
+				aArray = injuriesObj.getJSONArray("a_injuries");
+			} catch (Exception e) {
+			}
 			if(hArray != null) {
 				hInjureiesPersons = new ArrayList<MatchLineUpPersonDTO>(hArray.size());
 				for(int i=0; i<hArray.size();i++) {
@@ -182,8 +221,16 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		List<MatchLineUpPersonDTO> hSuspensionPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> aSuspensionPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		if(suspensionObj != null) {
-			JSONArray hArray = suspensionObj.getJSONArray("h_suspensions");
-			JSONArray aArray = suspensionObj.getJSONArray("a_suspensions");
+			JSONArray hArray = null;
+			try {
+				hArray = suspensionObj.getJSONArray("h_suspensions");
+			} catch (Exception e) {
+			}
+			JSONArray aArray = null;
+			try {
+				aArray = suspensionObj.getJSONArray("a_suspensions");
+			} catch (Exception e) {
+			}
 			if(hArray != null) {
 				hSuspensionPersons = new ArrayList<MatchLineUpPersonDTO>(hArray.size());
 				for(int i=0; i<hArray.size();i++) {

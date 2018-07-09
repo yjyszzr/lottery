@@ -42,11 +42,17 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 		JSONArray eventArray = null;
 		JSONObject statisticsObj = null;
 		if(StringUtils.isNotBlank(matchLiveInfo)) {
-			dataObj = JSON.parseObject(matchLiveInfo);
+			try {
+				dataObj = JSON.parseObject(matchLiveInfo);
+			} catch (Exception e) {
+			}
 		}
 		//解析data对象
 		if(dataObj != null) {
-			eventArray = dataObj.getJSONArray("event");
+			try {
+				eventArray = dataObj.getJSONArray("event");
+			} catch (Exception e1) {
+			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
@@ -134,7 +140,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     //获取球队统计数据
     private MatchLiveTeamDataDTO matchLiveTeamData(String key, JSONObject jsonObject) {
     	MatchLiveTeamDataDTO dto = new MatchLiveTeamDataDTO();
-    	JSONObject dataObj = jsonObject.getJSONObject(key);
+    	JSONObject dataObj = null;
+		try {
+			dataObj = jsonObject.getJSONObject(key);
+		} catch (Exception e) {
+		}
     	if(dataObj != null) {
     		String teamAData = dataObj.getString("team_a_data");
     		String teamHData = dataObj.getString("team_h_data");
