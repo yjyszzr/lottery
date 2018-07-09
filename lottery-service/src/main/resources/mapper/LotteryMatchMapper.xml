@@ -123,6 +123,30 @@
   	 order by match_sn
   </select>
 
+  <select id="queryMatchByQueryConditionNew" parameterType ="java.lang.String" resultMap="BaseResultMap">
+  	select * from dl_match
+  	 where is_del = 0 
+     and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
+  	 	and league_id in
+  	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchIdArr !=null and matchIdArr.length != 0">
+  	 	and match_id in
+  	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
+  	 		#{matchId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="type != null and type != ''">
+  	 	and  status = #{type}
+  	 </if>
+  	 order by match_sn
+  </select>
+
+
   <update id="updateMatchBatch" parameterType="java.util.List">
         update dl_match
             <trim prefix="set" suffixOverrides=",">

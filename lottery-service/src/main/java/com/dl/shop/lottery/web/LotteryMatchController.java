@@ -53,6 +53,7 @@ import com.dl.lottery.param.GetCancelMatchesParam;
 import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
+import com.dl.lottery.param.QueryMatchParamByType;
 import com.dl.lottery.param.StringRemindParam;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
@@ -541,6 +542,12 @@ public class LotteryMatchController {
     @PostMapping("/queryMatchResult")
     public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody QueryMatchParam dateStrParam) {
     	return lotteryMatchService.queryMatchResult(dateStrParam);
+    }
+
+	@ApiOperation(value = "根据条件查询比赛结果新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
+    @PostMapping("/queryMatchResultNew")
+    public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
+    	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
     }
 	
 	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")
