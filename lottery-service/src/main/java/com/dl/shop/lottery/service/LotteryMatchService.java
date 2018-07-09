@@ -2452,82 +2452,110 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param dateStr
 	 * @return
 	 */
-	public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType){
+	public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
-		if(!StringUtils.isEmpty(queryMatchParamByType.getIsAlreadyBuyMatch()) && !StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
-			return ResultGenerator.genResult(LotteryResultEnum.ONLY_ONE_CONDITION.getCode(),LotteryResultEnum.ONLY_ONE_CONDITION.getMsg());
-		} 
-		
-		String [] leagueIdArr = new String [] {};
-		if(!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
+		if (!StringUtils.isEmpty(queryMatchParamByType.getIsAlreadyBuyMatch())
+				&& !StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
+			return ResultGenerator.genResult(LotteryResultEnum.ONLY_ONE_CONDITION.getCode(),
+					LotteryResultEnum.ONLY_ONE_CONDITION.getMsg());
+		}
+
+		String[] leagueIdArr = new String[] {};
+		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
 			leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");
 		}
-		
-		log.info("查询的leagueId:"+JSON.toJSONString(leagueIdArr));
-		String[] matchIdArr = new String [] {};
+
+		log.info("查询的leagueId:" + JSON.toJSONString(leagueIdArr));
+		Integer[] matchIdArr = new Integer[] {};
 		List<LotteryMatch> lotteryMatchList = null;
-		List<Integer> matchIdList = null;
+		List<Integer> matchIdList = new ArrayList<>();
+		List<String> myOrderDetailMatchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
-		if("2".equals(queryMatchParamByType.getType())) {//我的赛事收藏
-			if(null == userId) {
+
+		if (queryMatchParamByType.getIsAlreadyBuyMatch().equals("1")) {// 查询已购的赛事id
+			if (null == userId) {
 				return ResultGenerator.genNeedLoginResult("请登录");
 			}
-			//查询 用户当天所下的订单 包含某天的比赛ID集合
+			DateStrParam dateStrParam = new DateStrParam();// 查询 用户某天所下的订单 包含某天的比赛ID集合
+			dateStrParam.setDateStr(queryMatchParamByType.getDateStr());
+			BaseResult<List<String>> matchIdsRst = orderDetailService.selectMatchIdsInSomeDayOrder(dateStrParam);
+			if (matchIdsRst.getCode() != 0) {
+				return ResultGenerator.genResult(matchIdsRst.getCode(), matchIdsRst.getMsg());
+			}
+			myOrderDetailMatchIdList = matchIdsRst.getData();
+		}
+
+		if ("2".equals(queryMatchParamByType.getType())) {// 我的赛事收藏
+			if (null == userId) {
+				return ResultGenerator.genNeedLoginResult("请登录");
+			}
 			EmptyParam emptyParam = new EmptyParam();
 			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(emptyParam);
-			if(matchIdsRst.getCode() != 0) {
-				return ResultGenerator.genResult(matchIdsRst.getCode(),matchIdsRst.getMsg());
+			if (matchIdsRst.getCode() != 0) {
+				return ResultGenerator.genResult(matchIdsRst.getCode(), matchIdsRst.getMsg());
 			}
-			
 			matchIdList = matchIdsRst.getData();
-			if(matchIdList.size() == 0) {
+			if (matchIdList.size() == 0) {
 				return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 			}
-			matchIdArr = matchIdList.stream().toArray(String[]::new);			
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),leagueIdArr,matchIdArr,queryMatchParamByType.getType());
-		}else {// 结束和未结束赛事
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),leagueIdArr,matchIdArr,queryMatchParamByType.getType());
+			matchIdArr = matchIdList.stream().toArray(Integer[]::new);
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),
+					matchIdArr, leagueIdArr, "");
+		} else {// 结束和未结束赛事
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),
+					matchIdArr, leagueIdArr, queryMatchParamByType.getType());
 		}
-		
-		if(CollectionUtils.isEmpty(lotteryMatchList)) {
+
+		if (CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 		}
-		
-		//查询球队logo
-		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s->s.getHomeTeamId()).collect(Collectors.toList());
-		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s->s.getVisitingTeamId()).collect(Collectors.toList());
+
+		// 查询球队logo
+		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s -> s.getHomeTeamId())
+				.collect(Collectors.toList());
+		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s -> s.getVisitingTeamId())
+				.collect(Collectors.toList());
 		homeTeamIdList.addAll(visitingTeamIdList);
 		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);
-	    for(LotteryMatch s:lotteryMatchList) {
-			LotteryMatchDTO  lotteryMatchDTO = new LotteryMatchDTO();
+
+		for (LotteryMatch s : lotteryMatchList) {
+			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
-			for(DlLeagueTeam ss:leagueList) {
-				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
+			for (DlLeagueTeam ss : leagueList) {
+				if (s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
 					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
 				}
-				if(s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
+				if (s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
 					lotteryMatchDTO.setVisitingTeamLogo(ss.getTeamPic());
 				}
 				continue;
 			}
-			
-			lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES.equals(s.getStatus().toString())?ProjectConstant.ONE_YES:ProjectConstant.ZERO_NO);
+
+			lotteryMatchDTO.setMatchFinish(ProjectConstant.ONE_YES.equals(s.getStatus().toString()) ? ProjectConstant.ONE_YES
+							: ProjectConstant.ZERO_NO);
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			Long matchTime = s.getMatchTime().getTime();
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
 			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
-			if(null == userId) {
-				if(matchIdList.contains(s.getMatchId())) {
+			if (null != userId) {
+				if (matchIdList.contains(s.getMatchId())) {
 					lotteryMatchDTO.setIsCollect("1");
-				}else {
+				} else {
 					lotteryMatchDTO.setIsCollect("0");
 				}
-			}else {
+			} else {
 				lotteryMatchDTO.setIsCollect("0");
 			}
-			lotteryMatchDTOList.add(lotteryMatchDTO);
-	    }
-		
+
+			if (myOrderDetailMatchIdList.size() > 0) {
+				if (myOrderDetailMatchIdList.contains(s.getMatchId())) {
+					lotteryMatchDTOList.add(lotteryMatchDTO);
+				}
+			} else {
+				lotteryMatchDTOList.add(lotteryMatchDTO);
+			}
+		}
+
 		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}	
 	
