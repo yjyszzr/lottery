@@ -53,6 +53,15 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public List<LotteryMatch> queryMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("matchIdArr") String[] matchIdArr,
 			@Param("leagueIdArr") String[] leagueIdArr,@Param("matchFinish") String matchFinish);
+	
+	/**
+	 * 根据查询条件查询赛事结果最新
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LotteryMatch> queryMatchByQueryConditionNew(@Param("dateStr") String dateStr,@Param("matchIdArr") String[] matchIdArr,
+			@Param("leagueIdArr") String[] leagueIdArr,@Param("type") String type);		
+	
 	/**
 	 * 通过changciId获取对象
 	 * @param matchId

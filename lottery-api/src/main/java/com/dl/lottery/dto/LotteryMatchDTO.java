@@ -50,6 +50,9 @@ public class LotteryMatchDTO {
     @ApiModelProperty("比赛时间")
     private String matchTime;
 
+    @ApiModelProperty("比赛开始时间")
+    private String matchTimeStart;
+    
     @ApiModelProperty("显示时间")
     private Date showTime;
 
@@ -58,6 +61,9 @@ public class LotteryMatchDTO {
     
     @ApiModelProperty("整场得分")
     private String whole;
+    
+    @ApiModelProperty("是否收藏：0-否 1-是")
+    private String isCollect;
     
     @ApiModelProperty("比赛状态：0-未结束 1-已结束")
     private String matchFinish;
