@@ -17,8 +17,8 @@ public class QueryMatchParamByType {
     @NotBlank(message = "当前日期不能为空")
     private String dateStr;
     
-    @ApiModelProperty(value = "是否查看已购赛事")
-    private String isAlreadyBuyMatch;
+//    @ApiModelProperty(value = "是否查看已购赛事")
+//    private String isAlreadyBuyMatch;
     
     @ApiModelProperty(value = "联赛id集合以,分隔,没有传空字符串")
     private String leagueIds;
