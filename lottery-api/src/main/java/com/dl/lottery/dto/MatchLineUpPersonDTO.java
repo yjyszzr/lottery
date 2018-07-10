@@ -16,4 +16,7 @@ public class MatchLineUpPersonDTO {
 	private String positionX;
 	@ApiModelProperty("队员位置Y")
 	private String positionY;
+	@ApiModelProperty("队员编号")
+	private String shirtNumber;
+	
 }

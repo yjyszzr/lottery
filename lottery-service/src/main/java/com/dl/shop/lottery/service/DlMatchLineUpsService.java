@@ -65,11 +65,26 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 				aLineupsObj = dataObj.getJSONObject("a_lineups_info");
 			} catch (Exception e) {
 			}
+			try {
+				String refereeName = dataObj.getString("referee_name");
+				matchLineUpInfosDTO.setRefereeName(refereeName==null?"":refereeName);
+			} catch (Exception e) {
+			}
 		}
 		//解析主队
 		List<MatchLineUpPersonDTO> hlineupPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> hbenchPersons = new ArrayList<MatchLineUpPersonDTO>(0);
+		String formationTeamH = null;
+		String coachTeamH = null;
 		if(hLineupsObj != null) {
+			try {
+				formationTeamH = hLineupsObj.getString("formation_team_h");
+			} catch (Exception e) {
+			}
+			try {
+				coachTeamH = hLineupsObj.getString("coach_team_h");
+			} catch (Exception e) {
+			}
 			JSONArray bArray = null;
 			try {
 				bArray = hLineupsObj.getJSONArray("lineups_bench");
@@ -90,12 +105,14 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = hObj.getString("position_x");
 					String positionY = hObj.getString("position_y");
+					String shirtNumber = hObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
 					person.setPersonName(personName);
 					person.setPosition(position);
 					person.setPositionX(positionX);
 					person.setPositionY(positionY);
+					person.setShirtNumber(shirtNumber);
 					hbenchPersons.add(person);
 				}
 			}
@@ -109,12 +126,14 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = hObj.getString("position_x");
 					String positionY = hObj.getString("position_y");
+					String shirtNumber = hObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
 					person.setPersonName(personName);
 					person.setPosition(position);
 					person.setPositionX(positionX);
 					person.setPositionY(positionY);
+					person.setShirtNumber(shirtNumber);
 					hlineupPersons.add(person);
 				}
 			}
@@ -122,7 +141,17 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		//解析客队
 		List<MatchLineUpPersonDTO> alineupPersons = new ArrayList<MatchLineUpPersonDTO>(0);
 		List<MatchLineUpPersonDTO> abenchPersons = new ArrayList<MatchLineUpPersonDTO>(0);
+		String formationTeamA = null;
+		String coachTeamA = null;
 		if(aLineupsObj != null) {
+			try {
+				formationTeamA = hLineupsObj.getString("formation_team_a");
+			} catch (Exception e) {
+			}
+			try {
+				coachTeamA = hLineupsObj.getString("coach_team_a");
+			} catch (Exception e) {
+			}
 			JSONArray bArray = null;
 			try {
 				bArray = aLineupsObj.getJSONArray("lineups_bench");
@@ -143,12 +172,14 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = aObj.getString("position_x");
 					String positionY = aObj.getString("position_y");
+					String shirtNumber = aObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
 					person.setPersonName(personName);
 					person.setPosition(position);
 					person.setPositionX(positionX);
 					person.setPositionY(positionY);
+					person.setShirtNumber(shirtNumber);
 					abenchPersons.add(person);
 				}
 			}
@@ -162,12 +193,14 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = aObj.getString("position_x");
 					String positionY = aObj.getString("position_y");
+					String shirtNumber = aObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
 					person.setPersonName(personName);
 					person.setPosition(position);
 					person.setPositionX(positionX);
 					person.setPositionY(positionY);
+					person.setShirtNumber(shirtNumber);
 					alineupPersons.add(person);
 				}
 			}
@@ -270,5 +303,9 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		matchLineUpInfosDTO.setHInjureiesPersons(hInjureiesPersons);
 		matchLineUpInfosDTO.setHlineupPersons(hlineupPersons);
 		matchLineUpInfosDTO.setHSuspensionPersons(hSuspensionPersons);
+		matchLineUpInfosDTO.setCoachTeamA(coachTeamA==null?"":coachTeamA);
+		matchLineUpInfosDTO.setCoachTeamH(coachTeamH==null?"":coachTeamH);
+		matchLineUpInfosDTO.setFormationTeamA(formationTeamA==null?"":formationTeamA);
+		matchLineUpInfosDTO.setFormationTeamH(formationTeamH==null?"":formationTeamH);
 	}
 }

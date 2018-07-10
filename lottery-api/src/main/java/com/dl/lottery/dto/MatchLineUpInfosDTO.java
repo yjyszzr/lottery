@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class MatchLineUpInfosDTO {
 
+	@ApiModelProperty("主裁判")
+	private String refereeName;
 	@ApiModelProperty("比赛时间")
 	private Integer matchTime;
 	@ApiModelProperty("场次")
@@ -34,4 +36,12 @@ public class MatchLineUpInfosDTO {
 	private List<MatchLineUpPersonDTO> hSuspensionPersons ;
 	@ApiModelProperty("客队停赛队员")
 	private List<MatchLineUpPersonDTO> aSuspensionPersons ;
+	@ApiModelProperty("客队阵型")
+	private String formationTeamA;
+	@ApiModelProperty("客队教练")
+	private String coachTeamA ;
+	@ApiModelProperty("主队阵型")
+	private String formationTeamH ;
+	@ApiModelProperty("主队教练")
+	private String coachTeamH ;
 }
