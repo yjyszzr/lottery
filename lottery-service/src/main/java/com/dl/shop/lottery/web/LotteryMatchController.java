@@ -544,7 +544,7 @@ public class LotteryMatchController {
     	return lotteryMatchService.queryMatchResult(dateStrParam);
     }
 
-	@ApiOperation(value = "根据条件查询比赛结果新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
+	@ApiOperation(value = "根据条件查询比赛比分新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
     @PostMapping("/queryMatchResultNew")
     public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
     	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
