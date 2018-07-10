@@ -145,11 +145,11 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		String coachTeamA = null;
 		if(aLineupsObj != null) {
 			try {
-				formationTeamA = hLineupsObj.getString("formation_team_a");
+				formationTeamA = aLineupsObj.getString("formation_team_a");
 			} catch (Exception e) {
 			}
 			try {
-				coachTeamA = hLineupsObj.getString("coach_team_a");
+				coachTeamA = aLineupsObj.getString("coach_team_a");
 			} catch (Exception e) {
 			}
 			JSONArray bArray = null;
