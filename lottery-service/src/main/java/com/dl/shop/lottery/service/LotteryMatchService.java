@@ -2483,7 +2483,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),matchIdArr, leagueIdArr, "");
 		} else {// 结束和未结束赛事
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),matchIdArr, leagueIdArr, queryMatchParamByType.getType());
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),null, leagueIdArr, queryMatchParamByType.getType());
 		}
 
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
