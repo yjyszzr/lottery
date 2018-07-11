@@ -17,6 +17,7 @@ import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchLiveStatisticsDTO;
 import com.dl.lottery.dto.MatchLiveTeamDataDTO;
 import com.dl.lottery.enums.MatchLiveDataEnums;
+import com.dl.lottery.enums.MatchLiveEventEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
@@ -68,14 +69,20 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				if(arr.size() == 1) {
 					JSONObject obj = arr.getJSONObject(0);
 					MatchLiveEventDTO event = this.matchLiveEventObj(obj);
-					eventList.add(event);
+					if(event != null) {
+						eventList.add(event);
+					}
 				} else if(arr.size() == 2){
 					JSONObject obj = arr.getJSONObject(0);
 					MatchLiveEventDTO event = this.matchLiveEventObj(obj);
-					eventList.add(event);
+					if(event != null) {
+						eventList.add(event);
+					}
 					JSONObject obj1 = arr.getJSONObject(1);
 					MatchLiveEventDTO event1 = this.matchLiveEventObj(obj1);
-					eventList.add(event1);
+					if(event1 != null) {
+						eventList.add(event1);
+					}
 				}
 			}
 		}
@@ -141,9 +148,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     }
     //获取事件对象
 	private MatchLiveEventDTO matchLiveEventObj(JSONObject obj) {
-		String eventType = obj.getString("event_type");
 		String eventCode = obj.getString("code");
-		String eventName = obj.getString("name");
+		String eventName = MatchLiveEventEnums.getMessageByCode(eventCode);
+		if(eventName == null)return null;
+		String eventType = obj.getString("event_type");
+//		String eventName = obj.getString("name");
 		String minute = obj.getString("minute");
 		String personId = obj.getString("person_id");
 		String person = obj.getString("person");
