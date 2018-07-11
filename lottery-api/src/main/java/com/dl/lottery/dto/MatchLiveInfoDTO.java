@@ -19,7 +19,7 @@ public class MatchLiveInfoDTO {
 	@ApiModelProperty("客队")
 	private String visitingTeamAbbr;
 	@ApiModelProperty("事件列表")
-	List<MatchLiveEventDTO> eventList;
+	private List<MatchLiveEventDTO> eventList;
 	@ApiModelProperty("统计数据")
-	MatchLiveStatisticsDTO matchLiveStatisticsDTO;
+	private List<MatchLiveTeamDataDTO> matchLiveStatisticsDTO;
 }

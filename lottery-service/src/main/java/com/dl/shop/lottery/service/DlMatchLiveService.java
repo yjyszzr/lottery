@@ -16,6 +16,7 @@ import com.dl.lottery.dto.MatchLiveEventDTO;
 import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchLiveStatisticsDTO;
 import com.dl.lottery.dto.MatchLiveTeamDataDTO;
+import com.dl.lottery.enums.MatchLiveDataEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
@@ -80,25 +81,45 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 		}
 		dto.setEventList(eventList);
 		//解析統計
-		MatchLiveStatisticsDTO matchLiveStatisticsDTO = new MatchLiveStatisticsDTO();
+		List<MatchLiveTeamDataDTO> matchLiveTeamDatas = new ArrayList<MatchLiveTeamDataDTO>(10);
 		if(statisticsObj != null) {
-			MatchLiveTeamDataDTO attacks = this.matchLiveTeamData("attacks", statisticsObj);
-			MatchLiveTeamDataDTO corners = this.matchLiveTeamData("corners", statisticsObj);
-			MatchLiveTeamDataDTO dangerousAttacks = this.matchLiveTeamData("dangerous_attacks", statisticsObj);
-			MatchLiveTeamDataDTO fouls = this.matchLiveTeamData("fouls", statisticsObj);
-			MatchLiveTeamDataDTO freeKicks = this.matchLiveTeamData("free_kicks", statisticsObj);
-			MatchLiveTeamDataDTO goals = this.matchLiveTeamData("goals", statisticsObj);
-			MatchLiveTeamDataDTO goalKicks = this.matchLiveTeamData("goal_kicks", statisticsObj);
-			MatchLiveTeamDataDTO offsides = this.matchLiveTeamData("offsides", statisticsObj);
 			MatchLiveTeamDataDTO posession = this.matchLiveTeamData("posession", statisticsObj);
-			MatchLiveTeamDataDTO possession = this.matchLiveTeamData("possession", statisticsObj);
-			MatchLiveTeamDataDTO shotsBlocked = this.matchLiveTeamData("shots_blocked", statisticsObj);
-			MatchLiveTeamDataDTO shotsOffTarget = this.matchLiveTeamData("shots_off_target", statisticsObj);
+			posession.setData(MatchLiveDataEnums.POSESSION);
+			matchLiveTeamDatas.add(posession);
 			MatchLiveTeamDataDTO shotsOnTarget = this.matchLiveTeamData("shots_on_target", statisticsObj);
-			MatchLiveTeamDataDTO substitutions = this.matchLiveTeamData("substitutions", statisticsObj);
-			MatchLiveTeamDataDTO throwIns = this.matchLiveTeamData("throw_ins", statisticsObj);
+			shotsOnTarget.setData(MatchLiveDataEnums.SHOTS_ON_TARGET);
+			matchLiveTeamDatas.add(shotsOnTarget);
+			MatchLiveTeamDataDTO shotsOffTarget = this.matchLiveTeamData("shots_off_target", statisticsObj);
+			shotsOffTarget.setData(MatchLiveDataEnums.SHOTS_OFF_TARGET);
+			matchLiveTeamDatas.add(shotsOffTarget);
+			MatchLiveTeamDataDTO shotsBlocked = this.matchLiveTeamData("shots_blocked", statisticsObj);
+			shotsBlocked.setData(MatchLiveDataEnums.SHOTS_BLOCKED);
+			matchLiveTeamDatas.add(shotsBlocked);
+			MatchLiveTeamDataDTO corners = this.matchLiveTeamData("corners", statisticsObj);
+			corners.setData(MatchLiveDataEnums.CORNERS);
+			matchLiveTeamDatas.add(corners);
+			MatchLiveTeamDataDTO freeKicks = this.matchLiveTeamData("free_kicks", statisticsObj);
+			freeKicks.setData(MatchLiveDataEnums.FREE_KICKS);
+			matchLiveTeamDatas.add(freeKicks);
+			MatchLiveTeamDataDTO offsides = this.matchLiveTeamData("offsides", statisticsObj);
+			offsides.setData(MatchLiveDataEnums.OFFSIDES);
+			matchLiveTeamDatas.add(offsides);
 			MatchLiveTeamDataDTO yellowCards = this.matchLiveTeamData("yellow cards", statisticsObj);
-			matchLiveStatisticsDTO.setAttacks(attacks);
+			yellowCards.setData(MatchLiveDataEnums.YELLOW_CARDS);
+			matchLiveTeamDatas.add(yellowCards);
+			MatchLiveTeamDataDTO fouls = this.matchLiveTeamData("fouls", statisticsObj);
+			fouls.setData(MatchLiveDataEnums.FOULS);
+			matchLiveTeamDatas.add(fouls);
+			MatchLiveTeamDataDTO dangerousAttacks = this.matchLiveTeamData("dangerous_attacks", statisticsObj);
+			dangerousAttacks.setData(MatchLiveDataEnums.DANGEROUS_ATTACKS);
+			matchLiveTeamDatas.add(dangerousAttacks);
+//			MatchLiveTeamDataDTO goalKicks = this.matchLiveTeamData("goal_kicks", statisticsObj);
+//			MatchLiveTeamDataDTO attacks = this.matchLiveTeamData("attacks", statisticsObj);
+//			MatchLiveTeamDataDTO goals = this.matchLiveTeamData("goals", statisticsObj);
+//			MatchLiveTeamDataDTO possession = this.matchLiveTeamData("possession", statisticsObj);
+//			MatchLiveTeamDataDTO substitutions = this.matchLiveTeamData("substitutions", statisticsObj);
+//			MatchLiveTeamDataDTO throwIns = this.matchLiveTeamData("throw_ins", statisticsObj);
+			/*matchLiveStatisticsDTO.setAttacks(attacks);
 			matchLiveStatisticsDTO.setCorners(corners);
 			matchLiveStatisticsDTO.setDangerousAttacks(dangerousAttacks);
 			matchLiveStatisticsDTO.setFouls(fouls);
@@ -113,9 +134,9 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			matchLiveStatisticsDTO.setShotsOnTarget(shotsOnTarget);
 			matchLiveStatisticsDTO.setSubstitutions(substitutions);
 			matchLiveStatisticsDTO.setThrowIns(throwIns);
-			matchLiveStatisticsDTO.setYellowCards(yellowCards);
+			matchLiveStatisticsDTO.setYellowCards(yellowCards);*/
 		}
-		dto.setMatchLiveStatisticsDTO(matchLiveStatisticsDTO);
+		dto.setMatchLiveStatisticsDTO(matchLiveTeamDatas);
 		return dto;
     }
     //获取事件对象
