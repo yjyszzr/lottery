@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 public enum MatchLiveEventEnums {
 	G("G","进球",0),
 	PG("PG","点球",0),
-//	("","点球未进",0),
+	PSM("PSM","点球未进",0),
+	PSG("PSG","点球进球",0),
 	OG("OG","乌龙球",0),
 	RC("RC","红牌",0),
 	YC("YC","黄牌",0),
