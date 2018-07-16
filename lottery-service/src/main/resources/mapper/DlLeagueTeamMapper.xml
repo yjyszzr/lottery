@@ -28,4 +28,9 @@
  		#{teamId}
  	</foreach>
   </select>
+  
+  <select id="queryTeamId" resultType="java.lang.Integer">
+  	select team_id from dl_league_team where sporttery_teamid=#{sportteryTeamid}
+  </select>
+  
 </mapper>

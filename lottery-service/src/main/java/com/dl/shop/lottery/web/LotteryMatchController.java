@@ -63,6 +63,7 @@ import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
 import com.dl.shop.lottery.core.ProjectConstant;
+import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.DlFutureMatchService;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
@@ -111,6 +112,8 @@ public class LotteryMatchController {
     private LotteryMatchPlayService lotteryMatchPlayService;
     @Resource
     private DlFutureMatchService dlFutureMatchService;
+    @Resource
+    private DlLeagueTeamMapper dlLeagueTeamMapper;
 	
     @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
     @PostMapping("/filterConditions")
@@ -612,9 +615,12 @@ public class LotteryMatchController {
 		matchTeamInfo.setHomeTeamScoreInfo(homeTeamScoreInfo);
 		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
 		matchTeamInfo.setVisitingTeamScoreInfo(visitingTeamScoreInfo);
-		List<DLFutureMatchDTO> hFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(lotteryMatch.getHomeTeamId());
+		
+		Integer homeTeamId = dlLeagueTeamMapper.queryTeamId(lotteryMatch.getHomeTeamId());
+		List<DLFutureMatchDTO> hFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(homeTeamId);
 		matchTeamInfo.setHFutureMatchInfos(hFutureMatchInfos);
-		List<DLFutureMatchDTO> vFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(lotteryMatch.getVisitingTeamId());
+		Integer visitTeamId = dlLeagueTeamMapper.queryTeamId(lotteryMatch.getVisitingTeamId());
+		List<DLFutureMatchDTO> vFutureMatchInfos = dlFutureMatchService.getFutureMatchInfo(visitTeamId);
 		matchTeamInfo.setVFutureMatchInfos(vFutureMatchInfos);
 		return ResultGenerator.genSuccessResult("success", matchTeamInfo);
 	}

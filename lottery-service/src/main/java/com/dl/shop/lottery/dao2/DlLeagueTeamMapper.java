@@ -14,4 +14,7 @@ public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 	DlLeagueTeam getByTeamId(@Param("teamId")Integer teamId);
 	
 	List<DlLeagueTeam> queryLeagueTeamByTeamIds(@Param("teamIdList")List teamIdList);
+
+	Integer queryTeamId(@Param("sportteryTeamid")Integer sportteryTeamid);
+
 }
