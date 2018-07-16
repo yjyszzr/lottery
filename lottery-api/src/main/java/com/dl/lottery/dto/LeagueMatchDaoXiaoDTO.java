@@ -46,4 +46,14 @@ public class LeagueMatchDaoXiaoDTO implements Serializable{
 
 	@ApiModelProperty(value="即时变化 时间")
 	private String realTime;
+	
+	@ApiModelProperty(value="胜变化趋势:0equal,1up,2down")
+	private Integer winChange;
+
+	@ApiModelProperty(value="平变化趋势:0equal,1up,2down")
+	private Integer drawChange;
+
+	@ApiModelProperty(value="负变化趋势:0equal,1up,2down")
+	private Integer loseChange;
+	
 }
