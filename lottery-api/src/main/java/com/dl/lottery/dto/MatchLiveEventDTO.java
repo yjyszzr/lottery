@@ -20,4 +20,5 @@ public class MatchLiveEventDTO {
 	String person;
 	@ApiModelProperty("主客队")
 	String isHa;
+
 }

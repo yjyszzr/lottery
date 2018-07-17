@@ -16,6 +16,7 @@ import com.dl.lottery.dto.MatchLiveEventDTO;
 import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchLiveStatisticsDTO;
 import com.dl.lottery.dto.MatchLiveTeamDataDTO;
+import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.enums.MatchLiveDataEnums;
 import com.dl.lottery.enums.MatchLiveEventEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
@@ -27,6 +28,39 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     @Resource
     private DlMatchLiveMapper dlMatchLiveMapper;
 
+    //获取比赛的进行时长和比分
+    public MatchMinuteAndScoreDTO getMatchInfoNow(Integer changciId) {
+    	MatchMinuteAndScoreDTO dto = new MatchMinuteAndScoreDTO();
+    	DlMatchLive dlMatchLive = dlMatchLiveMapper.getByChangciId(changciId);
+    	if(dlMatchLive != null) {
+    		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
+    		dto = this.parseJsonStr(matchLiveInfo);
+    	}
+    	
+    	return dto;
+    }
+    
+    public static MatchMinuteAndScoreDTO parseJsonStr(String matchLiveInfo) {
+    	MatchMinuteAndScoreDTO dto = new MatchMinuteAndScoreDTO();
+    	JSONObject dataObj = null;
+    	if(StringUtils.isNotBlank(matchLiveInfo)) {
+			try {
+				dataObj = JSON.parseObject(matchLiveInfo);
+			} catch (Exception e) {
+			}
+		}
+
+        String minute = dataObj.getString("minute");
+        String fsH = dataObj.getString("fs_h");
+        String fsA = dataObj.getString("fs_a");
+        String htsH = dataObj.getString("hts_h");
+        String htsA = dataObj.getString("hts_a");
+        dto.setMinute(minute);
+        dto.setFirstHalf(fsH+":"+fsA);
+        dto.setWhole(htsH+":"+htsA);
+    	return dto;
+    }
+    
     //獲取賽況信息
     public MatchLiveInfoDTO getMatchLiveInfo(Integer changciId) {
     	MatchLiveInfoDTO dto = new MatchLiveInfoDTO();
@@ -157,6 +191,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 		String personId = obj.getString("person_id");
 		String person = obj.getString("person");
 		String isHa = obj.getString("is_ha");
+		
 		MatchLiveEventDTO matchLiveEventDto = new MatchLiveEventDTO();
 		matchLiveEventDto.setEventCode(eventCode);
 		matchLiveEventDto.setEventName(eventName);

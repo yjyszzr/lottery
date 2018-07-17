@@ -62,10 +62,13 @@ public class LotteryMatchDTO {
     @ApiModelProperty("整场得分")
     private String whole;
     
+    @ApiModelProperty("比赛时长")
+    private String minute;
+    
     @ApiModelProperty("是否收藏：0-否 1-是")
     private String isCollect;
     
-    @ApiModelProperty("比赛状态：0-未结束 1-已结束")
+    @ApiModelProperty("比赛状态：0-未开赛 1-已结束 2-已取消  6-比赛进行中")
     private String matchFinish;
 
 }

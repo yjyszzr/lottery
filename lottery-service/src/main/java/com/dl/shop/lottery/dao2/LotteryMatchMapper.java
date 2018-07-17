@@ -63,6 +63,14 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 			@Param("leagueIdArr") String[] leagueIdArr,@Param("type") String type);		
 	
 	/**
+	 * 根据查询未结束的赛事
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LotteryMatch> queryNotFinishMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("matchIdArr") Integer[] matchIdArr,
+			@Param("leagueIdArr") String[] leagueIdArr);		
+	
+	/**
 	 * 通过changciId获取对象
 	 * @param matchId
 	 * @return
