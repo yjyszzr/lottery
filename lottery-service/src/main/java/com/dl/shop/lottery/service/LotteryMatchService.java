@@ -77,6 +77,7 @@ import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.dto.MatchTeamInfoDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
+import com.dl.lottery.dto.QueryMatchResultDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
@@ -157,6 +158,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
     @Resource
     private DlMatchLiveService dlMatchLiveService;
+
 	
 	@Value("${match.url}")
 	private String matchUrl;
@@ -2457,10 +2459,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param dateStr
 	 * @return
 	 */
-	public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
+	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
+		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
 		List<LotteryMatch> lotteryMatchList = null;
+		Integer collectCount = 0;
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
 		String[] leagueIdArr = new String[] {};
@@ -2476,6 +2480,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchIdList = matchIdsRst.getData();
 				if (matchIdList.size() != 0) {
 					matchIdArr = matchIdList.stream().toArray(Integer[]::new);
+					collectCount = matchIdList.size();
 				}
 			}else {
 				log.error("赛事比分查询收藏结果异常:"+matchIdsRst.getMsg());
@@ -2494,7 +2499,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 			
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
-			return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
+			return ResultGenerator.genSuccessResult("success", returnDTO);
 		}
 		// 查询球队logo
 		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s -> s.getHomeTeamId()).collect(Collectors.toList());
@@ -2537,8 +2542,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}	
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
+		
+	    //统计
+	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr());
+	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr());
+	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
+	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
+	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
+	    returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 
-		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
+		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
 	
@@ -2578,7 +2591,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			matchIdArr = matchIdList.stream().toArray(String[]::new);
 		}
-		
 
 		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(queryMatchParam.getDateStr(),matchIdArr,leagueIdArr,queryMatchParam.getMatchFinish());
 		if(CollectionUtils.isEmpty(lotteryMatchList)) {
@@ -2607,8 +2619,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 	    }
-		
-		return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
+	    
+	    return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}	
 	
 //	@Transactional(readOnly=true)

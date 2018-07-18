@@ -165,7 +165,16 @@
   	 </if>
   	 order by match_sn
   </select>
-
+  
+  <select id="countNotBeginMatch"  resultType="java.lang.Integer">
+  	select count(match_id) from dl_match where is_del = 0 and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and  status = 0 or status = 6
+  </select>
+  
+  <select id="countFinishMatch"  resultType="java.lang.Integer">
+  	select count(match_id) from dl_match where is_del = 0 and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and  status = 1
+  </select>
 
   <update id="updateMatchBatch" parameterType="java.util.List">
         update dl_match

@@ -43,6 +43,7 @@ import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
+import com.dl.lottery.dto.QueryMatchResultDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DateStrParam;
@@ -552,7 +553,7 @@ public class LotteryMatchController {
 
 	@ApiOperation(value = "根据条件查询比赛比分新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
     @PostMapping("/queryMatchResultNew")
-    public BaseResult<List<LotteryMatchDTO>> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
+    public BaseResult<QueryMatchResultDTO> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
     	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
     }
 	
