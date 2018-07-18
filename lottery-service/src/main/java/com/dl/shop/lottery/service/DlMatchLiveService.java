@@ -19,6 +19,7 @@ import com.dl.lottery.dto.MatchLiveTeamDataDTO;
 import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.enums.MatchLiveDataEnums;
 import com.dl.lottery.enums.MatchLiveEventEnums;
+import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
@@ -56,8 +57,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsH = dataObj.getString("hts_h");
         String htsA = dataObj.getString("hts_a");
         dto.setMinute(minute);
-        dto.setFirstHalf(fsH+":"+fsA);
-        dto.setWhole(htsH+":"+htsA);
+        dto.setFirstHalf(htsH+":"+htsA);
+        dto.setWhole(fsH+":"+fsA);
     	return dto;
     }
     
@@ -94,6 +95,19 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			} catch (Exception e) {
 			}
 		}
+		
+		//比分和比赛状态
+		String matchStatus = dataObj.getString("match_status");
+        String minute = dataObj.getString("minute");
+        String fsH = dataObj.getString("fs_h");
+        String fsA = dataObj.getString("fs_a");
+        String htsH = dataObj.getString("hts_h");
+        String htsA = dataObj.getString("hts_a");
+        dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
+        dto.setMinute(minute);
+        dto.setFirstHalf(htsH+":"+htsA);
+        dto.setWhole(fsH+":"+fsA);
+		
 		//解析事件
 		List<MatchLiveEventDTO> eventList = new ArrayList<MatchLiveEventDTO>(0);
 		if(eventArray != null) {

@@ -3,19 +3,22 @@ package com.dl.lottery.enums;
 import org.apache.commons.lang3.StringUtils;
 
 public enum MatchStatusEnums {
-     Fixture("0","未开赛"),
-     Played("1","已完成"),
-     Playing("6","进行中"),
-     Postponed("4","推迟"),
-     Suspended("5","暂停"),
-     Cancelled("2","取消");
+	
+     Fixture("0","未开赛","Fixture"),
+     Played("1","已完成","Played"),
+     Playing("6","进行中","Playing"),
+     Postponed("4","推迟","Postponed"),
+     Suspended("5","暂停","Suspended"),
+     Cancelled("2","取消","Cancelled");
 	
 	private String code;
 	private String msg;
+	private String enName;
 	
-	MatchStatusEnums(String code, String msg){
+	MatchStatusEnums(String code, String msg,String enName){
 		this.code = code;
 		this.msg = msg;
+		this.enName = enName;
 	}
 
 	public static String getMessageByCode(String code) {
@@ -28,9 +31,29 @@ public enum MatchStatusEnums {
 		}
 		return  null;
 	}
+	
+	public static String getCodeByEnName(String enName) {
+		if(StringUtils.isNotBlank(enName)) {
+			for(MatchStatusEnums ml: MatchStatusEnums.values()) {
+				if(ml.getEnName().toLowerCase().equals(enName.toLowerCase())) {
+					return ml.getCode();
+				}
+			}
+		}
+		return  null;
+	}
+	
 
 	public String getCode() {
 		return code;
+	}
+
+	public String getEnName() {
+		return enName;
+	}
+
+	public void setEnName(String enName) {
+		this.enName = enName;
 	}
 
 	public void setCode(String code) {

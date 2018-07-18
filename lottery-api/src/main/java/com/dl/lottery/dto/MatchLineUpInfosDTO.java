@@ -44,4 +44,11 @@ public class MatchLineUpInfosDTO {
 	private String formationTeamH ;
 	@ApiModelProperty("主队教练")
 	private String coachTeamH ;
+	
+	@ApiModelProperty("比赛状态")
+	private String matchStatus;
+	@ApiModelProperty("比赛时长")
+	private String minute;
+	
+	
 }

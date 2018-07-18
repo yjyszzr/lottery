@@ -2460,6 +2460,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @return
 	 */
 	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
+		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
@@ -2468,14 +2469,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
 		String[] leagueIdArr = new String[] {};
+		String dateStr = queryMatchParamByType.getDateStr();
 		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
 			leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");
 		}
-		log.info("赛事比分查询的参数leagueId:" + JSON.toJSONString(leagueIdArr));
+		if(StringUtils.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
 		
 		if (null != userId) {//登录状态下查询收藏的赛事
-			EmptyParam emptyParam = new EmptyParam();
-			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(emptyParam);
+			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
+			dateStrParam.setDateStr(dateStrParam.getDateStr());
+			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(dateStrParam);
 			if (matchIdsRst.getCode() == 0) {
 				matchIdList = matchIdsRst.getData();
 				if (matchIdList.size() != 0) {

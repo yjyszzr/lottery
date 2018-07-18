@@ -18,6 +18,14 @@ public class MatchLiveInfoDTO {
 	private String homeTeamAbbr;
 	@ApiModelProperty("客队")
 	private String visitingTeamAbbr;
+	@ApiModelProperty("比赛状态")
+	private String matchStatus;
+	@ApiModelProperty("比赛时长")
+	private String minute;
+	@ApiModelProperty("上半场比分")
+	private String firstHalf;
+	@ApiModelProperty("全场比分")
+	private String whole;
 	@ApiModelProperty("事件列表")
 	private List<MatchLiveEventDTO> eventList;
 	@ApiModelProperty("统计数据")
