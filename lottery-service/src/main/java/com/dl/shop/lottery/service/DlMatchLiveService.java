@@ -105,8 +105,10 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsA = dataObj.getString("hts_a");
         dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
         dto.setMinute(minute);
-        dto.setFirstHalf(htsH+":"+htsA);
-        dto.setWhole(fsH+":"+fsA);
+        dto.setFsH(fsH);
+        dto.setFsA(fsA);
+        dto.setHtsH(htsH);
+        dto.setHtsA(htsA);
 		
 		//解析事件
 		List<MatchLiveEventDTO> eventList = new ArrayList<MatchLiveEventDTO>(0);
