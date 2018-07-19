@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
@@ -40,6 +41,7 @@ import com.dl.lottery.dto.LeagueMatchEuropeDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
@@ -549,6 +551,13 @@ public class LotteryMatchController {
     @PostMapping("/queryMatchResult")
     public BaseResult<List<LotteryMatchDTO>> queryMatchResult(@RequestBody QueryMatchParam dateStrParam) {
     	return lotteryMatchService.queryMatchResult(dateStrParam);
+    }
+	
+	@ApiOperation(value = "后台提供的比赛比分的20天的日期筛选条件（:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
+    @PostMapping("/giveMatchChooseDate")
+    public BaseResult<List<MatchDateDTO>> giveMatchChooseDate(@RequestBody EmptyParam emptyParam) {
+		List<MatchDateDTO> list = lotteryMatchService.giveMatchChooseDate();
+		return ResultGenerator.genSuccessResult("success", list);
     }
 
 	@ApiOperation(value = "根据条件查询比赛比分新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")

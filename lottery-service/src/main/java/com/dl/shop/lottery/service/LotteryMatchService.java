@@ -14,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -71,6 +72,7 @@ import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchLiveInfoDTO;
@@ -2454,6 +2456,39 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return  str1+str2+str3;
 	}
 
+	/**
+	 * 构造比赛筛选日期20天
+	 * @return
+	 */
+	public List<MatchDateDTO> giveMatchChooseDate(){
+		List<MatchDateDTO> returnList = new ArrayList<>();
+		Date date = new Date();
+		List<String> before16days = DateUtil.getBeforeDatePeriod(date,16);
+		String today = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		List<String> after3days = DateUtil.getAfterDatePeriod(new Date(),3);
+		
+		for(String bs:before16days) {
+			MatchDateDTO dto = new MatchDateDTO();
+			dto.setIsSelected("0");
+			dto.setStrDate(bs);
+			returnList.add(dto);
+		}
+		
+		MatchDateDTO todayDto = new MatchDateDTO();
+		todayDto.setIsSelected("1");
+		todayDto.setStrDate(today);
+		returnList.add(todayDto);
+		
+		for(String as:after3days) {
+			MatchDateDTO dto = new MatchDateDTO();
+			dto.setIsSelected("0");
+			dto.setStrDate(as);
+			returnList.add(dto);
+		}
+		
+		return returnList;
+	}
+	
 	/**
 	 * 根据查询条件查看比赛结果  2018-07-06 新加
 	 * @param dateStr
