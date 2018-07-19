@@ -2522,11 +2522,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		if (null != userId) {//登录状态下查询收藏的赛事
 			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
-			dateStrParam.setDateStr(dateStrParam.getDateStr());
+			dateStrParam.setDateStr(dateStr);
 			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(dateStrParam);
 			if (matchIdsRst.getCode() == 0) {
 				matchIdList = matchIdsRst.getData();
-				if (matchIdList.size() != 0) {
+				if (matchIdList.size() > 0) {
 					matchIdArr = matchIdList.stream().toArray(Integer[]::new);
 					collectCount = matchIdList.size();
 				}
@@ -2540,12 +2540,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				return ResultGenerator.genNeedLoginResult("请登录");
 			}
 			if(matchIdArr.length > 0) {
-				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),matchIdArr, leagueIdArr, "");
+				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,matchIdArr, leagueIdArr, "");
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {
-			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(queryMatchParamByType.getDateStr(),null, leagueIdArr);
+			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
 		} else if("1".equals(queryMatchParamByType.getType())) {
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(queryMatchParamByType.getDateStr(),null, leagueIdArr, queryMatchParamByType.getType());
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
 		}
 			
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
@@ -3266,6 +3266,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @return
 	 */
 	public List<LeagueInfoDTO> getFilterConditionsSomeDay(String dateStr) {
+		if(StringUtils.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
 		List<LeagueInfoDTO> filterConditions = lotteryMatchMapper.getFilterConditionsSomeDay(dateStr);
 		if(filterConditions == null) {
 			filterConditions = new ArrayList<LeagueInfoDTO>(0);

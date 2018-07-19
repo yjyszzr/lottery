@@ -13,8 +13,7 @@ import lombok.Data;
 @Data
 public class QueryMatchParamByType {
 	
-    @ApiModelProperty(value = "当前日期字符串,月日为单数的时候不要带0：格式2018-3-5")
-    @NotBlank(message = "当前日期不能为空")
+    @ApiModelProperty(value = "当前日期字符串：格式2018-03-05,赛事比分界面首次初始化的时候传空字符串")
     private String dateStr;
     
 //    @ApiModelProperty(value = "是否查看已购赛事")
