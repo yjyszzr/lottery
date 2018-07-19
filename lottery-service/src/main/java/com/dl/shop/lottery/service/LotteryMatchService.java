@@ -2512,14 +2512,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
 		
-	    //统计
-	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr());
-	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr());
-	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
-	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
-	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
-	    returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
-		
 		if (null != userId) {//登录状态下查询收藏的赛事
 			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
 			dateStrParam.setDateStr(dateStr);
@@ -2547,7 +2539,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		} else if("1".equals(queryMatchParamByType.getType())) {
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
 		}
-			
+		
+	    //统计
+	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr());
+	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr());
+	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
+	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
+	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
+	    returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", returnDTO);
 		}
