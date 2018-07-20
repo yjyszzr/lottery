@@ -651,7 +651,6 @@ public class LotteryMatchController {
 		return lotteryMatchService.historyMatchIntoDB();
     }
 	
-	
 	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
     @PostMapping("/getFilterConditionsSomeDay")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditionsSomeDay(@Valid @RequestBody DateStrParam param) {
