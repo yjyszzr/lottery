@@ -2532,7 +2532,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				return ResultGenerator.genNeedLoginResult("请登录");
 			}
 			if(matchIdArr.length > 0) {
-				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,matchIdArr, leagueIdArr, "");
+				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(null,matchIdArr, leagueIdArr, "");
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {
 			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);

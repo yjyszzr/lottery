@@ -127,7 +127,9 @@
   	select * from dl_match
   	 where is_del = 0 
      and is_show = 1
-  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 <if test="dateStr !=null and dateStr != ''">
+		and str_to_date(match_time,'%Y-%m-%d') = #{dateStr}
+  	 </if>
   	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
   	 	and league_id in
   	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
