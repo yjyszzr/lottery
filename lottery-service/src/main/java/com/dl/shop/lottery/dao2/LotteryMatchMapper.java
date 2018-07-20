@@ -130,10 +130,10 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	/**
 	 * 统计未开赛的比赛数
 	 */
-	public int countNotBeginMatch(@Param("dateStr") String dateStr);
+	public int countNotBeginMatch(@Param("dateStr") String dateStr,@Param("leagueIdArr") String[] leagueIdArr);
 	
 	/**
 	 * 统计已结束的比赛数
 	 */
-	public int countFinishMatch(@Param("dateStr") String dateStr);
+	public int countFinishMatch(@Param("dateStr") String dateStr,@Param("leagueIdArr") String[] leagueIdArr);
 }

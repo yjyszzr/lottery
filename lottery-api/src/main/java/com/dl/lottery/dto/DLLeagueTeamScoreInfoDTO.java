@@ -19,11 +19,11 @@ public class DLLeagueTeamScoreInfoDTO implements Serializable{
 	@ApiModelProperty(value="球队名称")
     private String teamName;
 
-	@ApiModelProperty(value="总")
+	@ApiModelProperty(value="客")
 	private DLLeagueTeamScoreDTO tteamScore ;
 	@ApiModelProperty(value="主")
 	private DLLeagueTeamScoreDTO hteamScore ;
-	@ApiModelProperty(value="客")
+	@ApiModelProperty(value="总")
 	private DLLeagueTeamScoreDTO lteamScore;
 
 

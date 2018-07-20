@@ -20,7 +20,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     	DLLeagueTeamScoreInfoDTO teamScoreInfo = new DLLeagueTeamScoreInfoDTO();
     	DlMatchTeamScore teamScore = dlMatchTeamScoreMapper.getByTeamId(teamId,leagueId);
     	if(teamScore != null) {
-    		DLLeagueTeamScoreDTO lteamScore = new DLLeagueTeamScoreDTO();
+    		DLLeagueTeamScoreDTO lteamScore = new DLLeagueTeamScoreDTO();//总
     		lteamScore.setTeamId(teamId);
     		lteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		lteamScore.setTeamName(teamScore.getTeamName());
@@ -32,7 +32,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		lteamScore.setMatchL(teamScore.getlMatchA());
     		lteamScore.setMatchNum(teamScore.getlMatchNum());
     		lteamScore.setScore(teamScore.getlScore());
-    		DLLeagueTeamScoreDTO hteamScore = new DLLeagueTeamScoreDTO();
+    		DLLeagueTeamScoreDTO hteamScore = new DLLeagueTeamScoreDTO();//主
     		hteamScore.setTeamId(teamId);
     		hteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		hteamScore.setTeamName(teamScore.getTeamName());
@@ -44,7 +44,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		hteamScore.setMatchL(teamScore.gethMatchA());
     		hteamScore.setMatchNum(teamScore.gethMatchNum());
     		hteamScore.setScore(teamScore.gethScore());
-    		DLLeagueTeamScoreDTO tteamScore = new DLLeagueTeamScoreDTO();
+    		DLLeagueTeamScoreDTO tteamScore = new DLLeagueTeamScoreDTO();//客
     		tteamScore.setTeamId(teamId);
     		tteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		tteamScore.setTeamName(teamScore.getTeamName());
@@ -55,7 +55,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		tteamScore.setMatchH(teamScore.getvMatchH());
     		tteamScore.setMatchL(teamScore.getvMatchA());
     		tteamScore.setMatchNum(teamScore.getvMatchNum());
-    		tteamScore.setScore(teamScore.getlScore());
+    		tteamScore.setScore(teamScore.getvScore());
     		teamScoreInfo.setTeamId(teamId);
     		teamScoreInfo.setTeamName(teamScoreInfo.getTeamName());
     		teamScoreInfo.setHteamScore(hteamScore);

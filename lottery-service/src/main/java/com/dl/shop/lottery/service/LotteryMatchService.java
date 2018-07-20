@@ -2,6 +2,7 @@ package com.dl.shop.lottery.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -2497,6 +2498,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
 		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
+		String showMatchDateStr = "";
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
 		List<LotteryMatch> lotteryMatchList = null;
@@ -2541,8 +2543,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		
 	    //统计
-	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr());
-	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr());
+	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr(),leagueIdArr);
+	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr(),leagueIdArr);
 	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
 	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
 	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
@@ -2592,9 +2594,22 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
 
+
+		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, lotteryMatchDTOList.size()));
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
+	public String createMatchDateStr(String dateStr,Integer matchSize) {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
+		Date date = new Date();
+		try {
+			date = df.parse(dateStr);
+		} catch (ParseException e) {
+			log.error("给前端的比赛日期转化异常");
+			e.printStackTrace();
+		}
+		return dateStr + ""+ DateUtil.getWeekOfDate(date)+"共有["+matchSize+"]场比赛";
+	}
 	
 	/**
 	 * 根据查询条件查看比赛结果

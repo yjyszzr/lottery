@@ -24,4 +24,7 @@ public class QueryMatchResultDTO implements Serializable{
 	@ApiModelProperty("我收藏的赛事数")
 	private String matchCollectCount = "0";
 	
+	@ApiModelProperty("比赛日期字符串")
+	private String matchDateStr = "";
+	
 }
