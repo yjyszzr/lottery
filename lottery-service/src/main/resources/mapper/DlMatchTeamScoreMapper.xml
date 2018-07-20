@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="team_name" jdbcType="VARCHAR" property="teamName" />
     <result column="team_order" jdbcType="VARCHAR" property="teamOrder" />
     <result column="l_match_num" jdbcType="INTEGER" property="lMatchNum" />
@@ -38,9 +39,8 @@
   </resultMap>
   
   <select id="getByTeamId"  resultMap="BaseResultMap">
-  	select *
-  	from dl_match_team_score 
-  	where team_id=#{teamId}
+  	select * from dl_match_team_score 
+  	where team_id=#{teamId} and league_id = #{leagueId}
   </select>
   
 </mapper>

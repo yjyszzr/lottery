@@ -73,6 +73,7 @@ import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
+import com.dl.shop.lottery.service.DlLeagueTeamService;
 import com.dl.shop.lottery.service.DlMatchLiveService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.DlMatchTeamScoreService;
@@ -118,6 +119,8 @@ public class LotteryMatchController {
     private DlFutureMatchService dlFutureMatchService;
     @Resource
     private DlLeagueTeamMapper dlLeagueTeamMapper;
+    @Resource
+    private DlLeagueTeamService dlLeagueTeamService;
     
     
 	
@@ -624,9 +627,12 @@ public class LotteryMatchController {
 		matchTeamInfo.setLeagueMatchEuropes(leagueMatchEuropes);
 		List<LeagueMatchDaoXiaoDTO> leagueMatchDaoXiaos = dlLeagueMatchDaoXiaoService.leagueMatchDaoXiaos(lotteryMatch.getChangciId());
 		matchTeamInfo.setLeagueMatchDaoxiaos(leagueMatchDaoXiaos);
-		DLLeagueTeamScoreInfoDTO homeTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getHomeTeamId(), lotteryMatch.getHomeTeamAbbr());
+		
+		Integer h_teamId = this.queryTeamIdBySpottyTeamId(lotteryMatch.getHomeTeamId());
+		DLLeagueTeamScoreInfoDTO homeTeamScoreInfo = this.teamScoreInfo(h_teamId,lotteryMatch.getLeagueId(), lotteryMatch.getHomeTeamAbbr());
 		matchTeamInfo.setHomeTeamScoreInfo(homeTeamScoreInfo);
-		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(lotteryMatch.getVisitingTeamId(), lotteryMatch.getVisitingTeamAbbr());
+		Integer v_teamId = this.queryTeamIdBySpottyTeamId(lotteryMatch.getVisitingTeamId());
+		DLLeagueTeamScoreInfoDTO visitingTeamScoreInfo = this.teamScoreInfo(v_teamId,lotteryMatch.getLeagueId(),lotteryMatch.getVisitingTeamAbbr());
 		matchTeamInfo.setVisitingTeamScoreInfo(visitingTeamScoreInfo);
 		
 		Integer homeTeamId = dlLeagueTeamMapper.queryTeamId(lotteryMatch.getHomeTeamId());
@@ -638,11 +644,16 @@ public class LotteryMatchController {
 		return ResultGenerator.genSuccessResult("success", matchTeamInfo);
 	}
 
-	private DLLeagueTeamScoreInfoDTO teamScoreInfo(Integer teamId, String teamAbbr) {
-		DLLeagueTeamScoreInfoDTO teamScoreInfo = dlMatchTeamScoreService.getTeamScores(teamId);
+	private DLLeagueTeamScoreInfoDTO teamScoreInfo(Integer teamId,Integer leagueId ,String teamAbbr) {
+		DLLeagueTeamScoreInfoDTO teamScoreInfo = dlMatchTeamScoreService.getTeamScores(teamId,leagueId);
 		teamScoreInfo.setTeamId(teamId);
 		teamScoreInfo.setTeamName(teamAbbr);
 		return teamScoreInfo;
+	}
+	
+	private Integer queryTeamIdBySpottyTeamId(Integer spottyTeamId) {
+		Integer teamId = dlLeagueTeamService.queryTeamIdBySpottyTeamId(spottyTeamId);
+		return teamId;
 	}
 	
 	@ApiOperation(value = "历史赛事入库", notes = "历史赛事入库")

@@ -34,6 +34,11 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
     @Resource
     private DlLeagueInfoMapper dlLeagueInfoMapper;
 
+    public Integer queryTeamIdBySpottyTeamId(Integer spottyTeamId) {
+    	Integer teamId = dlLeagueTeamMapper.queryTeamId(spottyTeamId);
+    	return teamId;
+    }
+    
 	public void refreshMatchTeams(DlLeagueInfo league) {
 //		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.selectAll();
 //		for(DlLeagueInfo league: leagueInfos) {
@@ -64,6 +69,8 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 //			System.out.println("结束联赛："+league.getLeagueAddr() + " temas size="+ leagueTeams.size());
 //		}
 	}
+	
+	
 
 	private List<DlLeagueTeam> getLeagueTeams(Set<String> teamIds) {
 		List<DlLeagueTeam> teams = new ArrayList<DlLeagueTeam>(teamIds.size());

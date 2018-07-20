@@ -16,12 +16,13 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     @Resource
     private DlMatchTeamScoreMapper dlMatchTeamScoreMapper;
 
-    public DLLeagueTeamScoreInfoDTO getTeamScores(Integer teamId) {
+    public DLLeagueTeamScoreInfoDTO getTeamScores(Integer teamId,Integer leagueId) {
     	DLLeagueTeamScoreInfoDTO teamScoreInfo = new DLLeagueTeamScoreInfoDTO();
-    	DlMatchTeamScore teamScore = dlMatchTeamScoreMapper.getByTeamId(teamId);
+    	DlMatchTeamScore teamScore = dlMatchTeamScoreMapper.getByTeamId(teamId,leagueId);
     	if(teamScore != null) {
     		DLLeagueTeamScoreDTO lteamScore = new DLLeagueTeamScoreDTO();
     		lteamScore.setTeamId(teamId);
+    		lteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		lteamScore.setTeamName(teamScore.getTeamName());
     		lteamScore.setBallClean(teamScore.getlBallClean());
     		lteamScore.setBallIn(teamScore.getlBallIn());
@@ -33,6 +34,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		lteamScore.setScore(teamScore.getlScore());
     		DLLeagueTeamScoreDTO hteamScore = new DLLeagueTeamScoreDTO();
     		hteamScore.setTeamId(teamId);
+    		hteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		hteamScore.setTeamName(teamScore.getTeamName());
     		hteamScore.setBallClean(teamScore.gethBallClean());
     		hteamScore.setBallIn(teamScore.gethBallIn());
@@ -44,6 +46,7 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		hteamScore.setScore(teamScore.gethScore());
     		DLLeagueTeamScoreDTO tteamScore = new DLLeagueTeamScoreDTO();
     		tteamScore.setTeamId(teamId);
+    		tteamScore.setTeamOrder(Integer.valueOf(teamScore.getTeamOrder()));
     		tteamScore.setTeamName(teamScore.getTeamName());
     		tteamScore.setBallClean(teamScore.getvBallClean());
     		tteamScore.setBallIn(teamScore.getvBallIn());

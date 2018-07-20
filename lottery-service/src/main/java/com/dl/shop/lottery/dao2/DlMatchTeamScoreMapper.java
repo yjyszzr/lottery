@@ -7,5 +7,5 @@ import com.dl.shop.lottery.model.DlMatchTeamScore;
 
 public interface DlMatchTeamScoreMapper extends Mapper<DlMatchTeamScore> {
 
-	DlMatchTeamScore getByTeamId(@Param("teamId")Integer teamId);
+	DlMatchTeamScore getByTeamId(@Param("teamId")Integer teamId,@Param("leagueId")Integer leagueId);
 }

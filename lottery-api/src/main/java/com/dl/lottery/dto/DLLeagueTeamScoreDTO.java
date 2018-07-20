@@ -43,7 +43,7 @@ public class DLLeagueTeamScoreDTO implements Serializable{
 	@ApiModelProperty(value="积分")
     private Integer score;
 	
-	/*@ApiModelProperty(value="排名")
-	private Integer teamOrder;*/
+	@ApiModelProperty(value="排名")
+	private Integer teamOrder;
 
 }

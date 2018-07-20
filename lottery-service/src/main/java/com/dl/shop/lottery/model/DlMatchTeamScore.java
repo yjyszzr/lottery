@@ -17,6 +17,12 @@ public class DlMatchTeamScore {
      */
     @Column(name = "team_id")
     private Integer teamId;
+    
+    /**
+     * 联赛id
+     */
+    @Column(name = "league_id")
+    private Integer leagueId;
 
     /**
      * 球队名称
