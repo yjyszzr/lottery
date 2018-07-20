@@ -56,7 +56,13 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String fsA = dataObj.getString("fs_a");
         String htsH = dataObj.getString("hts_h");
         String htsA = dataObj.getString("hts_a");
-        dto.setMinute(minute);
+        String minuteExtra = dataObj.getString("minute_extra");
+        if(Integer.valueOf(minute) == 90 && StringUtils.isNoneEmpty(minuteExtra) ) {
+        	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+        	dto.setMinute(beyond90.toString());
+        }else {
+        	dto.setMinute(minute);
+        }
         dto.setFirstHalf(htsH+":"+htsA);
         dto.setWhole(fsH+":"+fsA);
     	return dto;
@@ -105,8 +111,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
         dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
-        if(Integer.valueOf(minute) == 90 && StringUtils.isNoneEmpty(minuteExtra) ) {
-        	dto.setMinute("90+");
+        if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
+        	if(Integer.valueOf(minute) == 90 ) {
+            	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+            	dto.setMinute(beyond90.toString());
+        	}
         }else{
         	dto.setMinute(minute);
         }
