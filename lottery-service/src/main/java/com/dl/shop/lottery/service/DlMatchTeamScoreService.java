@@ -58,9 +58,10 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
     		tteamScore.setScore(teamScore.getvScore());
     		teamScoreInfo.setTeamId(teamId);
     		teamScoreInfo.setTeamName(teamScoreInfo.getTeamName());
+    		teamScoreInfo.setLteamScore(lteamScore);
     		teamScoreInfo.setHteamScore(hteamScore);
     		teamScoreInfo.setTteamScore(tteamScore);
-    		teamScoreInfo.setLteamScore(lteamScore);
+    		
     	}
     	return teamScoreInfo;
     }
