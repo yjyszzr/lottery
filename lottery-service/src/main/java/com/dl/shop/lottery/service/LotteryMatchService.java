@@ -2536,15 +2536,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(matchIdArr.length > 0) {
 				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(null,matchIdArr, leagueIdArr, "");
 			}
-		} else if("0".equals(queryMatchParamByType.getType())) {
+		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
 			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
-		} else if("1".equals(queryMatchParamByType.getType())) {
+		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
 		}
 		
 	    //统计
-	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(queryMatchParamByType.getDateStr(),leagueIdArr);
-	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(queryMatchParamByType.getDateStr(),leagueIdArr);
+	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(dateStr,leagueIdArr);
+	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(dateStr,leagueIdArr);
 	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
 	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
 	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
