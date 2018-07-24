@@ -286,11 +286,11 @@ public class LotteryMatchController {
 		Double orderMoney = Double.valueOf(betMoney);
 		Double minBetMoney = lotteryMatchService.getMinBetMoney();
 		if(orderMoney < minBetMoney) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
+			return ResultGenerator.genSuccessResult("最低投注"+minBetMoney.intValue()+"元!", betInfo);
 		}
 		int canBetMoney = lotteryMatchService.canBetMoney();
 		if(orderMoney > canBetMoney) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);
 		}
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
