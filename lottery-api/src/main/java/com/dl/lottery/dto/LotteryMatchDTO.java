@@ -68,7 +68,7 @@ public class LotteryMatchDTO {
     @ApiModelProperty("是否收藏：0-否 1-是")
     private String isCollect;
     
-    @ApiModelProperty("比赛状态：0-未开赛 1-已结束 2-已取消  6-比赛进行中")
+    @ApiModelProperty("比赛状态:0-未开赛,1-已完成,2-取消,4-推迟,5-暂停,6-进行中")
     private String matchFinish;
 
 }
