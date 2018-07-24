@@ -57,12 +57,14 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsH = dataObj.getString("hts_h");
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
+        String matchStatus = dataObj.getString("match_status");
         if(Integer.valueOf(minute) == 90 && StringUtils.isNoneEmpty(minuteExtra) ) {
         	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
         	dto.setMinute(beyond90.toString());
         }else {
         	dto.setMinute(minute);
         }
+        dto.setMatchStatus(matchStatus);
         dto.setFirstHalf(htsH+":"+htsA);
         dto.setWhole(fsH+":"+fsA);
     	return dto;
