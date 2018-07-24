@@ -152,7 +152,7 @@
   	select * from dl_match
   	 where is_del = 0 
      and is_show = 1
-  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and  status = 0 or status = 6
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and  status != 1
   	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
   	 	and league_id in
   	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
@@ -177,7 +177,7 @@
   	 		#{leagueId}
   	 	</foreach>
   	 </if>
-  	 and  status = 0 or status = 6
+  	 and  status != 1
   </select>
   
   <select id="countFinishMatch"  resultType="java.lang.Integer">
