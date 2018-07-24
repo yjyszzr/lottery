@@ -2585,12 +2585,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setIsCollect("0");
 			}
 			
-			if(Integer.valueOf(MatchStatusEnums.Playing.getCode()) == s.getStatus()) {//构造开始比赛的进行的时间和比赛的实时分数
-				MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
-				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
-				lotteryMatchDTO.setWhole(dto.getWhole());
-				lotteryMatchDTO.setMinute(dto.getMinute());
-			}	
+			//用直播表查询这4个实时数据
+			MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
+			lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
+			lotteryMatchDTO.setWhole(dto.getWhole());
+			lotteryMatchDTO.setMinute(dto.getMinute());
+			lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
 
