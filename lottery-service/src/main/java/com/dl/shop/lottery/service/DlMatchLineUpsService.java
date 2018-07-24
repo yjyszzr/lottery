@@ -295,17 +295,29 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 				}
 			}
 		}
-		matchLineUpInfosDTO.setAbenchPersons(abenchPersons);
-		matchLineUpInfosDTO.setAInjureiesPersons(aInjureiesPersons);
-		matchLineUpInfosDTO.setAlineupPersons(alineupPersons);
-		matchLineUpInfosDTO.setASuspensionPersons(aSuspensionPersons);
-		matchLineUpInfosDTO.setHbenchPersons(hbenchPersons);
-		matchLineUpInfosDTO.setHInjureiesPersons(hInjureiesPersons);
-		matchLineUpInfosDTO.setHlineupPersons(hlineupPersons);
-		matchLineUpInfosDTO.setHSuspensionPersons(hSuspensionPersons);
+		matchLineUpInfosDTO.setAbenchPersons(this.doubleListEmptyMatch(abenchPersons, hbenchPersons));
+		matchLineUpInfosDTO.setAInjureiesPersons(this.doubleListEmptyMatch(aInjureiesPersons,hInjureiesPersons));
+		matchLineUpInfosDTO.setAlineupPersons(this.doubleListEmptyMatch(alineupPersons,hlineupPersons));
+		matchLineUpInfosDTO.setASuspensionPersons(this.doubleListEmptyMatch(aSuspensionPersons,hSuspensionPersons));
+		matchLineUpInfosDTO.setHbenchPersons(this.doubleListEmptyMatch(hbenchPersons,abenchPersons));
+		matchLineUpInfosDTO.setHInjureiesPersons(this.doubleListEmptyMatch(hInjureiesPersons,aInjureiesPersons));
+		matchLineUpInfosDTO.setHlineupPersons(this.doubleListEmptyMatch(hlineupPersons,alineupPersons));
+		matchLineUpInfosDTO.setHSuspensionPersons(this.doubleListEmptyMatch(hSuspensionPersons,aSuspensionPersons));
 		matchLineUpInfosDTO.setCoachTeamA(coachTeamA==null?"":coachTeamA);
 		matchLineUpInfosDTO.setCoachTeamH(coachTeamH==null?"":coachTeamH);
 		matchLineUpInfosDTO.setFormationTeamA(formationTeamA==null?"":formationTeamA);
 		matchLineUpInfosDTO.setFormationTeamH(formationTeamH==null?"":formationTeamH);
+	}
+	
+	/**
+	 * 主客队的信息只能成对出现，否则为空
+	 * @param hList
+	 * @param aList
+	 */
+	public List doubleListEmptyMatch(List list1,List list2) {
+		if(list1.size() == 0 || list2.size() == 0) {
+			return new ArrayList<>();
+		}
+		return list1;
 	}
 }
