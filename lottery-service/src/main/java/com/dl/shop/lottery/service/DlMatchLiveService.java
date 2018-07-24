@@ -58,9 +58,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
         String matchStatus = dataObj.getString("match_status");
-        if(Integer.valueOf(minute) == 90 && StringUtils.isNoneEmpty(minuteExtra) ) {
-        	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
-        	dto.setMinute(beyond90.toString());
+        if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
+        	if(Integer.valueOf(minute) == 90) {
+            	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+            	dto.setMinute(beyond90.toString());
+        	}
         }else {
         	dto.setMinute(minute);
         }
