@@ -60,16 +60,27 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String matchStatus = dataObj.getString("match_status");
         if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
         	if(Integer.valueOf(minute) == 90) {
-            	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
-            	dto.setMinute(beyond90.toString());
+            	//Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+            	dto.setMinute("90+");
         	}
         }else {
         	dto.setMinute(minute);
         }
         dto.setMatchStatus(matchStatus);
-        dto.setFirstHalf(htsH+":"+htsA);
-        dto.setWhole(fsH+":"+fsA);
+        dto.setFirstHalf(createShowScore(htsH,htsA));
+        dto.setWhole(createShowScore(fsH,fsA));
     	return dto;
+    }
+    
+    /**
+     * 对于已经开赛但是抓取比分显示是空的显示0:0,否则按实际情况展示
+     * @return
+     */
+    public static String createShowScore(String hScore,String aScore) {
+    	if(StringUtils.isEmpty(hScore) && StringUtils.isEmpty(aScore)) {
+    		return "0:0";
+    	}
+    	return hScore+":"+aScore;
     }
     
     //獲取賽況信息
@@ -117,8 +128,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
         if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
         	if(Integer.valueOf(minute) == 90 ) {
-            	Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
-            	dto.setMinute(beyond90.toString());
+            	dto.setMinute("90+");
         	}
         }else{
         	dto.setMinute(minute);

@@ -126,6 +126,10 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = hObj.getString("position_x");
 					String positionY = hObj.getString("position_y");
+					//球员没有比赛位置，则不统计这场比赛的场上阵容
+					if(StringUtils.isEmpty(positionX)&&StringUtils.isEmpty(positionY)) {
+						break;
+					}
 					String shirtNumber = hObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
@@ -193,6 +197,10 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 					position = MatchLineUpEnums.getMessageByCode(position);
 					String positionX = aObj.getString("position_x");
 					String positionY = aObj.getString("position_y");
+					//球员没有比赛位置，则不统计这场比赛的场上阵容
+					if(StringUtils.isEmpty(positionX)&&StringUtils.isEmpty(positionY)) {
+						break;
+					}
 					String shirtNumber = aObj.getString("shirtnumber");
 					MatchLineUpPersonDTO person = new MatchLineUpPersonDTO();
 					person.setPersonId(personId);
@@ -311,8 +319,8 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 	
 	/**
 	 * 主客队的信息只能成对出现，否则为空
-	 * @param hList
-	 * @param aList
+	 * @param list1
+	 * @param list2
 	 */
 	public List doubleListEmptyMatch(List list1,List list2) {
 		if(list1.size() == 0 || list2.size() == 0) {
@@ -320,4 +328,7 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 		}
 		return list1;
 	}
+	
 }
+
+	
