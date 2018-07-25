@@ -2498,7 +2498,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
 		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
-		String showMatchDateStr = "";
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
 		List<LotteryMatch> lotteryMatchList = null;
@@ -2534,21 +2533,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			if(matchIdArr.length > 0) {
 				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(null,matchIdArr, leagueIdArr, "");
+				collectCount = lotteryMatchList.size();
 			}
-			collectCount  = lotteryMatchList.size();
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
 			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
 		}
 		
-	    //统计
-	    Integer finishMatchCount = lotteryMatchMapper.countFinishMatch(dateStr,leagueIdArr);
-	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(dateStr,leagueIdArr);
-	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
-	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
-	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
-	    returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", returnDTO);
 		}
@@ -2557,15 +2549,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s -> s.getVisitingTeamId()).collect(Collectors.toList());
 		homeTeamIdList.addAll(visitingTeamIdList);
 		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);
-
 		for (LotteryMatch s : lotteryMatchList) {
 			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
 			for (DlLeagueTeam ss : leagueList) {
-				if (s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
+				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
 					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
 				}
-				if (s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
+				if(s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
 					lotteryMatchDTO.setVisitingTeamLogo(ss.getTeamPic());
 				}
 				continue;
@@ -2584,7 +2575,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			} else {
 				lotteryMatchDTO.setIsCollect("0");
 			}
-			
 			//用直播表查询这4个实时数据
 			if(Integer.valueOf(MatchStatusEnums.Fixture.getCode()) != s.getStatus()) {//非未开赛的实时数据都是从直播表里取
 				MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
@@ -2596,11 +2586,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
 		
-		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, lotteryMatchDTOList.size()));
+		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, lotteryMatchDTOList.size(),queryMatchParamByType.getType()));
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
-	public String createMatchDateStr(String dateStr,Integer matchSize) {
+	public String createMatchDateStr(String dateStr,Integer matchSize,String type) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
 		Date date = new Date();
 		try {
@@ -2608,6 +2598,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		} catch (ParseException e) {
 			log.error("给前端的比赛日期转化异常");
 			e.printStackTrace();
+		}
+		
+		if("2".equals(type)) {
+			return dateStr + ""+ DateUtil.getWeekOfDate(date)+"收藏["+matchSize+"]场比赛";
 		}
 		return dateStr + ""+ DateUtil.getWeekOfDate(date)+"共有["+matchSize+"]场比赛";
 	}
