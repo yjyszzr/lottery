@@ -2522,7 +2522,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchIdList = matchIdsRst.getData();
 				if (matchIdList.size() > 0) {
 					matchIdArr = matchIdList.stream().toArray(Integer[]::new);
-					collectCount = matchIdList.size();
 				}
 			}else {
 				log.error("赛事比分查询收藏结果异常:"+matchIdsRst.getMsg());
@@ -2547,7 +2546,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    Integer notBeginMatchCount = lotteryMatchMapper.countNotBeginMatch(dateStr,leagueIdArr);
 	    returnDTO.setFinishCount(String.valueOf(finishMatchCount));
 	    returnDTO.setNotfinishCount(String.valueOf(notBeginMatchCount));
-	    returnDTO.setMatchCollectCount(String.valueOf(collectCount));
+	    returnDTO.setMatchCollectCount(String.valueOf(lotteryMatchList.size()));
 	    returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", returnDTO);
@@ -2586,15 +2585,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			
 			//用直播表查询这4个实时数据
-			MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
-			lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
-			lotteryMatchDTO.setWhole(dto.getWhole());
-			lotteryMatchDTO.setMinute(dto.getMinute());
-			lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+			if(Integer.valueOf(MatchStatusEnums.Fixture.getCode()) != s.getStatus()) {//非未开赛的实时数据都是从直播表里取
+				MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
+				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
+				lotteryMatchDTO.setWhole(dto.getWhole());
+				lotteryMatchDTO.setMinute(dto.getMinute());
+				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
-
-
+		
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, lotteryMatchDTOList.size()));
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
