@@ -2585,13 +2585,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
-		
-		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, lotteryMatchDTOList.size(),queryMatchParamByType.getType()));
+			
+		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchList.size();
+		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
-	public String createMatchDateStr(String dateStr,Integer matchSize,String type) {
+	public String createMatchDateStr(String dateStr,Integer matchSize) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
 		Date date = new Date();
 		try {
@@ -2601,10 +2602,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			e.printStackTrace();
 		}
 		
-		if("2".equals(type)) {
-			return dateStr + ""+ DateUtil.getWeekOfDate(date)+"收藏["+matchSize+"]场比赛";
-		}
-		return dateStr + ""+ DateUtil.getWeekOfDate(date)+"共有["+matchSize+"]场比赛";
+		return dateStr +  DateUtil.getWeekOfDate(date) +"共有"+matchSize+"场比赛";
 	}
 	
 	/**

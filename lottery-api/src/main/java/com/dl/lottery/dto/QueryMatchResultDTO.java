@@ -15,15 +15,6 @@ public class QueryMatchResultDTO implements Serializable{
 	@ApiModelProperty("比赛集合")
 	private List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<>();
 	
-	@ApiModelProperty("已结束数")
-	private String finishCount = "0";
-	
-	@ApiModelProperty("未结束数")
-	private String notfinishCount = "0";
-	
-	@ApiModelProperty("我收藏的赛事数")
-	private String matchCollectCount = "0";
-	
 	@ApiModelProperty("比赛日期字符串")
 	private String matchDateStr = "";
 	
