@@ -62,8 +62,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         	if(Integer.valueOf(minute) == 90) {
             	//Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
             	dto.setMinute("90+");
-        	}else if(Integer.valueOf(minute) == 45) {
-        		dto.setMinute("45");
+        	}else {
+        		dto.setMinute(minute);
         	}
         }else {
         	dto.setMinute(minute);
@@ -131,6 +131,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
         	if(Integer.valueOf(minute) == 90 ) {
             	dto.setMinute("90+");
+        	}else {
+        		dto.setMinute(minute);
         	}
         }else{
         	dto.setMinute(minute);
