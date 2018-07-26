@@ -2575,13 +2575,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			} else {
 				lotteryMatchDTO.setIsCollect("0");
 			}
+			
 			//用直播表查询这4个实时数据
-			if(Integer.valueOf(MatchStatusEnums.Fixture.getCode()) != s.getStatus()) {//非未开赛的实时数据都是从直播表里取
-				MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
+			MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
+			if(StringUtils.isNotEmpty(dto.getMatchStatus())) {
 				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
 				lotteryMatchDTO.setWhole(dto.getWhole());
 				lotteryMatchDTO.setMinute(dto.getMinute());
 				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+			}else {
+				lotteryMatchDTO.setFirstHalf("0:0");
+				lotteryMatchDTO.setWhole("0:0");
+				lotteryMatchDTO.setMinute("0");
+				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Fixture.getCode());
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
@@ -2602,7 +2608,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			e.printStackTrace();
 		}
 		
-		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='red'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
+		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
 	
 	/**

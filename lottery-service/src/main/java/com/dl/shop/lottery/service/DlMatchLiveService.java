@@ -28,7 +28,7 @@ import com.dl.shop.lottery.model.DlMatchLive;
 public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     @Resource
     private DlMatchLiveMapper dlMatchLiveMapper;
-
+    
     //获取比赛的进行时长和比分
     public MatchMinuteAndScoreDTO getMatchInfoNow(Integer changciId) {
     	MatchMinuteAndScoreDTO dto = new MatchMinuteAndScoreDTO();
@@ -62,6 +62,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         	if(Integer.valueOf(minute) == 90) {
             	//Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
             	dto.setMinute("90+");
+        	}else if(Integer.valueOf(minute) == 45) {
+        		dto.setMinute("45");
         	}
         }else {
         	dto.setMinute(minute);
