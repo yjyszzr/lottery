@@ -2602,7 +2602,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			e.printStackTrace();
 		}
 		
-		return  "<html><body>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有<font  color='red'>"+matchSize+"</font>场比赛</body></html>";
+		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='red'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
 	
 	/**
