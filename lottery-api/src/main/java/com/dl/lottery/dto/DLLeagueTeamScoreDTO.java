@@ -1,11 +1,6 @@
 package com.dl.lottery.dto;
 
 import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.Column;
-
-import com.dl.member.dto.UserBonusDTO;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

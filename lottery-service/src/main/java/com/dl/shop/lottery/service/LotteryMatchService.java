@@ -15,7 +15,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,7 +49,6 @@ import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.exception.ServiceException;
-import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
@@ -76,7 +74,6 @@ import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
-import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.dto.MatchTeamInfoDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
@@ -96,6 +93,7 @@ import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.DateStrParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
+import com.dl.shop.lottery.dao2.DlMatchResultMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
@@ -104,6 +102,7 @@ import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.model.DlMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
@@ -161,6 +160,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
     @Resource
     private DlMatchLiveService dlMatchLiveService;
+    
+    @Resource
+    private DlMatchResultMapper dlMatchResultMapper;
 
 	
 	@Value("${match.url}")
@@ -2491,7 +2493,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	/**
-	 * 根据查询条件查看比赛结果  2018-07-06 新加
+	 * 根据查询条件查看比赛结果  2018-07-06 新加:方案一：直播表中查询比分数据
 	 * @param dateStr
 	 * @return
 	 */
@@ -2506,12 +2508,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer userId = SessionUtil.getUserId();
 		String[] leagueIdArr = new String[] {};
 		String dateStr = queryMatchParamByType.getDateStr();
-		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
-			leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");
-		}
-		if(StringUtils.isEmpty(dateStr)) {
-			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
-		}
+		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");}
+		if(StringUtils.isEmpty(dateStr)) {dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);}//默认进入页面使用服务器时间
 		
 		if (null != userId) {//登录状态下查询收藏的赛事
 			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
@@ -2528,9 +2526,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		
 		if ("2".equals(queryMatchParamByType.getType())) {//我的赛事收藏
-			if (null == userId) {
-				return ResultGenerator.genNeedLoginResult("请登录");
-			}
+			if (null == userId) {return ResultGenerator.genNeedLoginResult("请登录");}
 			if(matchIdArr.length > 0) {
 				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(null,matchIdArr, leagueIdArr, "");
 				collectCount = lotteryMatchList.size();
@@ -2540,11 +2536,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
 		}
+		if (CollectionUtils.isEmpty(lotteryMatchList)) {return ResultGenerator.genSuccessResult("success", returnDTO);}
 		
-		if (CollectionUtils.isEmpty(lotteryMatchList)) {
-			return ResultGenerator.genSuccessResult("success", returnDTO);
-		}
-		// 查询球队logo
 		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s -> s.getHomeTeamId()).collect(Collectors.toList());
 		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s -> s.getVisitingTeamId()).collect(Collectors.toList());
 		homeTeamIdList.addAll(visitingTeamIdList);
@@ -2552,6 +2545,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		for (LotteryMatch s : lotteryMatchList) {
 			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
+			lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
+			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+			Long matchTime = s.getMatchTime().getTime()/1000;
+			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
+			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
+			//组装球队logo
 			for (DlLeagueTeam ss : leagueList) {
 				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
 					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
@@ -2561,11 +2560,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				continue;
 			}
-			lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
-			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
-			Long matchTime = s.getMatchTime().getTime()/1000;
-			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
-			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
+			//组装收藏信息
 			if (null != userId) {
 				if (matchIdList.contains(s.getMatchId())) {
 					lotteryMatchDTO.setIsCollect("1");
@@ -2575,8 +2570,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			} else {
 				lotteryMatchDTO.setIsCollect("0");
 			}
-			
-			//用直播表查询这4个实时数据
+			//组装来自直播表的这4个实时数据
 			MatchMinuteAndScoreDTO dto = dlMatchLiveService.getMatchInfoNow(s.getChangciId());
 			if(StringUtils.isNotEmpty(dto.getMatchStatus())) {
 				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
@@ -2591,12 +2585,111 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
-			
+
+		if(queryMatchParamByType.getType().equals("0")) {//未结束
+			lotteryMatchDTOList.removeIf(s->s.getMatchFinish().equals("1"));
+		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
+			lotteryMatchDTOList.removeIf(s->!s.getMatchFinish().equals("1"));
+		}
+		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchList.size();
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
-		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		return ResultGenerator.genSuccessResult("success", returnDTO);
-	}	
+	}
+	
+	/**
+	 * 根据查询条件查看比赛结果  2018-07-06 新加:方案一：实时比赛结果表中查询比分数据
+	 * @param dateStr
+	 * @return
+	 */
+//	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
+//		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
+//		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
+//		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
+//		Integer[] matchIdArr = new Integer[] {};
+//		List<DlMatchResult> lotteryMatchList = new ArrayList<>();
+//		Integer collectCount = 0;
+//		List<Integer> matchIdList = new ArrayList<>();
+//		String[] leagueIdArr = new String[] {};
+//		Integer userId = SessionUtil.getUserId();
+//		String dateStr = queryMatchParamByType.getDateStr();
+//		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");}
+//		if(StringUtils.isEmpty(dateStr)) {dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);}
+//		
+//		if (null != userId) {//登录状态下查询收藏的赛事
+//			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
+//			dateStrParam.setDateStr(dateStr);
+//			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(dateStrParam);
+//			if (matchIdsRst.getCode() == 0) {
+//				matchIdList = matchIdsRst.getData();
+//				if (matchIdList.size() > 0) {matchIdArr = matchIdList.stream().toArray(Integer[]::new);}
+//			}else {
+//				log.error("赛事比分查询收藏结果异常:"+matchIdsRst.getMsg());
+//			}
+//		}
+//		
+//		if ("2".equals(queryMatchParamByType.getType())) {//我的赛事收藏
+//			if (null == userId) {return ResultGenerator.genNeedLoginResult("请登录");}
+//			if(matchIdArr.length > 0) {
+//				lotteryMatchList = dlMatchResultMapper.queryMatchResultByCondition(null, matchIdArr, leagueIdArr, null);
+//				collectCount = lotteryMatchList.size();
+//			}
+//		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
+//			lotteryMatchList = dlMatchResultMapper.queryMatchResultNotFinish(dateStr, null, leagueIdArr);
+//		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
+//			lotteryMatchList = dlMatchResultMapper.queryMatchResultALreadyFinish(dateStr, null, leagueIdArr);
+//		}
+//		if (CollectionUtils.isEmpty(lotteryMatchList)) {return ResultGenerator.genSuccessResult("success", returnDTO);}
+//		
+//		List<LotteryMatch> lmList = lotteryMatchMapper.queryMatchsBychangciIds(lotteryMatchList.stream().map(s->s.getChangciId()).collect(Collectors.toList()));
+//		List<Integer> homeTeamIdList = lmList.stream().map(s -> s.getHomeTeamId()).collect(Collectors.toList());
+//		List<Integer> visitingTeamIdList = lmList.stream().map(s -> s.getVisitingTeamId()).collect(Collectors.toList());
+//		homeTeamIdList.addAll(visitingTeamIdList);
+//		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);//查询球队logo
+//		for (LotteryMatch s : lmList) {
+//			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
+//			BeanUtils.copyProperties(s, lotteryMatchDTO);
+//			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+//			Long matchTime = s.getMatchTime().getTime()/1000;
+//			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
+//			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
+//			//组装收藏信息
+//			if (null != userId) {
+//				if (matchIdList.contains(s.getMatchId())) {
+//					lotteryMatchDTO.setIsCollect("1");
+//				} else {
+//					lotteryMatchDTO.setIsCollect("0");
+//				}
+//			} else {
+//				lotteryMatchDTO.setIsCollect("0");
+//			}
+//			//组装logo
+//			for (DlLeagueTeam ss : leagueList) {
+//				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
+//					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
+//				}
+//				if(s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
+//					lotteryMatchDTO.setVisitingTeamLogo(ss.getTeamPic());
+//				}
+//				continue;
+//			}
+//			//组装4个实时数据
+//			for (DlMatchResult ss : lotteryMatchList) {
+//				if(s.getChangciId().equals(ss.getChangciId())) {
+//					lotteryMatchDTO.setFirstHalf(ss.getFirstHalf());
+//					lotteryMatchDTO.setWhole(ss.getWhole());
+//					lotteryMatchDTO.setMinute(ss.getMatchMinutes());
+//					lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(ss.getMatchStatus()));
+//				}
+//				continue;
+//			}
+//			lotteryMatchDTOList.add(lotteryMatchDTO);
+//		}
+//		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchList.size();
+//		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
+//		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
+//		return ResultGenerator.genSuccessResult("success", returnDTO);
+//	}
 	
 	public String createMatchDateStr(String dateStr,Integer matchSize) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
@@ -2605,9 +2698,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			date = df.parse(dateStr);
 		} catch (ParseException e) {
 			log.error("给前端的比赛日期转化异常");
-			e.printStackTrace();
 		}
-		
 		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
 	
