@@ -93,7 +93,6 @@ import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.DateStrParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
-import com.dl.shop.lottery.dao2.DlMatchResultMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
@@ -102,7 +101,6 @@ import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
-import com.dl.shop.lottery.model.DlMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
@@ -161,10 +159,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     @Resource
     private DlMatchLiveService dlMatchLiveService;
     
-    @Resource
-    private DlMatchResultMapper dlMatchResultMapper;
-
-	
 	@Value("${match.url}")
 	private String matchUrl;
 	
