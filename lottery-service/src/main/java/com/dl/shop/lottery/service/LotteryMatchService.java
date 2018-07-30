@@ -2539,7 +2539,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		for (LotteryMatch s : lotteryMatchList) {
 			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
 			BeanUtils.copyProperties(s, lotteryMatchDTO);
-			lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
