@@ -14,7 +14,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.MatchLiveEventDTO;
 import com.dl.lottery.dto.MatchLiveInfoDTO;
-import com.dl.lottery.dto.MatchLiveStatisticsDTO;
 import com.dl.lottery.dto.MatchLiveTeamDataDTO;
 import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.enums.MatchLiveDataEnums;
@@ -33,7 +32,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     public MatchMinuteAndScoreDTO getMatchInfoNow(Integer changciId) {
     	MatchMinuteAndScoreDTO dto = new MatchMinuteAndScoreDTO();
     	DlMatchLive dlMatchLive = dlMatchLiveMapper.getByChangciId(changciId);
-    	if(dlMatchLive != null) {
+    	if(dlMatchLive != null && !StringUtils.isEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
     	}
