@@ -2561,7 +2561,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				continue;
 			}
-			lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
