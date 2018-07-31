@@ -22,6 +22,13 @@ public class LotteryClassify {
      */
     @Column(name = "lottery_img")
     private String lotteryImg;
+    
+    /**
+     * 玩法标签
+     */
+    @Column(name = "play_label_id")
+    private Integer playLabelId;
+
 
     /**
      * 彩票排序
@@ -39,7 +46,17 @@ public class LotteryClassify {
     @Column(name = "is_show")
     private Integer isShow;
 
-    /**
+    
+    
+    public Integer getPlayLabelId() {
+		return playLabelId;
+	}
+
+	public void setPlayLabelId(Integer playLabelId) {
+		this.playLabelId = playLabelId;
+	}
+
+	/**
      * 创建时间
      */
     @Column(name = "create_time")

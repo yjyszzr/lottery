@@ -1,7 +1,5 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
@@ -23,6 +21,8 @@ import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/lottery/hall")
@@ -52,7 +52,7 @@ public class LotteryHallController {
 
 		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
 	}
-
+	
 	@ApiOperation(value = "获取彩票大厅数据", notes = "获取彩票大厅数据")
 	@PostMapping("/getHallData")
 	public BaseResult<DlHallDTO> getHallData(
