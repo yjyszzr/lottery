@@ -26,9 +26,8 @@ public class LotteryClassify {
     /**
      * 玩法标签
      */
-    @Column(name = "play_label_id")
-    private Integer playLabelId;
-
+    @Column(name = "sub_title")
+    private String subTitle;
 
     /**
      * 彩票排序
@@ -48,12 +47,12 @@ public class LotteryClassify {
 
     
     
-    public Integer getPlayLabelId() {
-		return playLabelId;
+    public String getSubTitle() {
+		return subTitle;
 	}
 
-	public void setPlayLabelId(Integer playLabelId) {
-		this.playLabelId = playLabelId;
+	public void setSubTitle(String subTitle) {
+		this.subTitle = subTitle;
 	}
 
 	/**

@@ -22,8 +22,11 @@ import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional(value="transactionManager2")
+@Slf4j
 public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     @Resource
     private DlMatchLiveMapper dlMatchLiveMapper;
@@ -47,6 +50,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return null;
 			}
 		}
 

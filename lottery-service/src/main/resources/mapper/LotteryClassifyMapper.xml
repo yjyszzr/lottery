@@ -8,7 +8,7 @@
     <id column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
     <result column="lottery_name" jdbcType="VARCHAR" property="lotteryName" />
     <result column="lottery_img" jdbcType="VARCHAR" property="lotteryImg" />
-    <result column="play_label_id" jdbcType="INTEGER" property="playLabelId" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
@@ -19,8 +19,8 @@
   <select id="selectAllLotteryClassData" resultMap="BaseResultMap">
         select
            lottery_name,
+           sub_title,
            lottery_img,
-           play_label_id,
            redirect_url
         from
             dl_lottery_classify

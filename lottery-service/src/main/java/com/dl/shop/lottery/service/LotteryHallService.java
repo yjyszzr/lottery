@@ -72,6 +72,39 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
+	public DlHallDTO getHallDataAllLottery(HallParam hallParam) {
+		DlHallDTO dlHallDTO = new DlHallDTO();
+		// 获取首页轮播图列表
+		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
+		// 获取活动数据
+		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		// 获取中奖信息列表
+		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
+		// 获取彩票分类列表
+		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
+		// //第一版只显示竞彩足球的子列表
+		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = new ArrayList<DlPlayClassifyDetailDTO>();
+		//新版本展示的是不同彩种的logo相关信息
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClassData();
+		for(LotteryClassify s:classifyList){
+			DlPlayClassifyDetailDTO  dto = new DlPlayClassifyDetailDTO();
+			dto.setPlayClassifyId(String.valueOf(s.getLotteryClassifyId()));
+			dto.setPlayClassifyImg(lotteryConfig.getBannerShowUrl()+s.getLotteryImg());
+			dto.setSubTitle(s.getSubTitle());
+			dto.setPlayClassifyName(s.getLotteryName());
+			dto.setRedirectUrl(s.getRedirectUrl());
+			dlPlayClassifyDetailDTOs.add(dto);
+		}
+		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
+		return dlHallDTO;
+	}
+	
+	
+	/**
+	 * 获取彩票大厅数据
+	 * 
+	 * @return
+	 */
 	public DlHallDTO getHallData(HallParam hallParam) {
 		Integer userId = SessionUtil.getUserId();
 		DlHallDTO dlHallDTO = new DlHallDTO();
@@ -96,38 +129,25 @@ public class LotteryHallService {
 				isShowWorldCup = false;
 			}
 		}
-		
-		if(appv.compareTo("2.0.6") <= 0) {//老版本的首页的展示足彩彩票的的玩法
-			dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
-			if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
-				DlPlayClassifyDetailDTO wcDTO = null;
-				for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
-					dto.setLotteryId("1");
-					if("8".equals(dto.getPlayClassifyId())) {
-						channel = channel ==null?"":channel;
-						String redirectUrl = dto.getRedirectUrl();
-						redirectUrl = redirectUrl + "&channel="+channel;
-						dto.setRedirectUrl(redirectUrl);
-						wcDTO = dto;
-					}
-				}
-				if(wcDTO != null && !isShowWorldCup) {
-					dlPlayClassifyDetailDTOs.remove(wcDTO);
+
+		dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
+		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
+			DlPlayClassifyDetailDTO wcDTO = null;
+			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
+				dto.setLotteryId("1");
+				if("8".equals(dto.getPlayClassifyId())) {
+					channel = channel ==null?"":channel;
+					String redirectUrl = dto.getRedirectUrl();
+					redirectUrl = redirectUrl + "&channel="+channel;
+					dto.setRedirectUrl(redirectUrl);
+					wcDTO = dto;
 				}
 			}
-		}else {
-			//新版本展示的是不同彩种的logo相关信息
-			List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClassData();
-			for(LotteryClassify s:classifyList){
-				DlPlayClassifyDetailDTO  dto = new DlPlayClassifyDetailDTO();
-				dto.setPlayClassifyId(String.valueOf(s.getLotteryClassifyId()));
-				dto.setPlayClassifyName(s.getLotteryName());
-				dto.setPlayClassifyLabelName(PlayLabelEnums.getMessageByCode(s.getPlayLabelId()));
-				dto.setPlayClassifyImg(s.getLotteryImg());
-				dto.setRedirectUrl(s.getRedirectUrl());
-				dlPlayClassifyDetailDTOs.add(dto);
+			if(wcDTO != null && !isShowWorldCup) {
+				dlPlayClassifyDetailDTOs.remove(wcDTO);
 			}
 		}
+	
 		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
 		return dlHallDTO;
 	}

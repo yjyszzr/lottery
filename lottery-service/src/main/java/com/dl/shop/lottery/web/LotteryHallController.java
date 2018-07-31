@@ -73,6 +73,25 @@ public class LotteryHallController {
 		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
 	}
 
+	@ApiOperation(value = "获取彩票大厅数据和咨询列表数据:全彩种菜单20180731新增", notes = "获取彩票大厅数据和咨询列表数据:全彩种菜单20180731新增")
+	@PostMapping("/getAllLotteryInHallMixData")
+	public BaseResult<DlHallMixDTO> getHallDataMixAllLottery(@Valid @RequestBody HallParam hallParam) {
+		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
+		DlHallDTO dlHallDTO = new DlHallDTO();
+		if (hallParam.getPage() == 1) {
+			dlHallDTO = lotteryHallService.getHallDataAllLottery(hallParam);
+		}
+
+		PageHelper.startPage(hallParam.getPage(), hallParam.getSize());
+		PageInfo<DLArticleDTO> pageInfo = articleService.findArticles("-1");
+
+		dlHallMixDTO.setDlHallDTO(dlHallDTO);
+		dlHallMixDTO.setDlArticlePage(pageInfo);
+
+		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
+	}
+	
+	
 	@ApiOperation(value = "获取彩票玩法列表", notes = "获取彩票玩法列表")
 	@PostMapping("/getPlayClassifyList")
 	public BaseResult<DlPlayClassifyDTO> getPlayClassifyList(
