@@ -2591,7 +2591,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
 			
-		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchList.size();
+		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		return ResultGenerator.genSuccessResult("success", returnDTO);
