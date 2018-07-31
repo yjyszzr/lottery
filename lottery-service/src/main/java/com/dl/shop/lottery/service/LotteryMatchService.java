@@ -2542,7 +2542,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
-			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
+			lotteryMatchDTO.setChangci(s.getChangci());
 			//组装球队logo
 			for (DlLeagueTeam ss : leagueList) {
 				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
