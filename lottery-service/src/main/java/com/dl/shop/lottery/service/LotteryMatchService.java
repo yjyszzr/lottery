@@ -2564,7 +2564,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
-			lotteryMatchDTO.setChangci(s.getChangci().substring(2));
+			lotteryMatchDTO.setChangci(s.getChangci());
 			if (null != userId) {
 				if (matchIdList.contains(s.getMatchId())) {
 					lotteryMatchDTO.setIsCollect("1");
