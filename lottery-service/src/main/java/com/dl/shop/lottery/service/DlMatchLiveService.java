@@ -33,7 +33,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     public MatchMinuteAndScoreDTO getMatchInfoNow(Integer changciId) {
     	MatchMinuteAndScoreDTO dto = new MatchMinuteAndScoreDTO();
     	DlMatchLive dlMatchLive = dlMatchLiveMapper.getByChangciId(changciId);
-    	if(dlMatchLive != null) {
+    	if(dlMatchLive != null && StringUtils.isNotEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
     	}
