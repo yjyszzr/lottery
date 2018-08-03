@@ -653,7 +653,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_AD.getCode(), MatchResultHafuEnum.HAFU_AD.getMsg(), adOdds));
 		String ahOdds = jsonObj.getString("ah");
 		matchCells.add(new DlJcZqMatchCellDTO(MatchResultHafuEnum.HAFU_AH.getCode(), MatchResultHafuEnum.HAFU_AH.getMsg(), ahOdds));
-		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+		matchCells.sort((cell1,cell2)->cell2.getCellCode().compareTo(cell1.getCellCode()));
 		dto.setMatchCells(matchCells);
 	}
 	private void initDlJcZqMatchCell6(DlJcZqMatchPlayDTO dto) {
