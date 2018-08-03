@@ -2526,9 +2526,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				collectCount = lotteryMatchList.size();
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
-			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, null);
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, null);
 		}
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {return ResultGenerator.genSuccessResult("success", returnDTO);}
 		
@@ -2580,7 +2580,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 
 		if(queryMatchParamByType.getType().equals("0")) {//未结束
-			lotteryMatchDTOList.removeIf(s->s.getMatchFinish().equals("1"));
+			lotteryMatchDTOList.removeIf(s->!s.getMatchFinish().equals("0"));
 		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
 			lotteryMatchDTOList.removeIf(s->!s.getMatchFinish().equals("1"));
 		}
@@ -2678,7 +2678,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //			}
 //			lotteryMatchDTOList.add(lotteryMatchDTO);
 //		}
-//		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchList.size();
+//		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
 //		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 //		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 //		return ResultGenerator.genSuccessResult("success", returnDTO);
