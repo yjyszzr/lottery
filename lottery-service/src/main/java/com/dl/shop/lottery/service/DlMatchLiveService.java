@@ -98,6 +98,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseMatchLineups(matchLiveInfo);
     	}
+    	dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//抓取不到直播的，比赛状态就显示未开赛
     	return dto;
     }
     //解析賽況信息
