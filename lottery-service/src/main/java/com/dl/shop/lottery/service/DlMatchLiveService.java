@@ -23,8 +23,11 @@ import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @Transactional(value="transactionManager2")
+@Slf4j
 public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     @Resource
     private DlMatchLiveMapper dlMatchLiveMapper;
@@ -48,6 +51,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return dto;
 			}
 		}
 
@@ -105,6 +110,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return dto;
 			}
 		}
 		//解析data对象
@@ -112,10 +119,14 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
+				log.error(e1.getMessage());
+				return dto;
 			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return dto;
 			}
 		}
 		
@@ -257,7 +268,10 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 		try {
 			dataObj = jsonObject.getJSONObject(key);
 		} catch (Exception e) {
+			log.error(e.getMessage());
+			return dto;
 		}
+
     	if(dataObj != null) {
     		String teamAData = dataObj.getString("team_a_data");
     		String teamHData = dataObj.getString("team_h_data");
