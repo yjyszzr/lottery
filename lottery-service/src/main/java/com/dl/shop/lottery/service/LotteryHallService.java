@@ -187,9 +187,13 @@ public class LotteryHallService {
 		if(!StringUtils.isEmpty(hallParam.getIsTransaction()) && hallParam.getIsTransaction().equals(ProjectConstant.INFO_VERSION)) {//资讯版仅仅展示资讯版，交易版全部展示
 			criteria.andCondition("is_transaction =",Integer.valueOf(ProjectConstant.INFO_VERSION));
 		}
-		
 		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
 		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
+			Integer userId = SessionUtil.getUserId();
+			String isLogin = "&isLogin=0";
+			if(userId != null) {
+				isLogin = "&isLogin=1";
+			}
 			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
 				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
 				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
@@ -199,7 +203,9 @@ public class LotteryHallService {
 				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
 					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkMatchUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
 				} else {
-					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
+					String bannerLink = lotteryNavBanner.getBannerLink();
+					bannerLink = bannerLink + isLogin;
+					dlNavBannerDTO.setBannerLink(bannerLink);// 活动链接,后面跟活动URL
 				}
 				dlNavBannerDTO.setStartTime(lotteryNavBanner.getStartTime());
 				dlNavBannerDTO.setEndTime(lotteryNavBanner.getEndTime());
