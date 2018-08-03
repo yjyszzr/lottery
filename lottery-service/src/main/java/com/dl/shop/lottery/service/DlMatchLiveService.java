@@ -51,7 +51,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
 				log.error(e.getMessage());
-				return null;
+				return dto;
 			}
 		}
 
