@@ -41,6 +41,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		dto = this.parseJsonStr(matchLiveInfo);
     	}
     	
+    	dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//没有比赛赛况的比赛比赛状态默认为未开赛
     	return dto;
     }
     
