@@ -614,7 +614,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if("7".equals(code)) {
 					name += "+";
 				} 
-				matchCells.add(new DlJcZqMatchCellDTO(code, name, odds));
+				matchCells.add(new DlJcZqMatchCellDTO(code, name+"球", odds));
 			}
 		}
 		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
