@@ -39,7 +39,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
     	}
-    	
+    	dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());   	
     	return dto;
     }
     
