@@ -39,9 +39,10 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     	if(dlMatchLive != null && StringUtils.isNotEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
+    	}else {
+    		dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//没有比赛赛况的比赛比赛状态默认为未开赛
     	}
     	
-    	dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//没有比赛赛况的比赛比赛状态默认为未开赛
     	return dto;
     }
     
