@@ -2590,7 +2590,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
-			
+		
+		if(queryMatchParamByType.getType().equals("0")) {//未结束
+			lotteryMatchDTOList.removeIf(s->s.getMatchFinish().equals("1"));
+		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
+			lotteryMatchDTOList.removeIf(s->!s.getMatchFinish().equals("1"));
+		}
 		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
