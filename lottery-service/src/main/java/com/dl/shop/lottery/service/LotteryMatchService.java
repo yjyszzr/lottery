@@ -2581,7 +2581,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
 				lotteryMatchDTO.setWhole(dto.getWhole());
 				lotteryMatchDTO.setMinute(dto.getMinute());
-				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+				//冗余异常数据：比赛进行了150min还未结束,状态按结束算
+				if(MatchStatusEnums.Playing.getEnName().equals(dto.getMatchStatus()) && this.beyond150min(s.getMatchTime())) {
+					lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Played.getCode());
+				}else {
+					lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+				}
 			}else {
 				lotteryMatchDTO.setFirstHalf("0:0");
 				lotteryMatchDTO.setWhole("0:0");
@@ -2602,9 +2607,28 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
+	/**
+	 * 显示比分日期字符串
+	 * @param dateStr
+	 * @param matchSize
+	 * @return
+	 */
 	public String createMatchDateStr(String dateStr,Integer matchSize) {
 		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekByDateStr(dateStr) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
+	
+	/**
+	 * 判断比赛是否超过了150min
+	 * @param matchTime
+	 * @return
+	 */
+	public Boolean beyond150min(Date matchTime) {
+		 Integer beyondTime = DateUtil.getCurrentTimeLong() - DateUtil.getTimeSomeDate(matchTime);
+		 if(beyondTime > 540000) {
+			 return true;
+		 }
+		 return false;
+	} 
 	
 	/**
 	 * 根据查询条件查看比赛结果
