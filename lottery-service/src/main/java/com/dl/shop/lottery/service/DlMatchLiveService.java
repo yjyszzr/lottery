@@ -40,7 +40,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
     	}else {
-    		dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//没有比赛赛况的比赛比赛状态默认为未开赛
+    		dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());//没有比赛赛况的比赛比赛状态默认为未开赛
     	}
     	
     	return dto;
@@ -100,7 +100,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseMatchLineups(matchLiveInfo);
     	}else {
-    		dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//抓取不到直播的，比赛状态就显示未开赛
+    		dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());//抓取不到直播的，比赛状态就显示未开赛
     	}
     	return dto;
     }

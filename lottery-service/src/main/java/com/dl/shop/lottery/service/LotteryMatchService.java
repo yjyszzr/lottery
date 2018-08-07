@@ -2580,9 +2580,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 
 		if(queryMatchParamByType.getType().equals("0")) {//未结束
-			lotteryMatchDTOList.removeIf(s->s.getMatchFinish().equals("1"));
+			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
 		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
-			lotteryMatchDTOList.removeIf(s->!s.getMatchFinish().equals("1"));
+			lotteryMatchDTOList.removeIf(s->!MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
 		}
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
