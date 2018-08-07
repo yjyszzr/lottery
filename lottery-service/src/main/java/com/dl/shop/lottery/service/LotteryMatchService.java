@@ -2536,9 +2536,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				collectCount = lotteryMatchList.size();
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
-			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
 		}
 		
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {

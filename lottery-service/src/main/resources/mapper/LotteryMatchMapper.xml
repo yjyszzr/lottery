@@ -128,7 +128,7 @@
   	 where is_del = 0 
      and is_show = 1
   	 <if test="dateStr !=null and dateStr != ''">
-		and str_to_date(match_time,'%Y-%m-%d') = #{dateStr}
+		and str_to_date(show_time,'%Y-%m-%d') = #{dateStr}
   	 </if>
   	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
   	 	and league_id in
