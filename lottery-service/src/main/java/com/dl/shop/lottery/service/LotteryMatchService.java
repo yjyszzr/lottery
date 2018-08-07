@@ -2603,16 +2603,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}	
 	
 	public String createMatchDateStr(String dateStr,Integer matchSize) {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
-		Date date = new Date();
-		try {
-			date = df.parse(dateStr);
-		} catch (ParseException e) {
-			log.error("给前端的比赛日期转化异常");
-			e.printStackTrace();
-		}
-		
-		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
+		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekByDateStr(dateStr) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
 	
 	/**
