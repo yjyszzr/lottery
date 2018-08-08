@@ -23,8 +23,8 @@ public class LotteryMatchDTO {
     @ApiModelProperty("联赛简称")
     private String leagueAddr;
     
-//    @ApiModelProperty("场次id")
-//    private Integer changciId;
+    @ApiModelProperty("场次id")
+    private Integer changciId;
 
     @ApiModelProperty("场次")
     private String changci;
