@@ -1,5 +1,6 @@
 package com.dl.shop.lottery.dao2;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -59,7 +60,7 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @param dateStr
 	 * @return
 	 */
-	public List<LotteryMatch> queryMatchByQueryConditionNew(@Param("dateStr") String dateStr,@Param("matchIdArr") Integer[] matchIdArr,
+	public LinkedList<LotteryMatch> queryMatchByQueryConditionNew(@Param("dateStr") String dateStr,@Param("matchIdArr") Integer[] matchIdArr,
 			@Param("leagueIdArr") String[] leagueIdArr,@Param("type") String type);		
 	
 	/**

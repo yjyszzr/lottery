@@ -2500,7 +2500,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
-		List<LotteryMatch> lotteryMatchList = null;
+		LinkedList<LotteryMatch> lotteryMatchList = new LinkedList<>();
 		Integer collectCount = 0;
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
@@ -2537,6 +2537,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
+			//查询的是当天的，把当天比赛放入其中
+			if(DateUtil.isToday(dateStr, "yyyy-MM-dd")) {
+				List<LotteryMatch> lotteryMatchNowList = lotteryMatchMapper.queryMatchByQueryCondition(dateStr, null, leagueIdArr, null);
+				for(LotteryMatch l:lotteryMatchNowList) {
+					lotteryMatchList.addFirst(l);
+				}
+			}		
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
 		}
@@ -2624,7 +2631,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 */
 	public Boolean beyond150min(Date matchTime) {
 		 Integer beyondTime = DateUtil.getCurrentTimeLong() - DateUtil.getTimeSomeDate(matchTime);
-		 if(beyondTime > 540000) {
+		 if(beyondTime > 9000) {
 			 return true;
 		 }
 		 return false;
