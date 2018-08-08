@@ -342,6 +342,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return false;
 	}
+	
 	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
 		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
@@ -360,7 +361,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
 			//今天展示第二天比赛时间
-			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+//			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
 				if(matchWeekDay < 6 && matchHour < 9) {
 					betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 53, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 				} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
@@ -374,7 +376,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(betendDateTime.toLocalDate().isEqual(LocalDate.now()) && nowHour < 9 && betHour < 9){
 				if(matchWeekDay < 6) {
 					continue;
-				} else if(matchWeekDay > 5 && betHour > 0 ) {
+				} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
 					continue;
 				}
 			}
