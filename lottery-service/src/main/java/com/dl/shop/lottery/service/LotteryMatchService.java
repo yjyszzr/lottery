@@ -2504,7 +2504,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
 		LinkedList<LotteryMatch> lotteryMatchList = new LinkedList<>();
-		Integer collectCount = 0;
 		Integer matchSize = 0;
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
@@ -2578,7 +2577,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
 			lotteryMatchDTO.setChangci(s.getChangci());
-//			lotteryMatchDTO.setChangciId(String.valueOf(s.getChangciId()));
+			lotteryMatchDTO.setChangciId(s.getChangciId());
 			if (null != userId) {
 				if (matchIdList.contains(s.getMatchId())) {
 					lotteryMatchDTO.setIsCollect("1");
