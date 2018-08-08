@@ -2502,7 +2502,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
-		List<LotteryMatch> lotteryMatchList = null;
+		LinkedList<LotteryMatch> lotteryMatchList = new LinkedList<>();
 		Integer collectCount = 0;
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
@@ -2538,9 +2538,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				collectCount = lotteryMatchList.size();
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
-			lotteryMatchList = lotteryMatchMapper.queryNotFinishMatchByQueryCondition(dateStr,null, leagueIdArr);
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
+			//查询的是当天的，把当天比赛放入其中
+			if(DateUtil.isToday(dateStr, "yyyy-MM-dd")) {
+				List<LotteryMatch> lotteryMatchNowList = lotteryMatchMapper.queryMatchByQueryCondition(dateStr, null, leagueIdArr, null);
+				for(LotteryMatch l:lotteryMatchNowList) {
+					lotteryMatchList.addFirst(l);
+				}
+			}		
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
-			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr, queryMatchParamByType.getType());
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
 		}
 		
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
@@ -2583,7 +2590,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
 				lotteryMatchDTO.setWhole(dto.getWhole());
 				lotteryMatchDTO.setMinute(dto.getMinute());
-				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+				//冗余异常数据：比赛进行了150min还未结束,状态按结束算
+				if(MatchStatusEnums.Playing.getEnName().equals(dto.getMatchStatus()) && this.beyond150min(s.getMatchTime())) {
+					lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Played.getCode());
+				}else {
+					lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+				}
 			}else {
 				lotteryMatchDTO.setFirstHalf("0:0");
 				lotteryMatchDTO.setWhole("0:0");
@@ -2592,25 +2604,40 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
-			
+		
+		if(queryMatchParamByType.getType().equals("0")) {//未结束
+			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
+			lotteryMatchDTOList.removeIf(s->!MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+		}
 		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}	
 	
+	/**
+	 * 显示比分日期字符串
+	 * @param dateStr
+	 * @param matchSize
+	 * @return
+	 */
 	public String createMatchDateStr(String dateStr,Integer matchSize) {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
-		Date date = new Date();
-		try {
-			date = df.parse(dateStr);
-		} catch (ParseException e) {
-			log.error("给前端的比赛日期转化异常");
-			e.printStackTrace();
-		}
-		
-		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekOfDate(date) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
+		return  "<html><body><font  color='#9F9F9F'>"+dateStr + " " +DateUtil.getWeekByDateStr(dateStr) +"共有</font><font  color='#EA5504'>"+matchSize+"</font><font  color='#9F9F9F'>场比赛</font></body></html>";
 	}
+	
+	/**
+	 * 判断比赛是否超过了150min
+	 * @param matchTime
+	 * @return
+	 */
+	public Boolean beyond150min(Date matchTime) {
+		 Integer beyondTime = DateUtil.getCurrentTimeLong() - DateUtil.getTimeSomeDate(matchTime);
+		 if(beyondTime > 9000) {
+			 return true;
+		 }
+		 return false;
+	} 
 	
 	/**
 	 * 根据查询条件查看比赛结果

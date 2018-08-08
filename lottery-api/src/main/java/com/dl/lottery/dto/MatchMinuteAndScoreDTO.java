@@ -7,11 +7,11 @@ import lombok.Data;
 public class MatchMinuteAndScoreDTO {
 
 	@ApiModelProperty("比赛时长")
-	String minute;
+	private String minute = "";
 	@ApiModelProperty("上半场比分")
-	String firstHalf;
+	private String firstHalf ="";
 	@ApiModelProperty("全场比分")
-	String whole;
+	private String whole = "";
 	@ApiModelProperty("比赛状态:0-未开赛,1-已完成,2-取消,4-推迟,5-暂停,6-进行中")
-	String matchStatus;;
+	private String matchStatus ="";
 }

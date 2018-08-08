@@ -38,8 +38,9 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     	if(dlMatchLive != null && !StringUtils.isEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
+    	}else {
+    		dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());   	
     	}
-    	
     	return dto;
     }
     
@@ -96,8 +97,9 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     	if(dlMatchLive != null) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseMatchLineups(matchLiveInfo);
+    	}else {
+        	dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());//抓取不到直播的，比赛状态就显示未开赛
     	}
-    	dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//抓取不到直播的，比赛状态就显示未开赛
     	return dto;
     }
     //解析賽況信息
@@ -110,6 +112,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return dto;
 			}
 		}
 		//解析data对象
@@ -117,10 +121,15 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
+				log.error(e1.getMessage());
+				return dto;
 			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());
+				return dto;
 			}
 		}
 		
