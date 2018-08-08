@@ -112,6 +112,8 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				dataObj = JSON.parseObject(matchLiveInfo);
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				return dto;
 			}
 		}
 		//解析data对象
@@ -119,10 +121,15 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			try {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
+				log.error(e1.getMessage());
+				return dto;
 			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
+				log.error(e.getMessage());
+				dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());
+				return dto;
 			}
 		}
 		
