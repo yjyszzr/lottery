@@ -122,14 +122,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
 				log.error(e1.getMessage());
-				return dto;
 			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
 				log.error(e.getMessage());
-				dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());
-				return dto;
 			}
 		}
 		
