@@ -98,7 +98,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseMatchLineups(matchLiveInfo);
     	}else {
-    		dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());//抓取不到直播的，比赛状态就显示未开赛
+    		dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());//抓取不到直播的，比赛状态就显示未开赛
     	}
     	return dto;
     }
@@ -117,7 +117,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 			}
 		}
 		//解析data对象
-		if(dataObj != null) {
+ 		if(dataObj != null) {
 			try {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
@@ -128,6 +128,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
 				log.error(e.getMessage());
+				dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());
 				return dto;
 			}
 		}
@@ -140,7 +141,6 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsH = dataObj.getString("hts_h");
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
-        dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
         if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
         	if(Integer.valueOf(minute) == 90 ) {
             	dto.setMinute("90+");
@@ -154,6 +154,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         dto.setFsA(fsA);
         dto.setHtsH(htsH);
         dto.setHtsA(htsA);
+        dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
 		
 		//解析事件
 		List<MatchLiveEventDTO> eventList = new ArrayList<MatchLiveEventDTO>(0);
