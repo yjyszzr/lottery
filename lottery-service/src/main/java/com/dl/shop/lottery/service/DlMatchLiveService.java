@@ -140,15 +140,15 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
         dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
-        if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
-        	if(Integer.valueOf(minute) == 90 ) {
-            	dto.setMinute("90+");
-        	}else {
-        		dto.setMinute(minute);
-        	}
-        }else{
-        	dto.setMinute(minute);
-        }
+
+    	if(Integer.valueOf(minute) > 90 ) {
+        	dto.setMinute("90+");
+    	}else if(Integer.valueOf(minute) == 90 && StringUtil.isEmpty(minuteExtra)){
+    		dto.setMinute("90+");
+    	}else{
+    		dto.setMinute(minute);
+    	}
+
         dto.setFsH(StringUtil.isEmpty(fsH)?"0":fsH);
         dto.setFsA(StringUtil.isEmpty(fsA)?"0":fsA);
         dto.setHtsH(StringUtil.isEmpty(htsH)?"0":htsH);
