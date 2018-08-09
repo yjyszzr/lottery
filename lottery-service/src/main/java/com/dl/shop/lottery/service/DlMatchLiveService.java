@@ -23,6 +23,7 @@ import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
 import lombok.extern.slf4j.Slf4j;
+import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Transactional(value="transactionManager2")
@@ -64,15 +65,17 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String minuteExtra = dataObj.getString("minute_extra");
         String matchStatus = dataObj.getString("match_status");
         if(StringUtils.isNotEmpty(minute) && StringUtils.isNotEmpty(minuteExtra) ) {
-        	if(Integer.valueOf(minute) == 90) {
-            	//Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+        	if(Integer.valueOf(minute) > 90 ) {
             	dto.setMinute("90+");
-        	}else {
+        	}else if(Integer.valueOf(minute) == 90 && StringUtil.isEmpty(minuteExtra)){
+        		dto.setMinute("90+");
+        	}else{
         		dto.setMinute(minute);
         	}
         }else {
         	dto.setMinute(minute);
         }
+
         dto.setMatchStatus(matchStatus);
         dto.setFirstHalf(createShowScore(htsH,htsA));
         dto.setWhole(createShowScore(fsH,fsA));
@@ -122,14 +125,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				eventArray = dataObj.getJSONArray("event");
 			} catch (Exception e1) {
 				log.error(e1.getMessage());
-				return dto;
 			}
 			try {
 				statisticsObj = dataObj.getJSONObject("statistics");
 			} catch (Exception e) {
 				log.error(e.getMessage());
-				dto.setMatchStatus(MatchStatusEnums.Fixture.getCode());
-				return dto;
 			}
 		}
 		
@@ -142,19 +142,22 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
         dto.setMatchStatus(MatchStatusEnums.getCodeByEnName(matchStatus));
-        if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
-        	if(Integer.valueOf(minute) == 90 ) {
+        if(StringUtils.isNotEmpty(minute) && StringUtils.isNotEmpty(minuteExtra) ) {
+        	if(Integer.valueOf(minute) > 90 ) {
             	dto.setMinute("90+");
-        	}else {
+        	}else if(Integer.valueOf(minute) == 90 && StringUtil.isEmpty(minuteExtra)){
+        		dto.setMinute("90+");
+        	}else{
         		dto.setMinute(minute);
         	}
-        }else{
+        }else {
         	dto.setMinute(minute);
         }
-        dto.setFsH(fsH);
-        dto.setFsA(fsA);
-        dto.setHtsH(htsH);
-        dto.setHtsA(htsA);
+
+        dto.setFsH(StringUtil.isEmpty(fsH)?"0":fsH);
+        dto.setFsA(StringUtil.isEmpty(fsA)?"0":fsA);
+        dto.setHtsH(StringUtil.isEmpty(htsH)?"0":htsH);
+        dto.setHtsA(StringUtil.isEmpty(htsA)?"0":htsA);
 		
 		//解析事件
 		List<MatchLiveEventDTO> eventList = new ArrayList<MatchLiveEventDTO>(0);

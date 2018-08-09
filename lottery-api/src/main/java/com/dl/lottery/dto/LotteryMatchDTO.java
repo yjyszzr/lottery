@@ -2,10 +2,6 @@ package com.dl.lottery.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -28,6 +24,9 @@ public class LotteryMatchDTO {
 
     @ApiModelProperty("场次")
     private String changci;
+    
+    @ApiModelProperty("场次id")
+    private Integer changciId;
 
     @ApiModelProperty("主队名称")
     private String homeTeamName;

@@ -1,8 +1,11 @@
 package com.dl.shop.lottery.service;
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -15,7 +18,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,7 +53,6 @@ import com.dl.base.enums.MatchResultHafuEnum;
 import com.dl.base.enums.RespStatusEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.exception.ServiceException;
-import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
@@ -76,7 +78,6 @@ import com.dl.lottery.dto.MatchBetPlayDTO;
 import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
-import com.dl.lottery.dto.MatchLiveInfoDTO;
 import com.dl.lottery.dto.MatchMinuteAndScoreDTO;
 import com.dl.lottery.dto.MatchTeamInfoDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
@@ -2503,7 +2504,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
 		Integer[] matchIdArr = new Integer[] {};
 		LinkedList<LotteryMatch> lotteryMatchList = new LinkedList<>();
-		Integer collectCount = 0;
+		Integer matchSize = 0;
 		List<Integer> matchIdList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
 		String[] leagueIdArr = new String[] {};
@@ -2535,10 +2536,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			if(matchIdArr.length > 0) {
 				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(null,matchIdArr, leagueIdArr, "");
-				collectCount = lotteryMatchList.size();
+				matchSize = lotteryMatchList.size();
 			}
 		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
+			matchSize = lotteryMatchList.size();
 			//查询的是当天的，把当天比赛放入其中
 			if(DateUtil.isToday(dateStr, "yyyy-MM-dd")) {
 				List<LotteryMatch> lotteryMatchNowList = lotteryMatchMapper.queryMatchByQueryCondition(dateStr, null, leagueIdArr, null);
@@ -2548,6 +2550,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}		
 		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
+			matchSize = lotteryMatchList.size();
 		}
 		
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
@@ -2574,6 +2577,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			Long matchTime = s.getMatchTime().getTime()/1000;
 			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
 			lotteryMatchDTO.setChangci(s.getChangci());
+			lotteryMatchDTO.setChangciId(s.getChangciId());
 			if (null != userId) {
 				if (matchIdList.contains(s.getMatchId())) {
 					lotteryMatchDTO.setIsCollect("1");
@@ -2607,14 +2611,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		if(queryMatchParamByType.getType().equals("0")) {//未结束
 			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
+			lotteryMatchDTOList = unique;
+			String weekDay = DateUtil.getWeekByDateStr(dateStr);
+			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > 0).collect(Collectors.toList()).size();
 		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
 			lotteryMatchDTOList.removeIf(s->!MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+			matchSize = lotteryMatchDTOList.size();
 		}
-		Integer matchSize = queryMatchParamByType.getType().equals("2")?collectCount:lotteryMatchDTOList.size();
+		
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
 		return ResultGenerator.genSuccessResult("success", returnDTO);
-	}	
+	}
 	
 	/**
 	 * 显示比分日期字符串
