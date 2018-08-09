@@ -364,9 +364,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
 				if(matchWeekDay < 6 && matchHour < 9) {
-					betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 53, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+					betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 				} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
-					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 53, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 				}
 			}
 			//0-9点的赛事在当天不能投注
