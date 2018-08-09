@@ -80,7 +80,6 @@ import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryPrint;
 import com.dl.shop.lottery.model.LotteryThirdApiLog;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
-import com.dl.task.model.DlPrintLottery;
 
 @Slf4j
 @Service
