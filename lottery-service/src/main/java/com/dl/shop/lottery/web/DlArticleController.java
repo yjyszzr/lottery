@@ -147,7 +147,7 @@ public class DlArticleController {
 			if(1 == dto.getListStyle()) {
 				DLArticleDTO newDTO= new DLArticleDTO();
 				BeanUtils.copyProperties(dto, newDTO);
-				if(bigNewsList.size() >= 8) {
+				if(bigNewsList.size() >= 6) {
 					break;
 				}
 				newDTO.setListStyle(5);
