@@ -97,7 +97,7 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     public MatchLiveInfoDTO getMatchLiveInfo(Integer changciId) {
     	MatchLiveInfoDTO dto = new MatchLiveInfoDTO();
     	DlMatchLive dlMatchLive = dlMatchLiveMapper.getByChangciId(changciId);
-    	if(dlMatchLive != null) {
+    	if(dlMatchLive != null && StringUtil.isNotEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseMatchLineups(matchLiveInfo);
     	}else {
@@ -118,7 +118,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
 				log.error(e.getMessage());
 				return dto;
 			}
+		}else {
+			dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());//抓取不到直播的，比赛状态就显示未开赛
+			return dto;
 		}
+		
 		//解析data对象
 		if(dataObj != null) {
 			try {
