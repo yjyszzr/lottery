@@ -28,7 +28,7 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
     public MatchLineUpInfosDTO getMatchLineUps(Integer changciId) {
     	MatchLineUpInfosDTO matchLineUpInfosDTO = new  MatchLineUpInfosDTO();
     	DlMatchLineUps matchLineUps = dlMatchLineUpsMapper.getByChangciId(changciId);
-    	if(matchLineUps != null) {
+    	if(matchLineUps != null && StringUtils.isNotEmpty(matchLineUps.getMatchLineups())) {
     		String matchLineups2 = matchLineUps.getMatchLineups();
     		this.parseMatchLineups(matchLineups2, matchLineUpInfosDTO);
     	}
