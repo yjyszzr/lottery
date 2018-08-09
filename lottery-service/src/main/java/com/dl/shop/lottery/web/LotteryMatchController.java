@@ -1,5 +1,11 @@
 package com.dl.shop.lottery.web;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -178,10 +184,15 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
 		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
 		//校验串关
@@ -333,10 +344,15 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
 		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
 		//校验串关
