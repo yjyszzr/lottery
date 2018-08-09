@@ -139,11 +139,23 @@ public class DlArticleController {
 		PageHelper.startPage(page, size);
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
-		DLFindListDTO findListDTO = new DLFindListDTO();
+		//取其中图文并茂的文章前6篇
+		List<DLArticleDTO> bigNewsList = new ArrayList<>();
+		List<DLArticleDTO> dtos = rst.getList();
+		for(DLArticleDTO dto:dtos) {
+			if(1 == dto.getListStyle()) {
+				if(bigNewsList.size() >= 6) {
+					break;
+				}
+				bigNewsList.add(dto);
+			}
+		}
 		
+		DLFindListDTO findListDTO = new DLFindListDTO();
 		findListDTO.setInfoCatList(createCat());
 		findListDTO.setNavBanners(navBanners);
 		findListDTO.setDlArticlePage(rst);
+		findListDTO.setBigNewsList(bigNewsList);
 		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 

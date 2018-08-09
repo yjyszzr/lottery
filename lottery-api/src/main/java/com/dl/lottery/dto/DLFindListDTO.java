@@ -19,6 +19,9 @@ public class DLFindListDTO implements Serializable{
 	@ApiModelProperty(value = "咨讯轮播图列表")
 	public List<DlNavBannerDTO> navBanners;
 	
+	@ApiModelProperty(value = "重要新闻列表")
+	public List<DLArticleDTO> bigNewsList;
+	
 	@ApiModelProperty(value = "资讯列表")
 	public PageInfo<DLArticleDTO> dlArticlePage;
 }
