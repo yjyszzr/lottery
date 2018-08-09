@@ -3510,10 +3510,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//今天展示第二天比赛时间
 		//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
-			if(matchWeekDay < 7 && matchWeekDay > 1 && matchHour < 9 && betHour < 10) {
+			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
 				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
 				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-			} else if(matchHour < 9 && matchHour > 0  && betHour < 10)  {
+			} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
 				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 			}
 		} else {
