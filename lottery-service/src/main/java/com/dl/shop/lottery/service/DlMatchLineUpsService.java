@@ -28,7 +28,7 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
     public MatchLineUpInfosDTO getMatchLineUps(Integer changciId) {
     	MatchLineUpInfosDTO matchLineUpInfosDTO = new  MatchLineUpInfosDTO();
     	DlMatchLineUps matchLineUps = dlMatchLineUpsMapper.getByChangciId(changciId);
-    	if(matchLineUps != null) {
+    	if(matchLineUps != null && StringUtils.isNoneEmpty(matchLineUps.getMatchLineups())) {
     		String matchLineups2 = matchLineUps.getMatchLineups();
     		this.parseMatchLineups(matchLineups2, matchLineUpInfosDTO);
     	}
@@ -47,6 +47,7 @@ public class DlMatchLineUpsService extends AbstractService<DlMatchLineUps> {
 			} catch (Exception e) {
 			}
 		}
+		
 		//解析data对象
 		if(dataObj != null) {
 			try {

@@ -2614,7 +2614,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
 			lotteryMatchDTOList = unique;
 			String weekDay = DateUtil.getWeekByDateStr(dateStr);
-			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > 0).collect(Collectors.toList()).size();
+			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > -1).collect(Collectors.toList()).size();
 		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
 			lotteryMatchDTOList.removeIf(s->!MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
 			matchSize = lotteryMatchDTOList.size();
