@@ -64,10 +64,11 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String minuteExtra = dataObj.getString("minute_extra");
         String matchStatus = dataObj.getString("match_status");
         if(StringUtils.isNotEmpty(minute) && StringUtils.isNotEmpty(minuteExtra) ) {
-        	if(Integer.valueOf(minute) == 90) {
-            	//Integer beyond90 =Integer.valueOf(minute) + Integer.valueOf(minuteExtra);
+        	if(Integer.valueOf(minute) > 90 ) {
             	dto.setMinute("90+");
-        	}else {
+        	}else if(Integer.valueOf(minute) == 90 && StringUtils.isEmpty(minuteExtra)){
+        		dto.setMinute("90+");
+        	}else{
         		dto.setMinute(minute);
         	}
         }else {
@@ -138,13 +139,15 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         String htsH = dataObj.getString("hts_h");
         String htsA = dataObj.getString("hts_a");
         String minuteExtra = dataObj.getString("minute_extra");
-        if(StringUtils.isNoneEmpty(minute) && StringUtils.isNoneEmpty(minuteExtra) ) {
-        	if(Integer.valueOf(minute) == 90 ) {
+        if(StringUtils.isNotEmpty(minute) && StringUtils.isNotEmpty(minuteExtra) ) {
+        	if(Integer.valueOf(minute) > 90 ) {
             	dto.setMinute("90+");
-        	}else {
+        	}else if(Integer.valueOf(minute) == 90 && StringUtils.isEmpty(minuteExtra)){
+        		dto.setMinute("90+");
+        	}else{
         		dto.setMinute(minute);
         	}
-        }else{
+        }else {
         	dto.setMinute(minute);
         }
         dto.setFsH(fsH);
