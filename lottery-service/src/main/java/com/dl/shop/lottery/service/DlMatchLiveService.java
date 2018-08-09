@@ -23,6 +23,7 @@ import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.model.DlMatchLive;
 
 import lombok.extern.slf4j.Slf4j;
+import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Transactional(value="transactionManager2")
@@ -148,10 +149,10 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
         }else{
         	dto.setMinute(minute);
         }
-        dto.setFsH(fsH);
-        dto.setFsA(fsA);
-        dto.setHtsH(htsH);
-        dto.setHtsA(htsA);
+        dto.setFsH(StringUtil.isEmpty(fsH)?"0":fsH);
+        dto.setFsA(StringUtil.isEmpty(fsA)?"0":fsA);
+        dto.setHtsH(StringUtil.isEmpty(htsH)?"0":htsH);
+        dto.setHtsA(StringUtil.isEmpty(htsA)?"0":htsA);
 		
 		//解析事件
 		List<MatchLiveEventDTO> eventList = new ArrayList<MatchLiveEventDTO>(0);
