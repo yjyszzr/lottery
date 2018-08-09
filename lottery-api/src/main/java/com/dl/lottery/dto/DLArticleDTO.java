@@ -12,7 +12,6 @@ public class DLArticleDTO implements Serializable {
 
 	@ApiModelProperty(value = "")
 	private Integer articleId;
-
 	@ApiModelProperty(value = "文章标题")
 	private String title;
 	@ApiModelProperty(value = "关键字")
@@ -33,7 +32,7 @@ public class DLArticleDTO implements Serializable {
 	private Integer matchId;
 	@ApiModelProperty(value = "主队- 1  客队 - 2")
 	private String relatedTeam;
-	@ApiModelProperty(value = "列表展示形式:0 -纯文字  1- 单张图   3-三张图  4-视频")
+	@ApiModelProperty(value = "列表展示形式:0-纯文字  1-单张图   3-三张图  4-视频  5 满屏图")
 	private Integer listStyle;
 	@ApiModelProperty(value = "作者")
 	private String author;

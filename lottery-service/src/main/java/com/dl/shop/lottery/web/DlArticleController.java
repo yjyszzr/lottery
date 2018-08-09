@@ -139,7 +139,7 @@ public class DlArticleController {
 		PageHelper.startPage(page, size);
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
-		//取其中图文并茂的文章前6篇
+		//20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DLArticleDTO> dtos = rst.getList();
 		for(DLArticleDTO dto:dtos) {
@@ -147,6 +147,7 @@ public class DlArticleController {
 				if(bigNewsList.size() >= 6) {
 					break;
 				}
+				dto.setListStyle(5);
 				bigNewsList.add(dto);
 			}
 		}
