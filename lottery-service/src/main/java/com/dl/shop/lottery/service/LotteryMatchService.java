@@ -354,12 +354,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
-			LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
-			int matchHour = matchDateTime.getHour();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
+			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
+			
+			/*LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+			LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();*/
+			/*
+			int matchHour = matchDateTime.getHour();
 			int betEndTime = matchTime - betPreTime;
-			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
 			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
 			//今天展示第二天比赛时间
 //			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
@@ -369,18 +372,26 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
 					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 				}
-			}
+			}*/
 			//0-9点的赛事在当天不能投注
-			LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+			if(hideMatch) {
+				continue;
+			}
+			/*LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
 	        int nowHour = localTime.getHour();
 	        int betHour = betendDateTime.getHour();
-			if(betendDateTime.toLocalDate().isEqual(LocalDate.now()) && nowHour < 9 && betHour < 9){
-				if(matchWeekDay < 6) {
-					continue;
-				} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
+			if(betendDateTime.toLocalDate().isEqual(LocalDate.now())){
+				if(nowHour < 9 && betHour < 9) {
+					if(matchWeekDay < 6) {
+						continue;
+					} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
+						continue;
+					}
+				} else if(nowHour > 22 && betHour > 22) {//23点的比赛不再展示
 					continue;
 				}
-			}
+			}*/
 			//投注结束
 			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 				continue;
@@ -3480,5 +3491,61 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			betPreTime = ProjectConstant.BET_PRESET_TIME;
 		}
 		return betPreTime;
+	}
+	
+	public int getBetEndTime(Integer matchTime) {
+		Integer betPreTime = this.getBetPreTime();
+		return this.getBetEndTime(matchTime, betPreTime);
+	}
+	//获取出票截至时间
+	private int getBetEndTime(Integer matchTime, Integer betPreTime) {
+		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
+		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+		int matchHour = matchDateTime.getHour();
+		int betEndTime = matchTime - betPreTime;
+		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+		//LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+		//今天展示第二天比赛时间
+		//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+			if(matchWeekDay < 6 && matchHour < 9) {
+				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
+				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+			} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
+				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+			}
+		} else {
+			if(matchHour >= 23) {
+				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+			}
+		}
+		return betEndTime;
+	}
+	/*public boolean isHideMatch(Integer matchTime) {
+		Integer betEndTime = this.getBetEndTime(matchTime);
+		return this.isHideMatch(betEndTime, matchTime);
+	}*/
+	public boolean isHideMatch(Integer betEndTime, Integer matchTime) {
+		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
+		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+		//0-9点的赛事在当天不能投注
+		LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int nowHour = localTime.getHour();
+        int betHour = betendDateTime.getHour();
+		if(betendDateTime.toLocalDate().isEqual(LocalDate.now())){
+			if(nowHour < 9 && betHour < 9) {
+				if(matchWeekDay < 6) {
+					return true;
+				} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
+					return true;
+				}
+			} else if(nowHour > 22 && betHour > 22) {//23点的比赛不再展示
+				return true;
+			}
+		}
+		return false;
 	}
 }
