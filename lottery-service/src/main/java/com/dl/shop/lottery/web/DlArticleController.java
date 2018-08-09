@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -139,15 +140,18 @@ public class DlArticleController {
 		PageHelper.startPage(page, size);
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
-		//取其中图文并茂的文章前6篇
+		//20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DLArticleDTO> dtos = rst.getList();
 		for(DLArticleDTO dto:dtos) {
 			if(1 == dto.getListStyle()) {
+				DLArticleDTO newDTO= new DLArticleDTO();
+				BeanUtils.copyProperties(dto, newDTO);
 				if(bigNewsList.size() >= 6) {
 					break;
 				}
-				bigNewsList.add(dto);
+				newDTO.setListStyle(5);
+				bigNewsList.add(newDTO);
 			}
 		}
 		
