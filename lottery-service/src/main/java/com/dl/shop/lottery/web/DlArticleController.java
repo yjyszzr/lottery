@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -144,11 +145,13 @@ public class DlArticleController {
 		List<DLArticleDTO> dtos = rst.getList();
 		for(DLArticleDTO dto:dtos) {
 			if(1 == dto.getListStyle()) {
-				if(bigNewsList.size() >= 6) {
+				DLArticleDTO newDTO= new DLArticleDTO();
+				BeanUtils.copyProperties(dto, newDTO);
+				if(bigNewsList.size() >= 8) {
 					break;
 				}
-				dto.setListStyle(5);
-				bigNewsList.add(dto);
+				newDTO.setListStyle(5);
+				bigNewsList.add(newDTO);
 			}
 		}
 		
