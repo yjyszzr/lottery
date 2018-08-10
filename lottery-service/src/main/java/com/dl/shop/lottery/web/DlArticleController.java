@@ -5,8 +5,10 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -34,7 +36,9 @@ import com.dl.lottery.param.ArticleIdsParam;
 import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
+import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
@@ -55,6 +59,9 @@ public class DlArticleController {
 	
 	@Resource
 	private LotteryConfig lotteryConfig;
+	
+	@Resource
+	private DlArticleMapper dlArticleMapper;
 
 	/*
 	 * @PostMapping("/add") public BaseResult add(DlArticle dlArticle) {
@@ -141,28 +148,47 @@ public class DlArticleController {
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 		
 		//20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
-		List<DLArticleDTO> bigNewsList = new ArrayList<>();
-		List<DLArticleDTO> dtos = rst.getList();
-		for(DLArticleDTO dto:dtos) {
-			if(1 == dto.getListStyle() && dto.getIsStick().equals("1")) {
-				DLArticleDTO newDTO= new DLArticleDTO();
-				BeanUtils.copyProperties(dto, newDTO);
-				if(bigNewsList.size() >= 6) {
-					break;
-				}
-				newDTO.setListStyle(5);
-				bigNewsList.add(newDTO);
-			}
-		}
+		List<DLArticleDTO> bigNews = this.createBigNewsList(param.getExtendCat());
 		
 		DLFindListDTO findListDTO = new DLFindListDTO();
 		findListDTO.setInfoCatList(createCat());
 		findListDTO.setNavBanners(navBanners);
 		findListDTO.setDlArticlePage(rst);
-		findListDTO.setBigNewsList(bigNewsList);
+		findListDTO.setBigNewsList(bigNews);
 		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 
+	/*
+	 * 20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
+	 */
+	public List<DLArticleDTO> createBigNewsList(String extendCat) {
+		List<DLArticleDTO> bigNewsList = new ArrayList<>();
+		List<DlArticle> findAll = dlArticleMapper.findArticlesByCat(extendCat);
+		for(DlArticle article:findAll) {
+			if(1 == article.getListStyle() && 1 == article.getIsStick()) {
+				DLArticleDTO newDTO= new DLArticleDTO();
+				if(bigNewsList.size() >= 6) {
+					break;
+				}
+				newDTO.setListStyle(5);
+				newDTO.setArticleId(article.getArticleId());
+				newDTO.setLink(article.getLink());
+				newDTO.setAuthor(article.getAuthor());
+				newDTO.setTitle(article.getTitle());
+				newDTO.setIsStick(String.valueOf(article.getIsStick()));
+				List<String> articleThumbList = new ArrayList<String>();
+				if (!StringUtils.isEmpty(article.getArticleThumb())) {
+					List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
+					articleThumbList = picList.stream().map(s -> lotteryConfig.getBannerShowUrl() + s.toString()).collect(Collectors.toList());
+				}
+				newDTO.setArticleThumb(articleThumbList);
+				bigNewsList.add(newDTO);
+			}
+		}
+		return bigNewsList;
+	}
+	
+	
 	/**
 	 * 目前没有对咨询分类建立表
 	 * @return
