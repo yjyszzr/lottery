@@ -41,7 +41,7 @@
   <select id="findArticles" resultMap="BaseResultMap">
   	select * from dl_article
   	where status=1
-  	order by is_stick desc,  add_time desc
+  	order by is_stick asc,add_time desc
   </select>
   
   <select id="findArticlesRelated"  resultMap="BaseResultMap">
