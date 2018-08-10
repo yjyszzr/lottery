@@ -144,7 +144,7 @@ public class DlArticleController {
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DLArticleDTO> dtos = rst.getList();
 		for(DLArticleDTO dto:dtos) {
-			if(1 == dto.getListStyle()) {
+			if(1 == dto.getListStyle() && dto.getIsStick().equals("1")) {
 				DLArticleDTO newDTO= new DLArticleDTO();
 				BeanUtils.copyProperties(dto, newDTO);
 				if(bigNewsList.size() >= 6) {
