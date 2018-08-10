@@ -2,6 +2,7 @@ package com.dl.shop.lottery.web;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
+import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
@@ -71,6 +73,11 @@ public class LotteryPrintController {
     public BaseResult<String> callbackStake(@RequestBody DlCallbackStakeParam param) {
 		lotteryPrintService.callbackStake(param);
     	return ResultGenerator.genSuccessResult("投注结果通知成功");
+    }
+	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
+    @PostMapping("/callbackStakeWeiCaiShiDai")
+    public Map<String,String> callbackStakeWeiCaiShiDai(DlCallbackStakeWeiCaiShiDaiParam param) {
+		return lotteryPrintService.callbackStakeWeiCaiShiDai(param);
     }
 	
 	@ApiOperation(value = "投注结果查询", notes = "投注结果查询")
