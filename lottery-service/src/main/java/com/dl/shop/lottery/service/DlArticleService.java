@@ -94,6 +94,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			} 
 			dto.setAuthor(article.getAuthor());
 			dto.setAddTime(article.getAddTime().toString());
+			dto.setIsStick(String.valueOf(article.getIsStick()));
 			dto.setArticleThumb(dto.getArticleThumb());
 			dtos.add(dto);
 		}
