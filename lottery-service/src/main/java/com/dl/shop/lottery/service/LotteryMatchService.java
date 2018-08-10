@@ -1661,6 +1661,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 						maxLotteryMoney = betMoney;
 					}
 				}
+				log.info("minMoney:" + minMoney);
 				totalMaxMoney+=maxMoney;
 				totalMinMoney=Double.min(totalMinMoney, minMoney);
 //				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
@@ -1776,7 +1777,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBetPlayCellDTO> list = playCellMap.get(playCode);
 			List<Double> allbetComOdds = this.allbetComOdds(list);
-//			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
+			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
 			if(CollectionUtils.isEmpty(allbetComOdds)) {
 				continue;
 			}
@@ -1791,8 +1792,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				minOdds.add(min);
 			}
 		}
-//		log.info("allbetComOdds is maxOdds: "+ maxOdds);
-//		log.info("allbetComOdds is minOdds: "+ minOdds);
+		log.info("allbetComOdds is maxOdds: "+ maxOdds);
+		log.info("allbetComOdds is minOdds: "+ minOdds);
 		tem.setMaxOddsList(maxOdds);
 		tem.setMinOddsList(minOdds);
 		return tem;
