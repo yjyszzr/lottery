@@ -2003,7 +2003,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				allOdds.addAll(ndList);
 			}
 		}
-		if(allOdds.size() == 0){
+//		if(allOdds.size() == 0){
 			if(hList != null) {
 				allOdds.addAll(hList);
 			}
@@ -2013,7 +2013,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			if(dList != null) {
 				allOdds.addAll(dList);
 			}
-		}
+//		}
 //		logger.info("--------------" + JSONHelper.bean2json(allOdds));
 		allBetSumOdds.addAll(allOdds);
 		return allBetSumOdds;
