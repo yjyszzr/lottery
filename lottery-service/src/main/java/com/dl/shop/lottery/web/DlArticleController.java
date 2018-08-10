@@ -91,7 +91,7 @@ public class DlArticleController {
 			dlArticle.setExtendCat("竞彩预测");
 		} else if ("3".equals(extendCatValue)) {
 			dlArticle.setExtendCat("牛人分析");
-		} else if ("4".equals(extendCatValue)) {
+		} else if ("5".equals(extendCatValue)) {
 			dlArticle.setExtendCat("其他");
 		}
 		return ResultGenerator.genSuccessResult(null, dlArticle);
@@ -137,9 +137,6 @@ public class DlArticleController {
 				navBanners.add(dlNavBannerDTO);
 			}
 		}		
-		if("1".equals(param.getExtendCat())) {
-			param.setExtendCat("-1");
-		}
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
