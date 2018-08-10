@@ -1022,6 +1022,10 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		result.put("des", "成功");
 		return result;
 	}
+	public static void main(String[] args) {
+		String number="20180810001:01:0(1.84);20180810002:02:0(1.39)|2*1";
+		System.out.println(getCaiXiaoMiSpFromTicketNumber(number));
+	}
 	/**
 	 * 将微彩时代的赔率转化为我们的
 	 * @param ticketNumber
@@ -1039,7 +1043,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			caiXiaoMiSp.append(addIssueWeekDay(issue));
 			caiXiaoMiSp.append("|");
 //			3(2.39),0(2.39),1(2.39)
-			for(String onePlayAndSp:isssueAndSpArr[1].split(",")){
+			int spIndex=1;
+			if(isssueAndSpArr.length>2){
+				spIndex=2;
+			}
+			for(String onePlayAndSp:isssueAndSpArr[spIndex].split(",")){
 				String betCell = onePlayAndSp.substring(0, onePlayAndSp.indexOf("("));
 				caiXiaoMiSp.append(betCell);
 				caiXiaoMiSp.append("@");
