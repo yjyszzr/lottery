@@ -1960,20 +1960,24 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 							}
 						}
 						if(isa) {
-							List<Double> tnaList = new ArrayList<Double>(aList);
-							for(Double item: tnaList) {
-								naList.add(Double.sum(item, odds));
+							if(!MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+								List<Double> tnaList = new ArrayList<Double>(aList);
+								for(Double item: tnaList) {
+									naList.add(Double.sum(item, odds));
+								}
 							}
 							/*tnaList.forEach(item->Double.sum(item, odds));
 							naList.addAll(tnaList);*/
 						}
 					}else {
 						if(ish) {
-							List<Double> tnhList = new ArrayList<Double>(hList);
-							/*tnhList.forEach(item->Double.sum(item, odds));
-							nhList.addAll(tnhList);*/
-							for(Double item: tnhList) {
-								nhList.add(Double.sum(item, odds));
+							if(!MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+								List<Double> tnhList = new ArrayList<Double>(hList);
+								/*tnhList.forEach(item->Double.sum(item, odds));
+								nhList.addAll(tnhList);*/
+								for(Double item: tnhList) {
+									nhList.add(Double.sum(item, odds));
+								}
 							}
 						}
 						if(isd && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
