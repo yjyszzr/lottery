@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +59,7 @@ import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
+import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
 import com.dl.lottery.param.DlQueryPrizeFileParam;
@@ -986,5 +988,85 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public List<LotteryPrint> printLotterysByOrderSn(String orderSn) {
 		List<LotteryPrint> byOrderSn = lotteryPrintMapper.getByOrderSn(orderSn);
 		return byOrderSn;
+	}
+
+	public Map<String, String> callbackStakeWeiCaiShiDai(DlCallbackStakeWeiCaiShiDaiParam param) {
+		Map<String,String> result =new HashMap<String, String>();
+		log.info("微彩时代出票回调内容={}",JSONHelper.bean2json(param));
+		LotteryPrint lotteryPrint = new LotteryPrint();
+		lotteryPrint.setTicketId(param.getOut_id());
+		String orderStatus = param.getOrderStatus();
+		if("1".equals(orderStatus)){
+			lotteryPrint.setStatus(1);
+		}else if("3".equals(orderStatus)){
+			lotteryPrint.setStatus(2);
+		}else{
+			log.error("微彩时代orderStatus非合理值，不处理");
+			return null;
+		}
+		lotteryPrint.setPlatformId("");
+		lotteryPrint.setPrintNo(param.getNumber());
+		lotteryPrint.setPrintSp(getCaiXiaoMiSpFromTicketNumber(param.getNumber()));
+		lotteryPrint.setPrintStatus(Integer.parseInt(orderStatus));
+		Date printTime = new Date();
+		try{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String printTimeStr = param.getPrintTime();
+			printTime = sdf.parse(printTimeStr);
+		}catch(Exception e){
+			log.error("微彩时代回调出票时间转化出错 ticketId={},printTimeStr={}",param.getOut_id(),param.getPrintTime());
+		}
+		lotteryPrint.setPrintTime(printTime);
+		lotteryPrintMapper.updateLotteryPrintByCallBack(lotteryPrint);
+		result.put("code", "0000");
+		result.put("des", "成功");
+		return result;
+	}
+	/**
+	 * 将微彩时代的赔率转化为我们的
+	 * @param ticketNumber
+	 * @return
+	 */
+	private static String getCaiXiaoMiSpFromTicketNumber(String ticketNumber) {
+//		20180517001:3(2.39),0(2.39),1(2.39);20180517002:3(2.39)|2*1
+		StringBuffer caiXiaoMiSp = new StringBuffer(); 
+		String[] ticketNumArr= ticketNumber.split("\\|");
+		String WeiCaiShiDaiSp = ticketNumArr[0];
+		String[] isssueAndSps = WeiCaiShiDaiSp.split(";");
+		for(String isssueAndSp:isssueAndSps){
+			String[] isssueAndSpArr = isssueAndSp.split(":");
+			String issue = isssueAndSpArr[0];
+			caiXiaoMiSp.append(addIssueWeekDay(issue));
+			caiXiaoMiSp.append("|");
+//			3(2.39),0(2.39),1(2.39)
+			for(String onePlayAndSp:isssueAndSpArr[1].split(",")){
+				String betCell = onePlayAndSp.substring(0, onePlayAndSp.indexOf("("));
+				caiXiaoMiSp.append(betCell);
+				caiXiaoMiSp.append("@");
+				String betCellSp = onePlayAndSp.substring(onePlayAndSp.indexOf("(")+1, onePlayAndSp.indexOf(")"));
+				caiXiaoMiSp.append(betCellSp);
+				caiXiaoMiSp.append(",");
+			}
+			caiXiaoMiSp.deleteCharAt(caiXiaoMiSp.length()-1);
+			caiXiaoMiSp.append(";");
+		}
+		caiXiaoMiSp.deleteCharAt(caiXiaoMiSp.length()-1);
+		return caiXiaoMiSp.toString();
+	}
+	public static String addIssueWeekDay(String isssue){
+		String yyyymmdd = isssue.substring(0, 8);
+		String theEnd = isssue.substring(8, isssue.length());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		Date issueDay=null;
+		try {
+			issueDay = sdf.parse(yyyymmdd);
+		} catch (ParseException e) {
+			log.error("日期格式转化异常 日期串={}",yyyymmdd);
+		}
+		 Calendar cal = Calendar.getInstance();
+		cal.setTime(issueDay);
+		int week = cal.get(Calendar.DAY_OF_WEEK)-1;
+		String sumIsssue = yyyymmdd+week+theEnd;
+		return sumIsssue;
 	}
 }
