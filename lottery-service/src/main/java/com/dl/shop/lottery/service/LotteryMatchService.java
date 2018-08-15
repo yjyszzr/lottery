@@ -1,7 +1,6 @@
 package com.dl.shop.lottery.service;
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -2627,7 +2626,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		if(queryMatchParamByType.getType().equals("0")) {//未结束
 			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
-		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
+		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
 			lotteryMatchDTOList = unique;
 			String weekDay = DateUtil.getWeekByDateStr(dateStr);
 			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > -1).collect(Collectors.toList()).size();
