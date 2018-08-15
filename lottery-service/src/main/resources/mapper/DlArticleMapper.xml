@@ -50,10 +50,10 @@
   	order by add_time desc limit #{page},#{size}
   </select>
   
-    <select id="findArticlesByCat"  resultMap="BaseResultMap">
+  <select id="findArticlesByCat"  resultMap="BaseResultMap">
   	select * from dl_article
   	where status=1 and extend_cat=#{extendCat}
-  	order by is_stick desc,  add_time desc
+  	order by is_stick asc,add_time desc
   </select>
   
   <select id="findArticlesByIds" parameterType="java.util.List" resultMap="BaseResultMap">

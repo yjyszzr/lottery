@@ -64,6 +64,8 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			findAll = dlArticleMapper.findArticlesByCat(catArticle);
 		}
 
+		
+		
 //		List<DlArticle> collect = findAll.stream().filter(item->1 == (item.getIsStick()==null?0:item.getIsStick())).collect(Collectors.toList());
 //		if(CollectionUtils.isNotEmpty(collect)) {
 //			collect.sort((item1,item2)->{
@@ -95,6 +97,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 			dto.setAuthor(article.getAuthor());
 			dto.setAddTime(article.getAddTime().toString());
 			dto.setArticleThumb(dto.getArticleThumb());
+			dto.setIsStick(String.valueOf(article.getIsStick()));
 			dtos.add(dto);
 		}
 

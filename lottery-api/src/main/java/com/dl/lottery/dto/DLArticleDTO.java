@@ -36,5 +36,8 @@ public class DLArticleDTO implements Serializable {
 	private Integer listStyle;
 	@ApiModelProperty(value = "作者")
 	private String author;
+	@ApiModelProperty(value = "是否置顶")
+	private String isStick;
+	
 
 }
