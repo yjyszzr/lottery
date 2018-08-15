@@ -1,11 +1,5 @@
 package com.dl.shop.lottery.web;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,12 +74,13 @@ import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueTeamService;
-import com.dl.shop.lottery.service.DlMatchLiveService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchPlayService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
+import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
+import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -558,6 +553,215 @@ public class LotteryMatchController {
 		betPlayInfoDTO.setSurplus(String.format("%.2f", surplus));
 		betPlayInfoDTO.setThirdPartyPaid(String.format("%.2f", thirdPartyPaid));
 		return ResultGenerator.genSuccessResult("success", betPlayInfoDTO);
+	}
+	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
+	@PostMapping("/nSaveBetInfo")
+	public BaseResult<String> nSaveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+		if(lotteryMatchService.isShutDownBet()) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
+		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
+		if(matchBetPlays == null || matchBetPlays.size() < 1) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
+		}
+		//设置投注倍数
+		Integer times = param.getTimes();
+		if(null == times || times < 1) {
+			param.setTimes(1);
+		}
+		if(param.getTimes() >= 99999) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIMES_LIMIT.getCode(), LotteryResultEnum.BET_TIMES_LIMIT.getMsg());
+		}
+		String playType = param.getPlayType();
+		if(StringUtils.isBlank(playType)) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
+		}
+		try {
+			int parseInt = Integer.parseInt(playType);
+			if(parseInt < 1 || parseInt > 7) {
+				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
+			}
+		} catch (NumberFormatException e) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
+		}
+		//2 1
+		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
+			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
+		}
+		//校验赛事投注时间
+		MatchBetPlayDTO min = matchBetPlays.get(0);
+		if(matchBetPlays.size() > 1) {
+			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
+		}
+//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
+		Date now = new Date();
+		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
+		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		//校验串关
+		String betTypeStr = param.getBetType();
+		if(StringUtils.isBlank(betTypeStr)) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
+		}
+		
+		boolean isCellError = false;
+		boolean isAllSingle = true;
+		for(MatchBetPlayDTO betPlay : matchBetPlays){
+			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+			if(CollectionUtils.isEmpty(matchBetCells)) {
+				isCellError = true;
+				break;
+			}
+			for(MatchBetCellDTO betCell: matchBetCells){
+				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+				if(CollectionUtils.isEmpty(betCells)) {
+					isCellError = true;
+					break;
+				}
+				for(DlJcZqMatchCellDTO dto: betCells) {
+					String cellCode = dto.getCellCode();
+					String cellName = dto.getCellName();
+					String cellOdds = dto.getCellOdds();
+					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
+						isCellError = true;
+						break;
+					}
+				}
+				Integer single = betCell.getSingle();
+				if(single == null || single.equals(0)) {
+					isAllSingle = false;
+				}
+				if(isCellError) {
+					break;
+				}
+			}
+			if(isCellError) {
+				break;
+			}
+		}
+		//校验投注选项
+		if(isCellError) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
+		}
+		if(betTypeStr.contains("11")) {
+			if(!isAllSingle) {
+				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
+			}
+		}
+		String[] betTypes = betTypeStr.split(",");
+		boolean isCheckedBetType = true;
+		int minBetNum = 9;
+		try {
+			int maxBetNum = 1;
+			for(String betType: betTypes) {
+				char[] charArray = betType.toCharArray();
+				if(charArray.length == 2 && charArray[1] == '1') {
+					int num = Integer.valueOf(String.valueOf(charArray[0]));
+					if(num > maxBetNum) {
+						maxBetNum = num;
+					}
+					if(minBetNum > num) {
+						minBetNum = num;
+					}
+					if(num < 1 || num > 8) {
+						isCheckedBetType = false;
+					}
+				}
+			}
+			if(maxBetNum > matchBetPlays.size()) {
+				isCheckedBetType = false;
+			}
+		} catch (NumberFormatException e) {
+		}
+		if(!isCheckedBetType) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
+		}
+		//校验胆的个数设置
+		int danEnableNum = minBetNum -1;
+		if(minBetNum == matchBetPlays.size()) {
+			danEnableNum = 0;
+		}
+		long danNum = matchBetPlays.stream().filter(dto->dto.getIsDan() == 1).count();
+		if(danNum > danEnableNum) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
+		}
+		//投注计算
+		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
+		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
+		}
+		int betNum = betInfo.getBetNum();
+		if(betNum >= 10000 || betNum < 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
+		}
+		String betMoney = betInfo.getMoney();
+		Double orderMoney = Double.valueOf(betMoney);
+		Double minBetMoney = lotteryMatchService.getMinBetMoney();
+		if(orderMoney < minBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
+		}
+		int canBetMoney = lotteryMatchService.canBetMoney();
+		if(orderMoney > canBetMoney) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
+		
+		//缓存订单支付信息
+		UserBetPayInfoDTO dto = new UserBetPayInfoDTO();
+		List<UserBetDetailInfoDTO> betDetailInfos = new ArrayList<UserBetDetailInfoDTO>(matchBetPlays.size());
+		for(MatchBetPlayDTO matchCell: matchBetPlays) {
+			UserBetDetailInfoDTO dizqUserBetCellInfoDTO = new UserBetDetailInfoDTO();
+			dizqUserBetCellInfoDTO.setMatchId(matchCell.getMatchId());
+			dizqUserBetCellInfoDTO.setChangci(matchCell.getChangci());
+			dizqUserBetCellInfoDTO.setIsDan(matchCell.getIsDan());
+			dizqUserBetCellInfoDTO.setLotteryClassifyId(matchCell.getLotteryClassifyId());
+			dizqUserBetCellInfoDTO.setLotteryPlayClassifyId(matchCell.getLotteryPlayClassifyId());
+			dizqUserBetCellInfoDTO.setMatchTeam(matchCell.getMatchTeam());
+			String playCode = matchCell.getPlayCode();
+			dizqUserBetCellInfoDTO.setPlayCode(playCode);
+			List<MatchBetCellDTO> matchBetCells = matchCell.getMatchBetCells();
+			String ticketData = matchBetCells.stream().map(betCell->{
+				String ticketData1 = "0" + betCell.getPlayType() + "|" + playCode + "|";
+				return ticketData1 + betCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
+						.collect(Collectors.joining(","));
+			}).collect(Collectors.joining(";"));
+			dizqUserBetCellInfoDTO.setTicketData(ticketData);;
+			Optional<MatchBetCellDTO> findFirst = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+			if(findFirst.isPresent()) {
+				String fixOdds = findFirst.get().getFixedOdds();
+				logger.info("**************************fixOdds="+fixOdds);
+				dizqUserBetCellInfoDTO.setFixedodds(fixOdds);
+			}
+			betDetailInfos.add(dizqUserBetCellInfoDTO);
+		}
+		dto.setBetDetailInfos(betDetailInfos);
+		dto.setBetNum(betNum);
+		dto.setTicketNum(betInfo.getTicketNum());
+		dto.setOrderMoney(orderMoney);
+//		dto.setBonusAmount(bonusAmount);
+//		dto.setBonusId(bonusId);
+//		dto.setSurplus(surplus);
+		String forecastMoney = betInfo.getMinBonus() + "~" + betInfo.getMaxBonus();
+		dto.setForecastMoney(forecastMoney);
+//		dto.setThirdPartyPaid(thirdPartyPaid);
+		String requestFrom = "0";
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		if(userDevice != null) {
+			requestFrom = userDevice.getPlat();
+		}
+		dto.setRequestFrom(requestFrom);
+		dto.setUserId(SessionUtil.getUserId());
+		dto.setIssue(betInfo.getIssue());
+		String dtoJson = JSONHelper.bean2json(dto);
+		String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
+		String payToken = MD5.crypt(keyStr);
+		stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
+		return ResultGenerator.genSuccessResult("success", payToken);
 	}
     
 	@ApiOperation(value = "抓取赛事列表保存", notes = "抓取赛事列表保存")
