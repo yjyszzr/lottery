@@ -29,6 +29,7 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BetPayInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetInfoDTO;
+import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLFutureMatchDTO;
 import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
@@ -788,6 +789,16 @@ public class LotteryMatchController {
     @PostMapping("/queryMatchResultNew")
     public BaseResult<QueryMatchResultDTO> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
     	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
+    }
+	
+	@ApiOperation(value = "查询大乐透比赛结果", notes = "查询大乐透比赛结果")
+    @PostMapping("/getBetInfoByLotto")
+    public BaseResult<List<DLBetLottoInfoDTO>> getBetInfoByLotto(@RequestBody GetBetInfoByOrderSn param) {
+		if(StringUtils.isBlank(param.getOrderSn())) {
+			return ResultGenerator.genFailResult();
+		}
+		List<DLBetLottoInfoDTO> dtoList = lotteryMatchService.getBetInfoByLottoInfo( param.getOrderSn());
+    	return ResultGenerator.genSuccessResult("success",dtoList);
     }
 	
 	@ApiOperation(value = "查询比赛结果", notes = "查询比赛结果")

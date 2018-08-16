@@ -60,6 +60,7 @@ import com.dl.base.util.JSONHelper;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DLZQOrderLotteryBetInfoDTO;
@@ -2730,6 +2731,23 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    
 	    return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}	
+	
+	public List<DLBetLottoInfoDTO> getBetInfoByLottoInfo(String orderSn) {
+		List<DLBetLottoInfoDTO> list = new ArrayList<>();
+		List<LotteryPrint> prints = lotteryPrintMapper.getByOrderSn(orderSn);
+		prints.forEach(item->{
+			DLBetLottoInfoDTO dto = new DLBetLottoInfoDTO();
+			dto.setTicketId(item.getTicketId());
+			dto.setStakes(item.getStakes());
+			dto.setBetType(item.getBetType());
+			dto.setPlayType(item.getPlayType());
+			dto.setStatus(item.getStatus());
+			dto.setTimes(item.getTimes());
+			dto.setAmount(item.getMoney().doubleValue());
+			list.add(dto);
+		});
+		return list;
+	}
 	
 //	@Transactional(readOnly=true)
 	public DLZQBetInfoDTO getBetInfoByOrderInfo1(String orderSn) {
