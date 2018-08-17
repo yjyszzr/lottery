@@ -88,15 +88,13 @@ public class DlArticleController {
 		if (dlArticle == null) {
 			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_NULL.getCode(), LotteryResultEnum.ARTICLE_NULL.getMsg());
 		}
-		String extendCatValue = dlArticle.getExtendCat();
-		if ("1".equals(extendCatValue)) {
-			dlArticle.setExtendCat("今日关注");
-		} else if ("2".equals(extendCatValue)) {
-			dlArticle.setExtendCat("竞彩预测");
-		} else if ("3".equals(extendCatValue)) {
-			dlArticle.setExtendCat("牛人分析");
-		} else if ("5".equals(extendCatValue)) {
-			dlArticle.setExtendCat("其他");
+		List<DlArticleClassify> articleClassifyList = dlArticleService.findArticleClassify();
+		Map<Integer, DlArticleClassify> articleClassifyMap = new HashMap<Integer, DlArticleClassify>(articleClassifyList.size());
+		articleClassifyList.forEach(s -> articleClassifyMap.put(s.getId(), s));
+		Integer extendCatValue = Integer.parseInt(dlArticle.getExtendCat());
+		DlArticleClassify articleClassify = articleClassifyMap.get(extendCatValue);
+		if (null != articleClassify) {
+			dlArticle.setExtendCat(articleClassify.getClassifyName());
 		}
 		return ResultGenerator.genSuccessResult(null, dlArticle);
 	}
@@ -166,7 +164,7 @@ public class DlArticleController {
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DlArticle> findAll = dlArticleMapper.findArticlesByCat(extendCat);
 		for (DlArticle article : findAll) {
-			if(null == article.getIsStick()) {
+			if (null == article.getIsStick()) {
 				continue;
 			}
 			if (1 == article.getListStyle() && 1 == article.getIsStick()) {

@@ -2,7 +2,9 @@ package com.dl.shop.lottery.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -28,6 +30,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
+import com.dl.shop.lottery.model.DlArticleClassify;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -82,17 +85,15 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		if (null == findAll) {
 			return new PageInfo<DLArticleDTO>();
 		}
+		List<DlArticleClassify> articleClassifyList = dlArticleMapper.findArticleClassify();
+		Map<Integer, DlArticleClassify> articleClassifyMap = new HashMap<Integer, DlArticleClassify>(articleClassifyList.size());
+		articleClassifyList.forEach(s -> articleClassifyMap.put(s.getId(), s));
 		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
-			List<String> articleThumbShow = new ArrayList<String>();
-			if ("1".equals(article.getExtendCat())) {
-				article.setExtendCat("今日关注");
-			} else if ("2".equals(article.getExtendCat())) {
-				article.setExtendCat("竞彩预测");
-			} else if ("3".equals(article.getExtendCat())) {
-				article.setExtendCat("牛人分析");
-			} else if ("4".equals(article.getExtendCat())) {
-				article.setExtendCat("其他");
+			Integer extendCatValue = Integer.parseInt(dto.getExtendCat());
+			DlArticleClassify articleClassify = articleClassifyMap.get(extendCatValue);
+			if (null != articleClassify) {
+				article.setExtendCat(articleClassify.getClassifyName());
 			}
 			dto.setAuthor(article.getAuthor());
 			dto.setAddTime(article.getAddTime().toString());
@@ -276,5 +277,9 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setArticles(articles);
 
 		return dto;
+	}
+
+	public List<DlArticleClassify> findArticleClassify() {
+		return dlArticleMapper.findArticleClassify();
 	}
 }
