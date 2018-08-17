@@ -33,6 +33,20 @@ public class DlPhoneChannel {
 	@Column(name = "article_classify_ids")
 	private String articleClassifyIds;
 
+	/**
+	 * 排序
+	 */
+	@Column(name = "sorts")
+	private String sorts;
+
+	public String getSorts() {
+		return sorts;
+	}
+
+	public void setSorts(String sorts) {
+		this.sorts = sorts;
+	}
+
 	public Integer getId() {
 		return id;
 	}

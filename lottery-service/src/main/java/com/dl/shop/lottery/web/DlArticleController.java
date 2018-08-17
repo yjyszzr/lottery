@@ -14,6 +14,8 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +27,6 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
-import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
@@ -43,6 +44,7 @@ import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlPhoneChannel;
+import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
@@ -55,6 +57,7 @@ import com.github.pagehelper.PageInfo;
 @RestController
 @RequestMapping("/dl/article")
 public class DlArticleController {
+	private final static Logger logger = LoggerFactory.getLogger(DlArticleController.class);
 	@Resource
 	private DlArticleService dlArticleService;
 
@@ -197,15 +200,9 @@ public class DlArticleController {
 	 */
 	public List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		// for (CatEnums e : CatEnums.values()) {
-		// InfoCatDTO infoCatDTO = new InfoCatDTO();
-		// infoCatDTO.setCat(e.getCode());
-		// infoCatDTO.setCatName(e.getMsg());
-		// infoCatList.add(infoCatDTO);
-		// }
-		String channel = SessionUtil.getUserDevice().getChannel();
-		// String channel = "c22022";
-		System.out.println("channel===============================================" + channel);
+		// String channel = SessionUtil.getUserDevice().getChannel();
+		String channel = "c10022";
+		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
 			for (int i = 0; i < articleClassifyCatList.size(); i++) {
@@ -214,12 +211,12 @@ public class DlArticleController {
 				infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
 				infoCatList.add(infoCat);
 			}
-			System.out.println("H5端的infoCatList===================================" + infoCatList);
+			logger.info("H5端的infoCatList===================================" + infoCatList);
 		} else {
 			List<DlPhoneChannel> phoneChannelList = dlArticleMapper.findPhoneChannel(channel);
 			if (phoneChannelList.size() > 0) {
 				List<String> resultStr = Arrays.asList(phoneChannelList.get(0).getArticleClassifyIds().split(","));
-				System.out.println("ArticleClassifyIds======================================" + resultStr);
+				logger.info("ArticleClassifyIds======================================" + resultStr);
 				if (resultStr.size() == 1 && resultStr.get(0).equals("0")) {
 					for (int i = 0; i < articleClassifyCatList.size(); i++) {
 						InfoCatDTO infoCat = new InfoCatDTO();
@@ -227,13 +224,29 @@ public class DlArticleController {
 						infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
 						infoCatList.add(infoCat);
 					}
-					System.out.println("等于0时候的infoCatList===================================" + infoCatList);
+					logger.info("资讯分类id等于0时的infoCatList===================================" + infoCatList);
 				} else {
 					Map<Integer, DlArticleClassify> map = new HashMap<Integer, DlArticleClassify>(articleClassifyCatList.size());
-
 					articleClassifyCatList.forEach(s -> map.put(s.getId(), s));
-					for (int i = 0; i < resultStr.size(); i++) {
-						DlArticleClassify articleClassifyMap = map.get(Integer.parseInt(resultStr.get(i)));
+					String sortsStr = null == phoneChannelList.get(0).getSorts() ? "0" : phoneChannelList.get(0).getSorts();
+					List<String> sortStr = Arrays.asList(sortsStr.split(","));
+					List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
+					DlSorts sortsArr[] = new DlSorts[sortStr.size()];
+					for (int i = 0; i < sortStr.size(); i++) {
+						String[] arrStr = sortStr.get(i).split(":");
+						DlSorts sorts;
+						if (arrStr.length > 1) {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
+						} else {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
+						}
+						sortsArr[i] = sorts;
+						sortsList.add(sorts);
+					}
+					Arrays.sort(sortsArr);
+					for (int i = 0; i < sortsArr.length; i++) {
+						DlSorts sorts = sortsArr[i];
+						DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
 						if (null != articleClassifyMap) {
 							InfoCatDTO infoCat = new InfoCatDTO();
 							infoCat.setCat(articleClassifyMap.getId().toString());
@@ -241,7 +254,7 @@ public class DlArticleController {
 							infoCatList.add(infoCat);
 						}
 					}
-					System.out.println("不等于0时候的infoCatList===================================" + infoCatList);
+					logger.info("资讯分类id不等于0时的infoCatList===================================" + infoCatList);
 				}
 			}
 		}
