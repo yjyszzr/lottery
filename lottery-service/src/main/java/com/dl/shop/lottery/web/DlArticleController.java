@@ -165,6 +165,9 @@ public class DlArticleController {
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DlArticle> findAll = dlArticleMapper.findArticlesByCat(extendCat);
 		for(DlArticle article:findAll) {
+			if(null == article.getIsStick()) {
+				continue;
+			}
 			if(1 == article.getListStyle() && 1 == article.getIsStick()) {
 				DLArticleDTO newDTO= new DLArticleDTO();
 				if(bigNewsList.size() >= 6) {
