@@ -27,6 +27,7 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
@@ -200,8 +201,8 @@ public class DlArticleController {
 	 */
 	public List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		// String channel = SessionUtil.getUserDevice().getChannel();
-		String channel = "c10022";
+		String channel = SessionUtil.getUserDevice().getChannel();
+		// String channel = "c10022";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
