@@ -158,8 +158,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			List<LotteryPrint> lotteryPrints = new ArrayList<>(callbackStakes.size());
 			for(CallbackStake callbackStake : callbackStakes) {
 				if(ProjectConstant.CALLBACK_STAKE_SUCCESS.equals(callbackStake.getPrintStatus())) {
+					String ticketId = callbackStake.getTicketId();
+					LotteryPrint dBPrint = lotteryPrintMapper.getPrintLotteryByTicetId(ticketId);
+					if(dBPrint==null){
+						log.error("河南出票回调异常,未找到对应的票，ticketId={}",ticketId);
+						continue;
+					}
 					LotteryPrint lotteryPrint = new LotteryPrint();
-					lotteryPrint.setTicketId(callbackStake.getTicketId());
+					lotteryPrint.setTicketId(ticketId);
 					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
 					if(null != lotteryPrint) {
 						Integer printStatus = callbackStake.getPrintStatus();
@@ -172,10 +178,14 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 						} else {
 							continue;
 						}
-						String sp = callbackStake.getSp();
 						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-						lotteryPrint.setPrintSp(sp);
+						if("T51".equals(dBPrint.getGame())){
+							String sp = callbackStake.getSp();
+							lotteryPrint.setPrintSp(sp);
+						}else{
+							lotteryPrint.setPrintSp("");//大乐透没有赔率
+						}
 						lotteryPrint.setPrintStatus(printStatus);
 						Date printTime = null;
 						String printTimeStr = callbackStake.getPrintTime();
@@ -185,8 +195,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 								printTime = sdf.parse(printTimeStr);
 								lotteryPrint.setPrintTime(printTime);
 							} catch (ParseException e) {
-								e.printStackTrace();
-								log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常");
+								log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常",e);
 								continue;
 							}
 						}
@@ -993,8 +1002,16 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public Map<String, String> callbackStakeWeiCaiShiDai(DlCallbackStakeWeiCaiShiDaiParam param) {
 		Map<String,String> result =new HashMap<String, String>();
 		log.info("微彩时代出票回调内容={}",JSONHelper.bean2json(param));
+		String ticketId = param.getOut_id();
+		LotteryPrint dBPrint = lotteryPrintMapper.getPrintLotteryByTicetId(ticketId);
+		if(dBPrint==null){
+			log.error("微彩时代出票回调异常,未找到对应的票，ticketId={}",ticketId);
+			result.put("code", "0000");
+			result.put("des", "成功");
+			return result;
+		}
 		LotteryPrint lotteryPrint = new LotteryPrint();
-		lotteryPrint.setTicketId(param.getOut_id());
+		lotteryPrint.setTicketId(ticketId);
 		String orderStatus = param.getOrderStatus();
 		if("1".equals(orderStatus)){
 			lotteryPrint.setStatus(1);
@@ -1006,7 +1023,11 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		lotteryPrint.setPlatformId("");
 		lotteryPrint.setPrintNo(param.getNumber());
-		lotteryPrint.setPrintSp(getCaiXiaoMiSpFromTicketNumber(param.getNumber()));
+		if("T51".equals(dBPrint.getGame())){
+			lotteryPrint.setPrintSp(getCaiXiaoMiSpFromTicketNumber(param.getNumber()));
+		}else{
+			lotteryPrint.setPrintSp("");//大乐透没有赔率
+		}
 		lotteryPrint.setPrintStatus(Integer.parseInt(orderStatus));
 		Date printTime = new Date();
 		try{

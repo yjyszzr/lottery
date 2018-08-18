@@ -105,6 +105,9 @@
   <select id="getByOrderSn" resultMap="BaseResultMap">
   	select * from dl_print_lottery where order_sn=#{orderSn}
   </select>
+  <select id="getPrintLotteryByTicetId" resultMap="BaseResultMap">
+  	select * from dl_print_lottery where ticket_id = #{ticketId}
+  </select>
   
   <select id="getPrintLotteryListByOrderSns" resultMap="BaseResultMap">
   	select * from dl_print_lottery 
