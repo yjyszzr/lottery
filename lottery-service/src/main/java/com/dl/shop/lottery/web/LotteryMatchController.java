@@ -741,9 +741,12 @@ public class LotteryMatchController {
 			}
 			betDetailInfos.add(dizqUserBetCellInfoDTO);
 		}
-		dto.setBetDetailInfos(betDetailInfos);
+		dto.setTimes(param.getTimes());
+		dto.setBetType(param.getBetType());
+		dto.setPlayType(param.getPlayType());
 		dto.setLotteryClassifyId(param.getLotteryClassifyId());
 		dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
+		dto.setBetDetailInfos(betDetailInfos);
 		dto.setBetNum(betNum);
 		dto.setTicketNum(betInfo.getTicketNum());
 		dto.setOrderMoney(orderMoney);
