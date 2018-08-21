@@ -723,6 +723,7 @@ public class LotteryMatchController {
 			dizqUserBetCellInfoDTO.setLotteryClassifyId(matchCell.getLotteryClassifyId());
 			dizqUserBetCellInfoDTO.setLotteryPlayClassifyId(matchCell.getLotteryPlayClassifyId());
 			dizqUserBetCellInfoDTO.setMatchTeam(matchCell.getMatchTeam());
+			dizqUserBetCellInfoDTO.setMatchTime(matchCell.getMatchTime());
 			String playCode = matchCell.getPlayCode();
 			dizqUserBetCellInfoDTO.setPlayCode(playCode);
 			List<MatchBetCellDTO> matchBetCells = matchCell.getMatchBetCells();
