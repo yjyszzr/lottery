@@ -1095,6 +1095,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		 Calendar cal = Calendar.getInstance();
 		cal.setTime(issueDay);
 		int week = cal.get(Calendar.DAY_OF_WEEK)-1;
+		if(week==0){
+			week=7;//星期天
+		}
 		String sumIsssue = yyyymmdd+week+theEnd;
 		return sumIsssue;
 	}
