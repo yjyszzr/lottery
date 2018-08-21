@@ -741,6 +741,8 @@ public class LotteryMatchController {
 			betDetailInfos.add(dizqUserBetCellInfoDTO);
 		}
 		dto.setBetDetailInfos(betDetailInfos);
+		dto.setLotteryClassifyId(param.getLotteryClassifyId());
+		dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
 		dto.setBetNum(betNum);
 		dto.setTicketNum(betInfo.getTicketNum());
 		dto.setOrderMoney(orderMoney);
