@@ -38,8 +38,22 @@ public class LotteryClassify {
      * 彩票状态 0-售卖 1-停售
      */
     private Integer status;
-
+    
     /**
+     * 彩票状态说明 0-售卖 1-停售 2-未开售
+     */
+    private String statusReason;
+
+    
+    public String getStatusReason() {
+		return statusReason;
+	}
+
+	public void setStatusReason(String statusReason) {
+		this.statusReason = statusReason;
+	}
+
+	/**
      * 是否显示 0-不显示 1-显示
      */
     @Column(name = "is_show")

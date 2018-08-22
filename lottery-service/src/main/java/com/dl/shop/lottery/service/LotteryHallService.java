@@ -124,6 +124,7 @@ public class LotteryHallService {
 			dto.setLotteryName(s.getLotteryName());
 			dto.setSubTitle(s.getSubTitle());
 			dto.setStatus(s.getStatus().toString());
+			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
 		}

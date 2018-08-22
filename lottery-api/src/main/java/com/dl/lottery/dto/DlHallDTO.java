@@ -81,8 +81,11 @@ public class DlHallDTO implements Serializable{
 		@ApiModelProperty(value = "彩票图片")
 		public String lotteryImg;
 		
-		@ApiModelProperty(value = "彩票状态 0-售卖 1-停售")
+		@ApiModelProperty(value = "彩票状态 0-售卖 1-停售 2-未开售")
 		public String status;
+		
+		@ApiModelProperty(value = "彩票状态说明")
+		public String statusReason;
 		
 		@ApiModelProperty(value = "副标题")
 		public String subTitle;

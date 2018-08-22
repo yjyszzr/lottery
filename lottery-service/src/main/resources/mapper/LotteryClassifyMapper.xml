@@ -9,6 +9,7 @@
     <result column="lottery_name" jdbcType="VARCHAR" property="lotteryName" />
     <result column="lottery_img" jdbcType="VARCHAR" property="lotteryImg" />
     <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="status_reason" jdbcType="VARCHAR" property="statusReason" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
@@ -35,6 +36,7 @@
            lottery_name,
            lottery_img,
            sub_title,
+           status_reason,
            status,
            redirect_url
         from
