@@ -317,6 +317,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 				Integer changciId = matchPlay.getChangciId();
 				DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+				if(matchPlayDto == null) {
+					continue;
+				}
 				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
 				if(dlJcZqMatchPlayDTOs == null){
 					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
@@ -503,7 +506,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				initDlJcZqMatchCell7(dto);
 				break;
 		}
-		dto.setPlayContent(null);
+		if(dto != null) {
+			dto.setPlayContent(null);
+		}
 		return dto;
 	}
 	/**
@@ -631,8 +636,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				matchCells.add(new DlJcZqMatchCellDTO(code, name+"球", odds));
 			}
 		}
-		matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
-		dto.setMatchCells(matchCells);
+		if(CollectionUtils.isNotEmpty(matchCells)) {
+			matchCells.sort((cell1,cell2)->cell1.getCellCode().compareTo(cell2.getCellCode()));
+			dto.setMatchCells(matchCells);
+		} else {
+			dto = null;
+		}
 	}
 	
 	/**
