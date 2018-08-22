@@ -1,34 +1,38 @@
 package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
 import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.lottery.dto.InfoCatDTO;
-import com.dl.lottery.enums.CatEnums;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
@@ -39,6 +43,9 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlArticle;
+import com.dl.shop.lottery.model.DlArticleClassify;
+import com.dl.shop.lottery.model.DlPhoneChannel;
+import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
@@ -51,15 +58,16 @@ import com.github.pagehelper.PageInfo;
 @RestController
 @RequestMapping("/dl/article")
 public class DlArticleController {
+	private final static Logger logger = LoggerFactory.getLogger(DlArticleController.class);
 	@Resource
 	private DlArticleService dlArticleService;
 
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
-	
+
 	@Resource
 	private LotteryConfig lotteryConfig;
-	
+
 	@Resource
 	private DlArticleMapper dlArticleMapper;
 
@@ -81,18 +89,16 @@ public class DlArticleController {
 	@PostMapping("/detail")
 	public BaseResult<DLArticleDetailDTO> detail(@RequestBody ArticleDetailParam param) {
 		DLArticleDetailDTO dlArticle = dlArticleService.findArticleById(param.getArticleId());
-		if(dlArticle == null) {
+		if (dlArticle == null) {
 			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_NULL.getCode(), LotteryResultEnum.ARTICLE_NULL.getMsg());
 		}
-		String extendCatValue = dlArticle.getExtendCat();
-		if ("1".equals(extendCatValue)) {
-			dlArticle.setExtendCat("今日关注");
-		} else if ("2".equals(extendCatValue)) {
-			dlArticle.setExtendCat("竞彩预测");
-		} else if ("3".equals(extendCatValue)) {
-			dlArticle.setExtendCat("牛人分析");
-		} else if ("5".equals(extendCatValue)) {
-			dlArticle.setExtendCat("其他");
+		List<DlArticleClassify> articleClassifyList = dlArticleService.findArticleClassify();
+		Map<Integer, DlArticleClassify> articleClassifyMap = new HashMap<Integer, DlArticleClassify>(articleClassifyList.size());
+		articleClassifyList.forEach(s -> articleClassifyMap.put(s.getId(), s));
+		Integer extendCatValue = Integer.parseInt(dlArticle.getExtendCat());
+		DlArticleClassify articleClassify = articleClassifyMap.get(extendCatValue);
+		if (null != articleClassify) {
+			dlArticle.setExtendCat(articleClassify.getClassifyName());
 		}
 		return ResultGenerator.genSuccessResult(null, dlArticle);
 	}
@@ -108,7 +114,7 @@ public class DlArticleController {
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles("-1");
 		return ResultGenerator.genSuccessResult(null, rst);
 	}
-	
+
 	@ApiOperation(value = "发现页", notes = "发现页")
 	@PostMapping("/findList")
 	public BaseResult<DLFindListDTO> findList(@RequestBody CatArticleParam param) {
@@ -136,17 +142,17 @@ public class DlArticleController {
 				}
 				navBanners.add(dlNavBannerDTO);
 			}
-		}		
+		}
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
-		
-		//20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
+
+		// 20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
 		List<DLArticleDTO> bigNews = this.createBigNewsList(param.getExtendCat());
-		
+
 		DLFindListDTO findListDTO = new DLFindListDTO();
 		findListDTO.setInfoCatList(createCat());
 		findListDTO.setNavBanners(navBanners);
@@ -161,10 +167,13 @@ public class DlArticleController {
 	public List<DLArticleDTO> createBigNewsList(String extendCat) {
 		List<DLArticleDTO> bigNewsList = new ArrayList<>();
 		List<DlArticle> findAll = dlArticleMapper.findArticlesByCat(extendCat);
-		for(DlArticle article:findAll) {
-			if(1 == article.getListStyle() && 1 == article.getIsStick()) {
-				DLArticleDTO newDTO= new DLArticleDTO();
-				if(bigNewsList.size() >= 6) {
+		for (DlArticle article : findAll) {
+			if (null == article.getIsStick()) {
+				continue;
+			}
+			if (1 == article.getListStyle() && 1 == article.getIsStick()) {
+				DLArticleDTO newDTO = new DLArticleDTO();
+				if (bigNewsList.size() >= 6) {
 					break;
 				}
 				newDTO.setListStyle(5);
@@ -184,23 +193,75 @@ public class DlArticleController {
 		}
 		return bigNewsList;
 	}
-	
-	
+
 	/**
 	 * 目前没有对咨询分类建立表
+	 * 
 	 * @return
 	 */
 	public List<InfoCatDTO> createCat() {
-		List<InfoCatDTO> infoCatList = new ArrayList<>();
-		for(CatEnums e:CatEnums.values()) {
-			InfoCatDTO infoCatDTO = new InfoCatDTO();
-			infoCatDTO.setCat(e.getCode());
-			infoCatDTO.setCatName(e.getMsg());
-			infoCatList.add(infoCatDTO);
+		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
+		String channel = SessionUtil.getUserDevice().getChannel();
+		// String channel = "c10022";
+		logger.info("channel===============================================" + channel);
+		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
+		if (channel.equals("h5")) {
+			for (int i = 0; i < articleClassifyCatList.size(); i++) {
+				InfoCatDTO infoCat = new InfoCatDTO();
+				infoCat.setCat(articleClassifyCatList.get(i).getId().toString());
+				infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
+				infoCatList.add(infoCat);
+			}
+			logger.info("H5端的infoCatList===================================" + infoCatList);
+		} else {
+			List<DlPhoneChannel> phoneChannelList = dlArticleMapper.findPhoneChannel(channel);
+			if (phoneChannelList.size() > 0) {
+				List<String> resultStr = Arrays.asList(phoneChannelList.get(0).getArticleClassifyIds().split(","));
+				logger.info("ArticleClassifyIds======================================" + resultStr);
+				if (resultStr.size() == 1 && resultStr.get(0).equals("0")) {
+					for (int i = 0; i < articleClassifyCatList.size(); i++) {
+						InfoCatDTO infoCat = new InfoCatDTO();
+						infoCat.setCat(articleClassifyCatList.get(i).getId().toString());
+						infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
+						infoCatList.add(infoCat);
+					}
+					logger.info("资讯分类id等于0时的infoCatList===================================" + infoCatList);
+				} else {
+					Map<Integer, DlArticleClassify> map = new HashMap<Integer, DlArticleClassify>(articleClassifyCatList.size());
+					articleClassifyCatList.forEach(s -> map.put(s.getId(), s));
+					String sortsStr = null == phoneChannelList.get(0).getSorts() ? "0" : phoneChannelList.get(0).getSorts();
+					List<String> sortStr = Arrays.asList(sortsStr.split(","));
+					List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
+					DlSorts sortsArr[] = new DlSorts[sortStr.size()];
+					for (int i = 0; i < sortStr.size(); i++) {
+						String[] arrStr = sortStr.get(i).split(":");
+						DlSorts sorts;
+						if (arrStr.length > 1) {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
+						} else {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
+						}
+						sortsArr[i] = sorts;
+						sortsList.add(sorts);
+					}
+					Arrays.sort(sortsArr);
+					for (int i = 0; i < sortsArr.length; i++) {
+						DlSorts sorts = sortsArr[i];
+						DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
+						if (null != articleClassifyMap) {
+							InfoCatDTO infoCat = new InfoCatDTO();
+							infoCat.setCat(articleClassifyMap.getId().toString());
+							infoCat.setCatName(articleClassifyMap.getClassifyName());
+							infoCatList.add(infoCat);
+						}
+					}
+					logger.info("资讯分类id不等于0时的infoCatList===================================" + infoCatList);
+				}
+			}
 		}
 		return infoCatList;
 	}
-	
+
 	/**
 	 * 根据当前文章的分类查找相关文章
 	 * 
@@ -210,13 +271,13 @@ public class DlArticleController {
 	@ApiOperation(value = "相关文章", notes = "相关文章")
 	@PostMapping("/relatedArticles")
 	public BaseResult<PageInfo<DLArticleDTO>> relatedArticles(@RequestBody ArticleCatParam param) {
-		if(StringUtils.isBlank(param.getCurrentArticleId())) {
+		if (StringUtils.isBlank(param.getCurrentArticleId())) {
 			return ResultGenerator.genResult(LotteryResultEnum.ARTICLE_ID_NULL.getCode(), LotteryResultEnum.ARTICLE_ID_NULL.getMsg());
 		}
-		if(param.getPage() == null) {
+		if (param.getPage() == null) {
 			param.setPage(1);
 		}
-		if(param.getSize() == null) {
+		if (param.getSize() == null) {
 			param.setSize(10);
 		}
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesRelated(param);

@@ -1,8 +1,6 @@
 package com.dl.shop.lottery.service;
-import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
-
+import java.util.Comparator;
+import java.util.stream.Collectors;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -61,6 +59,7 @@ import com.dl.base.util.JSONHelper;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DLZQOrderLotteryBetInfoDTO;
@@ -100,11 +99,13 @@ import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
+import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.model.DlMatchLive;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
@@ -126,6 +127,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+	@Resource
+	private DlMatchLiveMapper dlMatchLiveMapper;
 	
 	@Resource
 	private LotteryPrintMapper lotteryPrintMapper;
@@ -342,7 +345,20 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		String cbtValue = jsonObj.getString("cbt");
 		if("2".equals(cbtValue)) {
-			return true;
+			Boolean isStop = Boolean.TRUE;
+			/****************20180820 据抓取工程师说，停售时（00-09）,cbt也是2，我们不能隐藏赛事因此增加逻辑**************/
+			Integer changciId= matchPlay.getChangciId();
+			DlMatchLive matchLive = dlMatchLiveMapper.getByChangciId(changciId);
+			if(matchLive!=null&&!StringUtils.isEmpty(matchLive.getMatchLiveInfo())){			
+				String matchLiveInfo = matchLive.getMatchLiveInfo();
+				JSONObject matchLiveJsonObj = JSON.parseObject(matchLiveInfo);
+				String matchStatus = matchLiveJsonObj.getString("match_status");
+				if(!"Cancelled".equalsIgnoreCase(matchStatus)){
+					isStop = Boolean.FALSE;
+				}
+			}
+			/****************20180820 据抓取工程师说，停售时（00-09）,cbt也是2，我们不能隐藏赛事因此增加逻辑**************/
+			return isStop;
 		}
 		return false;
 	}
@@ -2636,7 +2652,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		if(queryMatchParamByType.getType().equals("0")) {//未结束
 			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
-		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(collectingAndThen(toCollection(() -> new TreeSet<>(comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
+		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
 			lotteryMatchDTOList = unique;
 			String weekDay = DateUtil.getWeekByDateStr(dateStr);
 			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > -1).collect(Collectors.toList()).size();
@@ -2740,6 +2756,23 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    
 	    return ResultGenerator.genSuccessResult("success", lotteryMatchDTOList);
 	}	
+	
+	public List<DLBetLottoInfoDTO> getBetInfoByLottoInfo(String orderSn) {
+		List<DLBetLottoInfoDTO> list = new ArrayList<>();
+		List<LotteryPrint> prints = lotteryPrintMapper.getByOrderSn(orderSn);
+		prints.forEach(item->{
+			DLBetLottoInfoDTO dto = new DLBetLottoInfoDTO();
+			dto.setTicketId(item.getTicketId());
+			dto.setStakes(item.getStakes());
+			dto.setBetType(item.getBetType());
+			dto.setPlayType(item.getPlayType());
+			dto.setStatus(item.getStatus());
+			dto.setTimes(item.getTimes());
+			dto.setAmount(item.getMoney().doubleValue());
+			list.add(dto);
+		});
+		return list;
+	}
 	
 //	@Transactional(readOnly=true)
 	public DLZQBetInfoDTO getBetInfoByOrderInfo1(String orderSn) {

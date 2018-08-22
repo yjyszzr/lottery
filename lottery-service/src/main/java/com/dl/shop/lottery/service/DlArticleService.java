@@ -2,20 +2,20 @@ package com.dl.shop.lottery.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dl.base.enums.CommonEnum;
 import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
@@ -29,6 +29,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
+import com.dl.shop.lottery.model.DlArticleClassify;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -52,48 +53,47 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	 */
 	/**
 	 * 全部文章,catArticle:
-	 * @param catArticle -1:全部文章，非-1：其他分类文章
+	 * 
+	 * @param catArticle
+	 *            -1:全部文章，非-1：其他分类文章
 	 * @return
 	 */
 	public PageInfo<DLArticleDTO> findArticles(String catArticle) {
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		List<DlArticle> findAll = new ArrayList<>();
-		if(catArticle.equals("-1")) {//全部
+		if (catArticle.equals("-1")) {// 全部
 			findAll = dlArticleMapper.findArticles();
-		}else {
+		} else {
 			findAll = dlArticleMapper.findArticlesByCat(catArticle);
 		}
 
-		
-		
-//		List<DlArticle> collect = findAll.stream().filter(item->1 == (item.getIsStick()==null?0:item.getIsStick())).collect(Collectors.toList());
-//		if(CollectionUtils.isNotEmpty(collect)) {
-//			collect.sort((item1,item2)->{
-//				if(item2.getStickTime() == null)item2.setStickTime(0);
-//				if(item1.getStickTime() == null)item1.setStickTime(0);
-//				return item2.getStickTime().compareTo(item1.getStickTime());
-//			});
-//			findAll.removeAll(collect);
-//			findAll.addAll(0, collect);
-//		}
-		
+		// List<DlArticle> collect = findAll.stream().filter(item->1 ==
+		// (item.getIsStick()==null?0:item.getIsStick())).collect(Collectors.toList());
+		// if(CollectionUtils.isNotEmpty(collect)) {
+		// collect.sort((item1,item2)->{
+		// if(item2.getStickTime() == null)item2.setStickTime(0);
+		// if(item1.getStickTime() == null)item1.setStickTime(0);
+		// return item2.getStickTime().compareTo(item1.getStickTime());
+		// });
+		// findAll.removeAll(collect);
+		// findAll.addAll(0, collect);
+		// }
+
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAll);
 
 		if (null == findAll) {
 			return new PageInfo<DLArticleDTO>();
 		}
+		List<DlArticleClassify> articleClassifyList = dlArticleMapper.findArticleClassify();
+		Map<Integer, DlArticleClassify> articleClassifyMap = new HashMap<Integer, DlArticleClassify>(articleClassifyList.size());
+		articleClassifyList.forEach(s -> articleClassifyMap.put(s.getId(), s));
 		for (DlArticle article : findAll) {
 			DLArticleDTO dto = this.articleDto(article);
-			List<String> articleThumbShow = new ArrayList<String>();
-			if ("1".equals(article.getExtendCat())) {
-				article.setExtendCat("今日关注");
-			} else if ("2".equals(article.getExtendCat())) {
-				article.setExtendCat("竞彩预测");
-			} else if ("3".equals(article.getExtendCat())) {
-				article.setExtendCat("牛人分析");
-			} else if ("4".equals(article.getExtendCat())) {
-				article.setExtendCat("其他");
-			} 
+			Integer extendCatValue = Integer.parseInt(dto.getExtendCat());
+			DlArticleClassify articleClassify = articleClassifyMap.get(extendCatValue);
+			if (null != articleClassify) {
+				article.setExtendCat(articleClassify.getClassifyName());
+			}
 			dto.setAuthor(article.getAuthor());
 			dto.setAddTime(article.getAddTime().toString());
 			dto.setArticleThumb(dto.getArticleThumb());
@@ -164,13 +164,13 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		}
 
 		List<DlArticle> findAllRelated = null;
-		if(null != curArticle.getExtendCat() && null != articleId) {
-			//PageHelper.startPage(param.getPage(), param.getSize());
-		    try{
-		    	findAllRelated = dlArticleMapper.findArticlesRelated(articleId, curArticle.getExtendCat(),(param.getPage()-1)*param.getSize(), param.getSize());
-		    } finally {
-		        PageHelper.clearPage();
-		    }
+		if (null != curArticle.getExtendCat() && null != articleId) {
+			// PageHelper.startPage(param.getPage(), param.getSize());
+			try {
+				findAllRelated = dlArticleMapper.findArticlesRelated(articleId, curArticle.getExtendCat(), (param.getPage() - 1) * param.getSize(), param.getSize());
+			} finally {
+				PageHelper.clearPage();
+			}
 		}
 
 		PageInfo<DlArticle> pageInfo = new PageInfo<DlArticle>(findAllRelated);
@@ -204,7 +204,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 
 		dto.setArticleThumb(articleThumbList);
 		dto.setClickNumber(article.getClickNumber());
-		dto.setExtendCat(CommonEnum.getName(Integer.valueOf(article.getExtendCat())));
+		dto.setExtendCat(article.getExtendCat());
 		dto.setKeywords(article.getKeywords());
 		dto.setLink(lotteryConfig.getShareInfoUrl() + article.getArticleId());
 		dto.setListStyle(article.getListStyle());
@@ -267,7 +267,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		List<DLArticleDTO> articles = new ArrayList<DLArticleDTO>();
 
 		// 第一期通过 分类 来关联
-		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat(),1,3);
+		List<DlArticle> findAllRelated = dlArticleMapper.findArticlesRelated(article.getArticleId(), article.getExtendCat(), 1, 3);
 		for (DlArticle a : findAllRelated) {
 			DLArticleDTO d = this.articleDto(a);
 			d.setAddTime(a.getAddTime().toString());
@@ -276,5 +276,9 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setArticles(articles);
 
 		return dto;
+	}
+
+	public List<DlArticleClassify> findArticleClassify() {
+		return dlArticleMapper.findArticleClassify();
 	}
 }

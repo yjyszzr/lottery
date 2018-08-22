@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dl.shop.lottery.dao.DlArticleMapper">
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlArticle">
-    <!--
-      WARNING - @mbg.generated
-    -->
     <id column="article_id" jdbcType="INTEGER" property="articleId" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="cat_id" jdbcType="INTEGER" property="catId" />
@@ -36,6 +33,21 @@
     <result column="article_uv" jdbcType="INTEGER" property="articleUv" />
     <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  
+  <resultMap id="articleClassifyResultMap" type="com.dl.shop.lottery.model.DlArticleClassify">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="classify_name" jdbcType="VARCHAR" property="classifyName" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+  </resultMap>
+  
+  <resultMap id="phoneChannelResultMap" type="com.dl.shop.lottery.model.DlPhoneChannel">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+    <result column="app_code_name" jdbcType="VARCHAR" property="appCodeName" />
+    <result column="article_classify_ids" jdbcType="VARCHAR" property="articleClassifyIds" />
   </resultMap>
   
   <select id="findArticles" resultMap="BaseResultMap">
@@ -74,4 +86,10 @@
    	article_id = #{articleId}
   
   </update>
+  <select id="findArticleClassify"    resultMap="articleClassifyResultMap">
+  	select * from dl_article_classify where deleted = 0 
+  </select>
+  <select id="findPhoneChannel"    resultMap="phoneChannelResultMap">
+  	select * from dl_phone_channel where channel = #{channel} 
+  </select>
 </mapper>
