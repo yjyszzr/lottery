@@ -69,7 +69,7 @@ public class LotteryHallService {
 
 	/**
 	 * 获取彩票大厅数据
-	 * 
+	 * 第一版本使用
 	 * @return
 	 */
 	public DlHallDTO getHallDataAllLottery(HallParam hallParam) {
@@ -96,6 +96,38 @@ public class LotteryHallService {
 			dlPlayClassifyDetailDTOs.add(dto);
 		}
 		dlHallDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
+		return dlHallDTO;
+	}
+	/**
+	 * 新版本使用，多采种
+	 * @param hallParam
+	 * @return
+	 */
+	public DlHallDTO getHallDataAllLottery1(HallParam hallParam) {
+		DlHallDTO dlHallDTO = new DlHallDTO();
+		// 获取首页轮播图列表
+		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
+		// 获取活动数据
+		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		// 获取中奖信息列表
+		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
+		// 获取彩票分类列表
+		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
+		// //第一版只显示竞彩足球的子列表
+		List<DlLotteryClassifyDTO> lotteryClassifys = new ArrayList<DlLotteryClassifyDTO>();
+		//新版本展示的是不同彩种的logo相关信息
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		for(LotteryClassify s:classifyList){
+			DlLotteryClassifyDTO  dto = new DlLotteryClassifyDTO();
+			dto.setLotteryId(s.getLotteryClassifyId().toString());
+			dto.setLotteryImg(lotteryConfig.getBannerShowUrl()+s.getLotteryImg());
+			dto.setLotteryName(s.getLotteryName());
+			dto.setSubTitle(s.getSubTitle());
+			dto.setStatus(s.getStatus().toString());
+			dto.setRedirectUrl(s.getRedirectUrl());
+			lotteryClassifys.add(dto);
+		}
+		dlHallDTO.setLotteryClassifys(lotteryClassifys);
 		return dlHallDTO;
 	}
 	
@@ -272,7 +304,7 @@ public class LotteryHallService {
 	 * 
 	 * @return
 	 */
-	private List<DlLotteryClassifyDTO> getDlLotteryClassifyDTOs() {
+	/*private List<DlLotteryClassifyDTO> getDlLotteryClassifyDTOs() {
 		List<DlLotteryClassifyDTO> dlLotteryClassifyDTOs = new LinkedList<DlLotteryClassifyDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
 		condition.createCriteria().andCondition("is_show=", 1);
@@ -281,7 +313,7 @@ public class LotteryHallService {
 		if (CollectionUtils.isNotEmpty(lotteryClassifys)) {
 			for (LotteryClassify lotteryClassify : lotteryClassifys) {
 				DlLotteryClassifyDTO dlLotteryClassifyDTO = new DlLotteryClassifyDTO();
-				dlLotteryClassifyDTO.setLotteryId(lotteryClassify.getLotteryClassifyId());
+				dlLotteryClassifyDTO.setLotteryId(lotteryClassify.getLotteryClassifyId().toString());
 				dlLotteryClassifyDTO.setLotteryName(lotteryClassify.getLotteryName());
 				dlLotteryClassifyDTO.setLotteryImg(lotteryClassify.getLotteryImg());
 				dlLotteryClassifyDTO.setStatus(lotteryClassify.getStatus());
@@ -289,5 +321,5 @@ public class LotteryHallService {
 			}
 		}
 		return dlLotteryClassifyDTOs;
-	}
+	}*/
 }

@@ -21,8 +21,8 @@ public class DlHallDTO implements Serializable{
 	public List<DlWinningLogDTO> winningMsgs;
 	
 	//第一版只显示竞彩足球的子列表
-//	@ApiModelProperty(value = "彩票分类列表")
-//	public List<DlLotteryClassifyDTO> lotteryClassifys;
+	@ApiModelProperty(value = "彩票分类列表")
+	public List<DlLotteryClassifyDTO> lotteryClassifys;
 	
 	@ApiModelProperty(value = "玩法分类明细")
 	public List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs;
@@ -73,7 +73,7 @@ public class DlHallDTO implements Serializable{
 	public static class DlLotteryClassifyDTO {
 		
 		@ApiModelProperty(value = "彩票分类id")
-		public Integer lotteryId;
+		public String lotteryId;
 
 		@ApiModelProperty(value = "彩票名称")
 		public String lotteryName;
@@ -82,6 +82,13 @@ public class DlHallDTO implements Serializable{
 		public String lotteryImg;
 		
 		@ApiModelProperty(value = "彩票状态 0-售卖 1-停售")
-		public Integer status;
+		public String status;
+		
+		@ApiModelProperty(value = "副标题")
+		public String subTitle;
+		
+		@ApiModelProperty(value = "跳转链接地址")
+		public String redirectUrl;
+		
 	}
 }

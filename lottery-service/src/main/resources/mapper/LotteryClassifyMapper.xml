@@ -29,4 +29,18 @@
         order by sort asc, create_time desc
   </select>
   
+  <select id="selectAllLotteryClasses" resultMap="BaseResultMap">
+        select
+           lottery_classify_id,
+           lottery_name,
+           lottery_img,
+           sub_title,
+           status,
+           redirect_url
+        from
+            dl_lottery_classify
+        where is_show = 1
+        order by sort asc
+  </select>
+  
 </mapper>

@@ -79,7 +79,7 @@ public class LotteryHallController {
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		if (hallParam.getPage() == 1) {
-			dlHallDTO = lotteryHallService.getHallDataAllLottery(hallParam);
+			dlHallDTO = lotteryHallService.getHallDataAllLottery1(hallParam);
 		}
 
 		PageHelper.startPage(hallParam.getPage(), hallParam.getSize());
