@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
@@ -150,8 +151,17 @@ public class DlArticleController {
 		PageHelper.startPage(page, size);
 		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(param.getExtendCat());
 
-		// 20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
+		// 临时需求,可以删除,20180809 周丹提出的临时需求:取其中文章前6篇,临时支持显示样式5,全屏图
 		List<DLArticleDTO> bigNews = this.createBigNewsList(param.getExtendCat());
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		String channel = userDevice.getChannel();
+		if(StringUtils.isNotEmpty(channel)) {
+			if("c26013".equals(channel)) {//临时需求,可以删除,乐得体育的样式
+				if(bigNews.size() > 1) {
+					bigNews = bigNews.subList(0, 2);
+				}
+			}
+		}
 
 		DLFindListDTO findListDTO = new DLFindListDTO();
 		findListDTO.setInfoCatList(createCat());
