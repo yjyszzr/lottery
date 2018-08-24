@@ -157,8 +157,8 @@ public class DlArticleController {
 		String channel = userDevice.getChannel();
 		if(StringUtils.isNotEmpty(channel)) {
 			if("c26013".equals(channel)) {//临时需求,可以删除,乐得体育的样式
-				if(bigNews.size() > 1) {
-					bigNews = bigNews.subList(0, 2);
+				if(bigNews.size() > 0) {
+					bigNews = bigNews.subList(0, 1);
 				}
 			}
 		}
