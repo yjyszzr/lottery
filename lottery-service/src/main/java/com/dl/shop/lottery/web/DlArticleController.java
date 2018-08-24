@@ -158,7 +158,7 @@ public class DlArticleController {
 		if(StringUtils.isNotEmpty(channel)) {
 			if("c26013".equals(channel)) {//临时需求,可以删除,乐得体育的样式
 				if(bigNews.size() > 1) {
-					bigNews = bigNews.subList(0, 2);
+					bigNews = bigNews.subList(0, 1);
 				}
 			}
 		}
