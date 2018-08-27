@@ -281,4 +281,26 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	public List<DlArticleClassify> findArticleClassify() {
 		return dlArticleMapper.findArticleClassify();
 	}
+
+	public PageInfo<DLArticleDTO> findArticlesByCats(Integer[] catarr) {
+		List<DlArticle> findAll = new ArrayList<>();
+		List<DLArticleDTO> findAllDTO = new ArrayList<>();
+		findAll = dlArticleMapper.findArticlesByCats(catarr);
+		for (int i = 0; i < findAll.size(); i++) {
+			findAllDTO.add(articleDto(findAll.get(i)));
+		}
+		PageInfo<DLArticleDTO> pageInfo = new PageInfo<DLArticleDTO>(findAllDTO);
+
+		if (null == findAll) {
+			return new PageInfo<DLArticleDTO>();
+		}
+		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
+		try {
+			BeanUtils.copyProperties(pageInfo, result);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		result.setList(findAllDTO);
+		return result;
+	}
 }

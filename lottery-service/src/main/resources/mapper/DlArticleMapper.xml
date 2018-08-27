@@ -89,6 +89,12 @@
   <select id="findArticleClassify"    resultMap="articleClassifyResultMap">
   	select * from dl_article_classify where deleted = 0 
   </select>
+  <select id="findArticlesByCats"    resultMap="BaseResultMap">
+  	select * from dl_article where is_delete = 0  and  extend_cat  in
+  	  	<foreach collection="catarr" index="index" item="item" open="(" separator="," close=")">  
+         #{item}  
+    </foreach>
+  </select>
   <select id="findPhoneChannel"    resultMap="phoneChannelResultMap">
   	select * from dl_phone_channel where channel = #{channel} 
   </select>

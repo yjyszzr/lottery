@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlDiscoveryHallClassifyMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlDiscoveryHallClassify">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="classify_id" jdbcType="INTEGER" property="classifyId" />
+    <result column="class_name" jdbcType="VARCHAR" property="className" />
+    <result column="class_img" jdbcType="VARCHAR" property="classImg" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />
+    <result column="status_reason" jdbcType="VARCHAR" property="statusReason" />
+  </resultMap>
+</mapper>

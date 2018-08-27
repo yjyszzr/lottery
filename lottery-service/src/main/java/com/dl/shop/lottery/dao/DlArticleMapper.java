@@ -25,4 +25,6 @@ public interface DlArticleMapper extends Mapper<DlArticle> {
 
 	List<DlPhoneChannel> findPhoneChannel(@Param("channel") String channel);
 
+	List<DlArticle> findArticlesByCats(@Param("catarr") Integer[] catarr);
+
 }
