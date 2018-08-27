@@ -2645,7 +2645,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setFirstHalf("0:0");
 				lotteryMatchDTO.setWhole("0:0");
 				lotteryMatchDTO.setMinute("0");
-				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Fixture.getCode());
+				lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
@@ -2654,6 +2654,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
 		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
 			lotteryMatchDTOList = unique;
+			//优先展示正在进行的比赛
+			unique.stream().sorted(Comparator.comparing(LotteryMatchDTO::getMatchFinish).reversed().thenComparing(LotteryMatchDTO::getChangciId));
 			String weekDay = DateUtil.getWeekByDateStr(dateStr);
 			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > -1).collect(Collectors.toList()).size();
 		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
