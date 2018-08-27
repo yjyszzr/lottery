@@ -45,6 +45,7 @@ import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
+import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
@@ -76,6 +77,8 @@ public class DlArticleController {
 
 	@Resource
 	private DlArticleMapper dlArticleMapper;
+	@Resource
+	private LotteryClassifyMapper lotteryClassifyMapper;
 
 	@Resource
 	private DlDiscoveryHallClassifyService dlDiscoveryHallClassifyService;
@@ -203,11 +206,21 @@ public class DlArticleController {
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
 		List<InfoCatDTO> catList = createCat();
-		Integer[] catarr = new Integer[catList.size()];
-		for (int i = 0; i < catList.size(); i++) {
-			catarr[i] = Integer.parseInt(catList.get(i).getCat());
+		PageInfo<DLArticleDTO> rst = new PageInfo<DLArticleDTO>();
+		if (catList.size() == 0) {
+			List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+			Integer[] catarr = new Integer[classifyList.size()];
+			for (int i = 0; i < classifyList.size(); i++) {
+				catarr[i] = classifyList.get(i).getLotteryClassifyId();
+			}
+			rst = dlArticleService.findArticlesByCats(catarr);
+		} else {
+			Integer[] catarr = new Integer[catList.size()];
+			for (int i = 0; i < catList.size(); i++) {
+				catarr[i] = Integer.parseInt(catList.get(i).getCat());
+			}
+			rst = dlArticleService.findArticlesByCats(catarr);
 		}
-		PageInfo<DLArticleDTO> rst = dlArticleService.findArticlesByCats(catarr);
 		DlDiscoveryPageDTO discoveryPage = new DlDiscoveryPageDTO();
 		discoveryPage.setDlArticlePage(rst);
 		List<DlDiscoveryHallClassifyDTO> discoveryHalllist = new ArrayList<DlDiscoveryHallClassifyDTO>(discoveryHallClassifyList.size());
@@ -263,8 +276,8 @@ public class DlArticleController {
 	 */
 	public List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		String channel = SessionUtil.getUserDevice().getChannel();
-		// String channel = "c10022";
+		// String channel = SessionUtil.getUserDevice().getChannel();
+		String channel = "c16010";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
