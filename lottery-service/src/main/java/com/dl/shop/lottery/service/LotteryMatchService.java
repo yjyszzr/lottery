@@ -2645,7 +2645,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lotteryMatchDTO.setFirstHalf("0:0");
 				lotteryMatchDTO.setWhole("0:0");
 				lotteryMatchDTO.setMinute("0");
-				lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Fixture.getCode());
+				lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
 			}
 			lotteryMatchDTOList.add(lotteryMatchDTO);
 		}
