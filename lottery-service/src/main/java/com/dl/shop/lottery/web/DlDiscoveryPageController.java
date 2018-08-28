@@ -101,9 +101,9 @@ public class DlDiscoveryPageController {
 			List<DlTopScorerMemberDTO> topScorerMemberList = new ArrayList<DlTopScorerMemberDTO>(5);
 			for (int j = 0; j < 5; j++) {
 				DlTopScorerMemberDTO topScorerMember = new DlTopScorerMemberDTO();
-				topScorerMember.setMemberName("成员" + j);
+				topScorerMember.setMemberName(i + "成员" + j);
 				topScorerMember.setRanking(j + 1);
-				topScorerMember.setTopScorerTeam("球队" + j);
+				topScorerMember.setTopScorerTeam(i + "球队" + j);
 				topScorerMember.setTotalGoal(20 - j * 3);
 				topScorerMemberList.add(topScorerMember);
 			}
