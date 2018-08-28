@@ -353,7 +353,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				String matchLiveInfo = matchLive.getMatchLiveInfo();
 				JSONObject matchLiveJsonObj = JSON.parseObject(matchLiveInfo);
 				String matchStatus = matchLiveJsonObj.getString("match_status");
-				if(!"Cancelled".equalsIgnoreCase(matchStatus)){
+                if("Fixture".equalsIgnoreCase(matchStatus)){
 					isStop = Boolean.FALSE;
 				}
 			}
