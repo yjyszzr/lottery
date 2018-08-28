@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.util.StringUtils;
 import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.param.EmptyParam;
+import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlHallDTO;
@@ -26,6 +28,8 @@ import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.enums.PlayLabelEnums;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
+import com.dl.lotto.api.ISuperLottoService;
+import com.dl.lotto.dto.LottoDTO;
 import com.dl.member.api.IUserService;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
@@ -66,6 +70,9 @@ public class LotteryHallService {
 	
 	@Resource
 	private IUserService userService;
+	
+	@Resource
+	private	ISuperLottoService iSuperLottoService;
 
 	/**
 	 * 获取彩票大厅数据
@@ -115,6 +122,7 @@ public class LotteryHallService {
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
 		// //第一版只显示竞彩足球的子列表
 		List<DlLotteryClassifyDTO> lotteryClassifys = new ArrayList<DlLotteryClassifyDTO>();
+
 		//新版本展示的是不同彩种的logo相关信息
 		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
 		for(LotteryClassify s:classifyList){
@@ -122,7 +130,11 @@ public class LotteryHallService {
 			dto.setLotteryId(s.getLotteryClassifyId().toString());
 			dto.setLotteryImg(lotteryConfig.getBannerShowUrl()+s.getLotteryImg());
 			dto.setLotteryName(s.getLotteryName());
-			dto.setSubTitle(s.getSubTitle());
+			if(2 == s.getLotteryClassifyId()) {
+				dto.setSubTitle(this.queryLatestLottoPrizes());
+			}else {
+				dto.setSubTitle(s.getSubTitle());
+			}
 			dto.setStatus(s.getStatus().toString());
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
@@ -132,6 +144,17 @@ public class LotteryHallService {
 		return dlHallDTO;
 	}
 	
+	public String  queryLatestLottoPrizes() {
+		String prizes = "";
+		EmptyParam emptyParam = new EmptyParam();
+		emptyParam.setEmptyStr("");
+		BaseResult<LottoDTO> lottoDtoRst = iSuperLottoService.queryLottoLatestPrizes(emptyParam);
+		if(0 != lottoDtoRst.getCode()) {
+			return prizes;
+		}
+		LottoDTO lottoDTO = lottoDtoRst.getData();
+		return lottoDTO.getPrizes();
+	}
 	
 	/**
 	 * 获取彩票大厅数据

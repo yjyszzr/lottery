@@ -20,7 +20,7 @@ import com.dl.shop.lottery.core.ProjectConstant;
 @MapperScan(basePackages= {ProjectConstant.MAPPER_PACKAGE,"com.dl.shop.lottery.dao2"})
 @EnableTransactionManagement
 @EnableEurekaClient
-@EnableFeignClients({"com.dl.member.api", "com.dl.order.api", "com.dl.shop.payment.api"})
+@EnableFeignClients({"com.dl.member.api", "com.dl.order.api", "com.dl.shop.payment.api","com.dl.lotto.api"})
 public class LotteryServiceApplication {
 	
     public static void main(String[] args) {
