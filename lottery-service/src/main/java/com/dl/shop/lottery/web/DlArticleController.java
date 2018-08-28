@@ -32,8 +32,6 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLArticleDetailDTO;
 import com.dl.lottery.dto.DLFindListDTO;
-import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
-import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
@@ -41,7 +39,6 @@ import com.dl.lottery.param.ArticleCatParam;
 import com.dl.lottery.param.ArticleDetailParam;
 import com.dl.lottery.param.ArticleIdsParam;
 import com.dl.lottery.param.CatArticleParam;
-import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.ListArticleParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
@@ -49,7 +46,6 @@ import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
-import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
 import com.dl.shop.lottery.model.DlPhoneChannel;
 import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.LotteryClassify;
@@ -180,60 +176,6 @@ public class DlArticleController {
 		findListDTO.setDlArticlePage(rst);
 		findListDTO.setBigNewsList(bigNews);
 		return ResultGenerator.genSuccessResult(null, findListDTO);
-	}
-
-	@ApiOperation(value = "发现页", notes = "发现页(新版本发现页)")
-	@PostMapping("/discoveryPage")
-	public BaseResult<DlDiscoveryPageDTO> discoveryPage(@RequestBody DiscoveryPageParam param) {
-		Condition condition = new Condition(DlDiscoveryHallClassify.class);
-		condition.setOrderByClause("sort asc");
-		Criteria criteria = condition.createCriteria();
-		criteria.andCondition("status =", 1);
-		criteria.andCondition("is_show =", 1);
-		List<DlDiscoveryHallClassify> discoveryHallClassifyList = dlDiscoveryHallClassifyService.findByCondition(condition);
-		List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList = new ArrayList<>(discoveryHallClassifyList.size());
-		for (DlDiscoveryHallClassify s : discoveryHallClassifyList) {
-			DlDiscoveryHallClassifyDTO dto = new DlDiscoveryHallClassifyDTO();
-			dto.setClassImg(lotteryConfig.getBannerShowUrl() + s.getClassImg());
-			dto.setClassName(s.getClassName());
-			dto.setRedirectUrl(s.getRedirectUrl());
-			dto.setSubTitle(s.getSubTitle());
-			discoveryHallClassifyDTOList.add(dto);
-		}
-		Integer page = param.getPage();
-		page = null == page ? 1 : page;
-		Integer size = param.getSize();
-		size = null == size ? 20 : size;
-		PageHelper.startPage(page, size);
-		List<InfoCatDTO> catList = createCat();
-		PageInfo<DLArticleDTO> rst = new PageInfo<DLArticleDTO>();
-		if (catList.size() == 0) {
-			List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
-			Integer[] catarr = new Integer[classifyList.size()];
-			for (int i = 0; i < classifyList.size(); i++) {
-				catarr[i] = classifyList.get(i).getLotteryClassifyId();
-			}
-			rst = dlArticleService.findArticlesByCats(catarr);
-		} else {
-			Integer[] catarr = new Integer[catList.size()];
-			for (int i = 0; i < catList.size(); i++) {
-				catarr[i] = Integer.parseInt(catList.get(i).getCat());
-			}
-			rst = dlArticleService.findArticlesByCats(catarr);
-		}
-		DlDiscoveryPageDTO discoveryPage = new DlDiscoveryPageDTO();
-		discoveryPage.setDlArticlePage(rst);
-		List<DlDiscoveryHallClassifyDTO> discoveryHalllist = new ArrayList<DlDiscoveryHallClassifyDTO>(discoveryHallClassifyList.size());
-		for (int i = 0; i < discoveryHallClassifyList.size(); i++) {
-			DlDiscoveryHallClassifyDTO discoveryHallClassifyDTO = new DlDiscoveryHallClassifyDTO();
-			discoveryHallClassifyDTO.setClassImg(discoveryHallClassifyList.get(i).getClassImg());
-			discoveryHallClassifyDTO.setClassName(discoveryHallClassifyList.get(i).getClassName());
-			discoveryHallClassifyDTO.setRedirectUrl(discoveryHallClassifyList.get(i).getRedirectUrl());
-			discoveryHallClassifyDTO.setSubTitle(discoveryHallClassifyList.get(i).getSubTitle());
-			discoveryHalllist.add(discoveryHallClassifyDTO);
-		}
-		discoveryPage.setDiscoveryHallClassifyList(discoveryHallClassifyDTOList);
-		return ResultGenerator.genSuccessResult(null, discoveryPage);
 	}
 
 	/*
