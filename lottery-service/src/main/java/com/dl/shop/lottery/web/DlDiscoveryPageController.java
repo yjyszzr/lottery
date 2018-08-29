@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -20,8 +21,11 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.DateUtil;
+import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLHotLeagueDTO;
+import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
@@ -35,6 +39,7 @@ import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
 import com.dl.shop.lottery.model.LotteryClassify;
+import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.DlDiscoveryHallClassifyService;
 import com.github.pagehelper.PageHelper;
@@ -185,5 +190,35 @@ public class DlDiscoveryPageController {
 			lotteryClassifyList.add(lotteryClassifyForOpenPrize);
 		}
 		return ResultGenerator.genSuccessResult(null, lotteryClassifyList);
+	}
+
+	@ApiOperation(value = "活动中心", notes = "活动中心")
+	@PostMapping("/activeCenter")
+	public BaseResult<ActiveCenterDTO> activeCenter(@RequestBody EmptyParam emprt) {
+		ActiveCenterDTO activeCenter = new ActiveCenterDTO();
+		List<LotteryNavBanner> lotteryNavBannerList = lotteryNavBannerMapper.selectAll();
+		List<LotteryNavBanner> activeList = lotteryNavBannerList.stream().filter(s -> s.getBannerParam().equals("2")).collect(Collectors.toList());
+		Integer time = DateUtil.getCurrentTimeLong();
+		List<LotteryNavBanner> onlineActiveList = activeList.stream().filter(s -> s.getStartTime() <= time && s.getEndTime() > time).collect(Collectors.toList());
+		List<DlBannerForActive> onlineBannerList = new ArrayList<DlBannerForActive>();
+		List<LotteryNavBanner> offlineActiveList = activeList.stream().filter(s -> s.getEndTime() < time).collect(Collectors.toList());
+		List<DlBannerForActive> offlineBannerList = new ArrayList<DlBannerForActive>();
+		for (int i = 0; i < onlineActiveList.size(); i++) {
+			DlBannerForActive navBanner = new DlBannerForActive();
+			navBanner.setBannerImage(onlineActiveList.get(i).getBannerImage());
+			navBanner.setBannerLink(onlineActiveList.get(i).getBannerLink());
+			navBanner.setBannerName(onlineActiveList.get(i).getBannerName());
+			onlineBannerList.add(navBanner);
+		}
+		activeCenter.setOnlineList(onlineBannerList);
+		for (int i = 0; i < offlineActiveList.size(); i++) {
+			DlBannerForActive navBanner = new DlBannerForActive();
+			navBanner.setBannerImage(offlineActiveList.get(i).getBannerImage());
+			navBanner.setBannerLink(offlineActiveList.get(i).getBannerLink());
+			navBanner.setBannerName(offlineActiveList.get(i).getBannerName());
+			offlineBannerList.add(navBanner);
+		}
+		activeCenter.setOfflineList(offlineBannerList);
+		return ResultGenerator.genSuccessResult(null, activeCenter);
 	}
 }
