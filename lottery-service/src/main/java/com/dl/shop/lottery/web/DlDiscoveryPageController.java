@@ -24,6 +24,7 @@ import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLHotLeagueDTO;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
+import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
@@ -144,4 +145,45 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, rst);
 	}
 
+	@ApiOperation(value = "开奖结果", notes = "开奖结果")
+	@PostMapping("/openPrize")
+	public BaseResult<List<DlLotteryClassifyForOpenPrizeDTO>> openPrize(@RequestBody EmptyParam emprt) {
+		// 获取彩种相关信息
+		List<DlLotteryClassifyForOpenPrizeDTO> lotteryClassifyList = new ArrayList<DlLotteryClassifyForOpenPrizeDTO>();
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		for (LotteryClassify s : classifyList) {
+			DlLotteryClassifyForOpenPrizeDTO lotteryClassifyForOpenPrize = new DlLotteryClassifyForOpenPrizeDTO();
+			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
+			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
+			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
+			lotteryClassifyForOpenPrize.setPeriod("201808280001");
+			lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+			if (s.getLotteryName().equals("竞彩篮球")) {
+				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
+				lotteryClassifyForOpenPrize.setScore("2:0");
+				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
+				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
+			} else if (s.getLotteryName().equals("竞彩足球")) {
+				lotteryClassifyForOpenPrize.setHomeTeam("竞彩足球主队");
+				lotteryClassifyForOpenPrize.setScore("2:5");
+				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩足球客队");
+				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+			} else {
+				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+				List<String> listRed = new ArrayList<>();
+				listRed.add("01");
+				listRed.add("04");
+				listRed.add("05");
+				listRed.add("09");
+				listRed.add("07");
+				lotteryClassifyForOpenPrize.setRedBall(listRed);
+				List<String> listBlue = new ArrayList<>();
+				listBlue.add("02");
+				listBlue.add("08");
+				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+			}
+			lotteryClassifyList.add(lotteryClassifyForOpenPrize);
+		}
+		return ResultGenerator.genSuccessResult(null, lotteryClassifyList);
+	}
 }
