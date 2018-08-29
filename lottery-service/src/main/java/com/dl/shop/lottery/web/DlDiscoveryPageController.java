@@ -175,18 +175,49 @@ public class DlDiscoveryPageController {
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩足球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else {
+			} else if (s.getLotteryName().equals("广东11选5")) {
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("01");
+				listRed.add("03");
+				listRed.add("05");
+				listRed.add("08");
+				listRed.add("15");
+				lotteryClassifyForOpenPrize.setRedBall(listRed);
+			} else if (s.getLotteryName().equals("双色球")) {
+				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+				List<String> listRed = new ArrayList<>();
+				listRed.add("02");
 				listRed.add("04");
+				listRed.add("05");
+				listRed.add("09");
+				listRed.add("23");
+				listRed.add("11");
+				listRed.add("18");
+				lotteryClassifyForOpenPrize.setRedBall(listRed);
+				List<String> listBlue = new ArrayList<>();
+				listBlue.add("08");
+				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+			} else if (s.getLotteryName().equals("快3")) {
+				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+				List<String> listRed = new ArrayList<>();
 				listRed.add("05");
 				listRed.add("09");
 				listRed.add("07");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
+			} else {
+				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+				List<String> listRed = new ArrayList<>();
+				listRed.add("06");
+				listRed.add("04");
+				listRed.add("05");
+				listRed.add("09");
+				listRed.add("23");
+				listRed.add("11");
+				lotteryClassifyForOpenPrize.setRedBall(listRed);
 				List<String> listBlue = new ArrayList<>();
-				listBlue.add("02");
-				listBlue.add("08");
+				listRed.add("18");
+				listBlue.add("28");
 				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 			}
 			lotteryClassifyList.add(lotteryClassifyForOpenPrize);
