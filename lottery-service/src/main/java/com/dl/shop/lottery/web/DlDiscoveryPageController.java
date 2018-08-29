@@ -168,11 +168,13 @@ public class DlDiscoveryPageController {
 				lotteryClassifyForOpenPrize.setScore("2:0");
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
+				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} else if (s.getLotteryName().equals("竞彩足球")) {
 				lotteryClassifyForOpenPrize.setHomeTeam("竞彩足球主队");
 				lotteryClassifyForOpenPrize.setScore("2:5");
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩足球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
 			} else {
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();

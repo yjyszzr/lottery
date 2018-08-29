@@ -44,4 +44,7 @@ public class DlLotteryClassifyForOpenPrizeDTO implements Serializable {
 	@ApiModelProperty(value = "彩种 0:数字彩,1:竞彩")
 	private Integer classifyStatus;
 
+	@ApiModelProperty(value = "彩种 0:篮球的颜色,1:足球的颜色")
+	private Integer ballColor;
+
 }
