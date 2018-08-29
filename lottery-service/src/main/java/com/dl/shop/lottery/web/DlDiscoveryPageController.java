@@ -204,6 +204,24 @@ public class DlDiscoveryPageController {
 				listRed.add("09");
 				listRed.add("07");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
+			} else if (s.getLotteryName().equals("更多彩种")) {
+				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+				List<String> listRed = new ArrayList<>();
+				listRed.add("3");
+				listRed.add("0");
+				listRed.add("3");
+				listRed.add("3");
+				listRed.add("0");
+				listRed.add("0");
+				listRed.add("3");
+				listRed.add("3");
+				listRed.add("0");
+				listRed.add("3");
+				listRed.add("0");
+				listRed.add("0");
+				listRed.add("3");
+				listRed.add("0");
+				lotteryClassifyForOpenPrize.setRedBall(listRed);
 			} else {
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
