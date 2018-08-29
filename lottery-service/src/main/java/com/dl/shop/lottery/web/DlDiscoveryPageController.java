@@ -205,7 +205,7 @@ public class DlDiscoveryPageController {
 		List<DlBannerForActive> offlineBannerList = new ArrayList<DlBannerForActive>();
 		for (int i = 0; i < onlineActiveList.size(); i++) {
 			DlBannerForActive navBanner = new DlBannerForActive();
-			navBanner.setBannerImage(onlineActiveList.get(i).getBannerImage());
+			navBanner.setBannerImage(lotteryConfig.getBannerShowUrl() + onlineActiveList.get(i).getBannerImage());
 			navBanner.setBannerLink(onlineActiveList.get(i).getBannerLink());
 			navBanner.setBannerName(onlineActiveList.get(i).getBannerName());
 			onlineBannerList.add(navBanner);
@@ -213,7 +213,7 @@ public class DlDiscoveryPageController {
 		activeCenter.setOnlineList(onlineBannerList);
 		for (int i = 0; i < offlineActiveList.size(); i++) {
 			DlBannerForActive navBanner = new DlBannerForActive();
-			navBanner.setBannerImage(offlineActiveList.get(i).getBannerImage());
+			navBanner.setBannerImage(lotteryConfig.getBannerShowUrl() + offlineActiveList.get(i).getBannerImage());
 			navBanner.setBannerLink(offlineActiveList.get(i).getBannerLink());
 			navBanner.setBannerName(offlineActiveList.get(i).getBannerName());
 			offlineBannerList.add(navBanner);
