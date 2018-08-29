@@ -191,7 +191,6 @@ public class DlDiscoveryPageController {
 				listRed.add("04");
 				listRed.add("05");
 				listRed.add("09");
-				listRed.add("23");
 				listRed.add("11");
 				listRed.add("18");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
@@ -216,7 +215,7 @@ public class DlDiscoveryPageController {
 				listRed.add("11");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
 				List<String> listBlue = new ArrayList<>();
-				listRed.add("18");
+				listBlue.add("18");
 				listBlue.add("28");
 				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 			}
