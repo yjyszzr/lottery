@@ -2,7 +2,10 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +32,7 @@ import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
@@ -38,10 +42,12 @@ import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.DlDiscoveryHallClassifyService;
+import com.dl.shop.lottery.service.DlSuperLottoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -52,6 +58,9 @@ public class DlDiscoveryPageController {
 	private final static Logger logger = LoggerFactory.getLogger(DlDiscoveryPageController.class);
 	@Resource
 	private DlArticleService dlArticleService;
+
+	@Resource
+	private DlSuperLottoService dlSuperLottoService;
 
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
@@ -161,20 +170,22 @@ public class DlDiscoveryPageController {
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
 			lotteryClassifyForOpenPrize.setPeriod("201808280001");
-			lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 			if (s.getLotteryName().equals("竞彩篮球")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
 				lotteryClassifyForOpenPrize.setScore("2:0");
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} else if (s.getLotteryName().equals("竞彩足球")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setHomeTeam("竞彩足球主队");
 				lotteryClassifyForOpenPrize.setScore("2:5");
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩足球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
 			} else if (s.getLotteryName().equals("广东11选5")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("01");
@@ -184,6 +195,7 @@ public class DlDiscoveryPageController {
 				listRed.add("15");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
 			} else if (s.getLotteryName().equals("双色球")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("02");
@@ -197,6 +209,7 @@ public class DlDiscoveryPageController {
 				listBlue.add("08");
 				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 			} else if (s.getLotteryName().equals("快3")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("05");
@@ -204,6 +217,7 @@ public class DlDiscoveryPageController {
 				listRed.add("07");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
 			} else if (s.getLotteryName().equals("更多彩种")) {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("3");
@@ -221,7 +235,29 @@ public class DlDiscoveryPageController {
 				listRed.add("3");
 				listRed.add("0");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
+			} else if (s.getLotteryName().equals("大乐透")) {
+				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
+				if (null != superLotto) {
+					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+
+					try {
+						String str = dayForWeek(superLotto.getPrizeDate());
+						lotteryClassifyForOpenPrize.setDate(superLotto.getPrizeDate() + "(" + str + ")");
+					} catch (Exception e) {
+						logger.info("日期转星期几转换异常====================");
+						e.printStackTrace();
+					}
+					List<String> listRed = new ArrayList<>();
+					String str = superLotto.getPrizeNum();
+					String[] strArray = str.split(",");
+					listRed = Arrays.asList(Arrays.copyOfRange(strArray, 0, 5));
+					lotteryClassifyForOpenPrize.setRedBall(listRed);
+					List<String> listBlue = new ArrayList<>();
+					listBlue = Arrays.asList(Arrays.copyOfRange(strArray, 5, 7));
+					lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+				}
 			} else {
+				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
 				listRed.add("06");
@@ -246,7 +282,7 @@ public class DlDiscoveryPageController {
 	public BaseResult<ActiveCenterDTO> activeCenter(@RequestBody EmptyParam emprt) {
 		ActiveCenterDTO activeCenter = new ActiveCenterDTO();
 		List<LotteryNavBanner> lotteryNavBannerList = lotteryNavBannerMapper.selectAll();
-		List<LotteryNavBanner> activeList = lotteryNavBannerList.stream().filter(s -> s.getBannerParam().equals("2")).collect(Collectors.toList());
+		List<LotteryNavBanner> activeList = lotteryNavBannerList.stream().filter(s -> s.getBannerParam().equals("3")).collect(Collectors.toList());
 		Integer time = DateUtil.getCurrentTimeLong();
 		List<LotteryNavBanner> onlineActiveList = activeList.stream().filter(s -> s.getStartTime() <= time && s.getEndTime() > time).collect(Collectors.toList());
 		List<DlBannerForActive> onlineBannerList = new ArrayList<DlBannerForActive>();
@@ -269,5 +305,61 @@ public class DlDiscoveryPageController {
 		}
 		activeCenter.setOfflineList(offlineBannerList);
 		return ResultGenerator.genSuccessResult(null, activeCenter);
+	}
+
+	@ApiOperation(value = "大乐透列表", notes = "大乐透列表")
+	@PostMapping("/lottoList")
+	public BaseResult<PageInfo<DlSuperLottoDTO>> lottoList(@RequestBody DiscoveryPageParam param) {
+		Integer page = param.getPage();
+		page = null == page ? 1 : page;
+		Integer size = param.getSize();
+		size = null == size ? 20 : size;
+		PageHelper.startPage(page, size);
+		Condition condition = new Condition(DlSuperLotto.class);
+		condition.setOrderByClause("term_num desc");
+		List<DlSuperLotto> superLottoList = dlSuperLottoService.findByCondition(condition);
+		List<DlSuperLottoDTO> LottoDTOList = new ArrayList<DlSuperLottoDTO>();
+		for (int i = 0; i < superLottoList.size(); i++) {
+			DlSuperLottoDTO superLottoDTO = new DlSuperLottoDTO();
+			try {
+				String str = dayForWeek(superLottoList.get(i).getPrizeDate());
+				superLottoDTO.setPrizeDate(superLottoList.get(i).getPrizeDate() + "(" + str + ")");
+			} catch (Exception e) {
+				logger.info("日期转星期几转换异常====================");
+				e.printStackTrace();
+			}
+			String str = superLottoList.get(i).getPrizeNum();
+			String[] strArray = str.split(",");
+			superLottoDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+			superLottoDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+			superLottoDTO.setTermNum(superLottoList.get(i).getTermNum());
+			LottoDTOList.add(superLottoDTO);
+		}
+		PageInfo<DlSuperLottoDTO> DlSuperLottoPageList = new PageInfo<DlSuperLottoDTO>(LottoDTOList);
+		return ResultGenerator.genSuccessResult(null, DlSuperLottoPageList);
+	}
+
+	/**
+	 * 判断当前日期是星期几<br>
+	 * <br>
+	 * 
+	 * @param pTime
+	 *            修要判断的时间<br>
+	 * @return dayForWeek 判断结果<br>
+	 * @Exception 发生异常<br>
+	 */
+	public static String dayForWeek(String pTime) throws Exception {
+		// 注意参数的样式为yyyy-MM-dd,必须让参数样式与所需样式统一
+		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		c.setTime(format.parse(pTime));
+		int dayForWeek = 0;
+		if (c.get(Calendar.DAY_OF_WEEK) == 1) {
+			dayForWeek = 7;
+		} else {
+			dayForWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+		}
+		return weekDays[dayForWeek];
 	}
 }

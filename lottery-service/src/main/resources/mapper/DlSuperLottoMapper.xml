@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlSuperLottoMapper">
+
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlSuperLotto">
+    <id column="term_num" jdbcType="INTEGER" property="termNum" />
+    <result column="prize_date" jdbcType="VARCHAR" property="prizeDate" />
+    <result column="prize_num" jdbcType="VARCHAR" property="prizeNum" />
+    <result column="prizes" jdbcType="VARCHAR" property="prizes" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+  </resultMap>
+	    
+	  <sql id="allFields">
+		  	term_num,
+		  	prize_date,
+		  	prize_num,
+		  	prizes,
+		  	create_time
+	  </sql>
+	  
+	  <!-- 历史开奖 -->
+	 <select id="getLastNumLottos" resultMap="BaseResultMap">
+			SELECT 
+				 <include refid="allFields"></include>
+				 FROM dl_super_lotto 
+				 ORDER BY term_num DESC 
+				 LIMIT #{count}	
+	  </select>
+	  
+</mapper>

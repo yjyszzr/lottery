@@ -42,7 +42,7 @@ import freemarker.template.TemplateExceptionHandler;
 public class CodeGenerator {
 
 	// JDBC配置，请修改为你项目的实际配置
-	private static final String JDBC_URL = "jdbc:mysql://39.106.18.39:3306/cxm_test";
+	private static final String JDBC_URL = "jdbc:mysql://39.106.18.39:3306/cxm_lottery";
 	private static final String JDBC_USERNAME = "caixiaomi";
 	private static final String JDBC_PASSWORD = "caixiaomi";
 	private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -61,7 +61,7 @@ public class CodeGenerator {
 	private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());// @date
 
 	public static void main(String[] args) {
-		genCodeByCustomModelName("dl_discovery_hall_classify", "DlDiscoveryHallClassify");
+		genCodeByCustomModelName("dl_super_lotto", "DlSuperLotto");
 		// genCodeByCustomModelName("dl_world_cup_gyj", "DlWordCupGYJ");
 		// genCodeByCustomModelName("输入表名","输入自定义Model名称");
 	}
