@@ -37,6 +37,7 @@ import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
+import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
@@ -340,6 +341,14 @@ public class DlDiscoveryPageController {
 		}
 		PageInfo<DlSuperLottoDTO> DlSuperLottoPageList = new PageInfo<DlSuperLottoDTO>(LottoDTOList);
 		return ResultGenerator.genSuccessResult(null, DlSuperLottoPageList);
+	}
+
+	@ApiOperation(value = "大乐透详情", notes = "大乐透详情")
+	@PostMapping("/lottoDetails")
+	public BaseResult<PageInfo<DlSuperLottoDTO>> lottoDetails(@RequestBody LottoDetailsParam param) {
+		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
+		// List<> =dlSuperLottoService.findByTermNum(superLotto.getTermNum());
+		return ResultGenerator.genSuccessResult(null, null);
 	}
 
 	/**
