@@ -11,6 +11,9 @@ public class DlSuperLottoDTO {
 	@ApiModelProperty(value = "期号")
 	private Integer termNum;
 
+	@ApiModelProperty(value = "期次")
+	private String period;
+
 	@ApiModelProperty(value = "开奖日期")
 	private String prizeDate;
 

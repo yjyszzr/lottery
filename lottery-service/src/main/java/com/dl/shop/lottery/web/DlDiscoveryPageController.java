@@ -321,9 +321,12 @@ public class DlDiscoveryPageController {
 		List<DlSuperLottoDTO> LottoDTOList = new ArrayList<DlSuperLottoDTO>();
 		for (int i = 0; i < superLottoList.size(); i++) {
 			DlSuperLottoDTO superLottoDTO = new DlSuperLottoDTO();
+			String dateStr = superLottoList.get(i).getPrizeDate();
+			String period = dateStr.replaceAll("-", "");
+			superLottoDTO.setPeriod(period + "期");
 			try {
-				String str = dayForWeek(superLottoList.get(i).getPrizeDate());
-				superLottoDTO.setPrizeDate(superLottoList.get(i).getPrizeDate() + "(" + str + ")");
+				String weekStr = dayForWeek(dateStr);
+				superLottoDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
 			} catch (Exception e) {
 				logger.info("日期转星期几转换异常====================");
 				e.printStackTrace();
