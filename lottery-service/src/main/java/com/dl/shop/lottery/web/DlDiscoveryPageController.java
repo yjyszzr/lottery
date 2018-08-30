@@ -73,7 +73,6 @@ public class DlDiscoveryPageController {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
 		condition.setOrderByClause("sort asc");
 		Criteria criteria = condition.createCriteria();
-		criteria.andCondition("status =", 1);
 		criteria.andCondition("is_show =", 1);
 		List<DlDiscoveryHallClassify> discoveryHallClassifyList = dlDiscoveryHallClassifyService.findByCondition(condition);
 		List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList = new ArrayList<>(discoveryHallClassifyList.size());
