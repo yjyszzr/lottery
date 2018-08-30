@@ -31,11 +31,14 @@ import com.dl.lottery.dto.DLHotLeagueDTO;
 import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
+import com.dl.lottery.dto.DlLeagueContryDTO;
+import com.dl.lottery.dto.DlLeaguePageDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
@@ -43,11 +46,17 @@ import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.DlLeagueContry;
+import com.dl.shop.lottery.model.DlLeagueGroup;
+import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.DlDiscoveryHallClassifyService;
+import com.dl.shop.lottery.service.DlLeagueContryService;
+import com.dl.shop.lottery.service.DlLeagueGroupService;
+import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlSuperLottoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -62,6 +71,15 @@ public class DlDiscoveryPageController {
 
 	@Resource
 	private DlSuperLottoService dlSuperLottoService;
+
+	@Resource
+	private DlLeagueGroupService dlLeagueGroupService;
+
+	@Resource
+	private DlLeagueContryService dlLeagueContryService;
+
+	@Resource
+	private DlLeagueInfoService dlLeagueInfoService;
 
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
@@ -349,6 +367,54 @@ public class DlDiscoveryPageController {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		// List<> =dlSuperLottoService.findByTermNum(superLotto.getTermNum());
 		return ResultGenerator.genSuccessResult(null, null);
+	}
+
+	@ApiOperation(value = "联赛列表", notes = "联赛列表")
+	@PostMapping("/leagueList")
+	public BaseResult<List<DlLeaguePageDTO>> leagueList(@RequestBody EmptyParam emprt) {
+		List<DlLeaguePageDTO> leaguePageList = new ArrayList<DlLeaguePageDTO>();
+		// 获取洲际分组
+		List<DlLeagueGroup> leagueGroupList = dlLeagueGroupService.findAll();
+		// 获取国家信息
+		List<DlLeagueContry> leagueContryList = dlLeagueContryService.findAll();
+		// 获取联赛信息
+		List<DlLeagueInfo> leagueInfoList = dlLeagueInfoService.findAll();
+		// 获取热门联赛信息
+		List<DlLeagueInfo> leagueInfoHotList = leagueInfoList.stream().filter(s -> s.getIsHot() == 1).collect(Collectors.toList());
+		// 转换成DTO
+		List<LeagueInfoDTO> leagueInfoDTOList = new ArrayList<LeagueInfoDTO>();
+		for (int i = 0; i < leagueInfoHotList.size(); i++) {
+			LeagueInfoDTO leagueInfoDTO = new LeagueInfoDTO();
+			leagueInfoDTO.setLeagueAddr(leagueInfoHotList.get(i).getLeagueAddr());
+			leagueInfoDTO.setLeaguePic(leagueInfoHotList.get(i).getLeaguePic());
+			leagueInfoDTO.setLeagueId(leagueInfoHotList.get(i).getLeagueId());
+			leagueInfoDTO.setLeagueName(leagueInfoHotList.get(i).getLeagueName());
+			leagueInfoDTOList.add(leagueInfoDTO);
+		}
+		for (int i = 0; i < leagueGroupList.size(); i++) {
+			DlLeaguePageDTO leaguePage = new DlLeaguePageDTO();
+			leaguePage.setGroupName(leagueGroupList.get(i).getGroupName());
+			if (leagueGroupList.get(i).getGroupName().equals("热门")) {
+				leaguePage.setLeagueInfoList(leagueInfoDTOList);
+				leaguePage.setGroupStatus(0);
+			} else {
+				List<DlLeagueContryDTO> leagueContryDTOList = new ArrayList<>();
+				for (int j = 0; j < leagueContryList.size(); j++) {
+					if (leagueGroupList.get(i).getId().equals(leagueContryList.get(j).getGroupId())) {
+						DlLeagueContryDTO leagueContryDTO = new DlLeagueContryDTO();
+						leagueContryDTO.setContryName(leagueContryList.get(j).getContryName());
+						leagueContryDTO.setContryPic(leagueContryList.get(j).getContryPic());
+						leagueContryDTO.setGroupId(leagueContryList.get(j).getGroupId());
+						leagueContryDTO.setId(leagueContryList.get(j).getId());
+						leagueContryDTOList.add(leagueContryDTO);
+					}
+				}
+				leaguePage.setGroupStatus(1);
+				leaguePage.setLeagueContryList(leagueContryDTOList);
+			}
+			leaguePageList.add(leaguePage);
+		}
+		return ResultGenerator.genSuccessResult(null, leaguePageList);
 	}
 
 	/**
