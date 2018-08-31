@@ -45,6 +45,9 @@ public class DlLeagueInfo {
 	@Column(name = "league_pic")
 	private String leaguePic;
 
+	@Column(name = "is_league")
+	private Integer isLeague;
+	
 	@Column(name = "is_hot")
 	private Integer isHot;
 	
@@ -174,6 +177,14 @@ public class DlLeagueInfo {
 
 	public void setLeagueRule(Integer leagueRule) {
 		this.leagueRule = leagueRule;
+	}
+
+	public Integer getIsLeague() {
+		return isLeague;
+	}
+
+	public void setIsLeague(Integer isLeague) {
+		this.isLeague = isLeague;
 	}
 
 	
