@@ -9,12 +9,14 @@ import com.dl.shop.lottery.model.DlLeagueTeam;
 
 public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 
-	DlLeagueTeam getBySportteryTeamid(@Param("sportteryTeamid")Integer sportteryTeamid);
+	DlLeagueTeam getBySportteryTeamid(@Param("sportteryTeamid") Integer sportteryTeamid);
 
-	DlLeagueTeam getByTeamId(@Param("teamId")Integer teamId);
-	
-	List<DlLeagueTeam> queryLeagueTeamByTeamIds(@Param("teamIdList")List teamIdList);
+	DlLeagueTeam getByTeamId(@Param("teamId") Integer teamId);
 
-	Integer queryTeamId(@Param("sportteryTeamid")Integer sportteryTeamid);
+	List<DlLeagueTeam> queryLeagueTeamByTeamIds(@Param("teamIdList") List teamIdList);
+
+	Integer queryTeamId(@Param("sportteryTeamid") Integer sportteryTeamid);
+
+	List<DlLeagueTeam> findByLeagueId(@Param("leagueId") Integer leagueId);
 
 }

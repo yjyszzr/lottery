@@ -33,4 +33,13 @@
   	select team_id from dl_league_team where sporttery_teamid=#{sportteryTeamid}
   </select>
   
+  <select id="findByLeagueId" resultMap="BaseResultMap">
+		SELECT
+			* 
+		FROM
+			dl_league_team 
+		WHERE
+			team_id IN ( SELECT team_id FROM dl_league_team_ref WHERE league_id = #{leagueId} )
+  </select>
+  
 </mapper>

@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.service;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,38 +21,47 @@ import com.dl.shop.lottery.model.DlLeagueContry;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 
 @Service
-@Transactional(value="transactionManager2")
+@Transactional(value = "transactionManager2")
 public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
-    @Resource
-    private DlLeagueInfoMapper dlLeagueInfoMapper;
-    
-    @Resource
-    private DlLeagueContryMapper dlLeagueContryMapper;
-    
-   /* @Resource
-    private DlLeagueGroupMapper dlLeagueGroupMapper;*/
+	@Resource
+	private DlLeagueInfoMapper dlLeagueInfoMapper;
 
-    /**
-     * 联赛详情
-     * @param leagueId
-     */
+	@Resource
+	private DlLeagueContryMapper dlLeagueContryMapper;
+
+	/*
+	 * @Resource private DlLeagueGroupMapper dlLeagueGroupMapper;
+	 */
+
+	/**
+	 * 联赛详情
+	 * 
+	 * @param leagueId
+	 */
 	public DlLeagueDetailDTO leagueDetail(Integer leagueId) {
-		DlLeagueDetailDTO detail = null;
+		DlLeagueDetailDTO detail = new DlLeagueDetailDTO();
 		DlLeagueInfo leagueInfo = dlLeagueInfoMapper.getByLeagueId(leagueId);
-		if(leagueInfo == null) {
+		if (leagueInfo == null) {
 			return null;
+		} else {
+			detail.setLeagueAddr(leagueInfo.getLeagueAddr());
+			detail.setLeagueId(leagueInfo.getLeagueId());
+			detail.setLeagueName(leagueInfo.getLeagueName());
+			detail.setLeaguePic(leagueInfo.getLeaguePic());
+			detail.setLeagueRule(leagueInfo.getLeagueRule());
 		}
 		return detail;
 	}
-	
+
 	/**
 	 * 获取分类下的国家列表
+	 * 
 	 * @param groupId
 	 * @return
 	 */
 	public List<DlLeagueContryDTO> contryLeagueListByGroupId(Integer groupId) {
 		List<DlLeagueContryDTO> contryDtos = null;
-		if(groupId == 0) {
+		if (groupId == 0) {
 			DlLeagueContryDTO contryDTO = this.getHotLeagues();
 			contryDtos = new ArrayList<DlLeagueContryDTO>(1);
 			contryDtos.add(contryDTO);
@@ -61,11 +71,11 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		return contryDtos;
 	}
 
-	//热门
+	// 热门
 	private DlLeagueContryDTO getHotLeagues() {
 		List<DlLeagueInfo> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
-		for(DlLeagueInfo league: hotLeagues) {
+		for (DlLeagueInfo league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
@@ -80,22 +90,23 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		contryDTO.setLeagueInfoList(leagueInfos);
 		return contryDTO;
 	}
+
 	//
-	private List<DlLeagueContryDTO>  leagueContrys(Integer groupId) {
+	private List<DlLeagueContryDTO> leagueContrys(Integer groupId) {
 		List<DlLeagueContryDTO> contryDtos = null;
 		List<DlLeagueContry> leagueContrys = dlLeagueContryMapper.getContrysByGroupId(groupId);
-		if(CollectionUtils.isEmpty(leagueContrys)) {
+		if (CollectionUtils.isEmpty(leagueContrys)) {
 			return null;
 		}
-		List<DlLeagueInfo>  leagueInfos = dlLeagueInfoMapper.getAll();
-		if(CollectionUtils.isEmpty(leagueInfos)) {
+		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.getAll();
+		if (CollectionUtils.isEmpty(leagueInfos)) {
 			return null;
 		}
 		Map<Integer, List<LeagueInfoDTO>> leagueMap = new HashMap<Integer, List<LeagueInfoDTO>>();
-		for(DlLeagueInfo league: leagueInfos) {
+		for (DlLeagueInfo league : leagueInfos) {
 			Integer contryId = league.getContryId();
 			List<LeagueInfoDTO> leagueInfoDTOs = leagueMap.get(contryId);
-			if(leagueInfoDTOs == null) {
+			if (leagueInfoDTOs == null) {
 				leagueInfoDTOs = new ArrayList<LeagueInfoDTO>(30);
 				leagueMap.put(contryId, leagueInfoDTOs);
 			}
@@ -107,7 +118,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			leagueInfoDTOs.add(dto);
 		}
 		contryDtos = new ArrayList<DlLeagueContryDTO>(leagueContrys.size());
-		for(DlLeagueContry contry: leagueContrys) {
+		for (DlLeagueContry contry : leagueContrys) {
 			DlLeagueContryDTO dto = new DlLeagueContryDTO();
 			dto.setContryName(contry.getContryName());
 			dto.setContryPic(contry.getContryPic());
@@ -119,5 +130,5 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		}
 		return contryDtos;
 	}
-	
+
 }

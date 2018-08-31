@@ -16,7 +16,7 @@ public class DlLeagueDetailDTO {
 	@ApiModelProperty(value = "联赛规则")
 	private String leagueRule;
 	@ApiModelProperty(value = "联赛积分")
-	private DlLeagueScoreDTO leagueScore;
+	private DlLeagueIntegralDTO leagueScore;
 	@ApiModelProperty(value = "联赛射手")
 	private DlLeagueShooterDTO leagueShooter;
 	@ApiModelProperty(value = "联赛赛程")

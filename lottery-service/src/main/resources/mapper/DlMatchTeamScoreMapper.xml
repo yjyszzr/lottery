@@ -43,4 +43,12 @@
   	where team_id=#{teamId} and league_id = #{leagueId}
   </select>
   
+  
+  <select id="getByleagueId"  resultMap="BaseResultMap">
+  	select * from 
+  		dl_match_team_score 
+  	where   
+  		league_id = #{leagueId}
+  </select>
+  
 </mapper>

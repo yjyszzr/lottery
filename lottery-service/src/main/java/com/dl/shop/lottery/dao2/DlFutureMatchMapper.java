@@ -8,6 +8,8 @@ import com.dl.base.mapper.Mapper;
 import com.dl.shop.lottery.model.DlFutureMatch;
 
 public interface DlFutureMatchMapper extends Mapper<DlFutureMatch> {
-	
-	List<DlFutureMatch> getList(@Param("teamId")Integer teamId);
+
+	List<DlFutureMatch> getList(@Param("teamId") Integer teamId);
+
+	List<DlFutureMatch> findByLeagueId(@Param("leagueId") Integer leagueId);
 }

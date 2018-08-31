@@ -1,5 +1,7 @@
 package com.dl.shop.lottery.web;
 
+import io.swagger.annotations.ApiOperation;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
@@ -28,6 +33,10 @@ import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
+import com.dl.lottery.dto.DlLeagueIntegralDTO;
+import com.dl.lottery.dto.DlLeagueMatchDTO;
+import com.dl.lottery.dto.DlLeagueShooterDTO;
+import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
@@ -46,16 +55,16 @@ import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.DlDiscoveryHallClassifyService;
+import com.dl.shop.lottery.service.DlFutureMatchService;
 import com.dl.shop.lottery.service.DlLeagueContryService;
 import com.dl.shop.lottery.service.DlLeagueGroupService;
 import com.dl.shop.lottery.service.DlLeagueInfoService;
+import com.dl.shop.lottery.service.DlLeagueShooterService;
+import com.dl.shop.lottery.service.DlLeagueTeamService;
+import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.DlSuperLottoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
-import io.swagger.annotations.ApiOperation;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
 @RequestMapping("/discoveryPage")
@@ -75,6 +84,9 @@ public class DlDiscoveryPageController {
 	private DlLeagueContryService dlLeagueContryService;
 
 	@Resource
+	private DlMatchTeamScoreService dlMatchTeamScoreService;
+
+	@Resource
 	private DlLeagueInfoService dlLeagueInfoService;
 
 	@Resource
@@ -90,6 +102,15 @@ public class DlDiscoveryPageController {
 
 	@Resource
 	private DlDiscoveryHallClassifyService dlDiscoveryHallClassifyService;
+
+	@Resource
+	private DlLeagueShooterService dlLeagueShooterService;
+
+	@Resource
+	private DlFutureMatchService dlFutureMatchService;
+
+	@Resource
+	private DlLeagueTeamService dlLeagueTeamService;
 
 	@ApiOperation(value = "发现页主页", notes = "发现页主页")
 	@PostMapping("/homePage")
@@ -371,76 +392,81 @@ public class DlDiscoveryPageController {
 	@PostMapping("/leagueListByGroupId")
 	public BaseResult<List<DlLeagueContryDTO>> leagueListByGroupId(@RequestBody LeagueListByGroupIdParam param) {
 		Integer groupId = param.getGroupId();
-		if(groupId == null) {
+		if (groupId == null) {
 			groupId = 0;
 		}
 		List<DlLeagueContryDTO> contryLeagueList = dlLeagueInfoService.contryLeagueListByGroupId(groupId);
 		return ResultGenerator.genSuccessResult(null, contryLeagueList);
 	}
-	
+
 	@ApiOperation(value = "联赛详情", notes = "联赛详情")
 	@PostMapping("/leagueDetail")
 	public BaseResult<DlLeagueDetailDTO> leagueDetail(@RequestBody LeagueDetailParam param) {
 		Integer leagueId = param.getLeagueId();
-		if(leagueId == null) {
-			
+		if (leagueId == null) {
+
 		}
 		DlLeagueDetailDTO leagueDetail = dlLeagueInfoService.leagueDetail(leagueId);
-		if(leagueDetail == null) {
-			
+		if (leagueDetail == null) {
+			return null;
+		} else {
+			// 积分榜
+			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
+			leagueDetail.setLeagueScore(leagueIntegral);
+			// 射手榜
+			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueShooter(leagueShooter);
+			// 赛程
+			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueMatch(leagueMatch);
+			// 球队
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
 	}
-	
-	
 
-	/*@ApiOperation(value = "联赛主页", notes = "联赛主页")
-	@PostMapping("/leaguePage")
-	public BaseResult<List<DlLeaguePageDTO>> leaguePage(@RequestBody EmptyParam emprt) {
-		List<DlLeaguePageDTO> leaguePageList = new ArrayList<DlLeaguePageDTO>();
-		// 获取洲际分组
-		List<DlLeagueGroup> leagueGroupList = dlLeagueGroupService.findAll();
-		// 获取国家信息
-		List<DlLeagueContry> leagueContryList = dlLeagueContryService.findAll();
-		// 获取联赛信息
-		List<DlLeagueInfo> leagueInfoList = dlLeagueInfoService.findAll();
-		// 获取热门联赛信息
-		List<DlLeagueInfo> leagueInfoHotList = leagueInfoList.stream().filter(s -> s.getIsHot() == 1).collect(Collectors.toList());
-		// 转换成DTO
-		List<LeagueInfoDTO> leagueInfoDTOList = new ArrayList<LeagueInfoDTO>();
-		for (int i = 0; i < leagueInfoHotList.size(); i++) {
-			LeagueInfoDTO leagueInfoDTO = new LeagueInfoDTO();
-			leagueInfoDTO.setLeagueAddr(leagueInfoHotList.get(i).getLeagueAddr());
-			leagueInfoDTO.setLeaguePic(leagueInfoHotList.get(i).getLeaguePic());
-			leagueInfoDTO.setLeagueId(leagueInfoHotList.get(i).getLeagueId());
-			leagueInfoDTO.setLeagueName(leagueInfoHotList.get(i).getLeagueName());
-			leagueInfoDTOList.add(leagueInfoDTO);
-		}
-		for (int i = 0; i < leagueGroupList.size(); i++) {
-			DlLeaguePageDTO leaguePage = new DlLeaguePageDTO();
-			leaguePage.setGroupName(leagueGroupList.get(i).getGroupName());
-			if (leagueGroupList.get(i).getGroupName().equals("热门")) {
-				leaguePage.setLeagueInfoList(leagueInfoDTOList);
-				leaguePage.setGroupStatus(0);
-			} else {
-				List<DlLeagueContryDTO> leagueContryDTOList = new ArrayList<>();
-				for (int j = 0; j < leagueContryList.size(); j++) {
-					if (leagueGroupList.get(i).getId().equals(leagueContryList.get(j).getGroupId())) {
-						DlLeagueContryDTO leagueContryDTO = new DlLeagueContryDTO();
-						leagueContryDTO.setContryName(leagueContryList.get(j).getContryName());
-						leagueContryDTO.setContryPic(leagueContryList.get(j).getContryPic());
-						leagueContryDTO.setGroupId(leagueContryList.get(j).getGroupId());
-//						leagueContryDTO.setId(leagueContryList.get(j).getId());
-						leagueContryDTOList.add(leagueContryDTO);
-					}
-				}
-				leaguePage.setGroupStatus(1);
-				leaguePage.setLeagueContryList(leagueContryDTOList);
-			}
-			leaguePageList.add(leaguePage);
-		}
-		return ResultGenerator.genSuccessResult(null, leaguePageList);
-	}*/
+	/*
+	 * @ApiOperation(value = "联赛主页", notes = "联赛主页")
+	 * 
+	 * @PostMapping("/leaguePage") public BaseResult<List<DlLeaguePageDTO>>
+	 * leaguePage(@RequestBody EmptyParam emprt) { List<DlLeaguePageDTO>
+	 * leaguePageList = new ArrayList<DlLeaguePageDTO>(); // 获取洲际分组
+	 * List<DlLeagueGroup> leagueGroupList = dlLeagueGroupService.findAll(); //
+	 * 获取国家信息 List<DlLeagueContry> leagueContryList =
+	 * dlLeagueContryService.findAll(); // 获取联赛信息 List<DlLeagueInfo>
+	 * leagueInfoList = dlLeagueInfoService.findAll(); // 获取热门联赛信息
+	 * List<DlLeagueInfo> leagueInfoHotList = leagueInfoList.stream().filter(s
+	 * -> s.getIsHot() == 1).collect(Collectors.toList()); // 转换成DTO
+	 * List<LeagueInfoDTO> leagueInfoDTOList = new ArrayList<LeagueInfoDTO>();
+	 * for (int i = 0; i < leagueInfoHotList.size(); i++) { LeagueInfoDTO
+	 * leagueInfoDTO = new LeagueInfoDTO();
+	 * leagueInfoDTO.setLeagueAddr(leagueInfoHotList.get(i).getLeagueAddr());
+	 * leagueInfoDTO.setLeaguePic(leagueInfoHotList.get(i).getLeaguePic());
+	 * leagueInfoDTO.setLeagueId(leagueInfoHotList.get(i).getLeagueId());
+	 * leagueInfoDTO.setLeagueName(leagueInfoHotList.get(i).getLeagueName());
+	 * leagueInfoDTOList.add(leagueInfoDTO); } for (int i = 0; i <
+	 * leagueGroupList.size(); i++) { DlLeaguePageDTO leaguePage = new
+	 * DlLeaguePageDTO();
+	 * leaguePage.setGroupName(leagueGroupList.get(i).getGroupName()); if
+	 * (leagueGroupList.get(i).getGroupName().equals("热门")) {
+	 * leaguePage.setLeagueInfoList(leagueInfoDTOList);
+	 * leaguePage.setGroupStatus(0); } else { List<DlLeagueContryDTO>
+	 * leagueContryDTOList = new ArrayList<>(); for (int j = 0; j <
+	 * leagueContryList.size(); j++) { if
+	 * (leagueGroupList.get(i).getId().equals(
+	 * leagueContryList.get(j).getGroupId())) { DlLeagueContryDTO
+	 * leagueContryDTO = new DlLeagueContryDTO();
+	 * leagueContryDTO.setContryName(leagueContryList.get(j).getContryName());
+	 * leagueContryDTO.setContryPic(leagueContryList.get(j).getContryPic());
+	 * leagueContryDTO.setGroupId(leagueContryList.get(j).getGroupId()); //
+	 * leagueContryDTO.setId(leagueContryList.get(j).getId());
+	 * leagueContryDTOList.add(leagueContryDTO); } }
+	 * leaguePage.setGroupStatus(1);
+	 * leaguePage.setLeagueContryList(leagueContryDTOList); }
+	 * leaguePageList.add(leaguePage); } return
+	 * ResultGenerator.genSuccessResult(null, leaguePageList); }
+	 */
 
 	/**
 	 * 判断当前日期是星期几<br>

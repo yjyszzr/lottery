@@ -29,4 +29,12 @@
   	where (home_team_id=#{teamId} or visitor_team_id=#{teamId}) and match_date &gt; CURRENT_DATE 
   	order by match_date, match_time limit 3
   </select>
+  <select id="findByLeagueId" resultMap="BaseResultMap">
+  	select 
+  		*
+  	 from 
+  	 	dl_future_match 
+  	where 
+  		league_id =  #{leagueId}
+  </select>
 </mapper>

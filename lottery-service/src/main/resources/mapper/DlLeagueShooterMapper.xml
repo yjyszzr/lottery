@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlLeagueShooterMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueShooter">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="match_season_id" jdbcType="INTEGER" property="matchSeasonId" />
+    <result column="player_name" jdbcType="VARCHAR" property="playerName" />
+    <result column="player_team" jdbcType="VARCHAR" property="playerTeam" />
+    <result column="in_num" jdbcType="INTEGER" property="inNum" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  
+  <select id="findByLeagueId"  resultMap="BaseResultMap">
+  		SELECT
+			* 
+		FROM
+			dl_league_shooter 
+		WHERE
+			match_season_id = ( SELECT match_season_id FROM dl_league_match_season WHERE league_id = #{leagueId} ORDER BY match_season_id DESC LIMIT 1 )
+  </select>
+  
+  
+</mapper>

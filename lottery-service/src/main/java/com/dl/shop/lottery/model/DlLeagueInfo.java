@@ -47,12 +47,12 @@ public class DlLeagueInfo {
 
 	@Column(name = "is_league")
 	private Integer isLeague;
-	
+
 	@Column(name = "is_hot")
 	private Integer isHot;
-	
+
 	@Column(name = "league_rule")
-	private Integer leagueRule;
+	private String leagueRule;
 
 	/**
 	 * 获取ID
@@ -171,11 +171,11 @@ public class DlLeagueInfo {
 		this.isHot = isHot;
 	}
 
-	public Integer getLeagueRule() {
+	public String getLeagueRule() {
 		return leagueRule;
 	}
 
-	public void setLeagueRule(Integer leagueRule) {
+	public void setLeagueRule(String leagueRule) {
 		this.leagueRule = leagueRule;
 	}
 
@@ -186,7 +186,5 @@ public class DlLeagueInfo {
 	public void setIsLeague(Integer isLeague) {
 		this.isLeague = isLeague;
 	}
-
-	
 
 }
