@@ -40,7 +40,7 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
-import com.dl.lottery.param.LottoDetailsParam;
+import com.dl.lottery.param.DlLeagueParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
@@ -361,17 +361,38 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, DlSuperLottoPageList);
 	}
 
-	@ApiOperation(value = "大乐透详情", notes = "大乐透详情")
-	@PostMapping("/lottoDetails")
-	public BaseResult<PageInfo<DlSuperLottoDTO>> lottoDetails(@RequestBody LottoDetailsParam param) {
-		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
-		// List<> =dlSuperLottoService.findByTermNum(superLotto.getTermNum());
-		return ResultGenerator.genSuccessResult(null, null);
-	}
+	// @ApiOperation(value = "大乐透详情", notes = "大乐透详情")
+	// @PostMapping("/lottoDetails")
+	// public BaseResult<PageInfo<DlSuperLottoDTO>> lottoDetails(@RequestBody
+	// LottoDetailsParam param) {
+	// DlSuperLotto superLotto =
+	// dlSuperLottoService.findById(param.getTermNum());
+	// // List<> =dlSuperLottoService.findByTermNum(superLotto.getTermNum());
+	// return ResultGenerator.genSuccessResult(null, null);
+	// }
 
 	@ApiOperation(value = "联赛列表", notes = "联赛列表")
 	@PostMapping("/leagueList")
-	public BaseResult<List<DlLeaguePageDTO>> leagueList(@RequestBody EmptyParam emprt) {
+	public BaseResult<List<LeagueInfoDTO>> leagueList(@RequestBody DlLeagueParam param) {
+		List<LeagueInfoDTO> leagueInfoDTOlist = new ArrayList<LeagueInfoDTO>();
+		Condition condition = new Condition(DlLeagueInfo.class);
+		Criteria criteria = condition.createCriteria();
+		criteria.andEqualTo("contryId", param.getContryId());
+		List<DlLeagueInfo> leagueInfolist = dlLeagueInfoService.findByCondition(condition);
+		for (int i = 0; i < leagueInfolist.size(); i++) {
+			LeagueInfoDTO leagueInfoDTO = new LeagueInfoDTO();
+			leagueInfoDTO.setLeagueAddr(leagueInfolist.get(i).getLeagueAddr());
+			leagueInfoDTO.setLeagueId(leagueInfolist.get(i).getLeagueId());
+			leagueInfoDTO.setLeagueName(leagueInfolist.get(i).getLeagueName());
+			leagueInfoDTO.setLeaguePic(leagueInfolist.get(i).getLeaguePic());
+			leagueInfoDTOlist.add(leagueInfoDTO);
+		}
+		return ResultGenerator.genSuccessResult(null, leagueInfoDTOlist);
+	}
+
+	@ApiOperation(value = "联赛主页", notes = "联赛主页")
+	@PostMapping("/leaguePage")
+	public BaseResult<List<DlLeaguePageDTO>> leaguePage(@RequestBody EmptyParam emprt) {
 		List<DlLeaguePageDTO> leaguePageList = new ArrayList<DlLeaguePageDTO>();
 		// 获取洲际分组
 		List<DlLeagueGroup> leagueGroupList = dlLeagueGroupService.findAll();
