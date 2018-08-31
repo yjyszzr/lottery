@@ -7,10 +7,10 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class DlLeagueParam implements Serializable {
+public class LeagueListByGroupIdParam implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(value = "联赛国家Id")
-	private Integer contryId;
+	@ApiModelProperty(value = "联赛分组Id")
+	private Integer groupId;
 }

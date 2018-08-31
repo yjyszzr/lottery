@@ -8,5 +8,11 @@
     <result column="league_type" jdbcType="TINYINT" property="leagueType" />
   </resultMap>
   
- 
+  <select id="getAll" resultMap="BaseResultMap">
+  	select 
+ 		id,group_sn,group_name,league_type
+  	from dl_league_group
+  	order by id
+  </select>
+  
 </mapper>

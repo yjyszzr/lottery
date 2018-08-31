@@ -10,5 +10,9 @@ public interface DlLeagueInfoMapper extends Mapper<DlLeagueInfo> {
 
 	List<DlLeagueInfo> getFilterConditions();
 	
-	void saveLeagueTeamRef(DlLeagueInfoTeamRef ref);;
+	void saveLeagueTeamRef(DlLeagueInfoTeamRef ref);
+	
+	List<DlLeagueInfo>  getAll();
+	
+	List<DlLeagueInfo>  getHotLeagues();
 }

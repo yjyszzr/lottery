@@ -40,7 +40,7 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
-import com.dl.lottery.param.DlLeagueParam;
+import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
@@ -371,26 +371,18 @@ public class DlDiscoveryPageController {
 	// return ResultGenerator.genSuccessResult(null, null);
 	// }
 
-	@ApiOperation(value = "联赛列表", notes = "联赛列表")
-	@PostMapping("/leagueList")
-	public BaseResult<List<LeagueInfoDTO>> leagueList(@RequestBody DlLeagueParam param) {
-		List<LeagueInfoDTO> leagueInfoDTOlist = new ArrayList<LeagueInfoDTO>();
-		Condition condition = new Condition(DlLeagueInfo.class);
-		Criteria criteria = condition.createCriteria();
-		criteria.andEqualTo("contryId", param.getContryId());
-		List<DlLeagueInfo> leagueInfolist = dlLeagueInfoService.findByCondition(condition);
-		for (int i = 0; i < leagueInfolist.size(); i++) {
-			LeagueInfoDTO leagueInfoDTO = new LeagueInfoDTO();
-			leagueInfoDTO.setLeagueAddr(leagueInfolist.get(i).getLeagueAddr());
-			leagueInfoDTO.setLeagueId(leagueInfolist.get(i).getLeagueId());
-			leagueInfoDTO.setLeagueName(leagueInfolist.get(i).getLeagueName());
-			leagueInfoDTO.setLeaguePic(leagueInfolist.get(i).getLeaguePic());
-			leagueInfoDTOlist.add(leagueInfoDTO);
+	@ApiOperation(value = "国家联赛列表", notes = "国家联赛列表")
+	@PostMapping("/leagueListByGroupId")
+	public BaseResult<List<DlLeagueContryDTO>> leagueListByGroupId(@RequestBody LeagueListByGroupIdParam param) {
+		Integer groupId = param.getGroupId();
+		if(groupId == null) {
+			groupId = 0;
 		}
-		return ResultGenerator.genSuccessResult(null, leagueInfoDTOlist);
+		List<DlLeagueContryDTO> contryLeagueList = dlLeagueInfoService.contryLeagueListByGroupId(groupId);
+		return ResultGenerator.genSuccessResult(null, contryLeagueList);
 	}
 
-	@ApiOperation(value = "联赛主页", notes = "联赛主页")
+	/*@ApiOperation(value = "联赛主页", notes = "联赛主页")
 	@PostMapping("/leaguePage")
 	public BaseResult<List<DlLeaguePageDTO>> leaguePage(@RequestBody EmptyParam emprt) {
 		List<DlLeaguePageDTO> leaguePageList = new ArrayList<DlLeaguePageDTO>();
@@ -426,7 +418,7 @@ public class DlDiscoveryPageController {
 						leagueContryDTO.setContryName(leagueContryList.get(j).getContryName());
 						leagueContryDTO.setContryPic(leagueContryList.get(j).getContryPic());
 						leagueContryDTO.setGroupId(leagueContryList.get(j).getGroupId());
-						leagueContryDTO.setId(leagueContryList.get(j).getId());
+//						leagueContryDTO.setId(leagueContryList.get(j).getId());
 						leagueContryDTOList.add(leagueContryDTO);
 					}
 				}
@@ -436,7 +428,7 @@ public class DlDiscoveryPageController {
 			leaguePageList.add(leaguePage);
 		}
 		return ResultGenerator.genSuccessResult(null, leaguePageList);
-	}
+	}*/
 
 	/**
 	 * 判断当前日期是星期几<br>

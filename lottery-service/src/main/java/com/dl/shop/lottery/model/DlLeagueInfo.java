@@ -34,22 +34,26 @@ public class DlLeagueInfo {
 	private String leagueAddr;
 
 	@Column(name = "contry_id")
-	private String contryId;
+	private Integer contryId;
 
 	@Column(name = "league_type")
-	private String leagueType;
+	private Integer leagueType;
 
 	@Column(name = "league_from")
-	private String leagueFrom;
+	private Integer leagueFrom;
 
 	@Column(name = "league_pic")
 	private String leaguePic;
 
 	@Column(name = "is_hot")
 	private Integer isHot;
+	
+	@Column(name = "league_rule")
+	private Integer leagueRule;
 
 	/**
 	 * 获取ID
+	 *
 	 *
 	 * @return id - ID
 	 */
@@ -124,28 +128,36 @@ public class DlLeagueInfo {
 		this.leagueAddr = leagueAddr;
 	}
 
-	public String getContryId() {
+	public Integer getContryId() {
 		return contryId;
 	}
 
-	public void setContryId(String contryId) {
+	public void setContryId(Integer contryId) {
 		this.contryId = contryId;
 	}
 
-	public String getLeagueType() {
+	public Integer getLeagueType() {
 		return leagueType;
 	}
 
-	public void setLeagueType(String leagueType) {
+	public void setLeagueType(Integer leagueType) {
 		this.leagueType = leagueType;
 	}
 
-	public String getLeagueFrom() {
+	public Integer getLeagueFrom() {
 		return leagueFrom;
 	}
 
-	public void setLeagueFrom(String leagueFrom) {
+	public void setLeagueFrom(Integer leagueFrom) {
 		this.leagueFrom = leagueFrom;
+	}
+
+	public String getLeaguePic() {
+		return leaguePic;
+	}
+
+	public void setLeaguePic(String leaguePic) {
+		this.leaguePic = leaguePic;
 	}
 
 	public Integer getIsHot() {
@@ -156,12 +168,14 @@ public class DlLeagueInfo {
 		this.isHot = isHot;
 	}
 
-	public String getLeaguePic() {
-		return leaguePic;
+	public Integer getLeagueRule() {
+		return leagueRule;
 	}
 
-	public void setLeaguePic(String leaguePic) {
-		this.leaguePic = leaguePic;
+	public void setLeagueRule(Integer leagueRule) {
+		this.leagueRule = leagueRule;
 	}
+
+	
 
 }

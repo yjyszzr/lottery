@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dl.shop.lottery.dao2.DlLeagueInfoMapper">
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
@@ -12,13 +9,47 @@
     <result column="contry_id" jdbcType="INTEGER" property="contryId" />
     <result column="league_type" jdbcType="INTEGER" property="leagueType" />
     <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
+    <result column="league_pic" jdbcType="VARCHAR" property="leaguePic" />
+    <result column="is_league" jdbcType="INTEGER" property="isLeague" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+    <result column="league_rule" jdbcType="VARCHAR" property="leagueRule" />
   </resultMap>
+  
+  <sql id="allFields">
+	  	id,
+	  	league_id,
+	  	league_name,
+	  	league_addr,
+	  	contry_id,
+	  	league_type,
+	  	league_from,
+	  	league_pic,
+	  	is_league,
+	  	is_hot,
+	  	league_rule
+  </sql>
+  
+  <select id="getAll" resultMap="BaseResultMap">
+  	select 
+ 		 <include refid="allFields"></include>
+  	from dl_league_info
+  	order by contry_id
+  </select>
+  
+  <select id="getHotLeagues" resultMap="BaseResultMap">
+  	select 
+ 		 <include refid="allFields"></include>
+  	from dl_league_info
+  	where is_hot = 1
+  	order by contry_id
+  </select>
   
   <select id="getFilterConditions" resultMap="BaseResultMap">
   	select id, league_id, league_name, league_addr
   	from dl_league_info
   	where id &lt; 10
   </select>
+  
   
   <insert id="saveLeagueTeamRef" >
   	insert into dl_league_team_ref(team_id, league_id) values(#{teamId}, #{leagueId})
