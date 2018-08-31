@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -13,12 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.DlLeagueContryDTO;
+import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.dao2.DlLeagueContryMapper;
-import com.dl.shop.lottery.dao2.DlLeagueGroupMapper;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.model.DlLeagueContry;
-import com.dl.shop.lottery.model.DlLeagueGroup;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 
 @Service
@@ -30,22 +28,22 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
     @Resource
     private DlLeagueContryMapper dlLeagueContryMapper;
     
-    @Resource
-    private DlLeagueGroupMapper dlLeagueGroupMapper;
+   /* @Resource
+    private DlLeagueGroupMapper dlLeagueGroupMapper;*/
 
-	public List<LeagueInfoDTO> getFilterConditions() {
-		List<DlLeagueInfo> list = dlLeagueInfoMapper.getFilterConditions();
-		if(null == list) {
-			return new ArrayList<LeagueInfoDTO>(0);
+    /**
+     * 联赛详情
+     * @param leagueId
+     */
+	public DlLeagueDetailDTO leagueDetail(Integer leagueId) {
+		DlLeagueDetailDTO detail = null;
+		DlLeagueInfo leagueInfo = dlLeagueInfoMapper.getByLeagueId(leagueId);
+		if(leagueInfo == null) {
+			return null;
 		}
-		return list.stream().map(info->{
-			LeagueInfoDTO dto = new LeagueInfoDTO();
-			dto.setLeagueAddr(info.getLeagueAddr());
-			dto.setLeagueId(info.getLeagueId());
-			dto.setLeagueName(info.getLeagueName());
-			return dto;
-		}).collect(Collectors.toList());
+		return detail;
 	}
+	
 	/**
 	 * 获取分类下的国家列表
 	 * @param groupId
@@ -93,11 +91,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		if(CollectionUtils.isEmpty(leagueInfos)) {
 			return null;
 		}
-//		List<LeagueInfoDTO> hotLeagues = new ArrayList<LeagueInfoDTO>(15);
 		Map<Integer, List<LeagueInfoDTO>> leagueMap = new HashMap<Integer, List<LeagueInfoDTO>>();
 		for(DlLeagueInfo league: leagueInfos) {
 			Integer contryId = league.getContryId();
-//			Integer isHot = league.getIsHot();
 			List<LeagueInfoDTO> leagueInfoDTOs = leagueMap.get(contryId);
 			if(leagueInfoDTOs == null) {
 				leagueInfoDTOs = new ArrayList<LeagueInfoDTO>(30);
@@ -109,9 +105,6 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setLeagueName(league.getLeagueName());
 			dto.setLeaguePic(league.getLeaguePic());
 			leagueInfoDTOs.add(dto);
-			/*if(isHot == 1) {
-				hotLeagues.add(dto);
-			}*/
 		}
 		contryDtos = new ArrayList<DlLeagueContryDTO>(leagueContrys.size());
 		for(DlLeagueContry contry: leagueContrys) {

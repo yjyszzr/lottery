@@ -1,7 +1,5 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,9 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
@@ -32,23 +27,20 @@ import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
-import com.dl.lottery.dto.DlLeaguePageDTO;
+import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
-import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
+import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
-import com.dl.shop.lottery.model.DlLeagueContry;
-import com.dl.shop.lottery.model.DlLeagueGroup;
-import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
@@ -60,6 +52,10 @@ import com.dl.shop.lottery.service.DlLeagueInfoService;
 import com.dl.shop.lottery.service.DlSuperLottoService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
 
 @RestController
 @RequestMapping("/discoveryPage")
@@ -381,6 +377,22 @@ public class DlDiscoveryPageController {
 		List<DlLeagueContryDTO> contryLeagueList = dlLeagueInfoService.contryLeagueListByGroupId(groupId);
 		return ResultGenerator.genSuccessResult(null, contryLeagueList);
 	}
+	
+	@ApiOperation(value = "联赛详情", notes = "联赛详情")
+	@PostMapping("/leagueDetail")
+	public BaseResult<DlLeagueDetailDTO> leagueDetail(@RequestBody LeagueDetailParam param) {
+		Integer leagueId = param.getLeagueId();
+		if(leagueId == null) {
+			
+		}
+		DlLeagueDetailDTO leagueDetail = dlLeagueInfoService.leagueDetail(leagueId);
+		if(leagueDetail == null) {
+			
+		}
+		return ResultGenerator.genSuccessResult(null, leagueDetail);
+	}
+	
+	
 
 	/*@ApiOperation(value = "联赛主页", notes = "联赛主页")
 	@PostMapping("/leaguePage")

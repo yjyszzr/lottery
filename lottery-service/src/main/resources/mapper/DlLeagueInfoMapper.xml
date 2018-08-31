@@ -44,6 +44,13 @@
   	order by contry_id
   </select>
   
+  <select id="getByLeagueId" resultMap="BaseResultMap">
+  	select 
+ 		 <include refid="allFields"></include>
+  	from dl_league_info
+  	where league_id = #{leagueId}
+  </select>
+  
   <select id="getFilterConditions" resultMap="BaseResultMap">
   	select id, league_id, league_name, league_addr
   	from dl_league_info
