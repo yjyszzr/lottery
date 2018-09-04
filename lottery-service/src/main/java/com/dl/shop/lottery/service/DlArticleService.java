@@ -30,6 +30,7 @@ import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
+import com.dl.shop.lottery.model.DlPhoneChannel;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -291,5 +292,9 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		}
 		PageInfo<DLArticleDTO> pageInfoRSt = new PageInfo<DLArticleDTO>(findAllDTO);
 		return pageInfoRSt;
+	}
+
+	public List<DlPhoneChannel> findPhoneChannel(String channel) {
+		return dlArticleMapper.findPhoneChannel(channel);
 	}
 }

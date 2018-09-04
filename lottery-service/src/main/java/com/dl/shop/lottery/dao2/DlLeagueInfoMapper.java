@@ -11,12 +11,16 @@ import com.dl.shop.lottery.model.DlLeagueInfoTeamRef;
 public interface DlLeagueInfoMapper extends Mapper<DlLeagueInfo> {
 
 	List<DlLeagueInfo> getFilterConditions();
-	
-	void saveLeagueTeamRef(DlLeagueInfoTeamRef ref);
-	
-	List<DlLeagueInfo>  getAll();
-	
-	List<DlLeagueInfo>  getHotLeagues();
 
-	DlLeagueInfo getByLeagueId(@Param("leagueId")Integer leagueId);
+	void saveLeagueTeamRef(DlLeagueInfoTeamRef ref);
+
+	List<DlLeagueInfo> getAll();
+
+	List<DlLeagueInfo> getHotLeagues();
+
+	DlLeagueInfo getByLeagueId(@Param("leagueId") Integer leagueId);
+
+	List<DlLeagueInfo> getInternationalLeagues();
+
+	List<DlLeagueInfo> getHotLeaguesForLD();
 }
