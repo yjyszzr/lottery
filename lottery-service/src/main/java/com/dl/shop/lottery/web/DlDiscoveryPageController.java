@@ -2,11 +2,14 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -39,18 +42,25 @@ import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
+import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
+import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
+import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.DlPhoneChannel;
+import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
+import com.dl.shop.lottery.model.DlSuperLottoReward;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.DlArticleService;
@@ -174,8 +184,7 @@ public class DlDiscoveryPageController {
 		Integer size = param.getSize();
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
-		DlArticleController articleControllerTools = new DlArticleController();
-		List<InfoCatDTO> catList = articleControllerTools.createCat();
+		List<InfoCatDTO> catList = createCat();
 		PageInfo<DLArticleDTO> rst = new PageInfo<DLArticleDTO>();
 		if (catList.size() == 0) {
 			List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
@@ -191,6 +200,7 @@ public class DlDiscoveryPageController {
 			}
 			rst = dlArticleService.findArticlesByCats(catarr);
 		}
+		// PageInfo<DLArticleDTO> pageInfoRSt = new PageInfo<DLArticleDTO>(rst);
 		return ResultGenerator.genSuccessResult(null, rst);
 	}
 
@@ -275,14 +285,8 @@ public class DlDiscoveryPageController {
 				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
 				if (null != superLotto) {
 					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-
-					try {
-						String str = dayForWeek(superLotto.getPrizeDate());
-						lotteryClassifyForOpenPrize.setDate(superLotto.getPrizeDate() + "(" + str + ")");
-					} catch (Exception e) {
-						logger.info("日期转星期几转换异常====================");
-						e.printStackTrace();
-					}
+					String weekStr = dayForWeek(superLotto.getPrizeDate());
+					lotteryClassifyForOpenPrize.setDate(superLotto.getPrizeDate() + "(" + weekStr + ")");
 					List<String> listRed = new ArrayList<>();
 					String str = superLotto.getPrizeNum();
 					String[] strArray = str.split(",");
@@ -364,7 +368,7 @@ public class DlDiscoveryPageController {
 				String weekStr = dayForWeek(dateStr);
 				superLottoDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
 			} catch (Exception e) {
-				logger.info("日期转星期几转换异常====================");
+
 				e.printStackTrace();
 			}
 			String str = superLottoList.get(i).getPrizeNum();
@@ -378,15 +382,37 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, DlSuperLottoPageList);
 	}
 
-	// @ApiOperation(value = "大乐透详情", notes = "大乐透详情")
-	// @PostMapping("/lottoDetails")
-	// public BaseResult<PageInfo<DlSuperLottoDTO>> lottoDetails(@RequestBody
-	// LottoDetailsParam param) {
-	// DlSuperLotto superLotto =
-	// dlSuperLottoService.findById(param.getTermNum());
-	// // List<> =dlSuperLottoService.findByTermNum(superLotto.getTermNum());
-	// return ResultGenerator.genSuccessResult(null, null);
-	// }
+	@ApiOperation(value = "大乐透详情", notes = "大乐透详情")
+	@PostMapping("/lottoDetails")
+	public BaseResult<DlSuperLottoDetailsDTO> lottoDetails(@RequestBody LottoDetailsParam param) {
+		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
+		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
+		DlSuperLottoDetailsDTO superLottoDetailsDTO = new DlSuperLottoDetailsDTO();
+		superLottoDetailsDTO.setSellAmount(superLotto.getSell().toString());
+		String dateStr = superLotto.getPrizeDate();
+		String period = dateStr.replaceAll("-", "");
+		superLottoDetailsDTO.setPeriod(period + "期");
+		String weekStr = dayForWeek(dateStr);
+		superLottoDetailsDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+		superLottoDetailsDTO.setPrizes(superLotto.getPrizes());
+		String str = superLotto.getPrizeNum();
+		String[] strArray = str.split(",");
+		superLottoDetailsDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+		superLottoDetailsDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+
+		List<DlSuperLottoRewardDetailsDTO> superLottoRewardDetailsList = new ArrayList<DlSuperLottoRewardDetailsDTO>();
+		for (int i = 0; i < superLottoRewardList.size(); i++) {
+			DlSuperLottoRewardDetailsDTO superLottoRewardDetails = new DlSuperLottoRewardDetailsDTO();
+			superLottoRewardDetails.setRewardLevel(superLottoRewardList.get(i).getRewardLevel());
+			superLottoRewardDetails.setRewardNum1(superLottoRewardList.get(i).getRewardNum1());
+			superLottoRewardDetails.setRewardNum2(superLottoRewardList.get(i).getRewardNum2());
+			superLottoRewardDetails.setRewardPrice1(superLottoRewardList.get(i).getRewardPrice1());
+			superLottoRewardDetails.setRewardPrice2(superLottoRewardList.get(i).getRewardPrice2());
+			superLottoRewardDetailsList.add(superLottoRewardDetails);
+		}
+		superLottoDetailsDTO.setSuperLottoRewardDetailsList(superLottoRewardDetailsList);
+		return ResultGenerator.genSuccessResult(null, superLottoDetailsDTO);
+	}
 
 	@ApiOperation(value = "国家联赛列表", notes = "国家联赛列表")
 	@PostMapping("/leagueListByGroupId")
@@ -477,12 +503,17 @@ public class DlDiscoveryPageController {
 	 * @return dayForWeek 判断结果<br>
 	 * @Exception 发生异常<br>
 	 */
-	public static String dayForWeek(String pTime) throws Exception {
+	public static String dayForWeek(String pTime) {
 		// 注意参数的样式为yyyy-MM-dd,必须让参数样式与所需样式统一
 		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar c = Calendar.getInstance();
-		c.setTime(format.parse(pTime));
+		try {
+			c.setTime(format.parse(pTime));
+		} catch (ParseException e) {
+			logger.info("日期到星期的转换异常====================");
+			e.printStackTrace();
+		}
 		int dayForWeek = 0;
 		if (c.get(Calendar.DAY_OF_WEEK) == 1) {
 			dayForWeek = 7;
@@ -491,4 +522,68 @@ public class DlDiscoveryPageController {
 		}
 		return weekDays[dayForWeek];
 	}
+
+	private List<InfoCatDTO> createCat() {
+		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
+		// String channel = SessionUtil.getUserDevice().getChannel();
+		String channel = "c16010";
+		logger.info("channel===============================================" + channel);
+		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
+		if (channel.equals("h5")) {
+			for (int i = 0; i < articleClassifyCatList.size(); i++) {
+				InfoCatDTO infoCat = new InfoCatDTO();
+				infoCat.setCat(articleClassifyCatList.get(i).getId().toString());
+				infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
+				infoCatList.add(infoCat);
+			}
+			logger.info("H5端的infoCatList===================================" + infoCatList);
+		} else {
+			List<DlPhoneChannel> phoneChannelList = dlArticleMapper.findPhoneChannel(channel);
+			if (phoneChannelList.size() > 0) {
+				List<String> resultStr = Arrays.asList(phoneChannelList.get(0).getArticleClassifyIds().split(","));
+				logger.info("ArticleClassifyIds======================================" + resultStr);
+				if (resultStr.size() == 1 && resultStr.get(0).equals("0")) {
+					for (int i = 0; i < articleClassifyCatList.size(); i++) {
+						InfoCatDTO infoCat = new InfoCatDTO();
+						infoCat.setCat(articleClassifyCatList.get(i).getId().toString());
+						infoCat.setCatName(articleClassifyCatList.get(i).getClassifyName());
+						infoCatList.add(infoCat);
+					}
+					logger.info("资讯分类id等于0时的infoCatList===================================" + infoCatList);
+				} else {
+					Map<Integer, DlArticleClassify> map = new HashMap<Integer, DlArticleClassify>(articleClassifyCatList.size());
+					articleClassifyCatList.forEach(s -> map.put(s.getId(), s));
+					String sortsStr = null == phoneChannelList.get(0).getSorts() ? "0" : phoneChannelList.get(0).getSorts();
+					List<String> sortStr = Arrays.asList(sortsStr.split(","));
+					List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
+					DlSorts sortsArr[] = new DlSorts[sortStr.size()];
+					for (int i = 0; i < sortStr.size(); i++) {
+						String[] arrStr = sortStr.get(i).split(":");
+						DlSorts sorts;
+						if (arrStr.length > 1) {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
+						} else {
+							sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
+						}
+						sortsArr[i] = sorts;
+						sortsList.add(sorts);
+					}
+					Arrays.sort(sortsArr);
+					for (int i = 0; i < sortsArr.length; i++) {
+						DlSorts sorts = sortsArr[i];
+						DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
+						if (null != articleClassifyMap) {
+							InfoCatDTO infoCat = new InfoCatDTO();
+							infoCat.setCat(articleClassifyMap.getId().toString());
+							infoCat.setCatName(articleClassifyMap.getClassifyName());
+							infoCatList.add(infoCat);
+						}
+					}
+					logger.info("资讯分类id不等于0时的infoCatList===================================" + infoCatList);
+				}
+			}
+		}
+		return infoCatList;
+	}
+
 }

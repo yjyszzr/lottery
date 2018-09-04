@@ -289,18 +289,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		for (int i = 0; i < findAll.size(); i++) {
 			findAllDTO.add(articleDto(findAll.get(i)));
 		}
-		PageInfo<DLArticleDTO> pageInfo = new PageInfo<DLArticleDTO>(findAllDTO);
-
-		if (null == findAll) {
-			return new PageInfo<DLArticleDTO>();
-		}
-		PageInfo<DLArticleDTO> result = new PageInfo<DLArticleDTO>();
-		try {
-			BeanUtils.copyProperties(pageInfo, result);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-		result.setList(findAllDTO);
-		return result;
+		PageInfo<DLArticleDTO> pageInfoRSt = new PageInfo<DLArticleDTO>(findAllDTO);
+		return pageInfoRSt;
 	}
 }

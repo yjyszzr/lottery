@@ -9,6 +9,18 @@
     <result column="prizes" jdbcType="VARCHAR" property="prizes" />
     <result column="create_time" jdbcType="VARCHAR" property="createTime" />
   </resultMap>
+  
+  <resultMap id="SuperLottoRewardResultMap" type="com.dl.shop.lottery.model.DlSuperLottoReward">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="term_num" jdbcType="INTEGER" property="termNum" />
+    <result column="reward_level" jdbcType="INTEGER" property="rewardLevel" />
+    <result column="reward_num1" jdbcType="INTEGER" property="rewardNum1" />
+    <result column="reward_price1" jdbcType="INTEGER" property="rewardPrice1" />
+    <result column="reward_num2" jdbcType="INTEGER" property="rewardNum2" />
+    <result column="reward_price2" jdbcType="INTEGER" property="rewardPrice2" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+    <result column="plat_from" jdbcType="INTEGER" property="platFrom" />
+  </resultMap>
 	    
 	  <sql id="allFields">
 		  	term_num,
@@ -21,10 +33,23 @@
 	  <!-- 历史开奖 -->
 	 <select id="getLastNumLottos" resultMap="BaseResultMap">
 			SELECT 
-				 <include refid="allFields"></include>
-				 FROM dl_super_lotto 
-				 ORDER BY term_num DESC 
-				 LIMIT #{count}	
+				 *
+			FROM 
+				dl_super_lotto 
+			ORDER BY 
+				term_num DESC 
+			LIMIT #{count}	
 	  </select>
+	  
+    <select id="findByTermNum" resultMap="SuperLottoRewardResultMap">
+	  	SELECT
+			* 
+		FROM
+			dl_super_lotto_result 
+		WHERE
+			term_num = #{termNum}
+		ORDER BY
+			reward_level ASC
+  </select>
 	  
 </mapper>

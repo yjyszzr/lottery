@@ -31,6 +31,11 @@ public class DlSuperLotto {
 	private String prizes;
 
 	/**
+	 * 销售金额
+	 */
+	private Integer sell;
+
+	/**
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
@@ -130,4 +135,13 @@ public class DlSuperLotto {
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
 	}
+
+	public Integer getSell() {
+		return sell;
+	}
+
+	public void setSell(Integer sell) {
+		this.sell = sell;
+	}
+
 }
