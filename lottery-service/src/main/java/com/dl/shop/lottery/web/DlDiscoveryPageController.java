@@ -27,6 +27,7 @@ import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlNoviceClassroomDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
+import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
@@ -34,6 +35,7 @@ import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.LottoDetailsParam;
+import com.dl.lottery.param.SZCQueryParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.github.pagehelper.PageHelper;
@@ -46,8 +48,6 @@ public class DlDiscoveryPageController {
 	@Resource
 	private DlDiscoveryPageService dlDiscoveryPageService;
 	
-    @Resource
-    private LotteryMatchService lotteryMatchService;
 
 	@ApiOperation(value = "发现页主页", notes = "发现页主页")
 	@PostMapping("/homePage")
@@ -108,7 +108,7 @@ public class DlDiscoveryPageController {
 
 	@ApiOperation(value = "大乐透详情", notes = "大乐透详情")
 	@PostMapping("/lottoDetails")
-	public BaseResult<DlSuperLottoDetailsDTO> lottoDetails(@RequestBody LottoDetailsParam param) {
+	public BaseResult<DlSuperLottoDetailsDTO> lottoDetails(@RequestBody SZCQueryParam param) {
 		DlSuperLottoDetailsDTO superLottoDetails = dlDiscoveryPageService.lottoDetails(param);
 		return ResultGenerator.genSuccessResult(null, superLottoDetails);
 	}
@@ -141,10 +141,18 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
 	}
 	
-	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
+	@ApiOperation(value = "竞彩类开奖结果详情", notes = "竞彩类开奖结果详情")
 	@PostMapping("/queryJcOpenPrizesByDate")
-	public BaseResult<List<LeagueMatchResultDTO>> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam ) {
-		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
-		return ResultGenerator.genSuccessResult("success", list);
+	public BaseResult<JCResultDTO> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam ) {
+		JCResultDTO dto =  dlDiscoveryPageService.queryJCResult(jcParam);
+		return ResultGenerator.genSuccessResult("success", dto);
 	}
+	
+	@ApiOperation(value = "数字彩类开奖结果详情", notes = "数字彩类开奖结果详情")
+	@PostMapping("/querySzcOpenPrizesByDate")
+	public BaseResult<DlSuperLottoDetailsDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam ) {
+		DlSuperLottoDetailsDTO superLottoDetails = dlDiscoveryPageService.lottoDetails(szcParam);
+		return ResultGenerator.genSuccessResult("success", superLottoDetails);
+	}
+	
 }

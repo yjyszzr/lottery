@@ -10,6 +10,6 @@ public class KeyValueDTO {
 	public String keyName;
 	
 	@ApiModelProperty(value = "键值")
-	public String keyValue;
+	public Object keyValue;
 
 }

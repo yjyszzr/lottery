@@ -18,7 +18,7 @@ public class DlSuperLottoDetailsDTO {
 	@ApiModelProperty(value = "红球中奖号码")
 	private List<String> redPrizeNumList;
 
-	@ApiModelProperty(value = "红球中奖号码")
+	@ApiModelProperty(value = "蓝球中奖号码")
 	private List<String> bluePrizeNumList;
 
 	@ApiModelProperty(value = "奖金池")

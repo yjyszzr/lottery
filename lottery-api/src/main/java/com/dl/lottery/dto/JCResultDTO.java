@@ -1,24 +1,23 @@
 package com.dl.lottery.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 public class JCResultDTO {
 	
-	@ApiModelProperty(value = "让球胜平负")
-	private String hhad;
+	@ApiModelProperty(value = "彩票分类")
+	private String lotteryClassify;
 	
-	@ApiModelProperty(value = "胜平负")
-	private String had;
+	@ApiModelProperty(value = "彩票名称")
+	private String lotteryName;
 	
-	@ApiModelProperty(value = "比分")
-	private String crs;
+	@ApiModelProperty(value = "日期")
+	private String dateStr;
 	
-	@ApiModelProperty(value = "总进球")
-	private String ttg;
-	
-	@ApiModelProperty(value = "半全场")
-	private String hafu;
+	@ApiModelProperty(value = "集合")
+	private List<LeagueMatchResultDTO> list;
 
 }

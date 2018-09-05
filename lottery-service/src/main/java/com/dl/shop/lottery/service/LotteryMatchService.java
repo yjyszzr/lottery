@@ -1,6 +1,4 @@
 package com.dl.shop.lottery.service;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,6 +14,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,7 +67,6 @@ import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
-import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.KeyValueDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
@@ -2715,11 +2713,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(lotteryMatchList.size() == 0) {
 			return lmrList;
 		}
-		
 		List<Integer> changciIdList = lotteryMatchList.stream().map(s->s.getChangciId()).collect(Collectors.toList());
 		List<DlLeagueMatchResult> leagueMatchResultList = dlLeagueMatchResultMapper.queryMatchResultsByChangciIds(changciIdList);
 		Map<Integer, List<DlLeagueMatchResult>> leagueMatchMap = leagueMatchResultList.stream().collect(Collectors.groupingBy(DlLeagueMatchResult::getChangciId));
-		
 		lotteryMatchList.stream().forEach(s->{
 			LeagueMatchResultDTO lmrDto = new LeagueMatchResultDTO();
 			Integer changciId = s.getChangciId();		

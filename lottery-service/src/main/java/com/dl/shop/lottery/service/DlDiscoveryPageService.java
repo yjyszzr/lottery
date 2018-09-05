@@ -2,6 +2,7 @@ package com.dl.shop.lottery.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
+import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
@@ -44,12 +46,16 @@ import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.dto.JCResultDTO;
+import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.DiscoveryPageParam;
+import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.LottoDetailsParam;
+import com.dl.lottery.param.SZCQueryParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
@@ -103,6 +109,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlSeason500wService dlSeason500wService;
+	
+    @Resource
+    private LotteryMatchService lotteryMatchService;
 	
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
@@ -443,7 +452,7 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 
-	public DlSuperLottoDetailsDTO lottoDetails(LottoDetailsParam param) {
+	public DlSuperLottoDetailsDTO lottoDetails(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
 		DlSuperLottoDetailsDTO superLottoDetailsDTO = new DlSuperLottoDetailsDTO();
@@ -577,6 +586,20 @@ public class DlDiscoveryPageService {
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;
+	}
+	
+	public 	JCResultDTO queryJCResult(JCQueryParam jcParam) {
+		JCResultDTO dto = new JCResultDTO();
+		String dateStr = jcParam.getDateStr();
+		if(StringUtil.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
+		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
+		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
+		dto.setDateStr(dateShowStr);
+		dto.setLotteryClassify(jcParam.getLotteryClassify());
+		dto.setLotteryName("竞彩足球");
+		return dto;
 	}
 
 }
