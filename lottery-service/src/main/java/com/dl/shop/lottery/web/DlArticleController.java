@@ -162,6 +162,7 @@ public class DlArticleController {
 		List<DLArticleDTO> bigNews = this.createBigNewsList(param.getExtendCat());
 		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
 		String channel = userDevice.getChannel();
+		// String channel = "h5";
 		if (StringUtils.isNotEmpty(channel)) {
 			if ("c26013".equals(channel)) {// 临时需求,可以删除,乐得体育的样式
 				if (bigNews.size() > 0) {
@@ -219,7 +220,7 @@ public class DlArticleController {
 	public List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
 		String channel = SessionUtil.getUserDevice().getChannel();
-		// String channel = "c16010";
+		// String channel = "h5";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {

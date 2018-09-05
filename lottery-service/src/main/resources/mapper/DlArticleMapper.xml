@@ -35,12 +35,12 @@
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
   
-<!--   <resultMap id="articleClassifyResultMap" type="com.dl.shop.lottery.model.DlArticleClassify"> -->
-<!--     <id column="id" jdbcType="INTEGER" property="id" /> -->
-<!--     <result column="classify_name" jdbcType="VARCHAR" property="classifyName" /> -->
-<!--     <result column="deleted" jdbcType="INTEGER" property="deleted" /> -->
-<!--     <result column="create_time" jdbcType="INTEGER" property="createTime" /> -->
-<!--   </resultMap> -->
+  <resultMap id="articleClassifyResultMap" type="com.dl.shop.lottery.model.DlArticleClassify">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="classify_name" jdbcType="VARCHAR" property="classifyName" />
+    <result column="deleted" jdbcType="INTEGER" property="deleted" />
+    <result column="create_time" jdbcType="INTEGER" property="createTime" />
+  </resultMap>
   
   <resultMap id="phoneChannelResultMap" type="com.dl.shop.lottery.model.DlPhoneChannel">
     <id column="id" jdbcType="INTEGER" property="id" />
@@ -86,7 +86,7 @@
    	article_id = #{articleId}
   
   </update>
-  <select id="findArticleClassify"    resultType="com.dl.shop.lottery.model.DlArticleClassify">
+  <select id="findArticleClassify"    resultMap="articleClassifyResultMap">
   	select * from dl_article_classify where deleted = 0 
   </select>
   <select id="findArticlesByCats"    resultMap="BaseResultMap">
