@@ -218,8 +218,8 @@ public class DlArticleController {
 	 */
 	public List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		// String channel = SessionUtil.getUserDevice().getChannel();
-		String channel = "c16010";
+		String channel = SessionUtil.getUserDevice().getChannel();
+//		String channel = "c16010";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
