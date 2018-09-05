@@ -59,6 +59,9 @@ import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
+import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage;
+import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage.SpMap.Odds.MatchNumber;
+import com.dl.lottery.param.DlCallbackStakeSenDeParam;
 import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
@@ -146,6 +149,67 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		return dlToStakeDTO;
 	}
 	
+	/**
+	 * 森德回调参数
+	 * @param param
+	 */
+	public void callbackStakeSenDe(DlCallbackStakeSenDeParam param) {
+		log.info("森德出票回调内容={}",JSONHelper.bean2json(param));
+		List<SendeResultMessage> messages = param.getMessage();
+		if(CollectionUtils.isNotEmpty(messages)) {
+			List<LotteryPrint> lotteryPrints = new ArrayList<>(messages.size());
+			for(SendeResultMessage message : messages) {
+				String ticketId = message.getTicketId();
+				LotteryPrint dBPrint = lotteryPrintMapper.getPrintLotteryByTicetId(ticketId);
+				if(dBPrint==null){
+					log.error("森德出票回调异常,未找到对应的票，ticketId={}",ticketId);
+					continue;
+				}
+				LotteryPrint lotteryPrint = new LotteryPrint();
+				lotteryPrint.setTicketId(ticketId);
+				String resultStatus = message.getResult();
+				Integer printStatus = 0;
+				if(resultStatus.equals("SUC_TICKET") || resultStatus.equals("ORDER_EXIT_ERROR")) {
+					lotteryPrint.setStatus(1);
+					printStatus = 16;
+				}else if(resultStatus.equals("SUC_ENTRUST") || resultStatus.equals("ING_ENTRUST")){
+					lotteryPrint.setStatus(3);
+				}else {
+					lotteryPrint.setStatus(2);
+					printStatus = 17;
+				}
+				lotteryPrint.setPlatformId(message.getOrderNumber());
+				lotteryPrint.setPrintNo("");
+				lotteryPrint.setPrintStatus(printStatus);
+				List<MatchNumber> marchNumbers = message.getOdds().getSpMap().getMatchNumber();
+				StringBuffer numBuff = new StringBuffer();
+				marchNumbers.forEach(item->{
+					numBuff.append(";"+addIssueWeekDay(item.getMatchNumber())+"|");//添加第九位
+					Map<String,String> val = item.getValue();
+					String str ="";
+					for(String key:val.keySet()) {
+						str = str +","+key+"@"+val.get(key);
+					}
+					numBuff.append(str.substring(1));
+				});
+				lotteryPrint.setPrintSp(numBuff.substring(1));
+				Date printTime = new Date();
+				try{
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					String printTimeStr = message.getSuccessTime();
+					printTime = sdf.parse(printTimeStr);
+				}catch(Exception e){
+					log.error("森德回调出票时间转化出错 ticketId={},printTimeStr={}",message.getTicketId(),message.getSuccessTime());
+				}
+				lotteryPrint.setPrintTime(printTime);
+				lotteryPrints.add(lotteryPrint);
+			}
+			log.info("updateLotteryPrintByCallBackSenDe size:"+lotteryPrints.size());
+			if(CollectionUtils.isNotEmpty(lotteryPrints)) {
+				updateLotteryPrintByCallBack(lotteryPrints);
+			}
+		}
+	}
 	/**
 	 * 回调参数
 	 * @param param

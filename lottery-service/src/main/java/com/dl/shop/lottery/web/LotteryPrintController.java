@@ -28,6 +28,7 @@ import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.PrintLotteryRefundDTO;
 import com.dl.lottery.param.DlCallbackStakeParam;
+import com.dl.lottery.param.DlCallbackStakeSenDeParam;
 import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
 import com.dl.lottery.param.DlQueryAccountParam;
 import com.dl.lottery.param.DlQueryIssueParam;
@@ -74,6 +75,16 @@ public class LotteryPrintController {
 		lotteryPrintService.callbackStake(param);
     	return ResultGenerator.genSuccessResult("投注结果通知成功");
     }
+	
+	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
+	@PostMapping("/callbackStakeSenDe")
+	public BaseResult<String> callbackStakeSenDe(@RequestBody DlCallbackStakeSenDeParam param) {
+		if(param.getResultCode().equals("SUCCESS") && param.getMessageType().equals("ticketResult")) {
+			lotteryPrintService.callbackStakeSenDe(param);
+		}
+		return ResultGenerator.genSuccessResult("投注结果通知成功");
+	}
+	
 	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
     @PostMapping("/callbackStakeWeiCaiShiDai")
     public Map<String,String> callbackStakeWeiCaiShiDai(DlCallbackStakeWeiCaiShiDaiParam param) {
