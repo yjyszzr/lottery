@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.dl.base.mapper.Mapper;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.model.DlTeam500W;
 
 public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 
@@ -18,5 +19,7 @@ public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 	Integer queryTeamId(@Param("sportteryTeamid") Integer sportteryTeamid);
 
 	List<DlLeagueTeam> findByLeagueId(@Param("leagueId") Integer leagueId);
+
+	List<DlTeam500W> findBySeasonId(@Param("seasonId") Integer seasonId);
 
 }

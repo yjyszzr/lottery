@@ -14,6 +14,13 @@
     <result column="team_pic" jdbcType="VARCHAR" property="teamPic" />
     <result column="league_from" jdbcType="TINYINT" property="leagueFrom" />
   </resultMap>
+  <resultMap id="teamResultMap" type="com.dl.shop.lottery.model.DlTeam500W">
+    <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="team_name" jdbcType="VARCHAR" property="teamName" />
+    <result column="season_id" jdbcType="INTEGER" property="seasonId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="team_pic" jdbcType="VARCHAR" property="teamPic" />
+  </resultMap>
   
   <select id="getBySportteryTeamid" resultMap="BaseResultMap">
   	select * from dl_league_team where sporttery_teamid=#{sportteryTeamid}
@@ -40,6 +47,15 @@
 			dl_league_team 
 		WHERE
 			team_id IN ( SELECT team_id FROM dl_league_team_ref WHERE league_id = #{leagueId} )
+  </select>
+  
+  <select id="findBySeasonId" resultMap="teamResultMap">
+		SELECT
+			* 
+		FROM
+			dl_team_500w 
+		WHERE
+			season_id = #{seasonId} 
   </select>
   
 </mapper>

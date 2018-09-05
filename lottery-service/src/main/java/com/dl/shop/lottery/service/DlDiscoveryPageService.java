@@ -552,13 +552,13 @@ public class DlDiscoveryPageService {
 			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
-			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findByLeagueIdAndSeasonId(seasonId);
+			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
 			leagueDetail.setLeagueShooter(leagueShooter);
 			// 赛程
 			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
 			leagueDetail.setLeagueMatch(leagueMatch);
 			// 球队
-			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueId(leagueId);
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findBySeasonId(seasonId);
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;

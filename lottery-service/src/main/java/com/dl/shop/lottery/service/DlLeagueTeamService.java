@@ -27,6 +27,7 @@ import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueInfoTeamRef;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.model.DlTeam500W;
 
 @Service
 @Transactional(value = "transactionManager2")
@@ -136,6 +137,21 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 			DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
 			leagueTeamInfoDTO.setTeamAddr(leagueTeamInfoList.get(i).getTeamAddr());
 			leagueTeamInfoDTO.setTeamPic(leagueTeamInfoList.get(i).getTeamPic());
+			leagueTeamInfoDTOList.add(leagueTeamInfoDTO);
+		}
+		leagueTeamDTO.setLeagueTeamInfoDTOList(leagueTeamInfoDTOList);
+		return leagueTeamDTO;
+	}
+
+	public DlLeagueTeamDTO findBySeasonId(Integer seasonId) {
+		DlLeagueTeamDTO leagueTeamDTO = new DlLeagueTeamDTO();
+		List<DlLeagueTeamInfoDTO> leagueTeamInfoDTOList = new ArrayList<DlLeagueTeamInfoDTO>();
+		List<DlTeam500W> leagueTeamInfoList = dlLeagueTeamMapper.findBySeasonId(seasonId);
+		for (int i = 0; i < leagueTeamInfoList.size(); i++) {
+			DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
+			leagueTeamInfoDTO.setTeamAddr(leagueTeamInfoList.get(i).getTeamName());
+			leagueTeamInfoDTO.setTeamPic(leagueTeamInfoList.get(i).getTeamPic());
+			leagueTeamInfoDTO.setTeamId(leagueTeamInfoList.get(i).getTeamId());
 			leagueTeamInfoDTOList.add(leagueTeamInfoDTO);
 		}
 		leagueTeamDTO.setLeagueTeamInfoDTOList(leagueTeamInfoDTOList);

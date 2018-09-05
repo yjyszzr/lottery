@@ -41,7 +41,7 @@ public class DlLeagueShooterService extends AbstractService<DlLeagueShooter> {
 
 	}
 
-	public DlLeagueShooterDTO findByLeagueIdAndSeasonId(Integer seasonId) {
+	public DlLeagueShooterDTO findBySeasonId(Integer seasonId) {
 		DlLeagueShooterDTO leagueShooter = new DlLeagueShooterDTO();
 		List<DlLeagueShooterInfoDTO> leagueShooterDTOList = new ArrayList<DlLeagueShooterInfoDTO>();
 		List<DlLeagueShooter> leagueShooterList = dlLeagueShooterMapper.findBySeasonId(seasonId);
@@ -57,4 +57,5 @@ public class DlLeagueShooterService extends AbstractService<DlLeagueShooter> {
 		leagueShooter.setLeagueShooterInfoList(leagueShooterDTOList);
 		return leagueShooter;
 	}
+
 }
