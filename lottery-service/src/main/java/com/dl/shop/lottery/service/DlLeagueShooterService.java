@@ -40,4 +40,21 @@ public class DlLeagueShooterService extends AbstractService<DlLeagueShooter> {
 		return leagueShooter;
 
 	}
+
+	public DlLeagueShooterDTO findByLeagueIdAndSeasonId(Integer seasonId) {
+		DlLeagueShooterDTO leagueShooter = new DlLeagueShooterDTO();
+		List<DlLeagueShooterInfoDTO> leagueShooterDTOList = new ArrayList<DlLeagueShooterInfoDTO>();
+		List<DlLeagueShooter> leagueShooterList = dlLeagueShooterMapper.findBySeasonId(seasonId);
+		for (int i = 0; i < leagueShooterList.size(); i++) {
+			DlLeagueShooterInfoDTO leagueShooterDTO = new DlLeagueShooterInfoDTO();
+			leagueShooterDTO.setInNum(leagueShooterList.get(i).getInNum());
+			leagueShooterDTO.setMatchSeasonId(leagueShooterList.get(i).getMatchSeasonId());
+			leagueShooterDTO.setPlayerName(leagueShooterList.get(i).getPlayerName());
+			leagueShooterDTO.setPlayerTeam(leagueShooterList.get(i).getPlayerTeam());
+			leagueShooterDTO.setSort(leagueShooterList.get(i).getSort());
+			leagueShooterDTOList.add(leagueShooterDTO);
+		}
+		leagueShooter.setLeagueShooterInfoList(leagueShooterDTOList);
+		return leagueShooter;
+	}
 }

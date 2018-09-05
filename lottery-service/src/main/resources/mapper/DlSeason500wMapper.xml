@@ -25,4 +25,27 @@
 	FROM
 		dl_season_500w
    </select>
+  
+   <select id="findSeasonByLeagueId" resultMap="BaseResultMap">
+		SELECT 
+			<include refid = "allFields" ></include> 
+		FROM
+			dl_season_500w
+		WHERE 
+			league_id = #{leagueId}
+		ORDER BY 
+			season_id DESC
+   </select>
+   
+   <select id="getlastSeasonByLeagueId" resultType="Integer">
+		SELECT
+			season_id 
+		FROM
+			dl_season_500w 
+		WHERE
+			league_id = #{leagueId}
+		ORDER BY
+			season_id DESC
+		LIMIT 1
+   </select>
 </mapper>

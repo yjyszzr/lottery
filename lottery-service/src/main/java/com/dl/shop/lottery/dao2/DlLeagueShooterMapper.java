@@ -10,4 +10,6 @@ import com.dl.shop.lottery.model.DlLeagueShooter;
 public interface DlLeagueShooterMapper extends Mapper<DlLeagueShooter> {
 
 	List<DlLeagueShooter> findByLeagueId(@Param("leagueId") Integer leagueId);
+
+	List<DlLeagueShooter> findBySeasonId(@Param("seasonId") Integer seasonId);
 }
