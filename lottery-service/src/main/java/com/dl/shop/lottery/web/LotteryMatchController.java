@@ -39,6 +39,7 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchAsiaDTO;
 import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
 import com.dl.lottery.dto.LeagueMatchEuropeDTO;
+import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
@@ -55,6 +56,7 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetCancelMatchesParam;
 import com.dl.lottery.param.GetFilterConditionsParam;
+import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
@@ -913,4 +915,7 @@ public class LotteryMatchController {
 		List<String> leagueInfos =  lotteryMatchService.getCancelMatches(param.getPlayCodes());
 		return ResultGenerator.genSuccessResult("success", leagueInfos);
 	}
+	
+	
+	
 }

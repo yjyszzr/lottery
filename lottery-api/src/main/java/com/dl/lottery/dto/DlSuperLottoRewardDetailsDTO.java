@@ -8,6 +8,9 @@ public class DlSuperLottoRewardDetailsDTO {
 
 	@ApiModelProperty(value = "获奖级别1，2，3，4，5，6")
 	private Integer rewardLevel;
+	
+	@ApiModelProperty(value = "获奖级别名称")
+	private String rewardLevelName;
 
 	@ApiModelProperty(value = "基本中奖注数")
 	private Integer rewardNum1;

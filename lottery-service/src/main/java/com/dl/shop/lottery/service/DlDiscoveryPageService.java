@@ -44,12 +44,14 @@ import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
+import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
 import com.dl.shop.lottery.model.DlPhoneChannel;
@@ -58,6 +60,7 @@ import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.DlSuperLottoReward;
 import com.dl.shop.lottery.model.LotteryClassify;
+import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.github.pagehelper.PageInfo;
 
@@ -100,6 +103,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlSeason500wService dlSeason500wService;
+	
+	@Resource
+	private LotteryMatchMapper lotteryMatchMapper;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -255,10 +261,13 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} else if (s.getLotteryName().equals("竞彩足球")) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setHomeTeam("竞彩足球主队");
-				lotteryClassifyForOpenPrize.setScore("2:5");
-				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩足球客队");
+				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
+				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(yyyyMM +"("+zhouji+")"); // "08-28(星期二)"
+				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
+				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
 			} else if (s.getLotteryName().equals("广东11选5")) {
@@ -452,13 +461,19 @@ public class DlDiscoveryPageService {
 
 		List<DlSuperLottoRewardDetailsDTO> superLottoRewardDetailsList = new ArrayList<DlSuperLottoRewardDetailsDTO>();
 		for (int i = 0; i < superLottoRewardList.size(); i++) {
-			DlSuperLottoRewardDetailsDTO superLottoRewardDetails = new DlSuperLottoRewardDetailsDTO();
-			superLottoRewardDetails.setRewardLevel(superLottoRewardList.get(i).getRewardLevel());
-			superLottoRewardDetails.setRewardNum1(superLottoRewardList.get(i).getRewardNum1());
-			superLottoRewardDetails.setRewardNum2(superLottoRewardList.get(i).getRewardNum2());
-			superLottoRewardDetails.setRewardPrice1(superLottoRewardList.get(i).getRewardPrice1());
-			superLottoRewardDetails.setRewardPrice2(superLottoRewardList.get(i).getRewardPrice2());
-			superLottoRewardDetailsList.add(superLottoRewardDetails);
+			DlSuperLottoReward slr = superLottoRewardList.get(i);
+			DlSuperLottoRewardDetailsDTO basicDetails = new DlSuperLottoRewardDetailsDTO();
+			DlSuperLottoRewardDetailsDTO appendDetails = new DlSuperLottoRewardDetailsDTO();
+			basicDetails.setRewardLevel(slr.getRewardLevel());
+			basicDetails.setRewardLevelName(LottoRewardLevelEnums.getbasicNameByCode(slr.getRewardLevel()));
+			basicDetails.setRewardNum1(slr.getRewardNum1());
+			basicDetails.setRewardPrice1(slr.getRewardPrice1());
+			appendDetails.setRewardLevel(slr.getRewardLevel());
+			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
+			appendDetails.setRewardNum2(slr.getRewardNum2());
+			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			superLottoRewardDetailsList.add(basicDetails);
+			superLottoRewardDetailsList.add(appendDetails);
 		}
 		superLottoDetailsDTO.setSuperLottoRewardDetailsList(superLottoRewardDetailsList);
 		return superLottoDetailsDTO;

@@ -335,4 +335,8 @@
   	 order by match_time
   </select>
   
+  <select id="queryLatestMatch" resultMap="BaseResultMap">
+	select * from dl_match where status=1 order by match_time desc limit 1
+  </select>
+  
 </mapper>

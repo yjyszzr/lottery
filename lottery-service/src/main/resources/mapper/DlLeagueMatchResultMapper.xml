@@ -24,11 +24,20 @@
   </select>
   
   <select id="queryMatchResultsByPlayCodes" resultMap="BaseResultMap">
-  select * from dl_league_match_result
-  where play_code in
-  <foreach collection="playCodes" item="playCode" index="index" open="(" close=")" separator=",">
-	#{playCode}
-  </foreach>
+  	select * from dl_league_match_result
+  	where play_code in
+	  <foreach collection="playCodes" item="playCode" index="index" open="(" close=")" separator=",">
+		#{playCode}
+	  </foreach>
+  </select>
+  
+  <select id="queryMatchResultsByChangciIds" resultMap="BaseResultMap">
+  	select * from dl_league_match_result
+  	where changci_id in
+	  <foreach collection="changciIds" item="changciId" index="index" open="(" close=")" separator=",">
+		#{changciId}
+	  </foreach>
+	order by changci_id
   </select>
   
 </mapper>

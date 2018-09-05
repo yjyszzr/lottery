@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,12 +27,15 @@ import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlNoviceClassroomDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
+import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
+import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
+import com.dl.shop.lottery.service.LotteryMatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -41,6 +45,9 @@ public class DlDiscoveryPageController {
 
 	@Resource
 	private DlDiscoveryPageService dlDiscoveryPageService;
+	
+    @Resource
+    private LotteryMatchService lotteryMatchService;
 
 	@ApiOperation(value = "发现页主页", notes = "发现页主页")
 	@PostMapping("/homePage")
@@ -132,5 +139,12 @@ public class DlDiscoveryPageController {
 	public BaseResult<DlLeagueDetailForDiscoveryDTO> leagueDetailForDiscovery(@RequestBody LeagueDetailForDiscoveryParam param) {
 		DlLeagueDetailForDiscoveryDTO leagueDetail = dlDiscoveryPageService.leagueDetailForDiscovery(param);
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
+	}
+	
+	@ApiOperation(value = "筛选当天的比赛联赛信息,给开奖条件用", notes = "筛选当天的比赛联赛信息,给开奖条件用")
+	@PostMapping("/queryJcOpenPrizesByDate")
+	public BaseResult<List<LeagueMatchResultDTO>> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam ) {
+		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
+		return ResultGenerator.genSuccessResult("success", list);
 	}
 }

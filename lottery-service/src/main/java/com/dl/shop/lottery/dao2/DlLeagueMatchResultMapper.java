@@ -14,4 +14,6 @@ public interface DlLeagueMatchResultMapper extends Mapper<DlLeagueMatchResult> {
 	List<DlLeagueMatchResult> queryMatchResultByPlayCode(@Param("playCode")String playCode);
 
 	List<DlLeagueMatchResult> queryMatchResultsByPlayCodes(@Param("playCodes")List<String> playCodes);
+
+	List<DlLeagueMatchResult> queryMatchResultsByChangciIds(@Param("changciIds")List<Integer> changciIds);
 }

@@ -68,7 +68,10 @@ import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
+import com.dl.lottery.dto.InfoCatDTO;
+import com.dl.lottery.dto.KeyValueDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
@@ -85,6 +88,7 @@ import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
 import com.dl.member.api.IUserCollectService;
@@ -98,12 +102,14 @@ import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
+import com.dl.shop.lottery.dao2.DlLeagueMatchResultMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
+import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.DlLeagueTeam;
 import com.dl.shop.lottery.model.DlMatchLive;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -127,6 +133,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	@Resource
 	private LotteryMatchPlayMapper lotteryMatchPlayMapper;
+	
 	@Resource
 	private DlMatchLiveMapper dlMatchLiveMapper;
 	
@@ -164,9 +171,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	private  DlLeagueTeamMapper dlLeagueTeamMapper;
 	
     @Resource
-    private DlMatchLiveService dlMatchLiveService;
-
+    private DlLeagueMatchResultMapper dlLeagueMatchResultMapper;
 	
+    @Resource
+    private DlMatchLiveService dlMatchLiveService;
+    
 	@Value("${match.url}")
 	private String matchUrl;
 	
@@ -2690,6 +2699,54 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		 }
 		 return false;
 	} 
+	
+	/**
+	 * 查询竞彩结果
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LeagueMatchResultDTO> queryJcOpenPrizesByDate(JCQueryParam jcParam) {
+		List<LeagueMatchResultDTO> lmrList = new ArrayList<>();
+		String dateStr = jcParam.getDateStr();
+		if(StringUtils.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
+		List<LotteryMatch> lotteryMatchList = lotteryMatchMapper.queryMatchByQueryCondition(dateStr,null,null,MatchStatusEnums.Played.getCode());
+		if(lotteryMatchList.size() == 0) {
+			return lmrList;
+		}
+		
+		List<Integer> changciIdList = lotteryMatchList.stream().map(s->s.getChangciId()).collect(Collectors.toList());
+		List<DlLeagueMatchResult> leagueMatchResultList = dlLeagueMatchResultMapper.queryMatchResultsByChangciIds(changciIdList);
+		Map<Integer, List<DlLeagueMatchResult>> leagueMatchMap = leagueMatchResultList.stream().collect(Collectors.groupingBy(DlLeagueMatchResult::getChangciId));
+		
+		lotteryMatchList.stream().forEach(s->{
+			LeagueMatchResultDTO lmrDto = new LeagueMatchResultDTO();
+			Integer changciId = s.getChangciId();		
+			List<DlLeagueMatchResult> list = leagueMatchMap.get(changciId);
+			if(null != list) {
+				lmrDto.setChangciId(String.valueOf(changciId));
+				lmrDto.setHomeTeamAbbr(s.getHomeTeamAbbr());
+				lmrDto.setVisitTeamAbbr(s.getVisitingTeamAbbr());
+				lmrDto.setWhole(s.getWhole());
+				lmrDto.setHalf(s.getFirstHalf());
+				lmrDto.setCupName(s.getLeagueAddr());
+				String matchTime = DateUtil.getCurrentTimeString(Long.valueOf(DateUtil.getTimeSomeDate(s.getMatchTime())),DateUtil.hh_mm_sdf);
+				lmrDto.setMatchTime(matchTime);
+				List<KeyValueDTO> jcList = new ArrayList<>();
+				for(DlLeagueMatchResult lmr:list) {
+					KeyValueDTO keyValueDTO = new KeyValueDTO();
+					keyValueDTO.setKeyName(MatchPlayTypeEnum.getMsgByCode(lmr.getPlayType()));
+					keyValueDTO.setKeyValue(lmr.getCellName());
+					jcList.add(keyValueDTO);
+				}
+				lmrDto.setJcList(jcList);
+			}
+			lmrList.add(lmrDto);
+		});
+		return lmrList;
+	}
+	
 	
 	/**
 	 * 根据查询条件查看比赛结果
