@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
@@ -137,4 +138,9 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * 统计已结束的比赛数
 	 */
 	public int countFinishMatch(@Param("dateStr") String dateStr,@Param("leagueIdArr") String[] leagueIdArr);
+	
+	/**
+	 * 查询距现在最近的一场已结束比赛
+	 */
+	LotteryMatch queryLatestMatch();
 }
