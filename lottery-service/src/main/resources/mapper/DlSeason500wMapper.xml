@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlSeason500wMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlSeason500w">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="season_id" jdbcType="INTEGER" property="seasonId" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="match_season" jdbcType="VARCHAR" property="matchSeason" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+    <sql id="allFields">
+	  	season_id,
+	  	league_id,
+	  	match_season,
+	  	create_time,
+	  	update_time
+  </sql>
+  
+   <select id="findAllSeason" resultMap="BaseResultMap">
+	SELECT 
+		<include refid = "allFields" ></include> 
+	FROM
+		dl_season_500w
+   </select>
+</mapper>

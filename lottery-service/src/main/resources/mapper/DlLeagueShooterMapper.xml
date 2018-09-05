@@ -26,4 +26,15 @@
   </select>
   
   
+  
+  <select id="findByLeagueIdForDiscovery"  resultMap="BaseResultMap">
+  		SELECT
+			* 
+		FROM
+			dl_league_shooter 
+		WHERE
+			match_season_id = #{seasonId}
+  </select>
+  
+  
 </mapper>

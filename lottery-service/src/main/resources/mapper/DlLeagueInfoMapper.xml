@@ -14,6 +14,18 @@
     <result column="is_hot" jdbcType="INTEGER" property="isHot" />
     <result column="league_rule" jdbcType="VARCHAR" property="leagueRule" />
   </resultMap>
+  <resultMap id="LeagueInfo500wResultMap" type="com.dl.shop.lottery.model.DlLeagueInfo500W">
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
+    <result column="contry_id" jdbcType="INTEGER" property="contryId" />
+    <result column="league_type" jdbcType="INTEGER" property="leagueType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="league_pic" jdbcType="VARCHAR" property="leaguePic" />
+    <result column="is_league" jdbcType="INTEGER" property="isLeague" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+    <result column="league_rule" jdbcType="VARCHAR" property="leagueRule" />
+  </resultMap>
   
   <sql id="allFields">
 	  	id,
@@ -78,6 +90,15 @@
  		 <include refid="allFields"></include>
   	from dl_league_info
   	where league_id = #{leagueId}
+  </select>
+  
+  <select id="getLeagueInfo500wByLeagueId" resultMap="LeagueInfo500wResultMap">
+		SELECT
+			<include refid = "league_info_500w" ></include> 
+		FROM
+			dl_league_500w
+		WHERE
+			league_id = #{leagueId}
   </select>
   
   <select id="getFilterConditions" resultMap="BaseResultMap">

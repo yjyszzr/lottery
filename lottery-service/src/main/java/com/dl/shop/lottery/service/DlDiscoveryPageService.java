@@ -30,11 +30,14 @@ import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
+import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlLeagueIntegralDTO;
 import com.dl.lottery.dto.DlLeagueMatchDTO;
+import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlSeason500wDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
@@ -42,6 +45,7 @@ import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
+import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.LottoDetailsParam;
@@ -49,6 +53,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
 import com.dl.shop.lottery.model.DlPhoneChannel;
+import com.dl.shop.lottery.model.DlSeason500w;
 import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.DlSuperLottoReward;
@@ -92,6 +97,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlLeagueTeamService dlLeagueTeamService;
+
+	@Resource
+	private DlSeason500wService dlSeason500wService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -498,6 +506,45 @@ public class DlDiscoveryPageService {
 		}
 		List<DlLeagueContryDTO> contryLeagueList = dlLeagueInfoService.leagueHomePageByGroupId(groupId);
 		return contryLeagueList;
+	}
+
+	public DlLeagueDetailForDiscoveryDTO leagueDetailForDiscovery(LeagueDetailForDiscoveryParam param) {
+
+		Integer leagueId = param.getLeagueId();
+		if (leagueId == null) {
+
+		}
+		DlLeagueDetailForDiscoveryDTO leagueDetail = dlLeagueInfoService.leagueDetailFrom500w(leagueId);
+		if (leagueDetail == null) {
+			return null;
+		} else {
+			// 赛季
+			List<DlSeason500w> seasonList = dlSeason500wService.findAllSeason();
+			DlLeagueSeason500wDTO leagueSeason = new DlLeagueSeason500wDTO();
+			List<DlSeason500wDTO> leagueSeasonInfoList = new ArrayList<DlSeason500wDTO>();
+			for (int i = 0; i < seasonList.size(); i++) {
+				DlSeason500wDTO season500wDTO = new DlSeason500wDTO();
+				season500wDTO.setLeagueId(seasonList.get(i).getLeagueId());
+				season500wDTO.setMatchSeason(seasonList.get(i).getMatchSeason());
+				season500wDTO.setSeasonId(seasonList.get(i).getSeasonId());
+				leagueSeasonInfoList.add(season500wDTO);
+			}
+			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
+			leagueDetail.setLeagueSeason(leagueSeason);
+			// 积分榜
+			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
+			leagueDetail.setLeagueScore(leagueIntegral);
+			// 射手榜
+			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueShooter(leagueShooter);
+			// 赛程
+			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueMatch(leagueMatch);
+			// 球队
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueId(leagueId);
+			leagueDetail.setLeagueTeam(leagueTeam);
+		}
+		return leagueDetail;
 	}
 
 }
