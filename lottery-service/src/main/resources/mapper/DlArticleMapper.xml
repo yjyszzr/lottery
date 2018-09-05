@@ -86,7 +86,7 @@
    	article_id = #{articleId}
   
   </update>
-  <select id="findArticleClassify"    resultType="com.dl.shop.lottery.model.DlArticleClassify">
+  <select id="findArticleClassify"    resultMap="BaseResultMap">
   	select * from dl_article_classify where deleted = 0 
   </select>
   <select id="findArticlesByCats"    resultMap="BaseResultMap">
