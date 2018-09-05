@@ -479,11 +479,16 @@ public class DlDiscoveryPageService {
 		return superLottoDetailsDTO;
 	}
 
+	/**
+	 * 赛事详情 乐得体育过包接口
+	 * 
+	 * @param param
+	 * @return
+	 */
 	public DlLeagueDetailDTO leagueDetail(LeagueDetailParam param) {
-
 		Integer leagueId = param.getLeagueId();
 		if (leagueId == null) {
-
+			return null;
 		}
 		DlLeagueDetailDTO leagueDetail = dlLeagueInfoService.leagueDetail(leagueId);
 		if (leagueDetail == null) {
@@ -523,18 +528,30 @@ public class DlDiscoveryPageService {
 		return contryLeagueList;
 	}
 
+	/**
+	 * 赛事详情 正式接口
+	 * 
+	 * @param param
+	 * @return
+	 */
 	public DlLeagueDetailForDiscoveryDTO leagueDetailForDiscovery(LeagueDetailForDiscoveryParam param) {
-
 		Integer leagueId = param.getLeagueId();
 		if (leagueId == null) {
-
+			return null;
 		}
 		DlLeagueDetailForDiscoveryDTO leagueDetail = dlLeagueInfoService.leagueDetailFrom500w(leagueId);
 		if (leagueDetail == null) {
 			return null;
 		} else {
+			Integer seasonId = param.getSeasonId();
+			if (seasonId == null || seasonId == 0) {
+				seasonId = dlSeason500wService.getlastSeasonByLeagueId(leagueId);
+				if (seasonId == null) {
+					return null;
+				}
+			}
 			// 赛季
-			List<DlSeason500w> seasonList = dlSeason500wService.findAllSeason();
+			List<DlSeason500w> seasonList = dlSeason500wService.findSeasonByLeagueId(leagueId);
 			DlLeagueSeason500wDTO leagueSeason = new DlLeagueSeason500wDTO();
 			List<DlSeason500wDTO> leagueSeasonInfoList = new ArrayList<DlSeason500wDTO>();
 			for (int i = 0; i < seasonList.size(); i++) {
@@ -550,7 +567,7 @@ public class DlDiscoveryPageService {
 			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
-			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findByLeagueId(leagueId);
+			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findByLeagueIdAndSeasonId(seasonId);
 			leagueDetail.setLeagueShooter(leagueShooter);
 			// 赛程
 			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);

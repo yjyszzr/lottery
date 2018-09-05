@@ -16,6 +16,18 @@
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   
+  <sql id="shooterFields">
+		id,
+		match_season_id,
+		player_name,
+		player_team,
+		in_num,
+		sort,
+		league_from,
+		create_time,
+		update_time
+  </sql>
+  
   <select id="findByLeagueId"  resultMap="BaseResultMap">
   		SELECT
 			* 
@@ -25,16 +37,13 @@
 			match_season_id = ( SELECT match_season_id FROM dl_league_match_season WHERE league_id = #{leagueId} ORDER BY match_season_id DESC LIMIT 1 )
   </select>
   
-  
-  
-  <select id="findByLeagueIdForDiscovery"  resultMap="BaseResultMap">
-  		SELECT
-			* 
+  <select id="findBySeasonId"  resultMap="BaseResultMap">
+	  	SELECT
+			<include refid = "shooterFields" ></include> 
 		FROM
 			dl_league_shooter 
 		WHERE
-			match_season_id = #{seasonId}
+			match_season_id = #{seasonId} 
   </select>
-  
   
 </mapper>
