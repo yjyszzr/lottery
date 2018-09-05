@@ -104,7 +104,7 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, superLottoDetails);
 	}
 
-	@ApiOperation(value = "国家联赛列表<乐德过包用>", notes = "国家联赛列表<乐德过包用>")
+	@ApiOperation(value = "国家联赛列表<乐德>", notes = "国家联赛列表<乐德>")
 	@PostMapping("/leagueListByGroupId")
 	public BaseResult<List<DlLeagueContryDTO>> leagueListByGroupId(@RequestBody LeagueListByGroupIdParam param) {
 		List<DlLeagueContryDTO> leagueContryList = dlDiscoveryPageService.leagueListByGroupId(param);
@@ -118,11 +118,10 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, leagueContryList);
 	}
 
-	@ApiOperation(value = "联赛详情", notes = "联赛详情")
+	@ApiOperation(value = "联赛详情<乐德>", notes = "联赛详情<乐德>")
 	@PostMapping("/leagueDetail")
 	public BaseResult<DlLeagueDetailDTO> leagueDetail(@RequestBody LeagueDetailParam param) {
 		DlLeagueDetailDTO leagueDetail = dlDiscoveryPageService.leagueDetail(param);
-
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
 	}
 }
