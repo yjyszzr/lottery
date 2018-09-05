@@ -2,6 +2,7 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,10 +17,12 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
+import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlNoviceClassroomDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
@@ -68,6 +71,18 @@ public class DlDiscoveryPageController {
 	public BaseResult<ActiveCenterDTO> activeCenter(@RequestBody EmptyParam emprt) {
 		ActiveCenterDTO activeCenter = dlDiscoveryPageService.activeCenter();
 		return ResultGenerator.genSuccessResult(null, activeCenter);
+	}
+
+	@ApiOperation(value = "小白课堂", notes = "小白课堂")
+	@PostMapping("/noviceClassroom")
+	public BaseResult<DlNoviceClassroomDTO> noviceClassroom(@RequestBody EmptyParam emprt) {
+		DlNoviceClassroomDTO noviceClassroomDTO = new DlNoviceClassroomDTO();
+		ActiveCenterDTO activeCenter = dlDiscoveryPageService.activeCenter();
+		List<DlBannerForActive> bannerForActiveList = new ArrayList<DlBannerForActive>();
+		bannerForActiveList.addAll(activeCenter.getOfflineList());
+		bannerForActiveList.addAll(activeCenter.getOnlineList());
+		noviceClassroomDTO.setNoviceClassroomList(bannerForActiveList);
+		return ResultGenerator.genSuccessResult(null, noviceClassroomDTO);
 	}
 
 	@ApiOperation(value = "大乐透列表", notes = "大乐透列表")
