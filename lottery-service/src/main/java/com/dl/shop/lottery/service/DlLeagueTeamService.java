@@ -157,4 +157,8 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 		leagueTeamDTO.setLeagueTeamInfoDTOList(leagueTeamInfoDTOList);
 		return leagueTeamDTO;
 	}
+
+	public DlTeam500W findTeamByTeamId(Integer teamId) {
+		return dlLeagueTeamMapper.findTeamByTeamId(teamId);
+	}
 }

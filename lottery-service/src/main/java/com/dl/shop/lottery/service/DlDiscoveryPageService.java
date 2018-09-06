@@ -73,6 +73,7 @@ import com.dl.shop.lottery.model.DlSeason500w;
 import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.DlSuperLottoReward;
+import com.dl.shop.lottery.model.DlTeam500W;
 import com.dl.shop.lottery.model.DlTeamResult500W;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -768,8 +769,23 @@ public class DlDiscoveryPageService {
 	}
 
 	public DlTeamDetailForDiscoveryDTO teamDetailForDiscovery(TeamParam param) {
-		DlTeamDetailForDiscoveryDTO teamDetailForDiscovery = new DlTeamDetailForDiscoveryDTO();
-		DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
-		return teamDetailForDiscovery;
+		DlTeam500W team500w = dlLeagueTeamService.findTeamByTeamId(param.getTeamId());
+		if (null != team500w) {
+			DlTeamDetailForDiscoveryDTO teamDetailForDiscovery = new DlTeamDetailForDiscoveryDTO();
+			DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
+			teamDetailForDiscovery.setTeamId(team500w.getTeamId());
+			teamDetailForDiscovery.setTeamAddr(team500w.getTeamName());
+			teamDetailForDiscovery.setTeamPic(team500w.getTeamPic());
+			if (null != dlTeamResult500W) {
+				teamDetailForDiscovery.setCity(dlTeamResult500W.getCity());
+				teamDetailForDiscovery.setContry(dlTeamResult500W.getContry());
+				teamDetailForDiscovery.setTeamCapacity(dlTeamResult500W.getTeamCapacity());
+				teamDetailForDiscovery.setTeamTime(dlTeamResult500W.getTeamTime());
+				teamDetailForDiscovery.setTeamValue(dlTeamResult500W.getTeamValue());
+				teamDetailForDiscovery.setCourt(dlTeamResult500W.getCourt());
+			}
+			return teamDetailForDiscovery;
+		}
+		return null;
 	}
 }

@@ -58,4 +58,14 @@
 			league_id = #{leagueId} 
   </select>
   
+  
+  <select id="findTeamByTeamId" resultMap="teamResultMap">
+		SELECT
+			* 
+		FROM
+			dl_team_500w 
+		WHERE
+			team_id = #{teamId} 
+  </select>
+  
 </mapper>

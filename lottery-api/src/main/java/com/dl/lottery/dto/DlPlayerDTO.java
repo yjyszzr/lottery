@@ -22,6 +22,6 @@ public class DlPlayerDTO implements Serializable {
 	@Data
 	public static class DlPlayerInfoDTO {
 		@ApiModelProperty(value = "球员名称")
-		public String PlayerName;
+		public String playerName;
 	}
 }

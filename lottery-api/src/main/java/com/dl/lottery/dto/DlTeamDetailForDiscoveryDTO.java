@@ -27,7 +27,10 @@ public class DlTeamDetailForDiscoveryDTO implements Serializable {
 	private String city;
 	@ApiModelProperty(value = "球队身价")
 	private String teamValue;
-
 	@ApiModelProperty(value = "球员名单")
 	private DlPlayerDTO playerList;
+	@ApiModelProperty(value = "近期战绩")
+	private DlRecentRecordDTO recentRecord;
+	@ApiModelProperty(value = "未来赛事")
+	private DlMatchInfoFutureDTO futureMatch;
 }
