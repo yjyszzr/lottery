@@ -55,6 +55,7 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
+import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.DiscoveryPageParam;
@@ -478,18 +479,25 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 
-	public PageInfo<DlSZCDTO> szcDetailList(DiscoveryPageParam szcParam) {
+	public SZCPrizeDTO szcDetailList(DiscoveryPageParam szcParam) {
+		SZCPrizeDTO dto = new SZCPrizeDTO();
 		PageInfo<DlSZCDTO> p = new PageInfo<DlSZCDTO>();
 		if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
 			p = this.lottoDetailList(szcParam);
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.SUPER_LOTTO.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.SUPER_LOTTO.getMsg());
 		} else if (LotteryClassifyEnum.KUAI3.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
-
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.KUAI3.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.KUAI3.getMsg());
 		} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
-
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.DOUBLE_BALL.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.DOUBLE_BALL.getMsg());
 		} else if (LotteryClassifyEnum.GD_5IN11.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
-
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.GD_5IN11.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.GD_5IN11.getMsg());
 		}
-		return p;
+		dto.setSzcPrizePageInfo(p);
+		return dto;
 	}
 
 	public PageInfo<DlSZCDTO> lottoDetailList(DiscoveryPageParam param) {

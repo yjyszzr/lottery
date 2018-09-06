@@ -30,6 +30,7 @@ import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.JCResultDTO;
+import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
@@ -164,14 +165,14 @@ public class DlDiscoveryPageController {
 
 	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
 	@PostMapping("/szcDetailList")
-	public BaseResult<PageInfo<DlSZCDTO>> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
+	public BaseResult<SZCPrizeDTO> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
-		PageInfo<DlSZCDTO> pageInfo = dlDiscoveryPageService.szcDetailList(param);
-		return ResultGenerator.genSuccessResult(null, pageInfo);
+		SZCPrizeDTO dto = dlDiscoveryPageService.szcDetailList(param);
+		return ResultGenerator.genSuccessResult(null, dto);
 	}
 
 }

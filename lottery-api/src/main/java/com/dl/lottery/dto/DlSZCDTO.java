@@ -8,6 +8,13 @@ import lombok.Data;
 
 @Data
 public class DlSZCDTO {
+	
+	@ApiModelProperty(value = "彩票分类")
+	private String lotteryClassify ="";
+	
+	@ApiModelProperty(value = "彩票名称")
+	private String lotteryName ="";
+	
 	@ApiModelProperty(value = "期号")
 	private Integer termNum;
 
