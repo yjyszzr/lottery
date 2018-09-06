@@ -91,7 +91,7 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, noviceClassroomDTO);
 	}
 
-	@ApiOperation(value = "大乐透列表", notes = "大乐透列表")
+	@ApiOperation(value = "大乐透列表，演示用", notes = "大乐透列表，演示用")
 	@PostMapping("/lottoList")
 	public BaseResult<PageInfo<DlSuperLottoDTO>> lottoList(@RequestBody DiscoveryPageParam param) {
 		Integer page = param.getPage();
@@ -103,7 +103,7 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, pageInfo);
 	}
 
-	@ApiOperation(value = "大乐透详情", notes = "大乐透详情")
+	@ApiOperation(value = "大乐透详情，演示用", notes = "大乐透详情，演示用")
 	@PostMapping("/lottoDetails")
 	public BaseResult<DlSuperLottoDetailsDTO> lottoDetails(@RequestBody SZCQueryParam param) {
 		DlSuperLottoDetailsDTO superLottoDetails = dlDiscoveryPageService.lottoDetails(param);
@@ -148,13 +148,13 @@ public class DlDiscoveryPageController {
 	@ApiOperation(value = "数字彩类开奖结果详情", notes = "数字彩类开奖结果详情")
 	@PostMapping("/querySzcOpenPrizesByDate")
 	public BaseResult<SZCResultDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam) {
-		SZCResultDTO dto = dlDiscoveryPageService.lottoDetail(szcParam);
+		SZCResultDTO dto = dlDiscoveryPageService.szcDetail(szcParam);
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
 	
 	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
 	@PostMapping("/szcDetailList")
-	public BaseResult<PageInfo<DlSuperLottoDTO>> szcDetailList(@RequestBody DiscoveryPageParam param) {
+	public BaseResult<PageInfo<DlSuperLottoDTO>> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
