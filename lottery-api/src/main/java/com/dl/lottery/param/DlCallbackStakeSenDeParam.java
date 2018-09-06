@@ -25,7 +25,7 @@ public class DlCallbackStakeSenDeParam implements Serializable {
 	public String key;
 
 	@ApiModelProperty(value = "内容", required = true)
-	public List<SendeResultMessage> message;
+	public String message;
 
 	@Data
 	public static class SendeResultMessage {
@@ -60,7 +60,7 @@ public class DlCallbackStakeSenDeParam implements Serializable {
 					@ApiModelProperty(value = "", required = true)
 					public String matchNumber;
 					@ApiModelProperty(value = "", required = true)
-					public Map<String, String> value;
+					public String value;
 
 				}
 			}

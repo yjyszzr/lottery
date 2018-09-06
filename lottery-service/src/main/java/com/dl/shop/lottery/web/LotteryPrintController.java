@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.JSONHelper;
 import com.dl.lottery.dto.DlQueryAccountDTO;
 import com.dl.lottery.dto.DlQueryIssueDTO;
 import com.dl.lottery.dto.DlQueryPrizeFileDTO;
@@ -79,7 +80,8 @@ public class LotteryPrintController {
 	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
 	@PostMapping("/callbackStakeSenDe")
 	public BaseResult<String> callbackStakeSenDe(DlCallbackStakeSenDeParam param) {
-		if(param.getResultCode().equals("SUCCESS") && param.getMessageType().equals("ticketResult")) {
+		log.info("森德出票回调内容={}",JSONHelper.bean2json(param));
+		if(param.getMessageType().equals("ticketResult")) {
 			lotteryPrintService.callbackStakeSenDe(param);
 		}
 		return ResultGenerator.genSuccessResult("投注结果通知成功");

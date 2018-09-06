@@ -36,6 +36,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.dl.base.configurer.RestTemplateConfig;
 import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.enums.ThirdApiEnum;
@@ -155,7 +157,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 */
 	public void callbackStakeSenDe(DlCallbackStakeSenDeParam param) {
 		log.info("森德出票回调内容={}",JSONHelper.bean2json(param));
-		List<SendeResultMessage> messages = param.getMessage();
+		JSONArray jsonArray = JSONArray.parseArray(param.getMessage());
+		List<SendeResultMessage> messages = jsonArray.toJavaList(SendeResultMessage.class);
 		if(CollectionUtils.isNotEmpty(messages)) {
 			List<LotteryPrint> lotteryPrints = new ArrayList<>(messages.size());
 			for(SendeResultMessage message : messages) {
@@ -185,7 +188,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				StringBuffer numBuff = new StringBuffer();
 				marchNumbers.forEach(item->{
 					numBuff.append(";"+addIssueWeekDay(item.getMatchNumber())+"|");//添加第九位
-					Map<String,String> val = item.getValue();
+					String value = item.getValue();
+					Map<String,String> val = (Map<String, String>) JSON.parse(value);
 					String str ="";
 					for(String key:val.keySet()) {
 						str = str +","+key+"@"+val.get(key);
