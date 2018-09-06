@@ -321,7 +321,17 @@ public class DlDiscoveryPageService {
 				listRed.add("09");
 				listRed.add("07");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
+			}else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
+				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
+				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
+				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
+				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
+				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
+			}else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
