@@ -30,7 +30,7 @@ public class DlLeagueInfo {
 	/**
 	 * 联赛简称
 	 */
-	@Column(name = "league_addr")
+	@Column(name = "league_abbr")
 	private String leagueAddr;
 
 	@Column(name = "contry_id")
