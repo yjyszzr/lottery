@@ -22,7 +22,7 @@ public class DlRecentRecordDTO implements Serializable {
 	public Integer flat;
 	@ApiModelProperty(value = "负")
 	public Integer negative;
-	@ApiModelProperty(value = "球员列表")
+	@ApiModelProperty(value = "战绩列表")
 	public List<RecentRecordInfoDTO> recentRecordList;
 
 	@Data

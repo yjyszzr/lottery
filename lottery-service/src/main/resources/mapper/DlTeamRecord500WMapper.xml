@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlTeamRecord500WMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlTeamRecord500W">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="match_time" jdbcType="VARCHAR" property="matchTime" />
+    <result column="home_team" jdbcType="VARCHAR" property="homeTeam" />
+    <result column="visiting_team" jdbcType="VARCHAR" property="visitingTeam" />
+    <result column="score" jdbcType="VARCHAR" property="score" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <result column="team_id" jdbcType="INTEGER" property="teamId" />
+  </resultMap>
+  <select id="findByTeamId" resultMap="BaseResultMap">
+  		SELECT
+			* 
+		FROM
+			dl_team_record_500w 
+		WHERE
+			team_id = #{teamId}
+  </select>
+  
+</mapper>

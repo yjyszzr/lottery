@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlLeaguePlayerMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeaguePlayer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="player_id" jdbcType="INTEGER" property="playerId" />
+    <result column="player_name" jdbcType="VARCHAR" property="playerName" />
+    <result column="player_no" jdbcType="INTEGER" property="playerNo" />
+    <result column="player_type" jdbcType="INTEGER" property="playerType" />
+    <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="contry" jdbcType="VARCHAR" property="contry" />
+    <result column="player_price" jdbcType="VARCHAR" property="playerPrice" />
+    <result column="height" jdbcType="VARCHAR" property="height" />
+    <result column="weight" jdbcType="VARCHAR" property="weight" />
+  </resultMap>
+   <select id="findByTeamId" resultMap="BaseResultMap">
+		SELECT
+			* 
+		FROM
+			dl_league_player 
+		WHERE
+			team_id = #{teamId}
+   </select>
+  
+</mapper>

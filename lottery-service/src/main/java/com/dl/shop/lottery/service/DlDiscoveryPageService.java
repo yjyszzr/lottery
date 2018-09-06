@@ -44,6 +44,13 @@ import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlMatchInfoFutureDTO;
+import com.dl.lottery.dto.DlMatchInfoFutureDTO.MatchInfoFutureDTO;
+import com.dl.lottery.dto.DlPlayerDTO;
+import com.dl.lottery.dto.DlPlayerDTO.DlPlayerInfoDTO;
+import com.dl.lottery.dto.DlPlayerDTO.DlPlayerInfosDTO;
+import com.dl.lottery.dto.DlRecentRecordDTO;
+import com.dl.lottery.dto.DlRecentRecordDTO.RecentRecordInfoDTO;
 import com.dl.lottery.dto.DlSZCDTO;
 import com.dl.lottery.dto.DlSeason500wDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
@@ -68,12 +75,15 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.DlLeaguePlayer;
 import com.dl.shop.lottery.model.DlPhoneChannel;
 import com.dl.shop.lottery.model.DlSeason500w;
 import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.DlSuperLottoReward;
 import com.dl.shop.lottery.model.DlTeam500W;
+import com.dl.shop.lottery.model.DlTeamFuture500W;
+import com.dl.shop.lottery.model.DlTeamRecord500W;
 import com.dl.shop.lottery.model.DlTeamResult500W;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -128,6 +138,15 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlTeamResult500WService dlTeamResult500WService;
+
+	@Resource
+	private DlLeaguePlayerService dlLeaguePlayerService;
+
+	@Resource
+	private DlTeamFuture500WService dlTeamFuture500WService;
+
+	@Resource
+	private DlTeamRecord500WService dlTeamRecord500WService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -769,9 +788,11 @@ public class DlDiscoveryPageService {
 	}
 
 	public DlTeamDetailForDiscoveryDTO teamDetailForDiscovery(TeamParam param) {
+		// 查询球队名称以及logo
 		DlTeam500W team500w = dlLeagueTeamService.findTeamByTeamId(param.getTeamId());
 		if (null != team500w) {
 			DlTeamDetailForDiscoveryDTO teamDetailForDiscovery = new DlTeamDetailForDiscoveryDTO();
+			// 查询球队各项信息
 			DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
 			teamDetailForDiscovery.setTeamId(team500w.getTeamId());
 			teamDetailForDiscovery.setTeamAddr(team500w.getTeamName());
@@ -784,8 +805,117 @@ public class DlDiscoveryPageService {
 				teamDetailForDiscovery.setTeamValue(dlTeamResult500W.getTeamValue());
 				teamDetailForDiscovery.setCourt(dlTeamResult500W.getCourt());
 			}
+
+			DlPlayerDTO players = getTeamInfo(param);
+			// 设置球员信息
+			teamDetailForDiscovery.setPlayerlist(players);
+			// 未来赛事
+			DlMatchInfoFutureDTO futureMatch = getFutureMatch(param);
+			teamDetailForDiscovery.setFutureMatch(futureMatch);
+			// 近期战绩
+			DlRecentRecordDTO recentRecord = getTeamRecord(param);
+			teamDetailForDiscovery.setRecentRecord(recentRecord);
 			return teamDetailForDiscovery;
 		}
 		return null;
+	}
+
+	private DlRecentRecordDTO getTeamRecord(TeamParam param) {
+		List<DlTeamRecord500W> recentRecordList = dlTeamRecord500WService.findByTeamId(param.getTeamId());
+		DlRecentRecordDTO recentRecord = new DlRecentRecordDTO();
+		List<RecentRecordInfoDTO> recentRecordDTOList = new ArrayList<RecentRecordInfoDTO>();
+		for (int i = 0; i < recentRecordList.size(); i++) {
+			RecentRecordInfoDTO recentRecordInfoDTO = new RecentRecordInfoDTO();
+			recentRecordInfoDTO.setDate(recentRecordList.get(i).getMatchTime());
+			recentRecordInfoDTO.setHTeam(recentRecordList.get(i).getHomeTeam());
+			recentRecordInfoDTO.setVTeam(recentRecordList.get(i).getVisitingTeam());
+			recentRecordInfoDTO.setMatch(recentRecordList.get(i).getLeagueName());
+			recentRecordInfoDTO.setStatus(recentRecordList.get(i).getResult());
+			recentRecordInfoDTO.setScore(recentRecordList.get(i).getScore());
+			recentRecordDTOList.add(recentRecordInfoDTO);
+		}
+		recentRecord.setMatchCount(recentRecordList.size());
+		recentRecord.setHomeTeam("未抓");
+		recentRecord.setWin(0);
+		recentRecord.setFlat(0);
+		recentRecord.setNegative(0);
+		recentRecord.setRecentRecordList(recentRecordDTOList);
+		return recentRecord;
+	}
+
+	private DlMatchInfoFutureDTO getFutureMatch(TeamParam param) {
+		DlMatchInfoFutureDTO futureMatch = new DlMatchInfoFutureDTO();
+		List<DlTeamFuture500W> dlTeamFuture500WList = dlTeamFuture500WService.findByTeamId(param.getTeamId());
+		List<MatchInfoFutureDTO> matchInfoFutureList = new ArrayList<MatchInfoFutureDTO>();
+		for (int i = 0; i < dlTeamFuture500WList.size(); i++) {
+			MatchInfoFutureDTO matchInfoFutureDTO = new MatchInfoFutureDTO();
+			matchInfoFutureDTO.setDate(dlTeamFuture500WList.get(i).getMatchTime());
+			matchInfoFutureDTO.setHTeam(dlTeamFuture500WList.get(i).getHomeAbbr());
+			matchInfoFutureDTO.setMatchName(dlTeamFuture500WList.get(i).getLeagueAbbr());
+			matchInfoFutureDTO.setVTeam(dlTeamFuture500WList.get(i).getVisitingAbbr());
+			matchInfoFutureList.add(matchInfoFutureDTO);
+		}
+		futureMatch.setMatchInfoFutureList(matchInfoFutureList);
+		return futureMatch;
+	}
+
+	private DlPlayerDTO getTeamInfo(TeamParam param) {
+		List<DlLeaguePlayer> dlLeaguePlayerList = dlLeaguePlayerService.findByTeamId(param.getTeamId());
+		DlPlayerDTO players = new DlPlayerDTO();
+		List<DlPlayerInfosDTO> playerInfosList = new ArrayList<DlPlayerInfosDTO>();
+		// 0守门员
+		List<DlLeaguePlayer> dlLeaguePlayers0 = dlLeaguePlayerList.stream().filter(s -> s.getPlayerType() == 0).collect(Collectors.toList());
+		DlPlayerInfosDTO playerInfos0 = new DlPlayerInfosDTO();
+		List<DlPlayerInfoDTO> playerInfo0List = new ArrayList<DlPlayerInfoDTO>();
+		for (int i = 0; i < dlLeaguePlayers0.size(); i++) {
+			DlPlayerInfoDTO playerInfo0 = new DlPlayerInfoDTO();
+			playerInfo0.setPlayerName(dlLeaguePlayers0.get(i).getPlayerName());
+			playerInfo0List.add(playerInfo0);
+		}
+		playerInfos0.setPlayerTypeCode(0);
+		playerInfos0.setPlayerType("守门员");
+		playerInfos0.setPlayerList(playerInfo0List);
+		playerInfosList.add(playerInfos0);
+		// 1后卫
+		List<DlLeaguePlayer> dlLeaguePlayers1 = dlLeaguePlayerList.stream().filter(s -> s.getPlayerType() == 1).collect(Collectors.toList());
+		DlPlayerInfosDTO playerInfos1 = new DlPlayerInfosDTO();
+		List<DlPlayerInfoDTO> playerInfo1List = new ArrayList<DlPlayerInfoDTO>();
+		for (int i = 0; i < dlLeaguePlayers1.size(); i++) {
+			DlPlayerInfoDTO playerInfo1 = new DlPlayerInfoDTO();
+			playerInfo1.setPlayerName(dlLeaguePlayers1.get(i).getPlayerName());
+			playerInfo1List.add(playerInfo1);
+		}
+		playerInfos1.setPlayerTypeCode(1);
+		playerInfos1.setPlayerType("后卫");
+		playerInfos1.setPlayerList(playerInfo1List);
+		playerInfosList.add(playerInfos1);
+		// 2中场
+		List<DlLeaguePlayer> dlLeaguePlayers2 = dlLeaguePlayerList.stream().filter(s -> s.getPlayerType() == 2).collect(Collectors.toList());
+		DlPlayerInfosDTO playerInfos2 = new DlPlayerInfosDTO();
+		List<DlPlayerInfoDTO> playerInfo2List = new ArrayList<DlPlayerInfoDTO>();
+		for (int i = 0; i < dlLeaguePlayers2.size(); i++) {
+			DlPlayerInfoDTO playerInfo2 = new DlPlayerInfoDTO();
+			playerInfo2.setPlayerName(dlLeaguePlayers2.get(i).getPlayerName());
+			playerInfo2List.add(playerInfo2);
+		}
+		playerInfos2.setPlayerTypeCode(2);
+		playerInfos2.setPlayerType("中场");
+		playerInfos2.setPlayerList(playerInfo2List);
+		playerInfosList.add(playerInfos2);
+		// 3前锋
+		List<DlLeaguePlayer> dlLeaguePlayers3 = dlLeaguePlayerList.stream().filter(s -> s.getPlayerType() == 3).collect(Collectors.toList());
+		DlPlayerInfosDTO playerInfos3 = new DlPlayerInfosDTO();
+		List<DlPlayerInfoDTO> playerInfo3List = new ArrayList<DlPlayerInfoDTO>();
+		for (int i = 0; i < dlLeaguePlayers3.size(); i++) {
+			DlPlayerInfoDTO playerInfo3 = new DlPlayerInfoDTO();
+			playerInfo3.setPlayerName(dlLeaguePlayers3.get(i).getPlayerName());
+			playerInfo3List.add(playerInfo3);
+		}
+		playerInfos3.setPlayerTypeCode(3);
+		playerInfos3.setPlayerType("前锋");
+		playerInfos3.setPlayerList(playerInfo3List);
+		playerInfosList.add(playerInfos3);
+		players.setPlayerInfosList(playerInfosList);
+		return players;
 	}
 }
