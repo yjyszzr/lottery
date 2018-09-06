@@ -28,10 +28,10 @@ public class DlTeam500W {
 	private Date createTime;
 
 	/**
-	 * 赛季ID
+	 * 联赛ID
 	 */
-	@Column(name = "season_id")
-	private Integer seasonId;
+	@Column(name = "league_id")
+	private Integer leagueId;
 
 	/**
 	 * 球队图标
@@ -63,12 +63,12 @@ public class DlTeam500W {
 		this.createTime = createTime;
 	}
 
-	public Integer getSeasonId() {
-		return seasonId;
+	public Integer getLeagueId() {
+		return leagueId;
 	}
 
-	public void setSeasonId(Integer seasonId) {
-		this.seasonId = seasonId;
+	public void setLeagueId(Integer leagueId) {
+		this.leagueId = leagueId;
 	}
 
 	public String getTeamPic() {

@@ -143,10 +143,10 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 		return leagueTeamDTO;
 	}
 
-	public DlLeagueTeamDTO findBySeasonId(Integer seasonId) {
+	public DlLeagueTeamDTO findByLeagueIdFor500W(Integer leagueId) {
 		DlLeagueTeamDTO leagueTeamDTO = new DlLeagueTeamDTO();
 		List<DlLeagueTeamInfoDTO> leagueTeamInfoDTOList = new ArrayList<DlLeagueTeamInfoDTO>();
-		List<DlTeam500W> leagueTeamInfoList = dlLeagueTeamMapper.findBySeasonId(seasonId);
+		List<DlTeam500W> leagueTeamInfoList = dlLeagueTeamMapper.findByLeagueIdFor500W(leagueId);
 		for (int i = 0; i < leagueTeamInfoList.size(); i++) {
 			DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
 			leagueTeamInfoDTO.setTeamAddr(leagueTeamInfoList.get(i).getTeamName());

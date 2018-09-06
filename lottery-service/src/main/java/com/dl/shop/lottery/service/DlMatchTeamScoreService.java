@@ -127,8 +127,8 @@ public class DlMatchTeamScoreService extends AbstractService<DlMatchTeamScore> {
 		return teamScoreInfo;
 	}
 
-	public DlLeagueScoreDTO findByleagueId(Integer leagueId, Integer leagueType) {
-		List<DlMatchTeamScore> list = dlMatchTeamScoreMapper.getByleagueId(leagueId);
+	public DlLeagueScoreDTO findBySeasonId(Integer seasonId, Integer leagueType) {
+		List<DlMatchTeamScore> list = dlMatchTeamScoreMapper.getBySeasonId(seasonId);
 		DlLeagueScoreDTO teamScoreInfo = new DlLeagueScoreDTO();
 		// 0杯赛，1联赛
 		if (leagueType == 1) {

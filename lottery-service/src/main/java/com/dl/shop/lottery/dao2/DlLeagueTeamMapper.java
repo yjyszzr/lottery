@@ -20,6 +20,6 @@ public interface DlLeagueTeamMapper extends Mapper<DlLeagueTeam> {
 
 	List<DlLeagueTeam> findByLeagueId(@Param("leagueId") Integer leagueId);
 
-	List<DlTeam500W> findBySeasonId(@Param("seasonId") Integer seasonId);
+	List<DlTeam500W> findByLeagueIdFor500W(@Param("leagueId") Integer leagueId);
 
 }

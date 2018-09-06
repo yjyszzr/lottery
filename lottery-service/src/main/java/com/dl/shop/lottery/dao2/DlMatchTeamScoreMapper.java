@@ -11,5 +11,7 @@ public interface DlMatchTeamScoreMapper extends Mapper<DlMatchTeamScore> {
 
 	DlMatchTeamScore getByTeamId(@Param("teamId") Integer teamId, @Param("leagueId") Integer leagueId);
 
-	List<DlMatchTeamScore> getByleagueId(Integer leagueId);
+	List<DlMatchTeamScore> getByleagueId(@Param("leagueId") Integer leagueId);
+
+	List<DlMatchTeamScore> getBySeasonId(@Param("seasonId") Integer seasonId);
 }

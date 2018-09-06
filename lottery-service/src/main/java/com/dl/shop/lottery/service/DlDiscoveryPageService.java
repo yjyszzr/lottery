@@ -47,6 +47,7 @@ import com.dl.lottery.dto.DlSeason500wDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
+import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
@@ -60,7 +61,7 @@ import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
-import com.dl.member.dto.UserBonusDTO;
+import com.dl.lottery.param.TeamParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
@@ -70,6 +71,7 @@ import com.dl.shop.lottery.model.DlSeason500w;
 import com.dl.shop.lottery.model.DlSorts;
 import com.dl.shop.lottery.model.DlSuperLotto;
 import com.dl.shop.lottery.model.DlSuperLottoReward;
+import com.dl.shop.lottery.model.DlTeamResult500W;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
@@ -120,6 +122,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
+
+	@Resource
+	private DlTeamResult500WService dlTeamResult500WService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -459,7 +464,7 @@ public class DlDiscoveryPageService {
 		PageInfo<DlSuperLottoDTO> superLottoPageList = new PageInfo<DlSuperLottoDTO>(LottoDTOList);
 		return superLottoPageList;
 	}
-	
+
 	public PageInfo<DlSuperLottoDTO> szcDetailList(DiscoveryPageParam param) {
 		Condition condition = new Condition(DlSuperLotto.class);
 		condition.setOrderByClause("term_num desc");
@@ -484,7 +489,7 @@ public class DlDiscoveryPageService {
 			superLottoDTO.setTermNum(superLottoList.get(i).getTermNum());
 			LottoDTOList.add(superLottoDTO);
 		}
-		
+
 		PageInfo<DlSuperLottoDTO> result = new PageInfo<DlSuperLottoDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
@@ -660,7 +665,7 @@ public class DlDiscoveryPageService {
 			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByleagueId(leagueId, leagueDetail.getLeagueType());
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findBySeasonId(seasonId, leagueDetail.getLeagueType());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -669,7 +674,7 @@ public class DlDiscoveryPageService {
 			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
 			leagueDetail.setLeagueMatch(leagueMatch);
 			// 球队
-			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findBySeasonId(seasonId);
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueIdFor500W(leagueId);
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;
@@ -682,8 +687,8 @@ public class DlDiscoveryPageService {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
 		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
-		String prizeMatchStr = "已经有"+list.size()+"比赛已开奖";
-		if(list.size() > 0) {
+		String prizeMatchStr = "已经有" + list.size() + "比赛已开奖";
+		if (list.size() > 0) {
 			dto.setDateStr(dateStr);
 			dto.setPrizeMatchStr(prizeMatchStr);
 		}
@@ -691,6 +696,11 @@ public class DlDiscoveryPageService {
 		dto.setLotteryClassify(jcParam.getLotteryClassify());
 		dto.setLotteryName("竞彩足球");
 		return dto;
+	}
+
+	public DlTeamDetailForDiscoveryDTO teamDetailForDiscovery(TeamParam param) {
+		DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
+		return null;
 	}
 
 }

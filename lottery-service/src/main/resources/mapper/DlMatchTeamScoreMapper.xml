@@ -51,4 +51,12 @@
   		league_id = #{leagueId}
   </select>
   
+<!--   积分现在还没抓 -->
+  <select id="getBySeasonId"  resultMap="BaseResultMap">
+  	select * from 
+  		dl_match_team_score 
+  	where   
+  		league_id = #{seasonId}
+  </select>
+  
 </mapper>

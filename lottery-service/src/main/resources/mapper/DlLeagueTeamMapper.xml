@@ -17,7 +17,7 @@
   <resultMap id="teamResultMap" type="com.dl.shop.lottery.model.DlTeam500W">
     <result column="team_id" jdbcType="INTEGER" property="teamId" />
     <result column="team_name" jdbcType="VARCHAR" property="teamName" />
-    <result column="season_id" jdbcType="INTEGER" property="seasonId" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="team_pic" jdbcType="VARCHAR" property="teamPic" />
   </resultMap>
@@ -49,13 +49,13 @@
 			team_id IN ( SELECT team_id FROM dl_league_team_ref WHERE league_id = #{leagueId} )
   </select>
   
-  <select id="findBySeasonId" resultMap="teamResultMap">
+  <select id="findByLeagueIdFor500W" resultMap="teamResultMap">
 		SELECT
 			* 
 		FROM
 			dl_team_500w 
 		WHERE
-			season_id = #{seasonId} 
+			league_id = #{leagueId} 
   </select>
   
 </mapper>

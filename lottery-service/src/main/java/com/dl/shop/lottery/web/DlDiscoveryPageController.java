@@ -27,6 +27,7 @@ import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlNoviceClassroomDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
+import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
@@ -35,6 +36,7 @@ import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
+import com.dl.lottery.param.TeamParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -138,6 +140,13 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
 	}
 
+	@ApiOperation(value = "球队详情", notes = "球队详情")
+	@PostMapping("/teamDetailForDiscovery")
+	public BaseResult<DlTeamDetailForDiscoveryDTO> teamDetailForDiscovery(@RequestBody TeamParam param) {
+		DlTeamDetailForDiscoveryDTO teamDetail = dlDiscoveryPageService.teamDetailForDiscovery(param);
+		return ResultGenerator.genSuccessResult(null, teamDetail);
+	}
+
 	@ApiOperation(value = "竞彩类开奖结果详情", notes = "竞彩类开奖结果详情")
 	@PostMapping("/queryJcOpenPrizesByDate")
 	public BaseResult<JCResultDTO> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam) {
@@ -151,7 +160,7 @@ public class DlDiscoveryPageController {
 		SZCResultDTO dto = dlDiscoveryPageService.lottoDetail(szcParam);
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
-	
+
 	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
 	@PostMapping("/szcDetailList")
 	public BaseResult<PageInfo<DlSuperLottoDTO>> szcDetailList(@RequestBody DiscoveryPageParam param) {
