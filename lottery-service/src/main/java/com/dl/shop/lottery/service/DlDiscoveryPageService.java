@@ -584,8 +584,8 @@ public class DlDiscoveryPageService {
 			basicDetails.setRewardPrice1(slr.getRewardPrice1());
 			appendDetails.setRewardLevel(slr.getRewardLevel());
 			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
-			appendDetails.setRewardNum2(slr.getRewardNum2());
-			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			appendDetails.setRewardNum1(slr.getRewardNum2());
+			appendDetails.setRewardPrice1(slr.getRewardPrice2());
 			superLottoRewardDetailsList.add(basicDetails);
 			superLottoRewardDetailsList.add(appendDetails);
 		}
