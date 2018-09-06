@@ -768,7 +768,8 @@ public class DlDiscoveryPageService {
 	}
 
 	public DlTeamDetailForDiscoveryDTO teamDetailForDiscovery(TeamParam param) {
+		DlTeamDetailForDiscoveryDTO teamDetailForDiscovery = new DlTeamDetailForDiscoveryDTO();
 		DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
-		return null;
+		return teamDetailForDiscovery;
 	}
 }
