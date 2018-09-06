@@ -2733,15 +2733,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				for(DlLeagueMatchResult lmr:list) {
 					Integer playType = lmr.getPlayType();
 					if(1 == playType) {
-						lmrDto.setHhad(lmr.getCellCode());
+						lmrDto.setHhad(lmr.getCellName());
 					}else if(2 ==playType) {
-						lmrDto.setHad(lmr.getCellCode());
+						lmrDto.setHad(lmr.getCellName());
 					}else if(3 ==playType) {
-						lmrDto.setCrs(lmr.getCellCode());
+						lmrDto.setCrs(lmr.getCellName());
 					}else if(4 ==playType) {
-						lmrDto.setTtg(lmr.getCellCode());
+						lmrDto.setTtg(lmr.getCellName());
 					}else if(5 ==playType) {
-						lmrDto.setHafu(lmr.getCellCode());
+						lmrDto.setHafu(lmr.getCellName());
 					}
 				}
 			}
