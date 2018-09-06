@@ -24,6 +24,7 @@ import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 import tk.mybatis.mapper.util.StringUtil;
 
+import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.PinyinUtil;
 import com.dl.base.util.SessionUtil;
@@ -122,9 +123,6 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
-
-	@Resource
-	private DlTeamResult500WService dlTeamResult500WService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -275,14 +273,14 @@ public class DlDiscoveryPageService {
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
 			lotteryClassifyForOpenPrize.setPeriod("201808280001");
-			if (s.getLotteryName().equals("竞彩篮球")) {
+			if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
 				lotteryClassifyForOpenPrize.setScore("2:0");
 				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
-			} else if (s.getLotteryName().equals("竞彩足球")) {
+			} else if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
 				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
 				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
@@ -292,7 +290,7 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else if (s.getLotteryName().equals("广东11选5")) {
+			} else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
@@ -302,7 +300,7 @@ public class DlDiscoveryPageService {
 				listRed.add("08");
 				listRed.add("15");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (s.getLotteryName().equals("双色球")) {
+			} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
@@ -316,7 +314,7 @@ public class DlDiscoveryPageService {
 				List<String> listBlue = new ArrayList<>();
 				listBlue.add("08");
 				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
-			} else if (s.getLotteryName().equals("快3")) {
+			} else if (LotteryClassifyEnum.KUAI3.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
@@ -324,7 +322,17 @@ public class DlDiscoveryPageService {
 				listRed.add("09");
 				listRed.add("07");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (s.getLotteryName().equals("更多彩种")) {
+			} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
+				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
+				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
+				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
+				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
+				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
+			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
 				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
 				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
 				List<String> listRed = new ArrayList<>();
@@ -343,7 +351,7 @@ public class DlDiscoveryPageService {
 				listRed.add("3");
 				listRed.add("0");
 				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (s.getLotteryName().equals("大乐透")) {
+			} else if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == s.getLotteryClassifyId()) {
 				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
 				if (null != superLotto) {
 					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
@@ -465,32 +473,46 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 
-	public PageInfo<DlSuperLottoDTO> szcDetailList(DiscoveryPageParam param) {
+	public PageInfo<DlSZCDTO> szcDetailList(DiscoveryPageParam szcParam) {
+		PageInfo<DlSZCDTO> p = new PageInfo<DlSZCDTO>();
+		if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			p = this.lottoDetailList(szcParam);
+		} else if (LotteryClassifyEnum.KUAI3.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+
+		} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+
+		} else if (LotteryClassifyEnum.GD_5IN11.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+
+		}
+		return p;
+	}
+
+	public PageInfo<DlSZCDTO> lottoDetailList(DiscoveryPageParam param) {
 		Condition condition = new Condition(DlSuperLotto.class);
 		condition.setOrderByClause("term_num desc");
 		List<DlSuperLotto> superLottoList = dlSuperLottoService.findByCondition(condition);
 		PageInfo<DlSuperLotto> pageInfo = new PageInfo<DlSuperLotto>(superLottoList);
-		List<DlSuperLottoDTO> LottoDTOList = new ArrayList<DlSuperLottoDTO>();
+		List<DlSZCDTO> LottoDTOList = new ArrayList<DlSZCDTO>();
 		for (int i = 0; i < superLottoList.size(); i++) {
-			DlSuperLottoDTO superLottoDTO = new DlSuperLottoDTO();
+			DlSZCDTO dto = new DlSZCDTO();
 			String dateStr = superLottoList.get(i).getPrizeDate();
 			String period = dateStr.replaceAll("-", "");
-			superLottoDTO.setPeriod(period + "期");
+			dto.setPeriod(period + "期");
 			try {
 				String weekStr = dayForWeek(dateStr);
-				superLottoDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+				dto.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			String str = superLottoList.get(i).getPrizeNum();
 			String[] strArray = str.split(",");
-			superLottoDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
-			superLottoDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
-			superLottoDTO.setTermNum(superLottoList.get(i).getTermNum());
-			LottoDTOList.add(superLottoDTO);
+			dto.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+			dto.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+			dto.setTermNum(superLottoList.get(i).getTermNum());
+			LottoDTOList.add(dto);
 		}
 
-		PageInfo<DlSuperLottoDTO> result = new PageInfo<DlSuperLottoDTO>();
+		PageInfo<DlSZCDTO> result = new PageInfo<DlSZCDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
 		} catch (Exception e) {
@@ -500,12 +522,41 @@ public class DlDiscoveryPageService {
 		return result;
 	}
 
+	/**
+	 * 数字彩开奖详情
+	 * 
+	 * @param szcParam
+	 * @return
+	 */
+	public SZCResultDTO szcDetail(SZCQueryParam szcParam) {
+		SZCResultDTO szcDTO = new SZCResultDTO();
+		if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			szcDTO = this.lottoDetail(szcParam);
+			szcDTO.setLotteryClassify(String.valueOf(LotteryClassifyEnum.SUPER_LOTTO.getcode()));
+			szcDTO.setLotteryName(LotteryClassifyEnum.SUPER_LOTTO.getMsg());
+		} else if (LotteryClassifyEnum.KUAI3.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			szcDTO.setLotteryClassify(String.valueOf(LotteryClassifyEnum.KUAI3.getcode()));
+			szcDTO.setLotteryName(LotteryClassifyEnum.KUAI3.getMsg());
+		} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			szcDTO.setLotteryClassify(String.valueOf(LotteryClassifyEnum.DOUBLE_BALL.getcode()));
+			szcDTO.setLotteryName(LotteryClassifyEnum.DOUBLE_BALL.getMsg());
+		} else if (LotteryClassifyEnum.GD_5IN11.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			szcDTO.setLotteryClassify(String.valueOf(LotteryClassifyEnum.GD_5IN11.getcode()));
+			szcDTO.setLotteryName(LotteryClassifyEnum.GD_5IN11.getMsg());
+		}
+		return szcDTO;
+	}
+
+	/**
+	 * 大乐透开奖详情
+	 * 
+	 * @param param
+	 * @return
+	 */
 	public SZCResultDTO lottoDetail(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
 		SZCResultDTO szcDTO = new SZCResultDTO();
-		szcDTO.setLotteryClassify("2");
-		szcDTO.setLotteryName("大乐透");
 		szcDTO.setSellAmount(superLotto.getSell().toString());
 		String dateStr = superLotto.getPrizeDate();
 		String period = dateStr.replaceAll("-", "");
@@ -665,7 +716,7 @@ public class DlDiscoveryPageService {
 			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findBySeasonId(seasonId, leagueDetail.getLeagueType());
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByleagueId(leagueId, leagueDetail.getLeagueType());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -674,27 +725,41 @@ public class DlDiscoveryPageService {
 			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
 			leagueDetail.setLeagueMatch(leagueMatch);
 			// 球队
-			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueIdFor500W(leagueId);
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findBySeasonId(seasonId);
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;
 	}
 
+	/**
+	 * 查询竞彩类开奖结果
+	 * 
+	 * @param jcParam
+	 * @return
+	 */
 	public JCResultDTO queryJCResult(JCQueryParam jcParam) {
 		JCResultDTO dto = new JCResultDTO();
+		List<LeagueMatchResultDTO> list = new ArrayList<>();
+		if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == Integer.valueOf(jcParam.getLotteryClassify())) {
+			list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.JC_FOOTBALL.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.JC_FOOTBALL.getMsg());
+		} else if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == Integer.valueOf(jcParam.getLotteryClassify())) {
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.JC_BASKETBALL.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.JC_BASKETBALL.getMsg());
+		} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == Integer.valueOf(jcParam.getLotteryClassify())) {
+			dto.setLotteryClassify(String.valueOf(LotteryClassifyEnum.BJ_SINGLE.getcode()));
+			dto.setLotteryName(LotteryClassifyEnum.BJ_SINGLE.getMsg());
+		}
+
 		String dateStr = jcParam.getDateStr();
 		if (StringUtil.isEmpty(dateStr)) {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
-		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
-		String prizeMatchStr = "已经有" + list.size() + "比赛已开奖";
-		if (list.size() > 0) {
-			dto.setDateStr(dateStr);
-			dto.setPrizeMatchStr(prizeMatchStr);
-		}
+		String prizeMatchStr = list.size() + "比赛已开奖";
+		dto.setDateStr(dateStr);
+		dto.setPrizeMatchStr(prizeMatchStr);
 		dto.setList(list);
-		dto.setLotteryClassify(jcParam.getLotteryClassify());
-		dto.setLotteryName("竞彩足球");
 		return dto;
 	}
 
@@ -702,5 +767,4 @@ public class DlDiscoveryPageService {
 		DlTeamResult500W dlTeamResult500W = dlTeamResult500WService.findByTeamId(param.getTeamId());
 		return null;
 	}
-
 }

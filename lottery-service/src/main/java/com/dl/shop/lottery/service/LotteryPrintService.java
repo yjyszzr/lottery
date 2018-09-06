@@ -230,41 +230,41 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					}
 					LotteryPrint lotteryPrint = new LotteryPrint();
 					lotteryPrint.setTicketId(ticketId);
-					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
-					if(null != lotteryPrint) {
-						Integer printStatus = callbackStake.getPrintStatus();
-						if(printStatus.equals(ProjectConstant.PRINT_STATUS_FAIL)) {
-							lotteryPrint.setStatus(2);
-						}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_SUCCESS)) {
-							lotteryPrint.setStatus(1);
-						}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
-							lotteryPrint.setStatus(3);
-						} else {
+//					lotteryPrint = lotteryPrintMapper.selectOne(lotteryPrint);
+//					if(null != lotteryPrint) {
+					Integer printStatus = callbackStake.getPrintStatus();
+					if(printStatus.equals(ProjectConstant.PRINT_STATUS_FAIL)) {
+						lotteryPrint.setStatus(2);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_SUCCESS)) {
+						lotteryPrint.setStatus(1);
+					}else if(printStatus.equals(ProjectConstant.PRINT_STATUS_PRINT)) {
+						lotteryPrint.setStatus(3);
+					} else {
+						continue;
+					}
+					lotteryPrint.setPlatformId(callbackStake.getPlatformId());
+					lotteryPrint.setPrintNo(callbackStake.getPrintNo());
+					if("T51".equals(dBPrint.getGame())){
+						String sp = callbackStake.getSp();
+						lotteryPrint.setPrintSp(sp);
+					}else{
+						lotteryPrint.setPrintSp("");//大乐透没有赔率
+					}
+					lotteryPrint.setPrintStatus(printStatus);
+					Date printTime = null;
+					String printTimeStr = callbackStake.getPrintTime();
+					if(StringUtils.isNotBlank(printTimeStr)) {
+						try {
+							printTimeStr = printTimeStr.replaceAll("/", "-");
+							printTime = sdf.parse(printTimeStr);
+							lotteryPrint.setPrintTime(printTime);
+						} catch (ParseException e) {
+							log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常",e);
 							continue;
 						}
-						lotteryPrint.setPlatformId(callbackStake.getPlatformId());
-						lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-						if("T51".equals(dBPrint.getGame())){
-							String sp = callbackStake.getSp();
-							lotteryPrint.setPrintSp(sp);
-						}else{
-							lotteryPrint.setPrintSp("");//大乐透没有赔率
-						}
-						lotteryPrint.setPrintStatus(printStatus);
-						Date printTime = null;
-						String printTimeStr = callbackStake.getPrintTime();
-						if(StringUtils.isNotBlank(printTimeStr)) {
-							try {
-								printTimeStr = printTimeStr.replaceAll("/", "-");
-								printTime = sdf.parse(printTimeStr);
-								lotteryPrint.setPrintTime(printTime);
-							} catch (ParseException e) {
-								log.error("订单编号：" + callbackStake.getTicketId() + "，出票回调，时间转换异常",e);
-								continue;
-							}
-						}
-						lotteryPrints.add(lotteryPrint);
 					}
+					lotteryPrints.add(lotteryPrint);
+//					}
 				}
 			}
 			log.info("updateLotteryPrintByCallBack size:"+lotteryPrints.size());

@@ -78,7 +78,7 @@ public class LotteryPrintController {
 	
 	@ApiOperation(value = "投注结果通知", notes = "投注结果通知")
 	@PostMapping("/callbackStakeSenDe")
-	public BaseResult<String> callbackStakeSenDe(@RequestBody DlCallbackStakeSenDeParam param) {
+	public BaseResult<String> callbackStakeSenDe(DlCallbackStakeSenDeParam param) {
 		if(param.getResultCode().equals("SUCCESS") && param.getMessageType().equals("ticketResult")) {
 			lotteryPrintService.callbackStakeSenDe(param);
 		}
