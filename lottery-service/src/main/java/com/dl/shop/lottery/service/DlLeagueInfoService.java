@@ -246,6 +246,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			detail.setLeagueName(leagueInfo.getLeagueName());
 			detail.setLeaguePic(leagueInfo.getLeaguePic());
 			detail.setLeagueRule(leagueInfo.getLeagueRule());
+			detail.setLeagueType(leagueInfo.getIsLeague());
 		}
 		return detail;
 	}

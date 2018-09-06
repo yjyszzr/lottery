@@ -13,9 +13,15 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
@@ -29,6 +35,7 @@ import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlLeagueIntegralDTO;
 import com.dl.lottery.dto.DlLeagueMatchDTO;
+import com.dl.lottery.dto.DlLeagueScoreDTO;
 import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
@@ -63,11 +70,6 @@ import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.github.pagehelper.PageInfo;
-
-import lombok.extern.slf4j.Slf4j;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Slf4j
@@ -108,10 +110,10 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlSeason500wService dlSeason500wService;
-	
-    @Resource
-    private LotteryMatchService lotteryMatchService;
-	
+
+	@Resource
+	private LotteryMatchService lotteryMatchService;
+
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
 
@@ -270,9 +272,9 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} else if (s.getLotteryName().equals("竞彩足球")) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
-				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.hh_mm_sdf);
-				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.date_sdf));
-				lotteryClassifyForOpenPrize.setDate(yyyyMM +"("+zhouji+")"); // "08-28(星期二)"
+				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
 				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
 				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
@@ -488,7 +490,7 @@ public class DlDiscoveryPageService {
 		szcDTO.setSuperLottoRewardDetailsList(superLottoRewardDetailsList);
 		return szcDTO;
 	}
-	
+
 	public DlSuperLottoDetailsDTO lottoDetails(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
@@ -610,7 +612,7 @@ public class DlDiscoveryPageService {
 			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByleagueId(leagueId, leagueDetail.getLeagueType());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -624,14 +626,14 @@ public class DlDiscoveryPageService {
 		}
 		return leagueDetail;
 	}
-	
-	public 	JCResultDTO queryJCResult(JCQueryParam jcParam) {
+
+	public JCResultDTO queryJCResult(JCQueryParam jcParam) {
 		JCResultDTO dto = new JCResultDTO();
 		String dateStr = jcParam.getDateStr();
-		if(StringUtil.isEmpty(dateStr)) {
+		if (StringUtil.isEmpty(dateStr)) {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
-		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
+		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
 		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
 		dto.setList(list);
 		dto.setDateStr(dateShowStr);

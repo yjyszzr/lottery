@@ -16,10 +16,12 @@ public class DlLeagueDetailForDiscoveryDTO {
 	private String leaguePic;
 	@ApiModelProperty(value = "联赛规则")
 	private String leagueRule;
+	@ApiModelProperty(value = "0:杯赛,1:联赛")
+	private Integer leagueType;
 	@ApiModelProperty(value = "赛季")
 	private DlLeagueSeason500wDTO leagueSeason;
 	@ApiModelProperty(value = "联赛积分")
-	private DlLeagueIntegralDTO leagueScore;
+	private DlLeagueScoreDTO leagueScore;
 	@ApiModelProperty(value = "联赛射手")
 	private DlLeagueShooterDTO leagueShooter;
 	@ApiModelProperty(value = "联赛赛程")
