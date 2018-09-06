@@ -17,11 +17,11 @@ public interface DlLeagueInfoMapper extends Mapper<DlLeagueInfo> {
 
 	List<DlLeagueInfo> getAll();
 
-	List<DlLeagueInfo> getHotLeagues();
+	List<DlLeagueInfo500W> getHotLeagues();
 
 	DlLeagueInfo getByLeagueId(@Param("leagueId") Integer leagueId);
 
-	List<DlLeagueInfo> getInternationalLeagues();
+	List<DlLeagueInfo500W> getInternationalLeagues();
 
 	List<DlLeagueInfo> getHotLeaguesForLD();
 

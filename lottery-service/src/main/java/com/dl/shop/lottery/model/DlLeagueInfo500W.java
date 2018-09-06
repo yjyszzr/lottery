@@ -23,8 +23,8 @@ public class DlLeagueInfo500W {
 	/**
 	 * 联赛简称
 	 */
-	@Column(name = "league_addr")
-	private String leagueAddr;
+	@Column(name = "league_abbr")
+	private String leagueAbbr;
 
 	@Column(name = "contry_id")
 	private Integer contryId;
@@ -91,7 +91,7 @@ public class DlLeagueInfo500W {
 	 * @return league_addr - 联赛简称
 	 */
 	public String getLeagueAddr() {
-		return leagueAddr;
+		return leagueAbbr;
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class DlLeagueInfo500W {
 	 *            联赛简称
 	 */
 	public void setLeagueAddr(String leagueAddr) {
-		this.leagueAddr = leagueAddr;
+		this.leagueAbbr = leagueAddr;
 	}
 
 	public Integer getContryId() {

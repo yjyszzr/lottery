@@ -5,7 +5,7 @@
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
-    <result column="league_abbr" jdbcType="VARCHAR" property="leagueAddr" />
+    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
     <result column="contry_id" jdbcType="INTEGER" property="contryId" />
     <result column="league_type" jdbcType="INTEGER" property="leagueType" />
     <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
@@ -17,7 +17,7 @@
   <resultMap id="LeagueInfo500wResultMap" type="com.dl.shop.lottery.model.DlLeagueInfo500W">
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
-    <result column="league_addr" jdbcType="VARCHAR" property="leagueAddr" />
+    <result column="league_abbr" jdbcType="VARCHAR" property="leagueAbbr" />
     <result column="contry_id" jdbcType="INTEGER" property="contryId" />
     <result column="league_type" jdbcType="INTEGER" property="leagueType" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -62,7 +62,7 @@
   	order by contry_id
   </select>
   
-  <select id="getHotLeagues" resultMap="BaseResultMap">
+  <select id="getHotLeagues" resultMap="LeagueInfo500wResultMap"> 
   	select 
  		 <include refid="league_info_500w"></include>
   	from dl_league_500w
@@ -78,7 +78,7 @@
   	order by contry_id
   </select>
   
-  <select id="getInternationalLeagues" resultMap="BaseResultMap">
+  <select id="getInternationalLeagues" resultMap="LeagueInfo500wResultMap">
   	select 
  		 <include refid="league_info_500w"></include>
   	from dl_league_500w
