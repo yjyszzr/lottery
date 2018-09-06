@@ -28,17 +28,14 @@ import com.dl.lottery.dto.DlNoviceClassroomDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.JCResultDTO;
-import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
-import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
-import com.dl.shop.lottery.service.LotteryMatchService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
@@ -48,7 +45,6 @@ public class DlDiscoveryPageController {
 
 	@Resource
 	private DlDiscoveryPageService dlDiscoveryPageService;
-	
 
 	@ApiOperation(value = "发现页主页", notes = "发现页主页")
 	@PostMapping("/homePage")
@@ -141,19 +137,19 @@ public class DlDiscoveryPageController {
 		DlLeagueDetailForDiscoveryDTO leagueDetail = dlDiscoveryPageService.leagueDetailForDiscovery(param);
 		return ResultGenerator.genSuccessResult(null, leagueDetail);
 	}
-	
+
 	@ApiOperation(value = "竞彩类开奖结果详情", notes = "竞彩类开奖结果详情")
 	@PostMapping("/queryJcOpenPrizesByDate")
-	public BaseResult<JCResultDTO> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam ) {
-		JCResultDTO dto =  dlDiscoveryPageService.queryJCResult(jcParam);
+	public BaseResult<JCResultDTO> queryJcOpenPrizesByDate(@Valid @RequestBody JCQueryParam jcParam) {
+		JCResultDTO dto = dlDiscoveryPageService.queryJCResult(jcParam);
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
-	
+
 	@ApiOperation(value = "数字彩类开奖结果详情", notes = "数字彩类开奖结果详情")
 	@PostMapping("/querySzcOpenPrizesByDate")
-	public BaseResult<SZCResultDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam ) {
+	public BaseResult<SZCResultDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam) {
 		SZCResultDTO dto = dlDiscoveryPageService.lottoDetail(szcParam);
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
-	
+
 }
