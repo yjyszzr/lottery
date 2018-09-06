@@ -44,6 +44,7 @@ import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlSZCDTO;
 import com.dl.lottery.dto.DlSeason500wDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
@@ -461,32 +462,46 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 	
-	public PageInfo<DlSuperLottoDTO> szcDetailList(DiscoveryPageParam param) {
+	public PageInfo<DlSZCDTO> szcDetailList(DiscoveryPageParam szcParam) {
+		PageInfo<DlSZCDTO> p = new PageInfo<DlSZCDTO>();
+		if(LotteryClassifyEnum.SUPER_LOTTO.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+			p = this.lottoDetailList(szcParam);
+		}else if(LotteryClassifyEnum.KUAI3.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+
+		}else if(LotteryClassifyEnum.DOUBLE_BALL.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+	
+		}else if(LotteryClassifyEnum.GD_5IN11.getcode() == Integer.valueOf(szcParam.getLotteryClassify())) {
+
+		}
+		return p;
+	}
+	
+	public PageInfo<DlSZCDTO> lottoDetailList(DiscoveryPageParam param) {
 		Condition condition = new Condition(DlSuperLotto.class);
 		condition.setOrderByClause("term_num desc");
 		List<DlSuperLotto> superLottoList = dlSuperLottoService.findByCondition(condition);
 		PageInfo<DlSuperLotto> pageInfo = new PageInfo<DlSuperLotto>(superLottoList);
-		List<DlSuperLottoDTO> LottoDTOList = new ArrayList<DlSuperLottoDTO>();
+		List<DlSZCDTO> LottoDTOList = new ArrayList<DlSZCDTO>();
 		for (int i = 0; i < superLottoList.size(); i++) {
-			DlSuperLottoDTO superLottoDTO = new DlSuperLottoDTO();
+			DlSZCDTO dto = new DlSZCDTO();
 			String dateStr = superLottoList.get(i).getPrizeDate();
 			String period = dateStr.replaceAll("-", "");
-			superLottoDTO.setPeriod(period + "期");
+			dto.setPeriod(period + "期");
 			try {
 				String weekStr = dayForWeek(dateStr);
-				superLottoDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+				dto.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			String str = superLottoList.get(i).getPrizeNum();
 			String[] strArray = str.split(",");
-			superLottoDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
-			superLottoDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
-			superLottoDTO.setTermNum(superLottoList.get(i).getTermNum());
-			LottoDTOList.add(superLottoDTO);
+			dto.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+			dto.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+			dto.setTermNum(superLottoList.get(i).getTermNum());
+			LottoDTOList.add(dto);
 		}
 		
-		PageInfo<DlSuperLottoDTO> result = new PageInfo<DlSuperLottoDTO>();
+		PageInfo<DlSZCDTO> result = new PageInfo<DlSZCDTO>();
 		try {
 			BeanUtils.copyProperties(pageInfo, result);
 		} catch (Exception e) {

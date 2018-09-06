@@ -25,6 +25,7 @@ import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlNoviceClassroomDTO;
+import com.dl.lottery.dto.DlSZCDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.JCResultDTO;
@@ -154,13 +155,13 @@ public class DlDiscoveryPageController {
 	
 	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
 	@PostMapping("/szcDetailList")
-	public BaseResult<PageInfo<DlSuperLottoDTO>> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
+	public BaseResult<PageInfo<DlSZCDTO>> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();
 		size = null == size ? 20 : size;
 		PageHelper.startPage(page, size);
-		PageInfo<DlSuperLottoDTO> pageInfo = dlDiscoveryPageService.szcDetailList(param);
+		PageInfo<DlSZCDTO> pageInfo = dlDiscoveryPageService.szcDetailList(param);
 		return ResultGenerator.genSuccessResult(null, pageInfo);
 	}
 
