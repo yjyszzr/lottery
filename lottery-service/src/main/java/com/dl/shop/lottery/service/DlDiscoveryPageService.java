@@ -720,7 +720,7 @@ public class DlDiscoveryPageService {
 			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByleagueId(leagueId, leagueDetail.getLeagueType());
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findBySeasonId(leagueId, leagueDetail.getLeagueType());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -729,7 +729,7 @@ public class DlDiscoveryPageService {
 			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
 			leagueDetail.setLeagueMatch(leagueMatch);
 			// 球队
-			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findBySeasonId(seasonId);
+			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueIdFor500W(leagueId);
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;
