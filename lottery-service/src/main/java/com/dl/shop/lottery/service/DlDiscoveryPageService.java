@@ -24,6 +24,7 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLHotLeagueDTO;
@@ -259,6 +260,9 @@ public class DlDiscoveryPageService {
 		List<LotteryClassify> classifyList = lotteryClassifyService.selectAllLotteryClasses();
 		for (LotteryClassify s : classifyList) {
 			DlLotteryClassifyForOpenPrizeDTO lotteryClassifyForOpenPrize = new DlLotteryClassifyForOpenPrizeDTO();
+			if (null != s.getLotteryName()) {
+				lotteryClassifyForOpenPrize.setLotteryInitials(PinyinUtil.ToFirstChar(s.getLotteryName()));
+			}
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
