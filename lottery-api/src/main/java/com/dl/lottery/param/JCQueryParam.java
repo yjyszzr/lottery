@@ -12,6 +12,6 @@ public class JCQueryParam {
     @NotNull(message = "彩种不能为空")
     private String lotteryClassify;
  
-    @ApiModelProperty(value = "日期：选择了日期就传，没选择传空字符串")
+    @ApiModelProperty(value = "日期：选择了日期就传，没选择传空字符串，例如：2018-02-02")
     private String dateStr;
 }    

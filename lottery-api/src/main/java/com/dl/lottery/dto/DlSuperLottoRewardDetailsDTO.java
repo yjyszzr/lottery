@@ -12,15 +12,15 @@ public class DlSuperLottoRewardDetailsDTO {
 	@ApiModelProperty(value = "获奖级别名称")
 	private String rewardLevelName;
 
-	@ApiModelProperty(value = "基本中奖注数")
-	private Integer rewardNum1;
+	@ApiModelProperty(value = "中奖注数")
+	private Integer rewardNum;
 
-	@ApiModelProperty(value = "基本单注奖金")
-	private Integer rewardPrice1;
+	@ApiModelProperty(value = "单注奖金")
+	private Integer rewardPrice;
 
-	@ApiModelProperty(value = "追加中奖注数")
-	private Integer rewardNum2;
-
-	@ApiModelProperty(value = "追加单注奖金")
-	private Integer rewardPrice2;
+//	@ApiModelProperty(value = "追加中奖注数")
+//	private Integer rewardNum2;
+//
+//	@ApiModelProperty(value = "追加单注奖金")
+//	private Integer rewardPrice2;
 }

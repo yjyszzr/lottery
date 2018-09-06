@@ -580,12 +580,12 @@ public class DlDiscoveryPageService {
 			DlSuperLottoRewardDetailsDTO appendDetails = new DlSuperLottoRewardDetailsDTO();
 			basicDetails.setRewardLevel(slr.getRewardLevel());
 			basicDetails.setRewardLevelName(LottoRewardLevelEnums.getbasicNameByCode(slr.getRewardLevel()));
-			basicDetails.setRewardNum1(slr.getRewardNum1());
-			basicDetails.setRewardPrice1(slr.getRewardPrice1());
+			basicDetails.setRewardNum(slr.getRewardNum1());
+			basicDetails.setRewardPrice(slr.getRewardPrice1());
 			appendDetails.setRewardLevel(slr.getRewardLevel());
 			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
-			appendDetails.setRewardNum2(slr.getRewardNum2());
-			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			appendDetails.setRewardNum(slr.getRewardNum2());
+			appendDetails.setRewardPrice(slr.getRewardPrice2());
 			superLottoRewardDetailsList.add(basicDetails);
 			superLottoRewardDetailsList.add(appendDetails);
 		}
@@ -616,12 +616,12 @@ public class DlDiscoveryPageService {
 			DlSuperLottoRewardDetailsDTO appendDetails = new DlSuperLottoRewardDetailsDTO();
 			basicDetails.setRewardLevel(slr.getRewardLevel());
 			basicDetails.setRewardLevelName(LottoRewardLevelEnums.getbasicNameByCode(slr.getRewardLevel()));
-			basicDetails.setRewardNum1(slr.getRewardNum1());
-			basicDetails.setRewardPrice1(slr.getRewardPrice1());
+			basicDetails.setRewardNum(slr.getRewardNum1());
+			basicDetails.setRewardPrice(slr.getRewardPrice1());
 			appendDetails.setRewardLevel(slr.getRewardLevel());
 			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
-			appendDetails.setRewardNum2(slr.getRewardNum2());
-			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			appendDetails.setRewardNum(slr.getRewardNum2());
+			appendDetails.setRewardPrice(slr.getRewardPrice2());
 			superLottoRewardDetailsList.add(basicDetails);
 			superLottoRewardDetailsList.add(appendDetails);
 		}
