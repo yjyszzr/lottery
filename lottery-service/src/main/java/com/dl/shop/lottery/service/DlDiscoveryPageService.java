@@ -25,6 +25,7 @@ import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.PinyinUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLHotLeagueDTO;
@@ -193,8 +194,8 @@ public class DlDiscoveryPageService {
 
 	private List<InfoCatDTO> createCat() {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		// String channel = SessionUtil.getUserDevice().getChannel();
-		String channel = "c16010";
+		String channel = SessionUtil.getUserDevice().getChannel();
+		// String channel = "c16010";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleService.findArticleClassify();
 		if (channel.equals("h5")) {
@@ -261,7 +262,7 @@ public class DlDiscoveryPageService {
 		for (LotteryClassify s : classifyList) {
 			DlLotteryClassifyForOpenPrizeDTO lotteryClassifyForOpenPrize = new DlLotteryClassifyForOpenPrizeDTO();
 			if (null != s.getLotteryName()) {
-				lotteryClassifyForOpenPrize.setLotteryInitials(PinyinUtil.ToFirstChar(s.getLotteryName()));
+				lotteryClassifyForOpenPrize.setLotteryInitials(PinyinUtil.ToPinyin(s.getLotteryName()));
 			}
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
@@ -571,6 +572,12 @@ public class DlDiscoveryPageService {
 		return contryLeagueList;
 	}
 
+	/**
+	 * 联赛列表页
+	 * 
+	 * @param param
+	 * @return
+	 */
 	public List<DlLeagueContryDTO> leagueHomePageByGroupId(LeagueListByGroupIdParam param) {
 		Integer groupId = param.getGroupId();
 		if (groupId == null) {

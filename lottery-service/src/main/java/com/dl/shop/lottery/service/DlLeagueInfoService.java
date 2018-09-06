@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dl.base.service.AbstractService;
+import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
@@ -84,6 +85,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
 			dto.setLeaguePic(league.getLeaguePic());
+			if (null != league.getLeagueAddr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			}
 			leagueInfos.add(dto);
 		}
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
@@ -104,6 +108,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
 			dto.setLeaguePic(league.getLeaguePic());
+			if (null != league.getLeagueAddr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			}
 			leagueInfos.add(dto);
 		}
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
@@ -156,6 +163,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
+			if (null != league.getLeagueAddr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			}
 			dto.setLeaguePic(league.getLeaguePic());
 			leagueInfoDTOs.add(dto);
 		}

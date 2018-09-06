@@ -7,6 +7,12 @@
     <result column="contry_name" jdbcType="VARCHAR" property="contryName" />
     <result column="contry_pic" jdbcType="VARCHAR" property="contryPic" />
   </resultMap>
+  <resultMap id="500WResultMap" type="com.dl.shop.lottery.model.DlLeagueContry500W">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="contry_name" jdbcType="VARCHAR" property="contryName" />
+    <result column="contry_pic" jdbcType="VARCHAR" property="contryPic" />
+  </resultMap>
   
   <select id="getAll" resultMap="BaseResultMap">
   	select 
@@ -24,7 +30,7 @@
   </select>
   
   
-  <select id="getContrysFrom500WByGroupId" resultMap="BaseResultMap">
+  <select id="getContrysFrom500WByGroupId" resultMap="500WResultMap">
   	select 
  		id,group_id,contry_name,contry_pic
   	from dl_league_contry
