@@ -24,6 +24,7 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLHotLeagueDTO;
@@ -35,6 +36,7 @@ import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlLeagueIntegralDTO;
 import com.dl.lottery.dto.DlLeagueMatchDTO;
+import com.dl.lottery.dto.DlLeagueScoreDTO;
 import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
@@ -48,13 +50,13 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
+import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
-import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
@@ -109,10 +111,10 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlSeason500wService dlSeason500wService;
-	
-    @Resource
-    private LotteryMatchService lotteryMatchService;
-	
+
+	@Resource
+	private LotteryMatchService lotteryMatchService;
+
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
 
@@ -258,6 +260,9 @@ public class DlDiscoveryPageService {
 		List<LotteryClassify> classifyList = lotteryClassifyService.selectAllLotteryClasses();
 		for (LotteryClassify s : classifyList) {
 			DlLotteryClassifyForOpenPrizeDTO lotteryClassifyForOpenPrize = new DlLotteryClassifyForOpenPrizeDTO();
+			if (null != s.getLotteryName()) {
+				lotteryClassifyForOpenPrize.setLotteryInitials(PinyinUtil.ToFirstChar(s.getLotteryName()));
+			}
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
@@ -271,9 +276,9 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} else if (s.getLotteryName().equals("竞彩足球")) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
-				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.hh_mm_sdf);
-				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(),DateUtil.date_sdf));
-				lotteryClassifyForOpenPrize.setDate(yyyyMM +"("+zhouji+")"); // "08-28(星期二)"
+				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
 				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
 				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
@@ -452,6 +457,44 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 
+	public SZCResultDTO lottoDetail(SZCQueryParam param) {
+		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
+		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
+		SZCResultDTO szcDTO = new SZCResultDTO();
+		szcDTO.setLotteryClassify("2");
+		szcDTO.setLotteryName("大乐透");
+		szcDTO.setSellAmount(superLotto.getSell().toString());
+		String dateStr = superLotto.getPrizeDate();
+		String period = dateStr.replaceAll("-", "");
+		szcDTO.setPeriod(period + "期");
+		String weekStr = dayForWeek(dateStr);
+		szcDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+		szcDTO.setPrizes(superLotto.getPrizes());
+		String str = superLotto.getPrizeNum();
+		String[] strArray = str.split(",");
+		szcDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+		szcDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+
+		List<DlSuperLottoRewardDetailsDTO> superLottoRewardDetailsList = new ArrayList<DlSuperLottoRewardDetailsDTO>();
+		for (int i = 0; i < superLottoRewardList.size(); i++) {
+			DlSuperLottoReward slr = superLottoRewardList.get(i);
+			DlSuperLottoRewardDetailsDTO basicDetails = new DlSuperLottoRewardDetailsDTO();
+			DlSuperLottoRewardDetailsDTO appendDetails = new DlSuperLottoRewardDetailsDTO();
+			basicDetails.setRewardLevel(slr.getRewardLevel());
+			basicDetails.setRewardLevelName(LottoRewardLevelEnums.getbasicNameByCode(slr.getRewardLevel()));
+			basicDetails.setRewardNum1(slr.getRewardNum1());
+			basicDetails.setRewardPrice1(slr.getRewardPrice1());
+			appendDetails.setRewardLevel(slr.getRewardLevel());
+			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
+			appendDetails.setRewardNum2(slr.getRewardNum2());
+			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			superLottoRewardDetailsList.add(basicDetails);
+			superLottoRewardDetailsList.add(appendDetails);
+		}
+		szcDTO.setSuperLottoRewardDetailsList(superLottoRewardDetailsList);
+		return szcDTO;
+	}
+
 	public DlSuperLottoDetailsDTO lottoDetails(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
@@ -573,7 +616,7 @@ public class DlDiscoveryPageService {
 			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueIntegralDTO leagueIntegral = dlMatchTeamScoreService.getByleagueId(leagueId);
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByleagueId(leagueId, leagueDetail.getLeagueType());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -587,15 +630,16 @@ public class DlDiscoveryPageService {
 		}
 		return leagueDetail;
 	}
-	
-	public 	JCResultDTO queryJCResult(JCQueryParam jcParam) {
+
+	public JCResultDTO queryJCResult(JCQueryParam jcParam) {
 		JCResultDTO dto = new JCResultDTO();
 		String dateStr = jcParam.getDateStr();
-		if(StringUtil.isEmpty(dateStr)) {
+		if (StringUtil.isEmpty(dateStr)) {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
-		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
+		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
 		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
+		dto.setList(list);
 		dto.setDateStr(dateShowStr);
 		dto.setLotteryClassify(jcParam.getLotteryClassify());
 		dto.setLotteryName("竞彩足球");

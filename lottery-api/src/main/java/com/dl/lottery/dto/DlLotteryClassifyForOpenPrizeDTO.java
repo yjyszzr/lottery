@@ -20,6 +20,9 @@ public class DlLotteryClassifyForOpenPrizeDTO implements Serializable {
 	@ApiModelProperty(value = "彩种名称")
 	private String lotteryName;
 
+	@ApiModelProperty(value = "彩种首字母缩写")
+	private String lotteryInitials;
+
 	@ApiModelProperty(value = "期次")
 	private String period;
 
