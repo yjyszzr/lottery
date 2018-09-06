@@ -638,9 +638,12 @@ public class DlDiscoveryPageService {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
 		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
-		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
+		String prizeMatchStr = "已经有"+list.size()+"比赛已开奖";
+		if(list.size() > 0) {
+			dto.setDateStr(dateStr);
+			dto.setPrizeMatchStr(prizeMatchStr);
+		}
 		dto.setList(list);
-		dto.setDateStr(dateShowStr);
 		dto.setLotteryClassify(jcParam.getLotteryClassify());
 		dto.setLotteryName("竞彩足球");
 		return dto;

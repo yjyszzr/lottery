@@ -12,6 +12,6 @@ public class SZCQueryParam {
 	@ApiModelProperty(value = "期号")
 	private Integer termNum;
  
-    @ApiModelProperty(value = "日期：知道日期则就传，不知道传空字符串")
+    @ApiModelProperty(value = "日期：选择了日期就传，没选择传空字符串")
     private String dateStr;
 }    
