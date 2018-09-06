@@ -29,6 +29,7 @@ import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
+import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
@@ -150,9 +151,9 @@ public class DlDiscoveryPageController {
 	
 	@ApiOperation(value = "数字彩类开奖结果详情", notes = "数字彩类开奖结果详情")
 	@PostMapping("/querySzcOpenPrizesByDate")
-	public BaseResult<DlSuperLottoDetailsDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam ) {
-		DlSuperLottoDetailsDTO superLottoDetails = dlDiscoveryPageService.lottoDetails(szcParam);
-		return ResultGenerator.genSuccessResult("success", superLottoDetails);
+	public BaseResult<SZCResultDTO> querySzcOpenPrizesByDate(@Valid @RequestBody SZCQueryParam szcParam ) {
+		SZCResultDTO dto = dlDiscoveryPageService.lottoDetail(szcParam);
+		return ResultGenerator.genSuccessResult("success", dto);
 	}
 	
 }

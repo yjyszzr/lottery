@@ -13,15 +13,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
@@ -48,13 +42,13 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
+import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
-import com.dl.lottery.param.LottoDetailsParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
@@ -69,6 +63,11 @@ import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.github.pagehelper.PageInfo;
+
+import lombok.extern.slf4j.Slf4j;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Slf4j
@@ -452,6 +451,44 @@ public class DlDiscoveryPageService {
 		return superLottoPageList;
 	}
 
+	public SZCResultDTO lottoDetail(SZCQueryParam param) {
+		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
+		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
+		SZCResultDTO szcDTO = new SZCResultDTO();
+		szcDTO.setLotteryClassify("2");
+		szcDTO.setLotteryName("大乐透");
+		szcDTO.setSellAmount(superLotto.getSell().toString());
+		String dateStr = superLotto.getPrizeDate();
+		String period = dateStr.replaceAll("-", "");
+		szcDTO.setPeriod(period + "期");
+		String weekStr = dayForWeek(dateStr);
+		szcDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+		szcDTO.setPrizes(superLotto.getPrizes());
+		String str = superLotto.getPrizeNum();
+		String[] strArray = str.split(",");
+		szcDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+		szcDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+
+		List<DlSuperLottoRewardDetailsDTO> superLottoRewardDetailsList = new ArrayList<DlSuperLottoRewardDetailsDTO>();
+		for (int i = 0; i < superLottoRewardList.size(); i++) {
+			DlSuperLottoReward slr = superLottoRewardList.get(i);
+			DlSuperLottoRewardDetailsDTO basicDetails = new DlSuperLottoRewardDetailsDTO();
+			DlSuperLottoRewardDetailsDTO appendDetails = new DlSuperLottoRewardDetailsDTO();
+			basicDetails.setRewardLevel(slr.getRewardLevel());
+			basicDetails.setRewardLevelName(LottoRewardLevelEnums.getbasicNameByCode(slr.getRewardLevel()));
+			basicDetails.setRewardNum1(slr.getRewardNum1());
+			basicDetails.setRewardPrice1(slr.getRewardPrice1());
+			appendDetails.setRewardLevel(slr.getRewardLevel());
+			appendDetails.setRewardLevelName(LottoRewardLevelEnums.getappendNameByCode(slr.getRewardLevel()));
+			appendDetails.setRewardNum2(slr.getRewardNum2());
+			appendDetails.setRewardPrice2(slr.getRewardPrice2());
+			superLottoRewardDetailsList.add(basicDetails);
+			superLottoRewardDetailsList.add(appendDetails);
+		}
+		szcDTO.setSuperLottoRewardDetailsList(superLottoRewardDetailsList);
+		return szcDTO;
+	}
+	
 	public DlSuperLottoDetailsDTO lottoDetails(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
 		List<DlSuperLottoReward> superLottoRewardList = dlSuperLottoService.findByTermNum(superLotto.getTermNum());
@@ -596,6 +633,7 @@ public class DlDiscoveryPageService {
 		}
 		List<LeagueMatchResultDTO> list =  lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
 		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
+		dto.setList(list);
 		dto.setDateStr(dateShowStr);
 		dto.setLotteryClassify(jcParam.getLotteryClassify());
 		dto.setLotteryName("竞彩足球");
