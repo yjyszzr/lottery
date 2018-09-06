@@ -44,6 +44,7 @@ import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlSZCDTO;
 import com.dl.lottery.dto.DlSeason500wDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
@@ -123,6 +124,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private LotteryMatchMapper lotteryMatchMapper;
+
+	@Resource
+	private DlTeamResult500WService dlTeamResult500WService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
