@@ -18,16 +18,16 @@ public class DlPlayerDTO implements Serializable {
 	@Data
 	public static class DlPlayerInfosDTO {
 		@ApiModelProperty(value = "球员类型Code:0守门员，1后卫，2中场，3前锋")
-		public Integer playerTypeCode;
+		private Integer playerTypeCode;
 		@ApiModelProperty(value = "球员类型:0守门员，1后卫，2中场，3前锋")
-		public String playerType;
+		private String playerType;
 		@ApiModelProperty(value = "球员列表")
-		public List<DlPlayerInfoDTO> playerList;
+		private List<DlPlayerInfoDTO> playerList;
 	}
 
 	@Data
 	public static class DlPlayerInfoDTO {
 		@ApiModelProperty(value = "球员名称")
-		public String playerName;
+		private String playerName;
 	}
 }

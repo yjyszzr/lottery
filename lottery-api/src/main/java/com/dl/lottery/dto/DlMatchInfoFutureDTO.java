@@ -12,17 +12,17 @@ public class DlMatchInfoFutureDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@ApiModelProperty(value = "未来赛事列表")
-	public List<MatchInfoFutureDTO> matchInfoFutureList;
+	private List<MatchInfoFutureDTO> matchInfoFutureList;
 
 	@Data
 	public static class MatchInfoFutureDTO {
 		@ApiModelProperty(value = "赛事名称")
-		public String matchName;
+		private String matchName;
 		@ApiModelProperty(value = "比赛时间")
-		public String date;
+		private String date;
 		@ApiModelProperty(value = "主队")
-		public String hTeam;
+		private String hTeam;
 		@ApiModelProperty(value = "客队")
-		public String vTeam;
+		private String vTeam;
 	}
 }

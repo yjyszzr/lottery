@@ -814,8 +814,8 @@ public class DlDiscoveryPageService {
 				teamDetailForDiscovery.setCourt(dlTeamResult500W.getCourt());
 			}
 
-			DlPlayerDTO players = getTeamInfo(param);
 			// 设置球员信息
+			DlPlayerDTO players = getTeamInfo(param);
 			teamDetailForDiscovery.setPlayerlist(players);
 			// 未来赛事
 			DlMatchInfoFutureDTO futureMatch = getFutureMatch(param);
@@ -823,6 +823,7 @@ public class DlDiscoveryPageService {
 			// 近期战绩
 			DlRecentRecordDTO recentRecord = getTeamRecord(param);
 			teamDetailForDiscovery.setRecentRecord(recentRecord);
+
 			return teamDetailForDiscovery;
 		}
 		return null;

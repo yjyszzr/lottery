@@ -13,31 +13,31 @@ public class DlRecentRecordDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "比赛次数")
-	public Integer matchCount;
+	private Integer matchCount;
 	@ApiModelProperty(value = "主队名称")
-	public String homeTeam;
+	private String homeTeam;
 	@ApiModelProperty(value = "胜")
-	public Integer win;
+	private Integer win;
 	@ApiModelProperty(value = "平")
-	public Integer flat;
+	private Integer flat;
 	@ApiModelProperty(value = "负")
-	public Integer negative;
+	private Integer negative;
 	@ApiModelProperty(value = "战绩列表")
-	public List<RecentRecordInfoDTO> recentRecordList;
+	private List<RecentRecordInfoDTO> recentRecordList;
 
 	@Data
 	public static class RecentRecordInfoDTO {
 		@ApiModelProperty(value = "赛事")
-		public String match;
+		private String match;
 		@ApiModelProperty(value = "赛事")
-		public String date;
+		private String date;
 		@ApiModelProperty(value = "主队")
-		public String hTeam;
+		private String hTeam;
 		@ApiModelProperty(value = "比分")
-		public String score;
+		private String score;
 		@ApiModelProperty(value = "客队")
-		public String vTeam;
+		private String vTeam;
 		@ApiModelProperty(value = "胜负状态")
-		public String status;
+		private String status;
 	}
 }
