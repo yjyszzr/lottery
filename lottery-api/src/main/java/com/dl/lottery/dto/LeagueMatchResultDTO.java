@@ -28,7 +28,23 @@ public class LeagueMatchResultDTO {
 	
 	@ApiModelProperty(value = "杯赛名称")
 	private String cupName;
+		
+	@ApiModelProperty(value = "让球胜平负")
+	private String hhad;
 	
-	@ApiModelProperty(value = "竞彩开奖结果")
-	private List<KeyValueDTO> jcList ;
+	@ApiModelProperty(value = "胜平负")
+	private String had;
+	
+	@ApiModelProperty(value = "比分")
+	private String crs;
+	
+	@ApiModelProperty(value = "总进球")
+	private String ttg;
+	
+	@ApiModelProperty(value = "半全场")
+	private String hafu;
+	
+	
+	
+	
 }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import tk.mybatis.mapper.entity.Condition;
@@ -59,6 +60,7 @@ import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
 import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
+import com.dl.member.dto.UserBonusDTO;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
@@ -457,6 +459,41 @@ public class DlDiscoveryPageService {
 		PageInfo<DlSuperLottoDTO> superLottoPageList = new PageInfo<DlSuperLottoDTO>(LottoDTOList);
 		return superLottoPageList;
 	}
+	
+	public PageInfo<DlSuperLottoDTO> szcDetailList(DiscoveryPageParam param) {
+		Condition condition = new Condition(DlSuperLotto.class);
+		condition.setOrderByClause("term_num desc");
+		List<DlSuperLotto> superLottoList = dlSuperLottoService.findByCondition(condition);
+		PageInfo<DlSuperLotto> pageInfo = new PageInfo<DlSuperLotto>(superLottoList);
+		List<DlSuperLottoDTO> LottoDTOList = new ArrayList<DlSuperLottoDTO>();
+		for (int i = 0; i < superLottoList.size(); i++) {
+			DlSuperLottoDTO superLottoDTO = new DlSuperLottoDTO();
+			String dateStr = superLottoList.get(i).getPrizeDate();
+			String period = dateStr.replaceAll("-", "");
+			superLottoDTO.setPeriod(period + "期");
+			try {
+				String weekStr = dayForWeek(dateStr);
+				superLottoDTO.setPrizeDate(dateStr.substring(5) + "(" + weekStr + ")");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			String str = superLottoList.get(i).getPrizeNum();
+			String[] strArray = str.split(",");
+			superLottoDTO.setRedPrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 0, 5)));
+			superLottoDTO.setBluePrizeNumList(Arrays.asList(Arrays.copyOfRange(strArray, 5, 7)));
+			superLottoDTO.setTermNum(superLottoList.get(i).getTermNum());
+			LottoDTOList.add(superLottoDTO);
+		}
+		
+		PageInfo<DlSuperLottoDTO> result = new PageInfo<DlSuperLottoDTO>();
+		try {
+			BeanUtils.copyProperties(pageInfo, result);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		result.setList(LottoDTOList);
+		return result;
+	}
 
 	public SZCResultDTO lottoDetail(SZCQueryParam param) {
 		DlSuperLotto superLotto = dlSuperLottoService.findById(param.getTermNum());
@@ -645,9 +682,12 @@ public class DlDiscoveryPageService {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
 		List<LeagueMatchResultDTO> list = lotteryMatchService.queryJcOpenPrizesByDate(jcParam);
-		String dateShowStr = lotteryMatchService.createMatchDateStr(dateStr, list.size());
+		String prizeMatchStr = "已经有"+list.size()+"比赛已开奖";
+		if(list.size() > 0) {
+			dto.setDateStr(dateStr);
+			dto.setPrizeMatchStr(prizeMatchStr);
+		}
 		dto.setList(list);
-		dto.setDateStr(dateShowStr);
 		dto.setLotteryClassify(jcParam.getLotteryClassify());
 		dto.setLotteryName("竞彩足球");
 		return dto;

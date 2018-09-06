@@ -2729,14 +2729,21 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lmrDto.setCupName(s.getLeagueAddr());
 				String matchTime = DateUtil.getCurrentTimeString(Long.valueOf(DateUtil.getTimeSomeDate(s.getMatchTime())),DateUtil.hh_mm_sdf);
 				lmrDto.setMatchTime(matchTime);
-				List<KeyValueDTO> jcList = new ArrayList<>();
+				
 				for(DlLeagueMatchResult lmr:list) {
-					KeyValueDTO keyValueDTO = new KeyValueDTO();
-					keyValueDTO.setKeyName(MatchPlayTypeEnum.getMsgByCode(lmr.getPlayType()));
-					keyValueDTO.setKeyValue(lmr.getCellName());
-					jcList.add(keyValueDTO);
+					Integer playType = lmr.getPlayType();
+					if(1 == playType) {
+						lmrDto.setHhad(lmr.getCellCode());
+					}else if(2 ==playType) {
+						lmrDto.setHad(lmr.getCellCode());
+					}else if(3 ==playType) {
+						lmrDto.setCrs(lmr.getCellCode());
+					}else if(4 ==playType) {
+						lmrDto.setTtg(lmr.getCellCode());
+					}else if(5 ==playType) {
+						lmrDto.setHafu(lmr.getCellCode());
+					}
 				}
-				lmrDto.setJcList(jcList);
 			}
 			lmrList.add(lmrDto);
 		});
