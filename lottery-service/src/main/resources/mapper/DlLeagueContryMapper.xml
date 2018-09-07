@@ -35,7 +35,7 @@
  		contry_id,group_id,contry_name,contry_pic
   	from dl_contry_500w
   	where group_id=#{groupId}
-  	order by id
+  	order by contry_id
   </select>
   
 </mapper>
