@@ -51,7 +51,8 @@
 		is_league,
 		is_hot,
 		create_time,
-		league_rule
+		league_rule,
+		l_id
 
   </sql>
   
