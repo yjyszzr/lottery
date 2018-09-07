@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.NetWorkUtil;
+import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLeagueTeamInfoDTO;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
@@ -151,6 +152,9 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 			DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
 			leagueTeamInfoDTO.setTeamAddr(leagueTeamInfoList.get(i).getTeamName());
 			leagueTeamInfoDTO.setTeamPic(leagueTeamInfoList.get(i).getTeamPic());
+			if (null != leagueTeamInfoList.get(i).getTeamName()) {
+				leagueTeamInfoDTO.setTeamInitials(PinyinUtil.ToPinyin(leagueTeamInfoList.get(i).getTeamName()));
+			}
 			leagueTeamInfoDTO.setTeamId(leagueTeamInfoList.get(i).getTeamId());
 			leagueTeamInfoDTOList.add(leagueTeamInfoDTO);
 		}

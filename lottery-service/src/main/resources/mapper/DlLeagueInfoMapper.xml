@@ -62,9 +62,9 @@
   	order by contry_id
   </select>
   
-  <select id="getLeaguesFrom500WByGroupId" resultMap="BaseResultMap">
+  <select id="getLeaguesFrom500WByGroupId" resultMap="LeagueInfo500wResultMap">
   	select 
- 		<include refid="league_info_500w"></include>
+ 		 <include refid="league_info_500w"></include>
   	from dl_league_500w
   	where group_id = #{groupId}
   	order by contry_id
@@ -77,6 +77,15 @@
   	where is_hot = 1
   	order by contry_id
   </select>
+  
+  <select id="getCupMatchs" resultMap="LeagueInfo500wResultMap"> 
+  	select 
+ 		 <include refid="league_info_500w"></include>
+  	from dl_league_500w
+  	where group_id = #{groupId} and is_league = 0 
+  	order by contry_id
+  </select>
+  
 <!--   乐德过包用 -->
   <select id="getHotLeaguesForLD" resultMap="BaseResultMap">
   	select 
