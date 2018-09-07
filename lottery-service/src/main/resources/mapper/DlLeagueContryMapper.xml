@@ -8,7 +8,7 @@
     <result column="contry_pic" jdbcType="VARCHAR" property="contryPic" />
   </resultMap>
   <resultMap id="500WResultMap" type="com.dl.shop.lottery.model.DlLeagueContry500W">
-    <id column="id" jdbcType="INTEGER" property="id" />
+    <id column="contry_id" jdbcType="INTEGER" property="contryId" />
     <result column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="contry_name" jdbcType="VARCHAR" property="contryName" />
     <result column="contry_pic" jdbcType="VARCHAR" property="contryPic" />
@@ -32,7 +32,7 @@
   
   <select id="getContrysFrom500WByGroupId" resultMap="500WResultMap">
   	select 
- 		id,group_id,contry_name,contry_pic
+ 		contry_id,group_id,contry_name,contry_pic
   	from dl_contry_500w
   	where group_id=#{groupId}
   	order by id

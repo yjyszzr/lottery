@@ -12,8 +12,9 @@ public class DlLeagueContry500W {
 	 * ID
 	 */
 	@Id
+	@Column(name="contry_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer contryId;
 
 	/**
 	 * 所属组id
@@ -38,23 +39,14 @@ public class DlLeagueContry500W {
 	@Column(name = "contry_pic")
 	private String contryPic;
 
-	/**
-	 * 获取ID
-	 *
-	 * @return id - ID
-	 */
-	public Integer getId() {
-		return id;
+	
+
+	public Integer getContryId() {
+		return contryId;
 	}
 
-	/**
-	 * 设置ID
-	 *
-	 * @param id
-	 *            ID
-	 */
-	public void setId(Integer id) {
-		this.id = id;
+	public void setContryId(Integer contryId) {
+		this.contryId = contryId;
 	}
 
 	/**

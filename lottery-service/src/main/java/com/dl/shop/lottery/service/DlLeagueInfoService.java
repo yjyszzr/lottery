@@ -178,7 +178,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setContryName(contry.getContryName());
 			dto.setContryPic(contry.getContryPic());
 			// dto.setGroupId(groupId);
-			Integer contryId = contry.getId();
+			Integer contryId = contry.getContryId();
 			List<LeagueInfoDTO> leagueInfoList = leagueMap.get(contryId);
 			dto.setLeagueInfoList(leagueInfoList);
 			contryDtos.add(dto);
