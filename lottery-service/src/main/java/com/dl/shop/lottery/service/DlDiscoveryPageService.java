@@ -884,7 +884,11 @@ public class DlDiscoveryPageService {
 		List<MatchInfoFutureDTO> matchInfoFutureList = new ArrayList<MatchInfoFutureDTO>();
 		for (int i = 0; i < dlTeamFuture500WList.size(); i++) {
 			MatchInfoFutureDTO matchInfoFutureDTO = new MatchInfoFutureDTO();
-			matchInfoFutureDTO.setDate(dlTeamFuture500WList.get(i).getMatchTime());
+			String str = dlTeamFuture500WList.get(i).getMatchTime();
+			if (null != str) {
+				str = str.substring(0, 10);
+			}
+			matchInfoFutureDTO.setDate(str);
 			matchInfoFutureDTO.setHTeam(dlTeamFuture500WList.get(i).getHomeAbbr());
 			matchInfoFutureDTO.setMatchName(dlTeamFuture500WList.get(i).getLeagueAbbr());
 			matchInfoFutureDTO.setVTeam(dlTeamFuture500WList.get(i).getVisitingAbbr());
@@ -906,6 +910,7 @@ public class DlDiscoveryPageService {
 			for (DlLeaguePlayer leaguePlayer : dlLeaguePlayerList) {
 				DlPlayerInfoDTO playerDto = new DlPlayerInfoDTO();
 				playerDto.setPlayerName(leaguePlayer.getPlayerName());
+				playerDto.setPlayerNo(leaguePlayer.getPlayerNo());
 				Integer playerType = leaguePlayer.getPlayerType();
 				if (0 == playerType) {
 					playerInfo0List.add(playerDto);
