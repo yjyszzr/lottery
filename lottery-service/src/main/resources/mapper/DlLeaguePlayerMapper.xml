@@ -21,13 +21,18 @@
     <result column="height" jdbcType="VARCHAR" property="height" />
     <result column="weight" jdbcType="VARCHAR" property="weight" />
   </resultMap>
+  <sql id="allFields">
+  id,player_id,player_name,player_no,player_type,league_from,create_time,update_time,
+  team_id,birthday,age,contry,player_price,height,weight
+  </sql>
    <select id="findByTeamId" resultMap="BaseResultMap">
 		SELECT
-			* 
+			<include refid="allFields"></include>
 		FROM
 			dl_league_player 
 		WHERE
 			team_id = #{teamId}
+		order by id
    </select>
   
 </mapper>

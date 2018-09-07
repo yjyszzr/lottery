@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.JSONHelper;
 import com.dl.base.util.PinyinUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
@@ -815,13 +816,13 @@ public class DlDiscoveryPageService {
 			}
 
 			// 设置球员信息
-			DlPlayerDTO players = getTeamInfo(param);
+			DlPlayerDTO players = this.getTeamInfo(param);
 			teamDetailForDiscovery.setPlayerlist(players);
 			// 未来赛事
-			DlMatchInfoFutureDTO futureMatch = getFutureMatch(param);
+			DlMatchInfoFutureDTO futureMatch = this.getFutureMatch(param);
 			teamDetailForDiscovery.setFutureMatch(futureMatch);
 			// 近期战绩
-			DlRecentRecordDTO recentRecord = getTeamRecord(team500w.getTeamId(), team500w.getTeamName());
+			DlRecentRecordDTO recentRecord = this.getTeamRecord(team500w.getTeamId(), team500w.getTeamName());
 			teamDetailForDiscovery.setRecentRecord(recentRecord);
 
 			return teamDetailForDiscovery;
@@ -883,6 +884,7 @@ public class DlDiscoveryPageService {
 	//球员信息获取
 	private DlPlayerDTO getTeamInfo(TeamParam param) {
 		List<DlLeaguePlayer> dlLeaguePlayerList = dlLeaguePlayerService.findByTeamId(param.getTeamId());
+		log.info("method getTeamInfo : param=" + param.getTeamId() + "  players:" + dlLeaguePlayerList.size());
 		DlPlayerDTO players = new DlPlayerDTO();
 		if(CollectionUtils.isNotEmpty(dlLeaguePlayerList)) {
 			List<DlPlayerInfoDTO> playerInfo0List = new ArrayList<DlPlayerInfoDTO>(10);
@@ -908,6 +910,7 @@ public class DlDiscoveryPageService {
 			players.getMidPlayers().setPlayerList(playerInfo2List);
 			players.getForwards().setPlayerList(playerInfo3List);
 		}
+		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:"+ JSONHelper.bean2json(players));
 		return players;
 	}
 }
