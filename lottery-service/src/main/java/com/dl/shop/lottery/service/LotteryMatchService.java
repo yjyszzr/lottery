@@ -2733,7 +2733,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				for(DlLeagueMatchResult lmr:list) {
 					Integer playType = lmr.getPlayType();
 					if(1 == playType) {
-						lmrDto.setHhad(lmr.getCellName());
+						lmrDto.setHhad("("+lmr.getGoalline()+")"+ lmr.getCellName());
 					}else if(2 ==playType) {
 						lmrDto.setHad(lmr.getCellName());
 					}else if(3 ==playType) {
