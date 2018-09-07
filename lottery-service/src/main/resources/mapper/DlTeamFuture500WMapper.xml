@@ -15,9 +15,12 @@
     <result column="team_id" jdbcType="INTEGER" property="teamId" />
   </resultMap>
   
+  <sql id="allFields">
+  	id,match_time,league_abbr,home_abbr,visiting_abbr,update_time,create_time,team_id
+  </sql>
   <select id="findByTeamId" resultMap="BaseResultMap">
 		SELECT
-			* 
+			<include refid="allFields"></include>
 		FROM
 			dl_team_future_500w 
 		WHERE
