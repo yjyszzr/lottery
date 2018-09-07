@@ -72,7 +72,7 @@ public class DlTeamRecord500W {
      * 球队id
      */
     @Column(name = "visiting_id")
-    private Integer teavisitingId;
+    private Integer visitingId;
 
     /**
      * 获取id
@@ -262,14 +262,15 @@ public class DlTeamRecord500W {
 		this.homeId = homeId;
 	}
 
-	public Integer getTeavisitingId() {
-		return teavisitingId;
+	public Integer getVisitingId() {
+		return visitingId;
 	}
 
-	public void setTeavisitingId(Integer teavisitingId) {
-		this.teavisitingId = teavisitingId;
+	public void setVisitingId(Integer visitingId) {
+		this.visitingId = visitingId;
 	}
 
+	
 	
     
 }
