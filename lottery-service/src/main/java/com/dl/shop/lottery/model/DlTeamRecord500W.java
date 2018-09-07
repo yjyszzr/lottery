@@ -63,6 +63,16 @@ public class DlTeamRecord500W {
      */
     @Column(name = "team_id")
     private Integer teamId;
+    /**
+     * 球队id
+     */
+    @Column(name = "home_id")
+    private Integer homeId;
+    /**
+     * 球队id
+     */
+    @Column(name = "visiting_id")
+    private Integer teavisitingIdmId;
 
     /**
      * 获取id
@@ -243,4 +253,21 @@ public class DlTeamRecord500W {
     public void setTeamId(Integer teamId) {
         this.teamId = teamId;
     }
+
+	public Integer getHomeId() {
+		return homeId;
+	}
+
+	public void setHomeId(Integer homeId) {
+		this.homeId = homeId;
+	}
+
+	public Integer getTeavisitingIdmId() {
+		return teavisitingIdmId;
+	}
+
+	public void setTeavisitingIdmId(Integer teavisitingIdmId) {
+		this.teavisitingIdmId = teavisitingIdmId;
+	}
+    
 }

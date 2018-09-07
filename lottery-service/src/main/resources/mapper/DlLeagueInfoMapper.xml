@@ -62,10 +62,10 @@
   	order by contry_id
   </select>
   
-  <select id="getByGroupId" resultMap="BaseResultMap">
+  <select id="getLeaguesFrom500WByGroupId" resultMap="BaseResultMap">
   	select 
- 		 <include refid="allFields"></include>
-  	from dl_league_info
+ 		<include refid="league_info_500w"></include>
+  	from dl_league_500w
   	where group_id = #{groupId}
   	order by contry_id
   </select>

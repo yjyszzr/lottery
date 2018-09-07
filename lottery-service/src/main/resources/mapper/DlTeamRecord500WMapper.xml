@@ -15,7 +15,16 @@
     <result column="score" jdbcType="VARCHAR" property="score" />
     <result column="result" jdbcType="VARCHAR" property="result" />
     <result column="team_id" jdbcType="INTEGER" property="teamId" />
+    <result column="home_id" jdbcType="INTEGER" property="homeId" />
+    <result column="visiting_id" jdbcType="INTEGER" property="visitingId" />
   </resultMap>
+  
+  <sql id="allFields">
+	  id,create_time,update_time,league_name,
+	  match_time,home_team,visiting_team,score,
+	  result,team_id,home_id,visiting_id
+  </sql>
+  
   <select id="findByTeamId" resultMap="BaseResultMap">
   		SELECT
 			* 
@@ -23,6 +32,7 @@
 			dl_team_record_500w 
 		WHERE
 			team_id = #{teamId}
+		order by match_time
   </select>
   
 </mapper>

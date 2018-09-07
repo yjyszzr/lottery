@@ -29,7 +29,7 @@ public class DlRecentRecordDTO implements Serializable {
 	public static class RecentRecordInfoDTO {
 		@ApiModelProperty(value = "赛事")
 		private String match;
-		@ApiModelProperty(value = "赛事")
+		@ApiModelProperty(value = "比赛时间")
 		private String date;
 		@ApiModelProperty(value = "主队")
 		private String hTeam;

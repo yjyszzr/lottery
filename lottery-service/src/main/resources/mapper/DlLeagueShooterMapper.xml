@@ -44,6 +44,7 @@
 			dl_league_shooter 
 		WHERE
 			match_season_id = #{seasonId} 
+		order by sort
   </select>
   
 </mapper>

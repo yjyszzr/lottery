@@ -22,5 +22,6 @@
 			dl_team_future_500w 
 		WHERE
 			team_id = #{teamId}
+		order by match_time
   </select>
 </mapper>

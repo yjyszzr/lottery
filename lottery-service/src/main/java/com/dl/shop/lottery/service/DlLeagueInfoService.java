@@ -148,7 +148,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		if (CollectionUtils.isEmpty(leagueContrys)) {
 			return null;
 		}
-		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.getByGroupId(groupId);
+		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.getLeaguesFrom500WByGroupId(groupId);
 		if (CollectionUtils.isEmpty(leagueInfos)) {
 			return null;
 		}

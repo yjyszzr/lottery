@@ -33,7 +33,7 @@
   <select id="getContrysFrom500WByGroupId" resultMap="500WResultMap">
   	select 
  		id,group_id,contry_name,contry_pic
-  	from dl_league_contry
+  	from dl_contry_500w
   	where group_id=#{groupId}
   	order by id
   </select>
