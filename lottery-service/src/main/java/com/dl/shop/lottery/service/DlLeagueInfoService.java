@@ -16,6 +16,7 @@ import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
+import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.dao2.DlLeagueContryMapper;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
@@ -76,7 +77,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 	}
 
 	// 国际赛事
-	private DlLeagueContryDTO getInternationalLeagues() {
+	private List<LeagueInfoDTO> getInternationalLeagues() {
 		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getInternationalLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (DlLeagueInfo500W league : hotLeagues) {
@@ -90,16 +91,16 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			}
 			leagueInfos.add(dto);
 		}
-		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
+		/*DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
 		contryDTO.setContryName("");
-		contryDTO.setContryPic("");
-		contryDTO.setGroupId(0);
-		contryDTO.setLeagueInfoList(leagueInfos);
-		return contryDTO;
+		contryDTO.setContryPic("");*/
+//		contryDTO.setGroupId(0);
+//		contryDTO.setLeagueInfoList(leagueInfos);
+		return leagueInfos;
 	}
 
 	// 热门
-	private DlLeagueContryDTO getHotLeagues() {
+	private List<LeagueInfoDTO> getHotLeagues() {
 		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (DlLeagueInfo500W league : hotLeagues) {
@@ -113,12 +114,12 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			}
 			leagueInfos.add(dto);
 		}
-		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
+		/*DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
 		contryDTO.setContryName("");
-		contryDTO.setContryPic("");
-		contryDTO.setGroupId(0);
-		contryDTO.setLeagueInfoList(leagueInfos);
-		return contryDTO;
+		contryDTO.setContryPic("");*/
+//		contryDTO.setGroupId(0);
+//		contryDTO.setLeagueInfoList(leagueInfos);
+		return leagueInfos;
 	}
 
 	private DlLeagueContryDTO getHotLeaguesForLD() {
@@ -135,7 +136,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
 		contryDTO.setContryName("");
 		contryDTO.setContryPic("");
-		contryDTO.setGroupId(0);
+//		contryDTO.setGroupId(0);
 		contryDTO.setLeagueInfoList(leagueInfos);
 		return contryDTO;
 	}
@@ -147,7 +148,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		if (CollectionUtils.isEmpty(leagueContrys)) {
 			return null;
 		}
-		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.getAll();
+		List<DlLeagueInfo> leagueInfos = dlLeagueInfoMapper.getByGroupId(groupId);
 		if (CollectionUtils.isEmpty(leagueInfos)) {
 			return null;
 		}
@@ -177,7 +178,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			DlLeagueContryDTO dto = new DlLeagueContryDTO();
 			dto.setContryName(contry.getContryName());
 			dto.setContryPic(contry.getContryPic());
-			dto.setGroupId(groupId);
+//			dto.setGroupId(groupId);
 			Integer contryId = contry.getId();
 			List<LeagueInfoDTO> leagueInfoList = leagueMap.get(contryId);
 			dto.setLeagueInfoList(leagueInfoList);
@@ -217,7 +218,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			DlLeagueContryDTO dto = new DlLeagueContryDTO();
 			dto.setContryName(contry.getContryName());
 			dto.setContryPic(contry.getContryPic());
-			dto.setGroupId(groupId);
+//			dto.setGroupId(groupId);
 			Integer contryId = contry.getId();
 			List<LeagueInfoDTO> leagueInfoList = leagueMap.get(contryId);
 			dto.setLeagueInfoList(leagueInfoList);
@@ -226,20 +227,20 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		return contryDtos;
 	}
 
-	public List<DlLeagueContryDTO> leagueHomePageByGroupId(Integer groupId) {
-		List<DlLeagueContryDTO> contryDtos = null;
+	public GroupLeagueDTO leagueHomePageByGroupId(Integer groupId) {
+		GroupLeagueDTO dto = new GroupLeagueDTO();
+		dto.setGroupId(groupId);
 		if (groupId == 0) {
-			DlLeagueContryDTO contryDTO = this.getHotLeagues();
-			contryDtos = new ArrayList<DlLeagueContryDTO>(1);
-			contryDtos.add(contryDTO);
+			List<LeagueInfoDTO> hotLeagues = this.getHotLeagues();
+			dto.setGroupLeagues(hotLeagues);
 		} else if (groupId == 4) {
-			DlLeagueContryDTO contryDTO = this.getInternationalLeagues();
-			contryDtos = new ArrayList<DlLeagueContryDTO>(1);
-			contryDtos.add(contryDTO);
+			List<LeagueInfoDTO> leagues = this.getInternationalLeagues();
+			dto.setGroupLeagues(leagues);
 		} else {
-			contryDtos = this.leagueContrysFrom500W(groupId);
+			List<DlLeagueContryDTO> contrys = this.leagueContrysFrom500W(groupId);
+			dto.setContrys(contrys);
 		}
-		return contryDtos;
+		return dto;
 	}
 
 	/**

@@ -1,7 +1,5 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +23,10 @@ import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
 import com.dl.lottery.dto.DlNoviceClassroomDTO;
-import com.dl.lottery.dto.DlSZCDTO;
 import com.dl.lottery.dto.DlSuperLottoDTO;
 import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
+import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
@@ -42,6 +40,8 @@ import com.dl.lottery.param.TeamParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/discoveryPage")
@@ -123,9 +123,9 @@ public class DlDiscoveryPageController {
 
 	@ApiOperation(value = "联赛主页列表", notes = "联赛主页列表")
 	@PostMapping("/leagueHomePageByGroupId")
-	public BaseResult<List<DlLeagueContryDTO>> leagueHomePageByGroupId(@RequestBody LeagueListByGroupIdParam param) {
-		List<DlLeagueContryDTO> leagueContryList = dlDiscoveryPageService.leagueHomePageByGroupId(param);
-		return ResultGenerator.genSuccessResult(null, leagueContryList);
+	public BaseResult<GroupLeagueDTO> leagueHomePageByGroupId(@RequestBody LeagueListByGroupIdParam param) {
+		GroupLeagueDTO groupLeagueDto = dlDiscoveryPageService.leagueHomePageByGroupId(param);
+		return ResultGenerator.genSuccessResult(null, groupLeagueDto);
 	}
 
 	@ApiOperation(value = "联赛详情<乐德>", notes = "联赛详情<乐德>")

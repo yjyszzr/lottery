@@ -59,6 +59,7 @@ import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
 import com.dl.lottery.dto.DlTopScorerMemberDTO;
+import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
@@ -703,13 +704,12 @@ public class DlDiscoveryPageService {
 	 * @param param
 	 * @return
 	 */
-	public List<DlLeagueContryDTO> leagueHomePageByGroupId(LeagueListByGroupIdParam param) {
+	public GroupLeagueDTO leagueHomePageByGroupId(LeagueListByGroupIdParam param) {
 		Integer groupId = param.getGroupId();
 		if (groupId == null) {
 			groupId = 0;
 		}
-		List<DlLeagueContryDTO> contryLeagueList = dlLeagueInfoService.leagueHomePageByGroupId(groupId);
-		return contryLeagueList;
+		return dlLeagueInfoService.leagueHomePageByGroupId(groupId);
 	}
 
 	/**

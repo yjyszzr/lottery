@@ -62,6 +62,14 @@
   	order by contry_id
   </select>
   
+  <select id="getByGroupId" resultMap="BaseResultMap">
+  	select 
+ 		 <include refid="allFields"></include>
+  	from dl_league_info
+  	where group_id = #{groupId}
+  	order by contry_id
+  </select>
+  
   <select id="getHotLeagues" resultMap="LeagueInfo500wResultMap"> 
   	select 
  		 <include refid="league_info_500w"></include>
@@ -82,7 +90,7 @@
   	select 
  		 <include refid="league_info_500w"></include>
   	from dl_league_500w
-  	where contry_id = 0
+  	where group_id = 4
   </select>
   
   <select id="getByLeagueId" resultMap="BaseResultMap">
