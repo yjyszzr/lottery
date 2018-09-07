@@ -47,6 +47,25 @@ public class DlLeagueInfo500W {
 	@Column(name = "league_rule")
 	private String leagueRule;
 
+	@Column(name = "l_id")
+	private Integer lId;
+
+	public String getLeagueAbbr() {
+		return leagueAbbr;
+	}
+
+	public void setLeagueAbbr(String leagueAbbr) {
+		this.leagueAbbr = leagueAbbr;
+	}
+
+	public Integer getlId() {
+		return lId;
+	}
+
+	public void setlId(Integer lId) {
+		this.lId = lId;
+	}
+
 	/**
 	 * 获取联赛编号
 	 *
@@ -83,25 +102,6 @@ public class DlLeagueInfo500W {
 	 */
 	public void setLeagueName(String leagueName) {
 		this.leagueName = leagueName;
-	}
-
-	/**
-	 * 获取联赛简称
-	 *
-	 * @return league_addr - 联赛简称
-	 */
-	public String getLeagueAddr() {
-		return leagueAbbr;
-	}
-
-	/**
-	 * 设置联赛简称
-	 *
-	 * @param leagueAddr
-	 *            联赛简称
-	 */
-	public void setLeagueAddr(String leagueAddr) {
-		this.leagueAbbr = leagueAddr;
 	}
 
 	public Integer getContryId() {

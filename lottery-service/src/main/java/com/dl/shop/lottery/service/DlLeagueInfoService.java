@@ -15,7 +15,6 @@ import com.dl.base.service.AbstractService;
 import com.dl.base.util.PinyinUtil;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
-import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
 import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.dao2.DlLeagueContryMapper;
@@ -82,12 +81,12 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (DlLeagueInfo500W league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
-			dto.setLeagueAddr(league.getLeagueAddr());
+			dto.setLeagueAddr(league.getLeagueAbbr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
 			dto.setLeaguePic(league.getLeaguePic());
-			if (null != league.getLeagueAddr()) {
-				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			if (null != league.getLeagueAbbr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAbbr()));
 			}
 			leagueInfos.add(dto);
 		}
@@ -106,12 +105,12 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (DlLeagueInfo500W league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
-			dto.setLeagueAddr(league.getLeagueAddr());
+			dto.setLeagueAddr(league.getLeagueAbbr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
 			dto.setLeaguePic(league.getLeaguePic());
-			if (null != league.getLeagueAddr()) {
-				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			if (null != league.getLeagueAbbr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAbbr()));
 			}
 			leagueInfos.add(dto);
 		}
@@ -163,9 +162,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 				leagueMap.put(contryId, leagueInfoDTOs);
 			}
 			LeagueInfoDTO dto = new LeagueInfoDTO();
-			dto.setLeagueAddr(league.getLeagueAddr());
-			if (null != league.getLeagueAddr()) {
-				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAddr()));
+			dto.setLeagueAddr(league.getLeagueAbbr());
+			if (null != league.getLeagueAbbr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAbbr()));
 			}
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
@@ -249,10 +248,10 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		List<LeagueInfoDTO> list = new ArrayList<LeagueInfoDTO>();
 		for (int i = 0; i < leagueInfo500W.size(); i++) {
 			LeagueInfoDTO leagueInfoDTO = new LeagueInfoDTO();
-			leagueInfoDTO.setLeagueAddr(leagueInfo500W.get(i).getLeagueAddr());
+			leagueInfoDTO.setLeagueAddr(leagueInfo500W.get(i).getLeagueAbbr());
 			leagueInfoDTO.setLeagueId(leagueInfo500W.get(i).getLeagueId());
-			if (null != leagueInfo500W.get(i).getLeagueAddr()) {
-				leagueInfoDTO.setLeagueInitials(PinyinUtil.ToPinyin(leagueInfo500W.get(i).getLeagueAddr()));
+			if (null != leagueInfo500W.get(i).getLeagueAbbr()) {
+				leagueInfoDTO.setLeagueInitials(PinyinUtil.ToPinyin(leagueInfo500W.get(i).getLeagueAbbr()));
 			}
 			leagueInfoDTO.setLeagueName(leagueInfo500W.get(i).getLeagueName());
 			leagueInfoDTO.setLeaguePic(leagueInfo500W.get(i).getLeaguePic());
@@ -267,20 +266,8 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 	 * @param leagueId
 	 * @return
 	 */
-	public DlLeagueDetailForDiscoveryDTO leagueDetailFrom500w(Integer leagueId) {
-		DlLeagueDetailForDiscoveryDTO detail = new DlLeagueDetailForDiscoveryDTO();
+	public DlLeagueInfo500W leagueDetailFrom500w(Integer leagueId) {
 		DlLeagueInfo500W leagueInfo = dlLeagueInfoMapper.getLeagueInfo500wByLeagueId(leagueId);
-		if (leagueInfo == null) {
-			return null;
-		} else {
-			detail.setLeagueAddr(leagueInfo.getLeagueAddr());
-			detail.setLeagueId(leagueInfo.getLeagueId());
-			detail.setLeagueName(leagueInfo.getLeagueName());
-			detail.setLeaguePic(leagueInfo.getLeaguePic());
-			detail.setLeagueRule(leagueInfo.getLeagueRule());
-			detail.setLeagueType(leagueInfo.getIsLeague());
-		}
-		return detail;
+		return leagueInfo;
 	}
-
 }

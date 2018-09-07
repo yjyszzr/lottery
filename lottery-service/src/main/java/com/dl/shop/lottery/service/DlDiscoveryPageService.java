@@ -13,11 +13,17 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.util.DateUtil;
@@ -44,7 +50,6 @@ import com.dl.lottery.dto.DlMatchInfoFutureDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO.MatchInfoFutureDTO;
 import com.dl.lottery.dto.DlPlayerDTO;
 import com.dl.lottery.dto.DlPlayerInfoDTO;
-import com.dl.lottery.dto.DlPlayerInfosDTO;
 import com.dl.lottery.dto.DlRecentRecordDTO;
 import com.dl.lottery.dto.DlRecentRecordDTO.RecentRecordInfoDTO;
 import com.dl.lottery.dto.DlSZCDTO;
@@ -73,6 +78,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.DlLeagueInfo500W;
 import com.dl.shop.lottery.model.DlLeaguePlayer;
 import com.dl.shop.lottery.model.DlPhoneChannel;
 import com.dl.shop.lottery.model.DlSeason500w;
@@ -87,11 +93,6 @@ import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.github.pagehelper.PageInfo;
-
-import lombok.extern.slf4j.Slf4j;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-import tk.mybatis.mapper.util.StringUtil;
 
 @Service
 @Slf4j
@@ -724,10 +725,18 @@ public class DlDiscoveryPageService {
 		if (leagueId == null) {
 			return null;
 		}
-		DlLeagueDetailForDiscoveryDTO leagueDetail = dlLeagueInfoService.leagueDetailFrom500w(leagueId);
-		if (leagueDetail == null) {
+		DlLeagueDetailForDiscoveryDTO leagueDetail = new DlLeagueDetailForDiscoveryDTO();
+		DlLeagueInfo500W leagueInfo = dlLeagueInfoService.leagueDetailFrom500w(leagueId);
+
+		if (leagueInfo == null) {
 			return null;
 		} else {
+			leagueDetail.setLeagueAddr(leagueInfo.getLeagueAbbr());
+			leagueDetail.setLeagueId(leagueInfo.getLeagueId());
+			leagueDetail.setLeagueName(leagueInfo.getLeagueName());
+			leagueDetail.setLeaguePic(leagueInfo.getLeaguePic());
+			leagueDetail.setLeagueRule(leagueInfo.getLeagueRule());
+			leagueDetail.setLeagueType(leagueInfo.getIsLeague());
 			Integer seasonId = param.getSeasonId();
 			if (seasonId == null || seasonId == 0) {
 				seasonId = dlSeason500wService.getlastSeasonByLeagueId(leagueId);
@@ -736,20 +745,10 @@ public class DlDiscoveryPageService {
 				}
 			}
 			// 赛季
-			List<DlSeason500w> seasonList = dlSeason500wService.findSeasonByLeagueId(leagueId);
-			DlLeagueSeason500wDTO leagueSeason = new DlLeagueSeason500wDTO();
-			List<DlSeason500wDTO> leagueSeasonInfoList = new ArrayList<DlSeason500wDTO>();
-			for (int i = 0; i < seasonList.size(); i++) {
-				DlSeason500wDTO season500wDTO = new DlSeason500wDTO();
-				season500wDTO.setLeagueId(seasonList.get(i).getLeagueId());
-				season500wDTO.setMatchSeason(seasonList.get(i).getMatchSeason());
-				season500wDTO.setSeasonId(seasonList.get(i).getSeasonId());
-				leagueSeasonInfoList.add(season500wDTO);
-			}
-			leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
+			DlLeagueSeason500wDTO leagueSeason = getSeason(leagueId);
 			leagueDetail.setLeagueSeason(leagueSeason);
 			// 积分榜
-			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findBySeasonId(leagueId, leagueDetail.getLeagueType());
+			DlLeagueScoreDTO leagueIntegral = dlMatchTeamScoreService.findByLeagueIdAndSeasonId(seasonId, leagueDetail.getLeagueType(), leagueInfo.getLeagueId());
 			leagueDetail.setLeagueScore(leagueIntegral);
 			// 射手榜
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
@@ -762,6 +761,21 @@ public class DlDiscoveryPageService {
 			leagueDetail.setLeagueTeam(leagueTeam);
 		}
 		return leagueDetail;
+	}
+
+	private DlLeagueSeason500wDTO getSeason(Integer leagueId) {
+		List<DlSeason500w> seasonList = dlSeason500wService.findSeasonByLeagueId(leagueId);
+		DlLeagueSeason500wDTO leagueSeason = new DlLeagueSeason500wDTO();
+		List<DlSeason500wDTO> leagueSeasonInfoList = new ArrayList<DlSeason500wDTO>();
+		for (int i = 0; i < seasonList.size(); i++) {
+			DlSeason500wDTO season500wDTO = new DlSeason500wDTO();
+			season500wDTO.setLeagueId(seasonList.get(i).getLeagueId());
+			season500wDTO.setMatchSeason(seasonList.get(i).getMatchSeason());
+			season500wDTO.setSeasonId(seasonList.get(i).getSeasonId());
+			leagueSeasonInfoList.add(season500wDTO);
+		}
+		leagueSeason.setLeagueSeasonInfoList(leagueSeasonInfoList);
+		return leagueSeason;
 	}
 
 	/**
@@ -830,12 +844,12 @@ public class DlDiscoveryPageService {
 		return null;
 	}
 
-	//近期战绩
+	// 近期战绩
 	private DlRecentRecordDTO getTeamRecord(Integer teamId, String teamName) {
 		List<DlTeamRecord500W> recentRecordList = dlTeamRecord500WService.findByTeamId(teamId);
 		DlRecentRecordDTO recentRecord = new DlRecentRecordDTO();
 		List<RecentRecordInfoDTO> recentRecordDTOList = new ArrayList<RecentRecordInfoDTO>();
-		int win=0,flat=0,negative=0;
+		int win = 0, flat = 0, negative = 0;
 		for (int i = 0; i < recentRecordList.size(); i++) {
 			RecentRecordInfoDTO recentRecordInfoDTO = new RecentRecordInfoDTO();
 			DlTeamRecord500W dlTeamRecord500W = recentRecordList.get(i);
@@ -845,9 +859,9 @@ public class DlDiscoveryPageService {
 			recentRecordInfoDTO.setMatch(dlTeamRecord500W.getLeagueName());
 			String result = dlTeamRecord500W.getResult();
 			recentRecordInfoDTO.setStatus(result);
-			if("胜".equals(result)) {
+			if ("胜".equals(result)) {
 				win++;
-			} else if("负".equals(result)) {
+			} else if ("负".equals(result)) {
 				negative++;
 			} else {
 				flat++;
@@ -864,7 +878,7 @@ public class DlDiscoveryPageService {
 		return recentRecord;
 	}
 
-	//球队未来赛事
+	// 球队未来赛事
 	private DlMatchInfoFutureDTO getFutureMatch(TeamParam param) {
 		DlMatchInfoFutureDTO futureMatch = new DlMatchInfoFutureDTO();
 		List<DlTeamFuture500W> dlTeamFuture500WList = dlTeamFuture500WService.findByTeamId(param.getTeamId());
@@ -881,27 +895,27 @@ public class DlDiscoveryPageService {
 		return futureMatch;
 	}
 
-	//球员信息获取
+	// 球员信息获取
 	private DlPlayerDTO getTeamInfo(TeamParam param) {
 		List<DlLeaguePlayer> dlLeaguePlayerList = dlLeaguePlayerService.findByTeamId(param.getTeamId());
 		log.info("method getTeamInfo : param=" + param.getTeamId() + "  players:" + dlLeaguePlayerList.size());
 		DlPlayerDTO players = new DlPlayerDTO();
-		if(CollectionUtils.isNotEmpty(dlLeaguePlayerList)) {
+		if (CollectionUtils.isNotEmpty(dlLeaguePlayerList)) {
 			List<DlPlayerInfoDTO> playerInfo0List = new ArrayList<DlPlayerInfoDTO>(10);
 			List<DlPlayerInfoDTO> playerInfo1List = new ArrayList<DlPlayerInfoDTO>(10);
 			List<DlPlayerInfoDTO> playerInfo2List = new ArrayList<DlPlayerInfoDTO>(10);
 			List<DlPlayerInfoDTO> playerInfo3List = new ArrayList<DlPlayerInfoDTO>(10);
-			for(DlLeaguePlayer leaguePlayer : dlLeaguePlayerList) {
+			for (DlLeaguePlayer leaguePlayer : dlLeaguePlayerList) {
 				DlPlayerInfoDTO playerDto = new DlPlayerInfoDTO();
 				playerDto.setPlayerName(leaguePlayer.getPlayerName());
 				Integer playerType = leaguePlayer.getPlayerType();
-				if(0 == playerType) {
+				if (0 == playerType) {
 					playerInfo0List.add(playerDto);
-				} else if(1 == playerType) {
+				} else if (1 == playerType) {
 					playerInfo1List.add(playerDto);
-				} else if(2 == playerType) {
+				} else if (2 == playerType) {
 					playerInfo2List.add(playerDto);
-				} else if(3 == playerType) {
+				} else if (3 == playerType) {
 					playerInfo3List.add(playerDto);
 				}
 			}
