@@ -936,4 +936,18 @@ public class DlDiscoveryPageService {
 		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:" + JSONHelper.bean2json(players));
 		return players;
 	}
+
+	public List<DlBannerForActive> getNoviceClassroom() {
+		List<LotteryNavBanner> lotteryNavBannerList = lotteryNavBannerService.selectAll();
+		List<LotteryNavBanner> activeList = lotteryNavBannerList.stream().filter(s -> s.getBannerParam().equals("4")).collect(Collectors.toList());
+		List<DlBannerForActive> list = new ArrayList<DlBannerForActive>();
+		for (int i = 0; i < activeList.size(); i++) {
+			DlBannerForActive bannerForActive = new DlBannerForActive();
+			bannerForActive.setBannerImage(lotteryConfig.getBannerShowUrl() + activeList.get(i).getBannerImage());
+			bannerForActive.setBannerLink(activeList.get(i).getBannerLink());
+			bannerForActive.setBannerName(activeList.get(i).getBannerName());
+			list.add(bannerForActive);
+		}
+		return list;
+	}
 }
