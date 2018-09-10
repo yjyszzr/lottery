@@ -18,4 +18,7 @@ public class DlFutureMatchInfoDTO {
 	@ApiModelProperty("客队简称")
 	private String visitorTeamAbbr;
 
+	@ApiModelProperty("分组名称")
+	private String groupName;
+
 }

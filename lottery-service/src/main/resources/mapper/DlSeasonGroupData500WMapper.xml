@@ -12,6 +12,7 @@
     <result column="match_score" jdbcType="VARCHAR" property="matchScore" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
   </resultMap>
   <resultMap id="MatchGroupResultMap" type="com.dl.lottery.dto.DlMatchGroupDTO">
     <result column="match_group_id" jdbcType="INTEGER" property="groupId" />

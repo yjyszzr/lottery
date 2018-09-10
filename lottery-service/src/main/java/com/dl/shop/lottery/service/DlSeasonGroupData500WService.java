@@ -1,7 +1,10 @@
 package com.dl.shop.lottery.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -13,6 +16,7 @@ import com.dl.lottery.dto.DlFutureMatchInfoDTO;
 import com.dl.lottery.dto.DlMatchGroupDTO;
 import com.dl.lottery.dto.DlMatchGroupData500WDTO;
 import com.dl.lottery.dto.DlMatchGroupData500WDTO.MatchGroupData;
+import com.dl.lottery.dto.DlMatchGroupData500WDTO.MatchTurnGroupData;
 import com.dl.shop.lottery.dao2.DlSeasonGroupData500WMapper;
 import com.dl.shop.lottery.model.DlSeasonGroupData500W;
 
@@ -26,11 +30,12 @@ public class DlSeasonGroupData500WService extends AbstractService<DlSeasonGroupD
 		DlMatchGroupData500WDTO matchGroupData500W = new DlMatchGroupData500WDTO();
 		List<DlMatchGroupDTO> MatchGroups = dlSeasonGroupData500WMapper.findMatchGroupsByLeagueIdAndSeasonId(seasonId, leagueId);
 		List<DlSeasonGroupData500W> matchGroupData500WList = dlSeasonGroupData500WMapper.findByLeagueIdAndSeasonId(seasonId, leagueId);
-
-		List<MatchGroupData> matchGroupDataList = new ArrayList<MatchGroupData>();
+		// 获取每个轮次
+		List<MatchTurnGroupData> matchTurnGroupDataList = new ArrayList<MatchTurnGroupData>();
 		for (int i = 0; i < MatchGroups.size(); i++) {
-			MatchGroupData matchGroup = new MatchGroupData();
-			List<DlFutureMatchInfoDTO> futureMatchDTOList = new ArrayList<DlFutureMatchInfoDTO>();
+			MatchTurnGroupData matchTurnGroupData = new MatchTurnGroupData();
+			List<MatchGroupData> groupDTOList = new ArrayList<MatchGroupData>();
+			Map<String, List<DlFutureMatchInfoDTO>> matchMap = new HashMap<String, List<DlFutureMatchInfoDTO>>();
 			for (int j = 0; j < matchGroupData500WList.size(); j++) {
 				DlSeasonGroupData500W s = matchGroupData500WList.get(j);
 				if (s.getMatchGroupId().equals(MatchGroups.get(i).getGroupId())) {
@@ -38,14 +43,30 @@ public class DlSeasonGroupData500WService extends AbstractService<DlSeasonGroupD
 					futureMatchInfoDTO.setHomeTeamAbbr(s.getHomeTeam());
 					futureMatchInfoDTO.setMatchTime(s.getMatchTime());
 					futureMatchInfoDTO.setVisitorTeamAbbr(s.getVisitorTeam());
-					futureMatchDTOList.add(futureMatchInfoDTO);
+					futureMatchInfoDTO.setGroupName(s.getGroupName());
+					String groupName = matchGroupData500WList.get(j).getGroupName();
+					List<DlFutureMatchInfoDTO> matchs = matchMap.get(groupName);
+					if (matchs == null) {
+						matchs = new ArrayList<DlFutureMatchInfoDTO>(30);
+						matchMap.put(groupName, matchs);
+					}
+					matchs.add(futureMatchInfoDTO);
 				}
 			}
-			matchGroup.setGroupName(MatchGroups.get(i).getGroupName());
-			matchGroup.setFutureMatchDTOList(futureMatchDTOList);
-			matchGroupDataList.add(matchGroup);
+			Set<String> stringStr = matchMap.keySet();
+
+			for (String str : stringStr) {
+				MatchGroupData matchGroupData = new MatchGroupData();
+				matchGroupData.setGroupName(str);
+				matchGroupData.setFutureMatchDTOList(matchMap.get(str));
+				groupDTOList.add(matchGroupData);
+			}
+			matchTurnGroupData.setGroupDTOList(groupDTOList);
+			matchTurnGroupData.setGroupType(stringStr.size() > 1 ? 1 : 0);// 是否分组0:不分组,1分组
+			matchTurnGroupData.setTurnGroupName(MatchGroups.get(i).getGroupName());
+			matchTurnGroupDataList.add(matchTurnGroupData);
 		}
-		matchGroupData500W.setMatchGroupData(matchGroupDataList);
+		matchGroupData500W.setMatchTurnGroupList(matchTurnGroupDataList);
 		return matchGroupData500W;
 	}
 }
