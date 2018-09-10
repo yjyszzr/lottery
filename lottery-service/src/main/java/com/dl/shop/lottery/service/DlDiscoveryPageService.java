@@ -46,6 +46,7 @@ import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlMatchGroupData500WDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO.MatchInfoFutureDTO;
 import com.dl.lottery.dto.DlPlayerDTO;
@@ -151,6 +152,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlTeamRecord500WService dlTeamRecord500WService;
+
+	@Resource
+	private DlSeasonGroupData500WService dlSeasonGroupData500WService;
 
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
@@ -754,8 +758,8 @@ public class DlDiscoveryPageService {
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
 			leagueDetail.setLeagueShooter(leagueShooter);
 			// 赛程
-			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
-			leagueDetail.setLeagueMatch(leagueMatch);
+			DlMatchGroupData500WDTO dlMatchGroupData500WDTO = dlSeasonGroupData500WService.findByLeagueIdAndSeasonId(seasonId, leagueInfo.getLeagueId());
+			leagueDetail.setMatchGroupData(dlMatchGroupData500WDTO);
 			// 球队
 			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueIdFor500W(leagueId);
 			leagueDetail.setLeagueTeam(leagueTeam);
@@ -929,7 +933,7 @@ public class DlDiscoveryPageService {
 			players.getMidPlayers().setPlayerList(playerInfo2List);
 			players.getForwards().setPlayerList(playerInfo3List);
 		}
-		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:"+ JSONHelper.bean2json(players));
+		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:" + JSONHelper.bean2json(players));
 		return players;
 	}
 }
