@@ -37,7 +37,6 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
 import com.dl.lottery.dto.DLFindListDTO;
-import com.dl.lottery.dto.DLHotLeagueDTO;
 import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
@@ -70,6 +69,7 @@ import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
@@ -85,6 +85,7 @@ import com.dl.lottery.param.TeamParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
@@ -173,6 +174,9 @@ public class DlDiscoveryPageService {
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
 
+	@Resource
+	private DlLeagueInfoMapper dlLeagueInfoMapper;
+
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
 		condition.setOrderByClause("sort asc");
@@ -193,17 +197,27 @@ public class DlDiscoveryPageService {
 
 		// 设置八个分类
 		discoveryPage.setDiscoveryHallClassifyList(discoveryHallClassifyDTOList);
-		List<DLHotLeagueDTO> hotLeagueList = new ArrayList<DLHotLeagueDTO>(8);
-		for (int i = 0; i < 8; i++) {
-			DLHotLeagueDTO hotLeague = new DLHotLeagueDTO();
-			hotLeague.setActUrl("https://www.baidu.com");
-			hotLeague.setDetail("联赛详情" + i);
-			hotLeague.setIconImg(lotteryConfig.getBannerShowUrl() + "uploadImgs/20180731/daletou.png");
-			hotLeague.setTitle("联赛标题" + i);
-			hotLeagueList.add(hotLeague);
+
+		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
+		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
+		for (int i = 0; i < hotLeagues.size(); i++) {
+			DlLeagueInfo500W league = hotLeagues.get(i);
+			LeagueInfoDTO dto = new LeagueInfoDTO();
+			dto.setLeagueAddr(league.getLeagueAbbr());
+			dto.setLeagueId(league.getLeagueId());
+			dto.setLeagueName(league.getLeagueName());
+			dto.setLeaguePic(league.getLeaguePic());
+			if (null != league.getLeagueAbbr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAbbr()));
+			}
+			leagueInfos.add(dto);
+			if (i >= 8) {
+				break;
+			}
 		}
+
 		// 设置热门联赛
-		discoveryPage.setHotLeagueList(hotLeagueList);
+		discoveryPage.setHotLeagueList(leagueInfos);
 		List<DlTopScorerDTO> topScorerList = new ArrayList<DlTopScorerDTO>(5);
 		for (int i = 0; i < 5; i++) {
 			DlTopScorerDTO topScorer = new DlTopScorerDTO();
