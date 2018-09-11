@@ -162,7 +162,7 @@ public class DlArticleController {
 		List<DLArticleDTO> bigNews = this.createBigNewsList(param.getExtendCat());
 		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
 		String channel = userDevice.getChannel();
-		// String channel = "h5";
+		// String channel = "c10021";
 		if (StringUtils.isNotEmpty(channel)) {
 			if ("c26013".equals(channel)) {// 临时需求,可以删除,乐得体育的样式
 				if (bigNews.size() > 0) {
@@ -170,9 +170,8 @@ public class DlArticleController {
 				}
 			}
 		}
-
 		DLFindListDTO findListDTO = new DLFindListDTO();
-		findListDTO.setInfoCatList(createCat());
+		findListDTO.setInfoCatList(createCat(channel));
 		findListDTO.setNavBanners(navBanners);
 		findListDTO.setDlArticlePage(rst);
 		findListDTO.setBigNewsList(bigNews);
@@ -217,10 +216,8 @@ public class DlArticleController {
 	 * 
 	 * @return
 	 */
-	public List<InfoCatDTO> createCat() {
+	public List<InfoCatDTO> createCat(String channel) {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		String channel = SessionUtil.getUserDevice().getChannel();
-		// String channel = "h5";
 		logger.info("channel===============================================" + channel);
 		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
@@ -234,6 +231,7 @@ public class DlArticleController {
 		} else {
 			List<DlPhoneChannel> phoneChannelList = dlArticleMapper.findPhoneChannel(channel);
 			if (phoneChannelList.size() > 0) {
+				// 获取该渠道的资讯列表
 				List<String> resultStr = Arrays.asList(phoneChannelList.get(0).getArticleClassifyIds().split(","));
 				logger.info("ArticleClassifyIds======================================" + resultStr);
 				if (resultStr.size() == 1 && resultStr.get(0).equals("0")) {
@@ -248,29 +246,42 @@ public class DlArticleController {
 					Map<Integer, DlArticleClassify> map = new HashMap<Integer, DlArticleClassify>(articleClassifyCatList.size());
 					articleClassifyCatList.forEach(s -> map.put(s.getId(), s));
 					String sortsStr = null == phoneChannelList.get(0).getSorts() ? "0" : phoneChannelList.get(0).getSorts();
-					List<String> sortStr = Arrays.asList(sortsStr.split(","));
-					List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
-					DlSorts sortsArr[] = new DlSorts[sortStr.size()];
-					for (int i = 0; i < sortStr.size(); i++) {
-						String[] arrStr = sortStr.get(i).split(":");
-						DlSorts sorts;
-						if (arrStr.length > 1) {
-							sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
-						} else {
-							sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
-						}
-						sortsArr[i] = sorts;
-						sortsList.add(sorts);
-					}
-					Arrays.sort(sortsArr);
-					for (int i = 0; i < sortsArr.length; i++) {
-						DlSorts sorts = sortsArr[i];
-						DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
-						if (null != articleClassifyMap) {
+
+					// 等于0代表没有排序
+					if (sortsStr.equals("0")) {
+						for (int i = 0; i < resultStr.size(); i++) {
+							DlArticleClassify articleClassifyMap = map.get(Integer.parseInt(resultStr.get(i)));
 							InfoCatDTO infoCat = new InfoCatDTO();
 							infoCat.setCat(articleClassifyMap.getId().toString());
 							infoCat.setCatName(articleClassifyMap.getClassifyName());
 							infoCatList.add(infoCat);
+						}
+					} else {
+						List<String> sortStr = Arrays.asList(sortsStr.split(","));
+						List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
+						DlSorts sortsArr[] = new DlSorts[sortStr.size()];
+						// 组装并排序
+						for (int i = 0; i < sortStr.size(); i++) {
+							String[] arrStr = sortStr.get(i).split(":");
+							DlSorts sorts;
+							if (arrStr.length > 1) {
+								sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
+							} else {
+								sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
+							}
+							sortsArr[i] = sorts;
+							sortsList.add(sorts);
+						}
+						Arrays.sort(sortsArr);
+						for (int i = 0; i < sortsArr.length; i++) {
+							DlSorts sorts = sortsArr[i];
+							DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
+							if (null != articleClassifyMap) {
+								InfoCatDTO infoCat = new InfoCatDTO();
+								infoCat.setCat(articleClassifyMap.getId().toString());
+								infoCat.setCatName(articleClassifyMap.getClassifyName());
+								infoCatList.add(infoCat);
+							}
 						}
 					}
 					logger.info("资讯分类id不等于0时的infoCatList===================================" + infoCatList);
