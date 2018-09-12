@@ -13,9 +13,9 @@ public class DlDiscoveryPageDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@ApiModelProperty(value = "分类List")
 	List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyList;
-	@ApiModelProperty(value = "联赛list")
+	@ApiModelProperty(value = "热门联赛list")
 	List<LeagueInfoDTO> hotLeagueList;
-	@ApiModelProperty(value = "射手榜list")
+	@ApiModelProperty(value = "五大联赛射手榜list")
 	List<DlTopScorerDTO> topScorerDTOList;
 
 }

@@ -12,6 +12,6 @@ public class DlTopScorerDTO {
 	@ApiModelProperty(value = "射手榜联赛名")
 	private String LeagueName;
 	@ApiModelProperty(value = "射手榜成员列表")
-	private List<DlTopScorerMemberDTO> topScorerMemberList;
-
+	List<DlLeagueShooterInfoDTO> leagueShooterInfoList;
+	// private List<DlTopScorerMemberDTO> topScorerMemberList;
 }

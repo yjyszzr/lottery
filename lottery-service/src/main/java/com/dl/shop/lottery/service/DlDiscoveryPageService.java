@@ -65,7 +65,6 @@ import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
-import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
@@ -218,23 +217,42 @@ public class DlDiscoveryPageService {
 
 		// 设置热门联赛
 		discoveryPage.setHotLeagueList(leagueInfos);
-		List<DlTopScorerDTO> topScorerList = new ArrayList<DlTopScorerDTO>(5);
-		for (int i = 0; i < 5; i++) {
-			DlTopScorerDTO topScorer = new DlTopScorerDTO();
-			List<DlTopScorerMemberDTO> topScorerMemberList = new ArrayList<DlTopScorerMemberDTO>(5);
-			for (int j = 0; j < 5; j++) {
-				DlTopScorerMemberDTO topScorerMember = new DlTopScorerMemberDTO();
-				topScorerMember.setMemberName(i + "成员" + j);
-				topScorerMember.setRanking(j + 1);
-				topScorerMember.setTopScorerTeam(i + "球队" + j);
-				topScorerMember.setTotalGoal(20 - j * 3);
-				topScorerMemberList.add(topScorerMember);
-			}
-			topScorer.setLeagueName("射手联赛" + i);
-			topScorer.setTopScorerMemberList(topScorerMemberList);
-			topScorerList.add(topScorer);
+
+		// List<DlTopScorerDTO> topScorerList = new
+		// ArrayList<DlTopScorerDTO>(5);
+		// for (int i = 0; i < 5; i++) {
+		// DlTopScorerDTO topScorer = new DlTopScorerDTO();
+		// List<DlTopScorerMemberDTO> topScorerMemberList = new
+		// ArrayList<DlTopScorerMemberDTO>(5);
+		// for (int j = 0; j < 5; j++) {
+		// DlTopScorerMemberDTO topScorerMember = new DlTopScorerMemberDTO();
+		// topScorerMember.setMemberName(i + "成员" + j);
+		// topScorerMember.setRanking(j + 1);
+		// topScorerMember.setTopScorerTeam(i + "球队" + j);
+		// topScorerMember.setTotalGoal(20 - j * 3);
+		// topScorerMemberList.add(topScorerMember);
+		// }
+		// topScorer.setLeagueName("射手联赛" + i);
+		// topScorer.setTopScorerMemberList(topScorerMemberList);
+		// topScorerList.add(topScorer);
+		// }
+		List<DlLeagueInfo500W> dlLeagueInfos = dlLeagueInfoService.get5LeagueMatch();
+		List<Integer> leaguesList = new ArrayList<Integer>(dlLeagueInfos.size());
+		Map<Integer, String> leagueMap = new HashMap<Integer, String>();
+		for (int i = 0; i < dlLeagueInfos.size(); i++) {
+			leaguesList.add(dlLeagueInfos.get(i).getLeagueId());
+			leagueMap.put(dlLeagueInfos.get(i).getLeagueId(), dlLeagueInfos.get(i).getLeagueAbbr());
 		}
-		// 设置去个射手榜
+		List<DlSeason500w> dlSeason500ws = dlSeason500wService.getSeasonBy5LeagueId(leaguesList);
+		// 设置射手榜
+		List<DlTopScorerDTO> topScorerList = new ArrayList<DlTopScorerDTO>(dlSeason500ws.size());
+		for (int i = 0; i < dlSeason500ws.size(); i++) {
+			DlTopScorerDTO topScorerDTO = new DlTopScorerDTO();
+			topScorerDTO.setLeagueName(leagueMap.get(dlSeason500ws.get(i).getLeagueId()));
+			DlLeagueShooterDTO shooterList = dlLeagueShooterService.findBySeasonId(dlSeason500ws.get(i).getSeasonId());
+			topScorerDTO.setLeagueShooterInfoList(shooterList.getLeagueShooterInfoList());
+			topScorerList.add(topScorerDTO);
+		}
 		discoveryPage.setTopScorerDTOList(topScorerList);
 		return discoveryPage;
 	}

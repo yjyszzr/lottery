@@ -119,6 +119,15 @@
 			league_id = #{leagueId}
   </select>
   
+  <select id="get5LeagueMatch" resultMap="LeagueInfo500wResultMap">
+		SELECT
+			<include refid = "league_info_500w" ></include> 
+		FROM
+			dl_league_500w 
+		WHERE
+			league_abbr IN ( "英超", "西甲", "法甲", "意甲", "德甲" )
+  </select>
+  
   <select id="getFilterConditions" resultMap="BaseResultMap">
   	select id, league_id, league_name, league_addr
   	from dl_league_info

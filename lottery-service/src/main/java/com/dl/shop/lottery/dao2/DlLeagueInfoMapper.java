@@ -31,4 +31,6 @@ public interface DlLeagueInfoMapper extends Mapper<DlLeagueInfo> {
 
 	List<DlLeagueInfo500W> getCupMatchs(@Param("groupId") Integer groupId);
 
+	List<DlLeagueInfo500W> get5LeagueMatch();
+
 }
