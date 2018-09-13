@@ -30,6 +30,7 @@ import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.PinyinUtil;
@@ -72,6 +73,7 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
+import com.dl.lottery.enums.DiscoveryClassifyEnums;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.DiscoveryPageParam;
@@ -81,6 +83,9 @@ import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.lottery.param.TeamParam;
+import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
@@ -172,6 +177,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
+	
+	@Resource
+	private	ISwitchConfigService iSwitchConfigService;
 
 	@Resource
 	private DlLeagueInfoMapper dlLeagueInfoMapper;
@@ -185,6 +193,7 @@ public class DlDiscoveryPageService {
 		List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList = new ArrayList<>(discoveryHallClassifyList.size());
 		for (DlDiscoveryHallClassify s : discoveryHallClassifyList) {
 			DlDiscoveryHallClassifyDTO dto = new DlDiscoveryHallClassifyDTO();
+			dto.setClassifyId(String.valueOf(s.getClassifyId()));
 			dto.setClassImg(lotteryConfig.getBannerShowUrl() + s.getClassImg());
 			dto.setClassName(s.getClassName());
 			dto.setRedirectUrl(s.getRedirectUrl());
@@ -194,9 +203,9 @@ public class DlDiscoveryPageService {
 		}
 		DlDiscoveryPageDTO discoveryPage = new DlDiscoveryPageDTO();
 
-		// 设置八个分类
-		discoveryPage.setDiscoveryHallClassifyList(discoveryHallClassifyDTOList);
+		List<DlDiscoveryHallClassifyDTO> discoveryClassifyDTOs =  this.filterDiscoveryClassifyByDealVersion(discoveryHallClassifyDTOList);
 
+		discoveryPage.setDiscoveryHallClassifyList(discoveryClassifyDTOs);
 		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (int i = 0; i < hotLeagues.size(); i++) {
@@ -281,6 +290,33 @@ public class DlDiscoveryPageService {
 	// return rst;
 	// }
 
+	/**
+	 * 对发现页的分类进行咨询版的过滤只剩下 "资讯信息","联赛资料"
+	 * @param discoveryHallClassifyDTOList
+	 * @return
+	 */
+	public List<DlDiscoveryHallClassifyDTO> filterDiscoveryClassifyByDealVersion(List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList) {
+		Integer turnOn = 1;//1-交易开，0-交易关
+		StrParam strParam = new StrParam();
+		strParam.setStr("");
+		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDTORst.getCode() == 0) {
+			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
+			turnOn = switchDto.getTurnOn();
+		}	
+		if(0  == turnOn) {//交易版关
+			List<DlDiscoveryHallClassifyDTO> list = new ArrayList<>();
+			List<String> notDealList = new ArrayList<>();
+			notDealList.add(DiscoveryClassifyEnums.Articles.getCode());
+			notDealList.add(DiscoveryClassifyEnums.Leagues.getCode());
+			list = discoveryHallClassifyDTOList.stream().filter(s->notDealList.contains(s.getClassifyId())).collect(Collectors.toList());
+			return list;
+		}else {
+			return discoveryHallClassifyDTOList;
+		}
+	}
+	
+	
 	public DLFindListDTO discoveryArticle(@RequestBody CatArticleParam param) {
 		List<DlNavBannerDTO> navBanners = new LinkedList<DlNavBannerDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
