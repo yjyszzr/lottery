@@ -291,12 +291,12 @@ public class DlDiscoveryPageService {
 	// }
 
 	/**
-	 * 对发现页的分类进行咨询版的过滤只剩下 "资讯信息","联赛资料"
+	 * 资讯版发现页分类只有 "资讯信息","联赛资料"
 	 * @param discoveryHallClassifyDTOList
 	 * @return
 	 */
 	public List<DlDiscoveryHallClassifyDTO> filterDiscoveryClassifyByDealVersion(List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList) {
-		Integer turnOn = 1;//1-交易开，0-交易关
+		Integer turnOn = 0;// 1-交易开，0-交易关，默认关
 		StrParam strParam = new StrParam();
 		strParam.setStr("");
 		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
