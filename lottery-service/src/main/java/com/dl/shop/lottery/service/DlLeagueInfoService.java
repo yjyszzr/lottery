@@ -187,6 +187,9 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			DlLeagueContryDTO dto = new DlLeagueContryDTO();
 			dto.setContryName(contry.getContryName());
 			dto.setContryPic(contry.getContryPic());
+			if(4 == groupId) {
+				dto.setContryPic(turnOn == 1?contry.getContryPic():"https://static.caixiaomi.net/foot/league_5/log.png");
+			}
 			dto.setGroupId(groupId);
 			Integer contryId = contry.getId();
 			List<LeagueInfoDTO> leagueInfoList = leagueMap.get(contryId);
