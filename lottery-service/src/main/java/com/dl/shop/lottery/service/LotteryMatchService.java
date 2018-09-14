@@ -89,7 +89,9 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
+import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.api.IUserCollectService;
+import com.dl.member.param.UserDealActionParam;
 import com.dl.order.api.IOrderDetailService;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDetailDataDTO;
@@ -176,6 +178,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
     
 	@Value("${match.url}")
 	private String matchUrl;
+	
+	@Resource
+	private ISwitchConfigService iSwitchConfigService;
 	
 	/*@Value("${spring.datasource.druid.url}")
 	private String dbUrl;
@@ -3578,6 +3583,14 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public boolean isShutDownBet() {
 		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
 		if(shutDownBetValue == 1) {
+			return true;
+		}
+		//判断用户是否有交易
+		UserDealActionParam param = new UserDealActionParam();
+		param.setUserId(SessionUtil.getUserId());
+		BaseResult<Integer> userDealAction = iSwitchConfigService.userDealAction(param);
+		Integer data = userDealAction.getData();
+		if(null != data && 0 == data) {
 			return true;
 		}
 		return false;
