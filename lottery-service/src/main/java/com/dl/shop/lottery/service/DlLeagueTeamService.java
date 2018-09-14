@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -18,10 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.NetWorkUtil;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLeagueTeamInfoDTO;
+import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.DlLeagueInfo;
@@ -36,6 +41,8 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 	private DlLeagueTeamMapper dlLeagueTeamMapper;
 	@Resource
 	private DlLeagueInfoMapper dlLeagueInfoMapper;
+	@Resource
+	private ISwitchConfigService iSwitchConfigService;
 
 	public Integer queryTeamIdBySpottyTeamId(Integer spottyTeamId) {
 		Integer teamId = dlLeagueTeamMapper.queryTeamId(spottyTeamId);
@@ -132,13 +139,29 @@ public class DlLeagueTeamService extends AbstractService<DlLeagueTeam> {
 		DlLeagueTeamDTO leagueTeamDTO = new DlLeagueTeamDTO();
 		List<DlLeagueTeamInfoDTO> leagueTeamInfoDTOList = new ArrayList<DlLeagueTeamInfoDTO>();
 		List<DlLeagueTeam> leagueTeamInfoList = dlLeagueTeamMapper.findByLeagueId(leagueId);
-		for (int i = 0; i < leagueTeamInfoList.size(); i++) {
-			DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
-			leagueTeamInfoDTO.setTeamAddr(leagueTeamInfoList.get(i).getTeamAddr());
-			leagueTeamInfoDTO.setTeamPic(leagueTeamInfoList.get(i).getTeamPic());
-			leagueTeamInfoDTOList.add(leagueTeamInfoDTO);
+		if(CollectionUtils.isNotEmpty(leagueTeamInfoList)) {
+			Integer turnOn = this.queryTurnOnDealVersion();
+			for (int i = 0; i < leagueTeamInfoList.size(); i++) {
+				DlLeagueTeamInfoDTO leagueTeamInfoDTO = new DlLeagueTeamInfoDTO();
+				DlLeagueTeam dlLeagueTeam = leagueTeamInfoList.get(i);
+				leagueTeamInfoDTO.setTeamAddr(dlLeagueTeam.getTeamAddr());
+				leagueTeamInfoDTO.setTeamPic(turnOn == 1?dlLeagueTeam.getTeamPic():"https://static.caixiaomi.net/foot/league_5/log.png");
+				leagueTeamInfoDTOList.add(leagueTeamInfoDTO);
+			}
 		}
 		leagueTeamDTO.setLeagueTeamInfoDTOList(leagueTeamInfoDTOList);
 		return leagueTeamDTO;
+	}
+	
+	public Integer queryTurnOnDealVersion() {
+		Integer turnOn = 0;// 1-交易开，0-交易关，默认关
+		StrParam strParam = new StrParam();
+		strParam.setStr("");
+		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDTORst.getCode() == 0) {
+			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
+			turnOn = switchDto.getTurnOn();
+		}	
+		return turnOn;
 	}
 }

@@ -64,10 +64,12 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		if (leagueInfo == null) {
 			return null;
 		} else {
+			Integer turnOn = this.queryTurnOnDealVersion();
+			detail.setLeaguePic(turnOn == 1?leagueInfo.getLeaguePic():"https://static.caixiaomi.net/foot/league_5/log.png");
 			detail.setLeagueAddr(leagueInfo.getLeagueAddr());
 			detail.setLeagueId(leagueInfo.getLeagueId());
 			detail.setLeagueName(leagueInfo.getLeagueName());
-			detail.setLeaguePic(leagueInfo.getLeaguePic());
+//			detail.setLeaguePic(leagueInfo.getLeaguePic());
 			detail.setLeagueRule(leagueInfo.getLeagueRule());
 		}
 		return detail;
@@ -136,12 +138,13 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 	private DlLeagueContryDTO getHotLeaguesForLD() {
 		List<DlLeagueInfo> hotLeagues = dlLeagueInfoMapper.getHotLeaguesForLD();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
+		Integer turnOn = this.queryTurnOnDealVersion();
 		for (DlLeagueInfo league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
-			dto.setLeaguePic(league.getLeaguePic());
+			dto.setLeaguePic(turnOn == 1?league.getLeaguePic():"https://static.caixiaomi.net/foot/league_5/log.png");
 			leagueInfos.add(dto);
 		}
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
