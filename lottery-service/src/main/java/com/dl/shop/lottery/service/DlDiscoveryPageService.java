@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -484,13 +485,12 @@ public class DlDiscoveryPageService {
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
-			//lotteryClassifyForOpenPrize.setPeriod("201808280001");
 			
 			if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
-				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String mmdd = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
 				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
-				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
+				lotteryClassifyForOpenPrize.setDate(mmdd + "(" + zhouji + ")");
 				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
 				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
@@ -500,8 +500,9 @@ public class DlDiscoveryPageService {
 				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
 				if (null != superLotto) {
 					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-					String weekStr = dayForWeek(superLotto.getPrizeDate());
-					lotteryClassifyForOpenPrize.setDate(superLotto.getPrizeDate() + "(" + weekStr + ")");
+			    	String mmdd = DateUtil.toStringDateByFormat(superLotto.getPrizeDate(),"MM-dd");
+					String zhouji = DateUtil.getWeekByDateStr(superLotto.getPrizeDate());
+					lotteryClassifyForOpenPrize.setDate(mmdd + "(" + zhouji + ")");
 					List<String> listRed = new ArrayList<>();
 					String str = superLotto.getPrizeNum();
 					String[] strArray = str.split(",");
@@ -510,6 +511,9 @@ public class DlDiscoveryPageService {
 					List<String> listBlue = new ArrayList<>();
 					listBlue = Arrays.asList(Arrays.copyOfRange(strArray, 5, 7));
 					lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+					String dateStr = superLotto.getPrizeDate();
+					String period = dateStr.replaceAll("-", "");
+					lotteryClassifyForOpenPrize.setPeriod(period + "期");
 				}
 			}
 			
@@ -613,7 +617,7 @@ public class DlDiscoveryPageService {
 	 */
 	public static String dayForWeek(String pTime) {
 		// 注意参数的样式为yyyy-MM-dd,必须让参数样式与所需样式统一
-		String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+		String[] weekDays = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar c = Calendar.getInstance();
 		try {
