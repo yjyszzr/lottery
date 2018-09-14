@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,26 +17,31 @@ import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.enums.LotteryClassifyEnum;
+import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.PinyinUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.ActiveCenterDTO;
 import com.dl.lottery.dto.DLArticleDTO;
-import com.dl.lottery.dto.DLHotLeagueDTO;
+import com.dl.lottery.dto.DLFindListDTO;
 import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
+import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
@@ -46,6 +52,7 @@ import com.dl.lottery.dto.DlLeagueSeason500wDTO;
 import com.dl.lottery.dto.DlLeagueShooterDTO;
 import com.dl.lottery.dto.DlLeagueTeamDTO;
 import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
+import com.dl.lottery.dto.DlMatchGroupData500WDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO.MatchInfoFutureDTO;
 import com.dl.lottery.dto.DlPlayerDTO;
@@ -59,14 +66,16 @@ import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
 import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
 import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
 import com.dl.lottery.dto.DlTopScorerDTO;
-import com.dl.lottery.dto.DlTopScorerMemberDTO;
 import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.InfoCatDTO;
 import com.dl.lottery.dto.JCResultDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
+import com.dl.lottery.enums.DiscoveryClassifyEnums;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
+import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
@@ -74,8 +83,15 @@ import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.lottery.param.TeamParam;
+import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
+import com.dl.shop.lottery.dao.DlArticleMapper;
+import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
+import com.dl.shop.lottery.model.DlArticle;
 import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
 import com.dl.shop.lottery.model.DlLeagueInfo500W;
@@ -92,6 +108,7 @@ import com.dl.shop.lottery.model.DlTeamResult500W;
 import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryNavBanner;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 @Service
@@ -107,6 +124,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private DlArticleService dlArticleService;
+
+	@Resource
+	private DlArticleMapper dlArticleMapper;
 
 	@Resource
 	private LotteryClassifyService lotteryClassifyService;
@@ -152,6 +172,18 @@ public class DlDiscoveryPageService {
 	@Resource
 	private DlTeamRecord500WService dlTeamRecord500WService;
 
+	@Resource
+	private DlSeasonGroupData500WService dlSeasonGroupData500WService;
+
+	@Resource
+	private LotteryNavBannerMapper lotteryNavBannerMapper;
+	
+	@Resource
+	private	ISwitchConfigService iSwitchConfigService;
+
+	@Resource
+	private DlLeagueInfoMapper dlLeagueInfoMapper;
+
 	public DlDiscoveryPageDTO getHomePage() {
 		Condition condition = new Condition(DlDiscoveryHallClassify.class);
 		condition.setOrderByClause("sort asc");
@@ -161,6 +193,7 @@ public class DlDiscoveryPageService {
 		List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList = new ArrayList<>(discoveryHallClassifyList.size());
 		for (DlDiscoveryHallClassify s : discoveryHallClassifyList) {
 			DlDiscoveryHallClassifyDTO dto = new DlDiscoveryHallClassifyDTO();
+			dto.setClassifyId(String.valueOf(s.getClassifyId()));
 			dto.setClassImg(lotteryConfig.getBannerShowUrl() + s.getClassImg());
 			dto.setClassName(s.getClassName());
 			dto.setRedirectUrl(s.getRedirectUrl());
@@ -170,67 +203,204 @@ public class DlDiscoveryPageService {
 		}
 		DlDiscoveryPageDTO discoveryPage = new DlDiscoveryPageDTO();
 
-		// 设置八个分类
-		discoveryPage.setDiscoveryHallClassifyList(discoveryHallClassifyDTOList);
-		List<DLHotLeagueDTO> hotLeagueList = new ArrayList<DLHotLeagueDTO>(8);
-		for (int i = 0; i < 8; i++) {
-			DLHotLeagueDTO hotLeague = new DLHotLeagueDTO();
-			hotLeague.setActUrl("https://www.baidu.com");
-			hotLeague.setDetail("联赛详情" + i);
-			hotLeague.setIconImg(lotteryConfig.getBannerShowUrl() + "uploadImgs/20180731/daletou.png");
-			hotLeague.setTitle("联赛标题" + i);
-			hotLeagueList.add(hotLeague);
-		}
-		// 设置热门联赛
-		discoveryPage.setHotLeagueList(hotLeagueList);
-		List<DlTopScorerDTO> topScorerList = new ArrayList<DlTopScorerDTO>(5);
-		for (int i = 0; i < 5; i++) {
-			DlTopScorerDTO topScorer = new DlTopScorerDTO();
-			List<DlTopScorerMemberDTO> topScorerMemberList = new ArrayList<DlTopScorerMemberDTO>(5);
-			for (int j = 0; j < 5; j++) {
-				DlTopScorerMemberDTO topScorerMember = new DlTopScorerMemberDTO();
-				topScorerMember.setMemberName(i + "成员" + j);
-				topScorerMember.setRanking(j + 1);
-				topScorerMember.setTopScorerTeam(i + "球队" + j);
-				topScorerMember.setTotalGoal(20 - j * 3);
-				topScorerMemberList.add(topScorerMember);
+		List<DlDiscoveryHallClassifyDTO> discoveryClassifyDTOs =  this.filterDiscoveryClassifyByDealVersion(discoveryHallClassifyDTOList);
+
+		discoveryPage.setDiscoveryHallClassifyList(discoveryClassifyDTOs);
+		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
+		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
+		for (int i = 0; i < hotLeagues.size(); i++) {
+			DlLeagueInfo500W league = hotLeagues.get(i);
+			LeagueInfoDTO dto = new LeagueInfoDTO();
+			dto.setLeagueAddr(league.getLeagueAbbr());
+			dto.setLeagueId(league.getLeagueId());
+			dto.setLeagueName(league.getLeagueName());
+			dto.setLeaguePic(league.getLeaguePic());
+			if (null != league.getLeagueAbbr()) {
+				dto.setLeagueInitials(PinyinUtil.ToPinyin(league.getLeagueAbbr()));
 			}
-			topScorer.setLeagueName("射手联赛" + i);
-			topScorer.setTopScorerMemberList(topScorerMemberList);
-			topScorerList.add(topScorer);
+			leagueInfos.add(dto);
+			if (i >= 8) {
+				break;
+			}
 		}
-		// 设置去个射手榜
+
+		// 设置热门联赛
+		discoveryPage.setHotLeagueList(leagueInfos);
+
+		// List<DlTopScorerDTO> topScorerList = new
+		// ArrayList<DlTopScorerDTO>(5);
+		// for (int i = 0; i < 5; i++) {
+		// DlTopScorerDTO topScorer = new DlTopScorerDTO();
+		// List<DlTopScorerMemberDTO> topScorerMemberList = new
+		// ArrayList<DlTopScorerMemberDTO>(5);
+		// for (int j = 0; j < 5; j++) {
+		// DlTopScorerMemberDTO topScorerMember = new DlTopScorerMemberDTO();
+		// topScorerMember.setMemberName(i + "成员" + j);
+		// topScorerMember.setRanking(j + 1);
+		// topScorerMember.setTopScorerTeam(i + "球队" + j);
+		// topScorerMember.setTotalGoal(20 - j * 3);
+		// topScorerMemberList.add(topScorerMember);
+		// }
+		// topScorer.setLeagueName("射手联赛" + i);
+		// topScorer.setTopScorerMemberList(topScorerMemberList);
+		// topScorerList.add(topScorer);
+		// }
+		List<DlLeagueInfo500W> dlLeagueInfos = dlLeagueInfoService.get5LeagueMatch();
+		List<Integer> leaguesList = new ArrayList<Integer>(dlLeagueInfos.size());
+		Map<Integer, String> leagueMap = new HashMap<Integer, String>();
+		for (int i = 0; i < dlLeagueInfos.size(); i++) {
+			leaguesList.add(dlLeagueInfos.get(i).getLeagueId());
+			leagueMap.put(dlLeagueInfos.get(i).getLeagueId(), dlLeagueInfos.get(i).getLeagueAbbr());
+		}
+		List<DlSeason500w> dlSeason500ws = dlSeason500wService.getSeasonBy5LeagueId(leaguesList);
+		// 设置射手榜
+		List<DlTopScorerDTO> topScorerList = new ArrayList<DlTopScorerDTO>(dlSeason500ws.size());
+		for (int i = 0; i < dlSeason500ws.size(); i++) {
+			DlTopScorerDTO topScorerDTO = new DlTopScorerDTO();
+			topScorerDTO.setLeagueName(leagueMap.get(dlSeason500ws.get(i).getLeagueId()));
+			DlLeagueShooterDTO shooterList = dlLeagueShooterService.findBySeasonId(dlSeason500ws.get(i).getSeasonId());
+			topScorerDTO.setLeagueShooterInfoList(shooterList.getLeagueShooterInfoList());
+			topScorerList.add(topScorerDTO);
+		}
 		discoveryPage.setTopScorerDTOList(topScorerList);
 		return discoveryPage;
 	}
 
-	public PageInfo<DLArticleDTO> discoveryArticle(DiscoveryPageParam param) {
-		List<InfoCatDTO> catList = createCat();
-		PageInfo<DLArticleDTO> rst = new PageInfo<DLArticleDTO>();
-		if (catList.size() == 0) {
-			List<LotteryClassify> classifyList = lotteryClassifyService.selectAllLotteryClasses();
-			Integer[] catarr = new Integer[classifyList.size()];
-			for (int i = 0; i < classifyList.size(); i++) {
-				catarr[i] = classifyList.get(i).getLotteryClassifyId();
-			}
-			rst = dlArticleService.findArticlesByCats(catarr);
-		} else {
-			Integer[] catarr = new Integer[catList.size()];
-			for (int i = 0; i < catList.size(); i++) {
-				catarr[i] = Integer.parseInt(catList.get(i).getCat());
-			}
-			rst = dlArticleService.findArticlesByCats(catarr);
-		}
+	//
+	// public PageInfo<DLArticleDTO> discoveryArticle(DiscoveryPageParam param)
+	// {
+	// List<InfoCatDTO> catList = createCat();
+	// PageInfo<DLArticleDTO> rst = new PageInfo<DLArticleDTO>();
+	// if (catList.size() == 0) {
+	// List<LotteryClassify> classifyList =
+	// lotteryClassifyService.selectAllLotteryClasses();
+	// Integer[] catarr = new Integer[classifyList.size()];
+	// for (int i = 0; i < classifyList.size(); i++) {
+	// catarr[i] = classifyList.get(i).getLotteryClassifyId();
+	// }
+	// rst = dlArticleService.findArticlesByCats(catarr);
+	// } else {
+	// Integer[] catarr = new Integer[catList.size()];
+	// for (int i = 0; i < catList.size(); i++) {
+	// catarr[i] = Integer.parseInt(catList.get(i).getCat());
+	// }
+	// rst = dlArticleService.findArticlesByCats(catarr);
+	// }
+	//
+	// return rst;
+	// }
 
-		return rst;
+	/**
+	 * 资讯版发现页分类只有 "资讯信息","联赛资料"
+	 * @param discoveryHallClassifyDTOList
+	 * @return
+	 */
+	public List<DlDiscoveryHallClassifyDTO> filterDiscoveryClassifyByDealVersion(List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList) {
+		Integer turnOn = 0;// 1-交易开，0-交易关，默认关
+		StrParam strParam = new StrParam();
+		strParam.setStr("");
+		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDTORst.getCode() == 0) {
+			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
+			turnOn = switchDto.getTurnOn();
+		}	
+		if(0  == turnOn) {//交易版关
+			List<DlDiscoveryHallClassifyDTO> list = new ArrayList<>();
+			List<String> notDealList = new ArrayList<>();
+			notDealList.add(DiscoveryClassifyEnums.Articles.getCode());
+			notDealList.add(DiscoveryClassifyEnums.Leagues.getCode());
+			list = discoveryHallClassifyDTOList.stream().filter(s->notDealList.contains(s.getClassifyId())).collect(Collectors.toList());
+			return list;
+		}else {
+			return discoveryHallClassifyDTOList;
+		}
+	}
+	
+	
+	public DLFindListDTO discoveryArticle(@RequestBody CatArticleParam param) {
+		List<DlNavBannerDTO> navBanners = new LinkedList<DlNavBannerDTO>();
+		Condition condition = new Condition(LotteryClassify.class);
+		condition.setOrderByClause("banner_sort asc");
+		Criteria criteria = condition.createCriteria();
+		criteria.andCondition("start_time <=", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
+		criteria.andCondition("is_show=", 1);
+		criteria.andCondition("show_position=", 1);
+		List<LotteryNavBanner> lotteryNavBanners = lotteryNavBannerMapper.selectByCondition(condition);
+
+		if (CollectionUtils.isNotEmpty(lotteryNavBanners)) {
+			for (LotteryNavBanner lotteryNavBanner : lotteryNavBanners) {
+				DlNavBannerDTO dlNavBannerDTO = new DlNavBannerDTO();
+				dlNavBannerDTO.setBannerName(lotteryNavBanner.getBannerName());
+				dlNavBannerDTO.setBannerImage(lotteryConfig.getBannerShowUrl() + lotteryNavBanner.getBannerImage());
+				if ("1".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkArticleUrl() + lotteryNavBanner.getBannerLink());// 资讯链接,后面跟资讯链接
+				} else if ("2".equals(lotteryNavBanner.getBannerParam())) {
+					dlNavBannerDTO.setBannerLink(lotteryConfig.getBanneLinkMatchUrl() + lotteryNavBanner.getBannerLink()); // 赛事链接,后面跟赛事ID
+				} else {
+					dlNavBannerDTO.setBannerLink(lotteryNavBanner.getBannerLink());// 活动链接,后面跟活动URL
+				}
+				navBanners.add(dlNavBannerDTO);
+			}
+		}
+		Integer page = param.getPage();
+		page = null == page ? 1 : page;
+		Integer size = param.getSize();
+		size = null == size ? 20 : size;
+		PageHelper.startPage(page, size);
+
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		String channel = userDevice.getChannel();
+		// String channel = "c10020";
+		List<InfoCatDTO> infoCatList = createCat(channel);
+		DLFindListDTO findListDTO = new DLFindListDTO();
+		String extendCatParam = param.getExtendCat();
+		if (param.equals("-1")) {
+			extendCatParam = infoCatList.get(0).getCat();
+		}
+		PageInfo<DLArticleDTO> rst = dlArticleService.findArticles(extendCatParam);
+		List<DLArticleDTO> bigNews = this.createBigNewsList(extendCatParam);
+		findListDTO.setDlArticlePage(rst);
+		findListDTO.setBigNewsList(bigNews);
+		findListDTO.setInfoCatList(infoCatList);
+		findListDTO.setNavBanners(navBanners);
+		return findListDTO;
 	}
 
-	private List<InfoCatDTO> createCat() {
+	public List<DLArticleDTO> createBigNewsList(String extendCat) {
+		List<DLArticleDTO> bigNewsList = new ArrayList<>();
+		List<DlArticle> findAll = dlArticleMapper.findArticlesByCat(extendCat);
+		for (DlArticle article : findAll) {
+			if (null == article.getIsStick()) {
+				continue;
+			}
+			if (1 == article.getListStyle() && 1 == article.getIsStick()) {
+				DLArticleDTO newDTO = new DLArticleDTO();
+				if (bigNewsList.size() >= 6) {
+					break;
+				}
+				newDTO.setListStyle(5);
+				newDTO.setArticleId(article.getArticleId());
+				newDTO.setLink(article.getLink());
+				newDTO.setAuthor(article.getAuthor());
+				newDTO.setTitle(article.getTitle());
+				newDTO.setIsStick(String.valueOf(article.getIsStick()));
+				List<String> articleThumbList = new ArrayList<String>();
+				if (!StringUtils.isEmpty(article.getArticleThumb())) {
+					List<String> picList = Arrays.asList(article.getArticleThumb().split(","));
+					articleThumbList = picList.stream().map(s -> lotteryConfig.getBannerShowUrl() + s.toString()).collect(Collectors.toList());
+				}
+				newDTO.setArticleThumb(articleThumbList);
+				bigNewsList.add(newDTO);
+			}
+		}
+		return bigNewsList;
+	}
+
+	public List<InfoCatDTO> createCat(String channel) {
 		List<InfoCatDTO> infoCatList = new ArrayList<InfoCatDTO>();
-		String channel = SessionUtil.getUserDevice().getChannel();
-		// String channel = "c16010";
 		logger.info("channel===============================================" + channel);
-		List<DlArticleClassify> articleClassifyCatList = dlArticleService.findArticleClassify();
+		List<DlArticleClassify> articleClassifyCatList = dlArticleMapper.findArticleClassify();
 		if (channel.equals("h5")) {
 			for (int i = 0; i < articleClassifyCatList.size(); i++) {
 				InfoCatDTO infoCat = new InfoCatDTO();
@@ -240,8 +410,9 @@ public class DlDiscoveryPageService {
 			}
 			logger.info("H5端的infoCatList===================================" + infoCatList);
 		} else {
-			List<DlPhoneChannel> phoneChannelList = dlArticleService.findPhoneChannel(channel);
+			List<DlPhoneChannel> phoneChannelList = dlArticleMapper.findPhoneChannel(channel);
 			if (phoneChannelList.size() > 0) {
+				// 获取该渠道的资讯列表
 				List<String> resultStr = Arrays.asList(phoneChannelList.get(0).getArticleClassifyIds().split(","));
 				logger.info("ArticleClassifyIds======================================" + resultStr);
 				if (resultStr.size() == 1 && resultStr.get(0).equals("0")) {
@@ -256,29 +427,42 @@ public class DlDiscoveryPageService {
 					Map<Integer, DlArticleClassify> map = new HashMap<Integer, DlArticleClassify>(articleClassifyCatList.size());
 					articleClassifyCatList.forEach(s -> map.put(s.getId(), s));
 					String sortsStr = null == phoneChannelList.get(0).getSorts() ? "0" : phoneChannelList.get(0).getSorts();
-					List<String> sortStr = Arrays.asList(sortsStr.split(","));
-					List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
-					DlSorts sortsArr[] = new DlSorts[sortStr.size()];
-					for (int i = 0; i < sortStr.size(); i++) {
-						String[] arrStr = sortStr.get(i).split(":");
-						DlSorts sorts;
-						if (arrStr.length > 1) {
-							sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
-						} else {
-							sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
-						}
-						sortsArr[i] = sorts;
-						sortsList.add(sorts);
-					}
-					Arrays.sort(sortsArr);
-					for (int i = 0; i < sortsArr.length; i++) {
-						DlSorts sorts = sortsArr[i];
-						DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
-						if (null != articleClassifyMap) {
+
+					// 等于0代表没有排序
+					if (sortsStr.equals("0")) {
+						for (int i = 0; i < resultStr.size(); i++) {
+							DlArticleClassify articleClassifyMap = map.get(Integer.parseInt(resultStr.get(i)));
 							InfoCatDTO infoCat = new InfoCatDTO();
 							infoCat.setCat(articleClassifyMap.getId().toString());
 							infoCat.setCatName(articleClassifyMap.getClassifyName());
 							infoCatList.add(infoCat);
+						}
+					} else {
+						List<String> sortStr = Arrays.asList(sortsStr.split(","));
+						List<DlSorts> sortsList = new ArrayList<DlSorts>(sortStr.size());
+						DlSorts sortsArr[] = new DlSorts[sortStr.size()];
+						// 组装并排序
+						for (int i = 0; i < sortStr.size(); i++) {
+							String[] arrStr = sortStr.get(i).split(":");
+							DlSorts sorts;
+							if (arrStr.length > 1) {
+								sorts = new DlSorts(Integer.parseInt(arrStr[0]), Integer.parseInt(arrStr[1]));
+							} else {
+								sorts = new DlSorts(Integer.parseInt(arrStr[0]), 0);
+							}
+							sortsArr[i] = sorts;
+							sortsList.add(sorts);
+						}
+						Arrays.sort(sortsArr);
+						for (int i = 0; i < sortsArr.length; i++) {
+							DlSorts sorts = sortsArr[i];
+							DlArticleClassify articleClassifyMap = map.get(sorts.getClassifyId());
+							if (null != articleClassifyMap) {
+								InfoCatDTO infoCat = new InfoCatDTO();
+								infoCat.setCat(articleClassifyMap.getId().toString());
+								infoCat.setCatName(articleClassifyMap.getClassifyName());
+								infoCatList.add(infoCat);
+							}
 						}
 					}
 					logger.info("资讯分类id不等于0时的infoCatList===================================" + infoCatList);
@@ -300,15 +484,9 @@ public class DlDiscoveryPageService {
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
-			lotteryClassifyForOpenPrize.setPeriod("201808280001");
-			if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
-				lotteryClassifyForOpenPrize.setScore("2:0");
-				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
-				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
-				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
-			} else if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
+			//lotteryClassifyForOpenPrize.setPeriod("201808280001");
+			
+			if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
 				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
 				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
@@ -318,68 +496,7 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("01");
-				listRed.add("03");
-				listRed.add("05");
-				listRed.add("08");
-				listRed.add("15");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("02");
-				listRed.add("04");
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("11");
-				listRed.add("18");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-				List<String> listBlue = new ArrayList<>();
-				listBlue.add("08");
-				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
-			} else if (LotteryClassifyEnum.KUAI3.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("07");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
-				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
-				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
-				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
-				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
-				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
-				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
-				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
-				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
-				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("0");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == s.getLotteryClassifyId()) {
+			}  else if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == s.getLotteryClassifyId()) {
 				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
 				if (null != superLotto) {
 					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
@@ -394,22 +511,92 @@ public class DlDiscoveryPageService {
 					listBlue = Arrays.asList(Arrays.copyOfRange(strArray, 5, 7));
 					lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 				}
-			} else {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("06");
-				listRed.add("04");
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("23");
-				listRed.add("11");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-				List<String> listBlue = new ArrayList<>();
-				listBlue.add("18");
-				listBlue.add("28");
-				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 			}
+			
+//			if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
+//				lotteryClassifyForOpenPrize.setScore("2:0");
+//				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
+//				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
+//			} else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("01");
+//				listRed.add("03");
+//				listRed.add("05");
+//				listRed.add("08");
+//				listRed.add("15");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("02");
+//				listRed.add("04");
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("11");
+//				listRed.add("18");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//				List<String> listBlue = new ArrayList<>();
+//				listBlue.add("08");
+//				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+//			} else if (LotteryClassifyEnum.KUAI3.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("07");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
+//				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
+//				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+//				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+//				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
+//				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
+//				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+//				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
+//				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+//				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
+//			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("0");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			}  else {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("06");
+//				listRed.add("04");
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("23");
+//				listRed.add("11");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//				List<String> listBlue = new ArrayList<>();
+//				listBlue.add("18");
+//				listBlue.add("28");
+//				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+//			}
 			lotteryClassifyList.add(lotteryClassifyForOpenPrize);
 		}
 		return lotteryClassifyList;
@@ -754,8 +941,8 @@ public class DlDiscoveryPageService {
 			DlLeagueShooterDTO leagueShooter = dlLeagueShooterService.findBySeasonId(seasonId);
 			leagueDetail.setLeagueShooter(leagueShooter);
 			// 赛程
-			DlLeagueMatchDTO leagueMatch = dlFutureMatchService.findByLeagueId(leagueId);
-			leagueDetail.setLeagueMatch(leagueMatch);
+			DlMatchGroupData500WDTO dlMatchGroupData500WDTO = dlSeasonGroupData500WService.findByLeagueIdAndSeasonId(seasonId, leagueInfo.getLeagueId());
+			leagueDetail.setMatchGroupData(dlMatchGroupData500WDTO);
 			// 球队
 			DlLeagueTeamDTO leagueTeam = dlLeagueTeamService.findByLeagueIdFor500W(leagueId);
 			leagueDetail.setLeagueTeam(leagueTeam);
@@ -885,7 +1072,11 @@ public class DlDiscoveryPageService {
 		List<MatchInfoFutureDTO> matchInfoFutureList = new ArrayList<MatchInfoFutureDTO>();
 		for (int i = 0; i < dlTeamFuture500WList.size(); i++) {
 			MatchInfoFutureDTO matchInfoFutureDTO = new MatchInfoFutureDTO();
-			matchInfoFutureDTO.setDate(dlTeamFuture500WList.get(i).getMatchTime());
+			String str = dlTeamFuture500WList.get(i).getMatchTime();
+			if (null != str) {
+				str = str.substring(0, 10);
+			}
+			matchInfoFutureDTO.setDate(str);
 			matchInfoFutureDTO.setHTeam(dlTeamFuture500WList.get(i).getHomeAbbr());
 			matchInfoFutureDTO.setMatchName(dlTeamFuture500WList.get(i).getLeagueAbbr());
 			matchInfoFutureDTO.setVTeam(dlTeamFuture500WList.get(i).getVisitingAbbr());
@@ -908,6 +1099,7 @@ public class DlDiscoveryPageService {
 			for (DlLeaguePlayer leaguePlayer : dlLeaguePlayerList) {
 				DlPlayerInfoDTO playerDto = new DlPlayerInfoDTO();
 				playerDto.setPlayerName(leaguePlayer.getPlayerName());
+				playerDto.setPlayerNo(leaguePlayer.getPlayerNo());
 				Integer playerType = leaguePlayer.getPlayerType();
 				if (0 == playerType) {
 					playerInfo0List.add(playerDto);
@@ -924,7 +1116,22 @@ public class DlDiscoveryPageService {
 			players.getMidPlayers().setPlayerList(playerInfo2List);
 			players.getForwards().setPlayerList(playerInfo3List);
 		}
-		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:"+ JSONHelper.bean2json(players));
+		log.info("method getTeamInfo : param=" + param.getTeamId() + "  rst:" + JSONHelper.bean2json(players));
 		return players;
 	}
+
+	public List<DlBannerForActive> getNoviceClassroom() {
+		List<LotteryNavBanner> lotteryNavBannerList = lotteryNavBannerService.selectAll();
+		List<LotteryNavBanner> activeList = lotteryNavBannerList.stream().filter(s -> s.getBannerParam().equals("4")).collect(Collectors.toList());
+		List<DlBannerForActive> list = new ArrayList<DlBannerForActive>();
+		for (int i = 0; i < activeList.size(); i++) {
+			DlBannerForActive bannerForActive = new DlBannerForActive();
+			bannerForActive.setBannerImage(lotteryConfig.getBannerShowUrl() + activeList.get(i).getBannerImage());
+			bannerForActive.setBannerLink(activeList.get(i).getBannerLink());
+			bannerForActive.setBannerName(activeList.get(i).getBannerName());
+			list.add(bannerForActive);
+		}
+		return list;
+	}
+
 }

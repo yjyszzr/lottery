@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlSeasonGroupData500WMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlSeasonGroupData500W">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="match_group_id" jdbcType="INTEGER" property="matchGroupId" />
+    <result column="match_time" jdbcType="VARCHAR" property="matchTime" />
+    <result column="home_team_id" jdbcType="INTEGER" property="homeTeamId" />
+    <result column="home_team" jdbcType="VARCHAR" property="homeTeam" />
+    <result column="visitor_team_id" jdbcType="INTEGER" property="visitorTeamId" />
+    <result column="visitor_team" jdbcType="VARCHAR" property="visitorTeam" />
+    <result column="match_score" jdbcType="VARCHAR" property="matchScore" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+  </resultMap>
+  <resultMap id="MatchGroupResultMap" type="com.dl.lottery.dto.DlMatchGroupDTO">
+    <result column="match_group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="match_group_name" jdbcType="VARCHAR" property="groupName" />
+  </resultMap>
+  
+  <select id="findByLeagueIdAndSeasonId" resultMap="BaseResultMap">
+		SELECT
+			* 
+		FROM
+			dl_season_group_data_500w 
+		WHERE
+			match_group_id IN (
+		SELECT
+			b.match_group_id 
+		FROM
+			dl_league_500w a
+			LEFT JOIN dl_season_group_500w b ON a.l_id = b.l_id 
+		WHERE
+			a.league_id = #{leagueId}
+			AND b.season_id = #{seasonId} 
+			);
+  </select>
+  <select id="findMatchGroupsByLeagueIdAndSeasonId" resultMap="MatchGroupResultMap">
+	SELECT
+		b.match_group_id ,
+		b.match_group_name
+	FROM
+		dl_league_500w a
+		LEFT JOIN dl_season_group_500w b ON a.l_id = b.l_id 
+	WHERE
+		a.league_id = #{leagueId}
+		AND b.season_id = #{seasonId} 
+  </select>
+</mapper>

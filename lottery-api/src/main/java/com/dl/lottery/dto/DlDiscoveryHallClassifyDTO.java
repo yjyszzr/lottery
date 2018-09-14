@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 public class DlDiscoveryHallClassifyDTO {
 
+	@ApiModelProperty("发现页分类id")
+	private String classifyId;
+	
 	@ApiModelProperty("名称")
 	private String className;
 

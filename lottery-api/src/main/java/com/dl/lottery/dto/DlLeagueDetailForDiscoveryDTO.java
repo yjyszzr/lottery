@@ -25,7 +25,7 @@ public class DlLeagueDetailForDiscoveryDTO {
 	@ApiModelProperty(value = "联赛射手")
 	private DlLeagueShooterDTO leagueShooter;
 	@ApiModelProperty(value = "联赛赛程")
-	private DlLeagueMatchDTO leagueMatch;
+	private DlMatchGroupData500WDTO matchGroupData;
 	@ApiModelProperty(value = "联赛球队")
 	private DlLeagueTeamDTO leagueTeam;
 

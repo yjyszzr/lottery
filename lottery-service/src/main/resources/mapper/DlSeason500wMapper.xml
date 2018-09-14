@@ -48,4 +48,30 @@
 			season_id DESC
 		LIMIT 1
    </select>
+   
+   <select id="getSeasonBy5LeagueId" resultMap="BaseResultMap">
+		SELECT
+			b.league_id,
+			b.season_id,
+			b.match_season 
+		FROM
+			(
+		SELECT
+			league_id,
+			season_id,
+			match_season 
+		FROM
+			dl_season_500w 
+		WHERE
+			league_id IN 
+		  <foreach item="item" index="index" collection="list"   open="(" separator="," close=")">  
+          		#{item}   
+      	</foreach>
+		ORDER BY
+			league_id ASC,
+			season_id DESC 
+			) b 
+		GROUP BY
+			b.league_id;
+   </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.dl.shop.lottery.web;
 
-import java.util.ArrayList;
+import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,7 +16,7 @@ import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.dto.ActiveCenterDTO;
-import com.dl.lottery.dto.DLArticleDTO;
+import com.dl.lottery.dto.DLFindListDTO;
 import com.dl.lottery.dto.DlBannerForActive;
 import com.dl.lottery.dto.DlDiscoveryPageDTO;
 import com.dl.lottery.dto.DlLeagueContryDTO;
@@ -30,6 +31,7 @@ import com.dl.lottery.dto.GroupLeagueDTO;
 import com.dl.lottery.dto.JCResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
+import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.DiscoveryPageParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
@@ -40,8 +42,6 @@ import com.dl.lottery.param.TeamParam;
 import com.dl.shop.lottery.service.DlDiscoveryPageService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/discoveryPage")
@@ -59,14 +59,9 @@ public class DlDiscoveryPageController {
 
 	@ApiOperation(value = "发现页资讯", notes = "发现页资讯")
 	@PostMapping("/discoveryArticle")
-	public BaseResult<PageInfo<DLArticleDTO>> discoveryArticle(@RequestBody DiscoveryPageParam param) {
-		Integer page = param.getPage();
-		page = null == page ? 1 : page;
-		Integer size = param.getSize();
-		size = null == size ? 20 : size;
-		PageHelper.startPage(page, size);
-		PageInfo<DLArticleDTO> articleDTOPageInfo = dlDiscoveryPageService.discoveryArticle(param);
-		return ResultGenerator.genSuccessResult(null, articleDTOPageInfo);
+	public BaseResult<DLFindListDTO> discoveryArticle(@RequestBody CatArticleParam param) {
+		DLFindListDTO findListDTO = dlDiscoveryPageService.discoveryArticle(param);
+		return ResultGenerator.genSuccessResult(null, findListDTO);
 	}
 
 	@ApiOperation(value = "开奖结果", notes = "开奖结果")
@@ -87,10 +82,7 @@ public class DlDiscoveryPageController {
 	@PostMapping("/noviceClassroom")
 	public BaseResult<DlNoviceClassroomDTO> noviceClassroom(@RequestBody EmptyParam emprt) {
 		DlNoviceClassroomDTO noviceClassroomDTO = new DlNoviceClassroomDTO();
-		ActiveCenterDTO activeCenter = dlDiscoveryPageService.activeCenter();
-		List<DlBannerForActive> bannerForActiveList = new ArrayList<DlBannerForActive>();
-		bannerForActiveList.addAll(activeCenter.getOfflineList());
-		bannerForActiveList.addAll(activeCenter.getOnlineList());
+		List<DlBannerForActive> bannerForActiveList = dlDiscoveryPageService.getNoviceClassroom();
 		noviceClassroomDTO.setNoviceClassroomList(bannerForActiveList);
 		return ResultGenerator.genSuccessResult(null, noviceClassroomDTO);
 	}
@@ -165,7 +157,7 @@ public class DlDiscoveryPageController {
 
 	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
 	@PostMapping("/szcDetailList")
-	public BaseResult<SZCPrizeDTO> szcDetailList(@Valid  @RequestBody DiscoveryPageParam param) {
+	public BaseResult<SZCPrizeDTO> szcDetailList(@Valid @RequestBody DiscoveryPageParam param) {
 		Integer page = param.getPage();
 		page = null == page ? 1 : page;
 		Integer size = param.getSize();

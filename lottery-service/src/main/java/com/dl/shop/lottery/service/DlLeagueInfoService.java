@@ -270,4 +270,8 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 		DlLeagueInfo500W leagueInfo = dlLeagueInfoMapper.getLeagueInfo500wByLeagueId(leagueId);
 		return leagueInfo;
 	}
+
+	public List<DlLeagueInfo500W> get5LeagueMatch() {
+		return dlLeagueInfoMapper.get5LeagueMatch();
+	}
 }

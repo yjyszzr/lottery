@@ -29,4 +29,8 @@ public class DlSeason500wService extends AbstractService<DlSeason500w> {
 		return dlSeason500wMapper.findSeasonByLeagueId(leagueId);
 	}
 
+	public List<DlSeason500w> getSeasonBy5LeagueId(List<Integer> leaguesList) {
+		return dlSeason500wMapper.getSeasonBy5LeagueId(leaguesList);
+	}
+
 }

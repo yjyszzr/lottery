@@ -83,7 +83,7 @@
   	select 
  		 <include refid="league_info_500w"></include>
   	from dl_league_500w
-  	where group_id = #{groupId} and is_league = 0 
+  	where group_id = #{groupId} and is_league = 0 and contry_id = -1
   	order by contry_id
   </select>
   
@@ -117,6 +117,15 @@
 			dl_league_500w
 		WHERE
 			league_id = #{leagueId}
+  </select>
+  
+  <select id="get5LeagueMatch" resultMap="LeagueInfo500wResultMap">
+		SELECT
+			<include refid = "league_info_500w" ></include> 
+		FROM
+			dl_league_500w 
+		WHERE
+			league_abbr IN ( "英超", "西甲", "法甲", "意甲", "德甲" )
   </select>
   
   <select id="getFilterConditions" resultMap="BaseResultMap">
