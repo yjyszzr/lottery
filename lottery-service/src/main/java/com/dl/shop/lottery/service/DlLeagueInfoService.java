@@ -11,10 +11,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.DlLeagueContryDTO;
 import com.dl.lottery.dto.DlLeagueDetailDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.dao2.DlLeagueContryMapper;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.model.DlLeagueContry;
@@ -28,11 +32,27 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 
 	@Resource
 	private DlLeagueContryMapper dlLeagueContryMapper;
+	
+	@Resource
+	private ISwitchConfigService iSwitchConfigService;
 
 	/*
 	 * @Resource private DlLeagueGroupMapper dlLeagueGroupMapper;
 	 */
 
+	public Integer queryTurnOnDealVersion() {
+		Integer turnOn = 0;// 1-交易开，0-交易关，默认关
+		StrParam strParam = new StrParam();
+		strParam.setStr("");
+		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDTORst.getCode() == 0) {
+			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
+			turnOn = switchDto.getTurnOn();
+		}	
+		return turnOn;
+	}
+	
+	
 	/**
 	 * 联赛详情
 	 * 
@@ -75,12 +95,13 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 	private DlLeagueContryDTO getInternationalLeagues() {
 		List<DlLeagueInfo> hotLeagues = dlLeagueInfoMapper.getInternationalLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
+		Integer turnOn = this.queryTurnOnDealVersion();
 		for (DlLeagueInfo league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
-			dto.setLeaguePic(league.getLeaguePic());
+			dto.setLeaguePic(turnOn == 1?league.getLeaguePic():"https://static.caixiaomi.net/foot/league_5/log.png");
 			leagueInfos.add(dto);
 		}
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
@@ -95,12 +116,13 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 	private DlLeagueContryDTO getHotLeagues() {
 		List<DlLeagueInfo> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
+		Integer turnOn = this.queryTurnOnDealVersion();
 		for (DlLeagueInfo league : hotLeagues) {
 			LeagueInfoDTO dto = new LeagueInfoDTO();
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
-			dto.setLeaguePic(league.getLeaguePic());
+			dto.setLeaguePic(turnOn == 1?league.getLeaguePic():"https://static.caixiaomi.net/foot/league_5/log.png");
 			leagueInfos.add(dto);
 		}
 		DlLeagueContryDTO contryDTO = new DlLeagueContryDTO();
@@ -142,6 +164,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			return null;
 		}
 		Map<Integer, List<LeagueInfoDTO>> leagueMap = new HashMap<Integer, List<LeagueInfoDTO>>();
+		Integer turnOn = this.queryTurnOnDealVersion();
 		for (DlLeagueInfo league : leagueInfos) {
 			Integer contryId = league.getContryId();
 			List<LeagueInfoDTO> leagueInfoDTOs = leagueMap.get(contryId);
@@ -153,7 +176,7 @@ public class DlLeagueInfoService extends AbstractService<DlLeagueInfo> {
 			dto.setLeagueAddr(league.getLeagueAddr());
 			dto.setLeagueId(league.getLeagueId());
 			dto.setLeagueName(league.getLeagueName());
-			dto.setLeaguePic(league.getLeaguePic());
+			dto.setLeaguePic(turnOn == 1?league.getLeaguePic():"https://static.caixiaomi.net/foot/league_5/log.png");
 			leagueInfoDTOs.add(dto);
 		}
 		contryDtos = new ArrayList<DlLeagueContryDTO>(leagueContrys.size());
