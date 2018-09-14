@@ -30,6 +30,7 @@ import tk.mybatis.mapper.util.StringUtil;
 
 import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.PinyinUtil;
@@ -72,6 +73,7 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.SZCPrizeDTO;
 import com.dl.lottery.dto.SZCResultDTO;
+import com.dl.lottery.enums.DiscoveryClassifyEnums;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
 import com.dl.lottery.param.CatArticleParam;
 import com.dl.lottery.param.DiscoveryPageParam;
@@ -81,6 +83,9 @@ import com.dl.lottery.param.LeagueDetailParam;
 import com.dl.lottery.param.LeagueListByGroupIdParam;
 import com.dl.lottery.param.SZCQueryParam;
 import com.dl.lottery.param.TeamParam;
+import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.dao.DlArticleMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
@@ -172,6 +177,9 @@ public class DlDiscoveryPageService {
 
 	@Resource
 	private LotteryNavBannerMapper lotteryNavBannerMapper;
+	
+	@Resource
+	private	ISwitchConfigService iSwitchConfigService;
 
 	@Resource
 	private DlLeagueInfoMapper dlLeagueInfoMapper;
@@ -185,6 +193,7 @@ public class DlDiscoveryPageService {
 		List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList = new ArrayList<>(discoveryHallClassifyList.size());
 		for (DlDiscoveryHallClassify s : discoveryHallClassifyList) {
 			DlDiscoveryHallClassifyDTO dto = new DlDiscoveryHallClassifyDTO();
+			dto.setClassifyId(String.valueOf(s.getClassifyId()));
 			dto.setClassImg(lotteryConfig.getBannerShowUrl() + s.getClassImg());
 			dto.setClassName(s.getClassName());
 			dto.setRedirectUrl(s.getRedirectUrl());
@@ -194,9 +203,9 @@ public class DlDiscoveryPageService {
 		}
 		DlDiscoveryPageDTO discoveryPage = new DlDiscoveryPageDTO();
 
-		// 设置八个分类
-		discoveryPage.setDiscoveryHallClassifyList(discoveryHallClassifyDTOList);
+		List<DlDiscoveryHallClassifyDTO> discoveryClassifyDTOs =  this.filterDiscoveryClassifyByDealVersion(discoveryHallClassifyDTOList);
 
+		discoveryPage.setDiscoveryHallClassifyList(discoveryClassifyDTOs);
 		List<DlLeagueInfo500W> hotLeagues = dlLeagueInfoMapper.getHotLeagues();
 		List<LeagueInfoDTO> leagueInfos = new ArrayList<LeagueInfoDTO>(hotLeagues.size());
 		for (int i = 0; i < hotLeagues.size(); i++) {
@@ -281,6 +290,33 @@ public class DlDiscoveryPageService {
 	// return rst;
 	// }
 
+	/**
+	 * 资讯版发现页分类只有 "资讯信息","联赛资料"
+	 * @param discoveryHallClassifyDTOList
+	 * @return
+	 */
+	public List<DlDiscoveryHallClassifyDTO> filterDiscoveryClassifyByDealVersion(List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList) {
+		Integer turnOn = 0;// 1-交易开，0-交易关，默认关
+		StrParam strParam = new StrParam();
+		strParam.setStr("");
+		BaseResult<SwitchConfigDTO> switchConfigDTORst = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDTORst.getCode() == 0) {
+			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
+			turnOn = switchDto.getTurnOn();
+		}	
+		if(0  == turnOn) {//交易版关
+			List<DlDiscoveryHallClassifyDTO> list = new ArrayList<>();
+			List<String> notDealList = new ArrayList<>();
+			notDealList.add(DiscoveryClassifyEnums.Articles.getCode());
+			notDealList.add(DiscoveryClassifyEnums.Leagues.getCode());
+			list = discoveryHallClassifyDTOList.stream().filter(s->notDealList.contains(s.getClassifyId())).collect(Collectors.toList());
+			return list;
+		}else {
+			return discoveryHallClassifyDTOList;
+		}
+	}
+	
+	
 	public DLFindListDTO discoveryArticle(@RequestBody CatArticleParam param) {
 		List<DlNavBannerDTO> navBanners = new LinkedList<DlNavBannerDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
@@ -448,15 +484,9 @@ public class DlDiscoveryPageService {
 			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
 			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
 			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
-			lotteryClassifyForOpenPrize.setPeriod("201808280001");
-			if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
-				lotteryClassifyForOpenPrize.setScore("2:0");
-				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
-				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
-				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
-			} else if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
+			//lotteryClassifyForOpenPrize.setPeriod("201808280001");
+			
+			if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
 				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
 				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
@@ -466,68 +496,7 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("01");
-				listRed.add("03");
-				listRed.add("05");
-				listRed.add("08");
-				listRed.add("15");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("02");
-				listRed.add("04");
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("11");
-				listRed.add("18");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-				List<String> listBlue = new ArrayList<>();
-				listBlue.add("08");
-				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
-			} else if (LotteryClassifyEnum.KUAI3.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("07");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
-				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
-				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
-				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
-				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
-				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
-				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
-				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
-				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
-				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
-			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("0");
-				listRed.add("0");
-				listRed.add("3");
-				listRed.add("0");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-			} else if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == s.getLotteryClassifyId()) {
+			}  else if (LotteryClassifyEnum.SUPER_LOTTO.getcode() == s.getLotteryClassifyId()) {
 				DlSuperLotto superLotto = dlSuperLottoService.getLastNumLottos(1);
 				if (null != superLotto) {
 					lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
@@ -542,22 +511,92 @@ public class DlDiscoveryPageService {
 					listBlue = Arrays.asList(Arrays.copyOfRange(strArray, 5, 7));
 					lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 				}
-			} else {
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
-				List<String> listRed = new ArrayList<>();
-				listRed.add("06");
-				listRed.add("04");
-				listRed.add("05");
-				listRed.add("09");
-				listRed.add("23");
-				listRed.add("11");
-				lotteryClassifyForOpenPrize.setRedBall(listRed);
-				List<String> listBlue = new ArrayList<>();
-				listBlue.add("18");
-				listBlue.add("28");
-				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
 			}
+			
+//			if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
+//				lotteryClassifyForOpenPrize.setScore("2:0");
+//				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
+//				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
+//			} else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("01");
+//				listRed.add("03");
+//				listRed.add("05");
+//				listRed.add("08");
+//				listRed.add("15");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			} else if (LotteryClassifyEnum.DOUBLE_BALL.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("02");
+//				listRed.add("04");
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("11");
+//				listRed.add("18");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//				List<String> listBlue = new ArrayList<>();
+//				listBlue.add("08");
+//				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+//			} else if (LotteryClassifyEnum.KUAI3.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("07");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			} else if (LotteryClassifyEnum.BJ_SINGLE.getcode() == s.getLotteryClassifyId()) {
+//				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
+//				String yyyyMM = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+//				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+//				lotteryClassifyForOpenPrize.setDate(yyyyMM + "(" + zhouji + ")"); // "08-28(星期二)"
+//				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
+//				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+//				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
+//				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
+//				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
+//			} else if (LotteryClassifyEnum.MORE_L.getcode() == s.getLotteryClassifyId()) {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("0");
+//				listRed.add("0");
+//				listRed.add("3");
+//				listRed.add("0");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//			}  else {
+//				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
+//				lotteryClassifyForOpenPrize.setClassifyStatus(0);// 0代表是数字彩类别
+//				List<String> listRed = new ArrayList<>();
+//				listRed.add("06");
+//				listRed.add("04");
+//				listRed.add("05");
+//				listRed.add("09");
+//				listRed.add("23");
+//				listRed.add("11");
+//				lotteryClassifyForOpenPrize.setRedBall(listRed);
+//				List<String> listBlue = new ArrayList<>();
+//				listBlue.add("18");
+//				listBlue.add("28");
+//				lotteryClassifyForOpenPrize.setBlueBall(listBlue);
+//			}
 			lotteryClassifyList.add(lotteryClassifyForOpenPrize);
 		}
 		return lotteryClassifyList;
