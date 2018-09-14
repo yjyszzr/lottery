@@ -54,7 +54,6 @@ public class DlSeasonGroupData500WService extends AbstractService<DlSeasonGroupD
 				}
 			}
 			Set<String> stringStr = matchMap.keySet();
-
 			for (String str : stringStr) {
 				MatchGroupData matchGroupData = new MatchGroupData();
 				matchGroupData.setGroupName(str);

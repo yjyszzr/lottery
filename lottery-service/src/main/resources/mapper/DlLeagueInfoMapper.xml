@@ -83,7 +83,7 @@
   	select 
  		 <include refid="league_info_500w"></include>
   	from dl_league_500w
-  	where group_id = #{groupId} and is_league = 0 
+  	where group_id = #{groupId} and is_league = 0 and contry_id = -1
   	order by contry_id
   </select>
   
