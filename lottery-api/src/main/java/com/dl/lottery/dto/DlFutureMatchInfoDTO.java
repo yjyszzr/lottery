@@ -15,6 +15,9 @@ public class DlFutureMatchInfoDTO {
 	@ApiModelProperty("主队简称")
 	private String homeTeamAbbr;
 
+	@ApiModelProperty("比分")
+	private String matchScore;
+
 	@ApiModelProperty("客队简称")
 	private String visitorTeamAbbr;
 

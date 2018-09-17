@@ -42,6 +42,7 @@ public class DlSeasonGroupData500WService extends AbstractService<DlSeasonGroupD
 					DlFutureMatchInfoDTO futureMatchInfoDTO = new DlFutureMatchInfoDTO();
 					futureMatchInfoDTO.setHomeTeamAbbr(s.getHomeTeam());
 					futureMatchInfoDTO.setMatchTime(s.getMatchTime());
+					futureMatchInfoDTO.setMatchScore(s.getMatchScore());
 					futureMatchInfoDTO.setVisitorTeamAbbr(s.getVisitorTeam());
 					futureMatchInfoDTO.setGroupName(s.getGroupName());
 					String groupName = matchGroupData500WList.get(j).getGroupName();
