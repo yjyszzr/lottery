@@ -304,7 +304,12 @@ public class DlDiscoveryPageService {
 		if(switchConfigDTORst.getCode() == 0) {
 			SwitchConfigDTO switchDto = switchConfigDTORst.getData();
 			turnOn = switchDto.getTurnOn();
-		}	
+		}
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		String platform = userDevice.getPlat();
+		if("h5".equals(platform)) {
+			turnOn = 1;
+		}
 		if(0  == turnOn) {//交易版关
 			List<DlDiscoveryHallClassifyDTO> list = new ArrayList<>();
 			List<String> notDealList = new ArrayList<>();
@@ -352,7 +357,6 @@ public class DlDiscoveryPageService {
 
 		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
 		String channel = userDevice.getChannel();
-		// String channel = "c10020";
 		List<InfoCatDTO> infoCatList = createCat(channel);
 		DLFindListDTO findListDTO = new DLFindListDTO();
 		String extendCatParam = param.getExtendCat();
