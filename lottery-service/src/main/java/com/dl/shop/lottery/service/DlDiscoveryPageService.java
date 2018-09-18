@@ -497,6 +497,7 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setDate(mmdd + "(" + zhouji + ")");
 				lotteryClassifyForOpenPrize.setHomeTeam(dlMatch.getHomeTeamAbbr());
 				lotteryClassifyForOpenPrize.setScore(dlMatch.getWhole());
+				lotteryClassifyForOpenPrize.setChangci(dlMatch.getChangci());
 				lotteryClassifyForOpenPrize.setVisitingTeam(dlMatch.getLeagueAddr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类别
 				lotteryClassifyForOpenPrize.setBallColor(1);// 代表足球的颜色
