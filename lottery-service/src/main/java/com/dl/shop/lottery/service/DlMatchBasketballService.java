@@ -183,7 +183,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dlJcLqMatchListDTO.getPlayList().sort((item1,item2)->item1.getSortMatchDay().compareTo(item2.getSortMatchDay()));
 		dlJcLqMatchListDTO.setAllMatchCount(totalNum.toString());
 		dlJcLqMatchListDTO.setLotteryClassifyId(1);
-		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(1, Integer.parseInt(playType));
+		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(3, Integer.parseInt(playType));
 		Integer lotteryPlayClassifyId = playClassify == null?Integer.parseInt(playType):playClassify.getLotteryPlayClassifyId();
 		dlJcLqMatchListDTO.setLotteryPlayClassifyId(lotteryPlayClassifyId);
 		return dlJcLqMatchListDTO;
