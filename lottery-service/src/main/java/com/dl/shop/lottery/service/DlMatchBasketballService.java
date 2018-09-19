@@ -36,6 +36,7 @@ import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.lottery.param.DlJcLqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
+import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchPlayBasketballMapper;
@@ -85,9 +86,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
 		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"5".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
-			Integer playType2 = matchPlay.getPlayType();
 			Integer changciId = matchPlay.getChangciId();
-			
 			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
 			if(matchPlayDto == null) {
 				continue;
@@ -112,19 +111,19 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		DlJcLqMatchListDTO dlJcLqMatchListDTO = new DlJcLqMatchListDTO();
 		Map<String, DlJcLqDateMatchDTO> map = new HashMap<String, DlJcLqDateMatchDTO>();
 		Integer totalNum = 0;
-		Integer betPreTime = 1537259767;//this.getBetPreTime();
+//		Integer betPreTime = this.getBetPreTime();
 		for(DlMatchBasketball match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
+//			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
 			//投注结束
 //			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 //				continue;
 //			}
 			DlJcLqMatchDTO matchDto = new DlJcLqMatchDTO();
 			matchDto.setIsShutDown(0);
-			matchDto.setBetEndTime(betEndTime);
+			matchDto.setBetEndTime(0);
 			matchDto.setChangci(match.getChangci());
 			matchDto.setChangciId(match.getChangciId().toString());
 			matchDto.setHomeTeamAbbr(match.getHomeTeamAbbr());
@@ -156,7 +155,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			
 			if("5".equals(playType)) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
-				for(int i=1; i< 6; i++) {
+				for(int i=1; i<= 4; i++) {
 					if(!collect.contains(i)) {
 						DlJcLqMatchPlayDTO dto = new DlJcLqMatchPlayDTO();
 						dto.setPlayType(i);
@@ -166,10 +165,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				}
 			}
 
-			
 			matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
 			matchDto.setMatchPlays(matchPlays);
-			//
 			DlJcLqDateMatchDTO dlJcLqMatchDTO = map.get(matchDay);
 			if(null == dlJcLqMatchDTO) {
 				dlJcLqMatchDTO = new DlJcLqDateMatchDTO();
@@ -207,7 +204,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 //		}
 //		return betPreTime;
 //	}
-//	
+	
 //	public int getBetEndTime(Integer matchTime) {
 //		Integer betPreTime = this.getBetPreTime();
 //		return this.getBetEndTime(matchTime, betPreTime);

@@ -24,4 +24,5 @@ public interface DlMatchBasketballMapper extends Mapper<DlMatchBasketball> {
 	 */
 	public List<BasketBallLeagueInfoDTO> getBasketBallFilterConditions();
 	
+	
 }

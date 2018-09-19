@@ -165,7 +165,6 @@ public class LotteryMatchController {
     	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcLqMatchListDTO);
     }
 	
-	
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
