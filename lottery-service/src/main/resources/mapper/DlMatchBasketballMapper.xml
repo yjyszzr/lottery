@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlMatchBasketballMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlMatchBasketball">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="league_abbr" jdbcType="VARCHAR" property="leagueAbbr" />
+    <result column="changci" jdbcType="VARCHAR" property="changci" />
+    <result column="home_team_id" jdbcType="INTEGER" property="homeTeamId" />
+    <result column="home_team_name" jdbcType="VARCHAR" property="homeTeamName" />
+    <result column="home_team_abbr" jdbcType="VARCHAR" property="homeTeamAbbr" />
+    <result column="home_team_rank" jdbcType="VARCHAR" property="homeTeamRank" />
+    <result column="visiting_team_id" jdbcType="INTEGER" property="visitingTeamId" />
+    <result column="visiting_team_name" jdbcType="VARCHAR" property="visitingTeamName" />
+    <result column="visiting_team_abbr" jdbcType="VARCHAR" property="visitingTeamAbbr" />
+    <result column="visiting_team_rank" jdbcType="VARCHAR" property="visitingTeamRank" />
+    <result column="match_time" jdbcType="TIMESTAMP" property="matchTime" />
+    <result column="show_time" jdbcType="TIMESTAMP" property="showTime" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="match_sn" jdbcType="VARCHAR" property="matchSn" />
+    <result column="whole" jdbcType="VARCHAR" property="whole" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+  </resultMap>
+  
+  <select id="getMatchList" resultMap="BaseResultMap">
+	select
+		match_id,league_id,league_name,league_abbr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
+		home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
+		is_show,is_del,match_sn,is_hot
+	from
+	dl_match_basketball 
+	where is_del = 0 and is_show=1 
+  	 <if test="leagueIds!=null and leagueIds != ''">
+  	 	and league_id in
+  	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 order by match_time
+  </select>
+  
+    <update id="updateteaminfo">
+  update dl_match_basketball set home_team_id=#{homeTeamId}, home_team_name=#{homeTeamName} where match_id=#{matchId}
+  </update>
+  <select id="allmatches" resultMap="BaseResultMap">
+  select * from dl_match_basketball where visiting_team_abbr not in(select team_addr from dl_league_team ) order by visiting_team_abbr;
+  </select>
+  
+    <select id="getBasketBallFilterConditions" resultType="com.dl.lottery.dto.LeagueInfoDTO">
+	select
+		distinct(league_id) as leagueId,
+		league_name as leagueName,
+		league_abbr as leagueAddr
+	from dl_match_basketball 
+	where  is_del = 0 and is_show=1
+  	order by leagueId
+  </select>
+  
+  <select id="getFilterConditionsSomeDay" parameterType ="java.lang.String" resultType="com.dl.lottery.dto.LeagueInfoDTO">
+	select
+		distinct(league_id) as leagueId,
+		league_name as leagueName,
+		league_addr as leagueAddr
+	from dl_match_basketball 
+	where str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and is_del = 0 and is_show=1 order by leagueId
+  </select>
+  
+  <select id="getCancelMatches" resultType="java.lang.String">
+	select match_sn from dl_match_basketball 
+		where status=2 and match_sn in
+	  	 	<foreach collection="playCodes" item="playCode" open="(" close=")" separator=",">
+	  	 		#{playCode}
+	  	 	</foreach>
+	  	 order by match_time
+  </select>
+  
+  	<select id="getByChangciId" resultMap="BaseResultMap">
+		select * from dl_match_basketball where changci_id=#{changciId}
+	</select>
+	
+	<select id="getByMatchId" resultMap="BaseResultMap">
+		select * from dl_match_basketball where match_id=#{matchId}
+	</select>
+	
+	<select id="getByTeamId" resultMap="BaseResultMap">
+		select * 
+		from dl_match_basketball 
+		where status=1 and
+		((home_team_id = #{homeTeamId} and visiting_team_id=#{visitingTeamId}) or (home_team_id = #{visitingTeamId} and visiting_team_id=#{homeTeamId}))
+		order by match_time desc limit ${num}
+	</select>
+  
+</mapper>

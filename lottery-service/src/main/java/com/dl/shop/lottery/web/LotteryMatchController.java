@@ -26,6 +26,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
 import com.dl.lottery.dto.BetPayInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetInfoDTO;
@@ -33,6 +34,7 @@ import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLFutureMatchDTO;
 import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
+import com.dl.lottery.dto.DlJcLqMatchListDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
@@ -51,6 +53,7 @@ import com.dl.lottery.dto.QueryMatchResultDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DateStrParam;
+import com.dl.lottery.param.DlJcLqMatchListParam;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -77,6 +80,8 @@ import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
 import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
 import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
 import com.dl.shop.lottery.service.DlLeagueTeamService;
+import com.dl.shop.lottery.service.DlMatchBasketballService;
+import com.dl.shop.lottery.service.DlMatchPlayBasketballService;
 import com.dl.shop.lottery.service.DlMatchSupportService;
 import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchPlayService;
@@ -97,6 +102,8 @@ public class LotteryMatchController {
 	private final static Logger logger = Logger.getLogger(LotteryMatchController.class);
     @Resource
     private LotteryMatchService lotteryMatchService;
+    @Resource
+    private DlMatchBasketballService dlMatchBasketballService;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
@@ -125,22 +132,39 @@ public class LotteryMatchController {
     private DlLeagueTeamMapper dlLeagueTeamMapper;
     @Resource
     private DlLeagueTeamService dlLeagueTeamService;
+    @Resource
+    private DlMatchPlayBasketballService dlMatchPlayBasketballService;
     
     
 	
-    @ApiOperation(value = "获取筛选条件列表", notes = "获取筛选条件列表")
+    @ApiOperation(value = "获取筛选条件列表-足球", notes = "获取筛选条件列表-足球")
     @PostMapping("/filterConditions")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
     	List<LeagueInfoDTO> leagueInfos = lotteryMatchService.getFilterConditions();
     	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
     }
     
-	@ApiOperation(value = "获取赛事列表", notes = "获取赛事列表")
+    @ApiOperation(value = "获取筛选条件列表-籃球", notes = "获取筛选条件列表-籃球")
+    @PostMapping("/filterBasketBallConditions")
+    public BaseResult<List<BasketBallLeagueInfoDTO>> getBasketBallFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
+    	List<BasketBallLeagueInfoDTO> leagueInfos = dlMatchBasketballService.getBasketBallFilterConditions();
+    	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
+    }
+    
+	@ApiOperation(value = "获取赛事列表-足球", notes = "获取赛事列表-足球")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
     	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcZqMatchListDTO);
     }
+	
+	@ApiOperation(value = "获取赛事列表-篮球", notes = "获取赛事列表-篮球")
+    @PostMapping("/getBasketBallMatchList")
+    public BaseResult<DlJcLqMatchListDTO> getBasketBallMatchList(@Valid @RequestBody DlJcLqMatchListParam param) {
+		DlJcLqMatchListDTO dlJcLqMatchListDTO = dlMatchBasketballService.getMatchList(param);
+    	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcLqMatchListDTO);
+    }
+	
 	
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")

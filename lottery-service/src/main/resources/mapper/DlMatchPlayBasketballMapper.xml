@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlMatchPlayBasketballMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlMatchPlayBasketball">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="play_content" jdbcType="VARCHAR" property="playContent" />
+    <result column="play_type" jdbcType="INTEGER" property="playType" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="is_del" jdbcType="INTEGER" property="isDel" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="is_hot" jdbcType="INTEGER" property="isHot" />
+  </resultMap>
+  
+  <select id="matchPlayListByChangciIds" resultMap="BaseResultMap">
+  	select id,changci_id,play_content,play_type,status,is_del,create_time,update_time
+  	from dl_match_play_basketball
+  	where is_del = 0 and status=0 
+  	<if test="changciIds!=null and changciIds != ''">
+  	 	and changci_id in
+  	 	<foreach collection="changciIds" item="changciId" open="(" close=")" separator=",">
+  	 		#{changciId}
+  	 	</foreach>
+  	 </if> 
+  	 <if test="playType!=null and playType != ''">
+  	 	and play_type = ${playType}
+  	 </if> 
+  </select>
+  
+    <select id="lotteryMatchPlayByChangciIdAndPlayType" resultMap="BaseResultMap">
+  	select * from dl_match_play_basketball where changci_id=#{changciId} and play_type=#{playType}
+  </select>
+  
+  <update id="updatePlayContent">
+  	update dl_match_play_basketball
+  	set play_content = #{playContent},update_time=#{updateTime}
+  	where changci_id=#{changciId} and play_type=#{playType}
+  </update>
+  
+  
+</mapper>

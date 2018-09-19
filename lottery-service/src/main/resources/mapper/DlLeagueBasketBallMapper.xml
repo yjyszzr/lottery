@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlLeagueBasketBallMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlLeagueBasketBall">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="league_id" jdbcType="INTEGER" property="leagueId" />
+    <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
+    <result column="league_abbr" jdbcType="VARCHAR" property="leagueAbbr" />
+    <result column="contry_id" jdbcType="INTEGER" property="contryId" />
+    <result column="league_pic" jdbcType="VARCHAR" property="leaguePic" />
+    <result column="is_league" jdbcType="INTEGER" property="isLeague" />
+  </resultMap>
+  
+    <select id="getFilterConditions" resultType="com.dl.lottery.dto.BasketBallLeagueInfoDTO">
+	select
+			distinct(league_id) as leagueId,
+			league_name as leagueName,
+			league_addr as leagueAddr
+		from dl_match_basketball 
+		where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+	  	order by leagueId
+  </select>
+  
+</mapper>
