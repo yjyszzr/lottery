@@ -13,13 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +25,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.BasketBallMatchResultHILOEnum;
 import com.dl.base.enums.MatchBasketBallResultMaxMinScoreEnum;
-import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
@@ -37,7 +33,7 @@ import com.dl.lottery.dto.DlJcLqMatchDTO;
 import com.dl.lottery.dto.DlJcLqMatchListDTO;
 import com.dl.lottery.dto.DlJcLqMatchPlayDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
-import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.lottery.param.DlJcLqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
@@ -87,10 +83,11 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 		String playType = param.getPlayType();
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
-		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),playType);
+		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"5".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
 			Integer playType2 = matchPlay.getPlayType();
 			Integer changciId = matchPlay.getChangciId();
+			
 			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
 			if(matchPlayDto == null) {
 				continue;
@@ -157,6 +154,19 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				continue;
 			}
 			
+			if("5".equals(playType)) {
+				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
+				for(int i=1; i< 6; i++) {
+					if(!collect.contains(i)) {
+						DlJcLqMatchPlayDTO dto = new DlJcLqMatchPlayDTO();
+						dto.setPlayType(i);
+						dto.setIsShow(0);
+						matchPlays.add(dto);
+					}
+				}
+			}
+
+			
 			matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
 			matchDto.setMatchPlays(matchPlays);
 			//
@@ -182,7 +192,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dlJcLqMatchListDTO.getHotPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 		dlJcLqMatchListDTO.getPlayList().sort((item1,item2)->item1.getSortMatchDay().compareTo(item2.getSortMatchDay()));
 		dlJcLqMatchListDTO.setAllMatchCount(totalNum.toString());
-		dlJcLqMatchListDTO.setLotteryClassifyId(1);
+		dlJcLqMatchListDTO.setLotteryClassifyId(3);
 		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(3, Integer.parseInt(playType));
 		Integer lotteryPlayClassifyId = playClassify == null?Integer.parseInt(playType):playClassify.getLotteryPlayClassifyId();
 		dlJcLqMatchListDTO.setLotteryPlayClassifyId(lotteryPlayClassifyId);

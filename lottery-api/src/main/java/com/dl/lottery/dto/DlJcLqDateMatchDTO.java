@@ -20,9 +20,6 @@ public class DlJcLqDateMatchDTO implements Serializable{
 	@ApiModelProperty(value = "用来排序的字段 ", required = true)
 	public String sortMatchDay;
 	
-	//@ApiModelProperty(value = "当日比赛场数", required = true)
-	//public String matchCount;
-	
 	@ApiModelProperty(value = "当日赛事列表", required = true)
 	public List<DlJcLqMatchDTO> playList = new ArrayList<DlJcLqMatchDTO>();
 }
