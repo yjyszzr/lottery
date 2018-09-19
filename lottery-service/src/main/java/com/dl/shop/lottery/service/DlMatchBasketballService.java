@@ -23,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dl.base.enums.BasketBallMatchResultHILOEnum;
-import com.dl.base.enums.MatchBasketBallResultMaxMinScoreEnum;
+import com.dl.base.enums.BasketBallHILOLeverlEnum;
+import com.dl.base.enums.MatchBasketBallResultHDCEnum;
+import com.dl.base.enums.MatchBasketBallResultHILOEnum;
 import com.dl.base.enums.MatchResultHadEnum;
 import com.dl.base.service.AbstractService;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
@@ -71,7 +72,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return filterConditions;
 	}
 	
-    
     /**
      * 获取赛事列表
      * @param param
@@ -353,10 +353,13 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		String hOdds = jsonObj.getString("h");
 		String aOdds = jsonObj.getString("a");
+		String fixedOdds = jsonObj.getString("fixedodds");
+		dto.setFixedOdds(fixedOdds);
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), aOdds));
+		Boolean negative = fixedOdds.contains("-");
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHAD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHAD_H.getMsg()+(negative == false?fixedOdds:""), hOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHAD_A.getCode().toString(), MatchBasketBallResultHDCEnum.HHAD_A.getMsg()+(negative == true?fixedOdds:""), aOdds));
 	}
 	
 	/**
@@ -408,13 +411,13 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			if(key.indexOf("l") == 0) {
 				String code = key.substring(1);
 				String odds = jsonObj.getString(key);
-				String name = BasketBallMatchResultHILOEnum.getName(code);
+				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
 			}else if(key.indexOf("w") == 0) {
 				String level = key.substring(1);
-				String code = BasketBallMatchResultHILOEnum.getCode(level);
+				String code = BasketBallHILOLeverlEnum.getCode(level);
 				String odds = jsonObj.getString(key);
-				String name = BasketBallMatchResultHILOEnum.getName(code);
+				String name = BasketBallHILOLeverlEnum.getName(code);
 				visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
 			}
 		}
@@ -453,8 +456,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		String fixedOdds = jsonObj.getString("fixedodds");
 		dto.setFixedOdds(fixedOdds);
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultMaxMinScoreEnum.MIN_SCORE.getCode().toString(), MatchBasketBallResultMaxMinScoreEnum.MIN_SCORE.getMsg(), hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultMaxMinScoreEnum.MAX_SCORE.getCode().toString(), MatchBasketBallResultMaxMinScoreEnum.MAX_SCORE.getMsg(), aOdds));
+		fixedOdds = fixedOdds.replace("+", "");
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.L_SCORE.getCode().toString(), "小于"+fixedOdds+"分", hOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.H_SCORE.getCode().toString(), "大于"+fixedOdds+"分", aOdds));
 	}
 	
 	
