@@ -33,11 +33,11 @@ import com.dl.lottery.dto.DlJcLqMatchDTO;
 import com.dl.lottery.dto.DlJcLqMatchListDTO;
 import com.dl.lottery.dto.DlJcLqMatchPlayDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
-import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
 import com.dl.lottery.param.DlJcLqMatchListParam;
 import com.dl.shop.lottery.core.LocalWeekDate;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
+import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchPlayBasketballMapper;
 import com.dl.shop.lottery.model.DlMatchBasketball;
@@ -58,6 +58,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
     
 	@Resource
 	private LotteryPlayClassifyMapper lotteryPlayClassifyMapper;
+	
+	@Resource
+	private LotteryPrintMapper	lotteryPrintMapper;
    
 	
 	public List<BasketBallLeagueInfoDTO> getBasketBallFilterConditions() {
@@ -86,6 +89,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
 		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"5".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
+			if(this.isStop(matchPlay)) {
+				continue;
+			}
+			
 			Integer changciId = matchPlay.getChangciId();
 			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
 			if(matchPlayDto == null) {
@@ -111,19 +118,20 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		DlJcLqMatchListDTO dlJcLqMatchListDTO = new DlJcLqMatchListDTO();
 		Map<String, DlJcLqDateMatchDTO> map = new HashMap<String, DlJcLqDateMatchDTO>();
 		Integer totalNum = 0;
-//		Integer betPreTime = this.getBetPreTime();
+		Integer betPreTime = this.getBetPreTime();
 		for(DlMatchBasketball match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
-//			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
+			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
 			//投注结束
 //			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 //				continue;
 //			}
 			DlJcLqMatchDTO matchDto = new DlJcLqMatchDTO();
+			matchDto.setMatchId(match.getMatchId());
 			matchDto.setIsShutDown(0);
-			matchDto.setBetEndTime(0);
+			matchDto.setBetEndTime(betEndTime);
 			matchDto.setChangci(match.getChangci());
 			matchDto.setChangciId(match.getChangciId().toString());
 			matchDto.setHomeTeamAbbr(match.getHomeTeamAbbr());
@@ -196,19 +204,31 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return dlJcLqMatchListDTO;
 	}
 
+	//判断是否停售
+	private boolean isStop(DlMatchPlayBasketball matchPlay) {
+		String playContent = matchPlay.getPlayContent();
+		JSONObject jsonObj = JSON.parseObject(playContent);
+		String cbtValue = jsonObj.getString("cbt");
+		if("2".equals(cbtValue)) {
+			Boolean isStop = Boolean.TRUE;
+			return isStop;
+		}
+		return false;
+	}
 	
-//	public Integer getBetPreTime() {
-//		Integer betPreTime = dlMatchBasketballMapper.getBetPreTime();
-//		if(betPreTime == null || betPreTime <= 0) {
-//			betPreTime = ProjectConstant.BET_PRESET_TIME;
-//		}
-//		return betPreTime;
-//	}
 	
-//	public int getBetEndTime(Integer matchTime) {
-//		Integer betPreTime = this.getBetPreTime();
-//		return this.getBetEndTime(matchTime, betPreTime);
-//	}
+	public Integer getBetPreTime() {
+		Integer betPreTime = lotteryPrintMapper.getBasketBallBetPreTime();
+		if(betPreTime == null || betPreTime <= 0) {
+			betPreTime = ProjectConstant.BET_PRESET_TIME;
+		}
+		return betPreTime;
+	}
+	
+	public int getBetEndTime(Integer matchTime) {
+		Integer betPreTime = this.getBetPreTime();
+		return this.getBetEndTime(matchTime, betPreTime);
+	}
 	
 	//获取出票截至时间
 	private int getBetEndTime(Integer matchTime, Integer betPreTime) {

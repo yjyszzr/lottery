@@ -67,10 +67,10 @@ public class DlJcLqMatchDTO implements Serializable{
 	@ApiModelProperty(value = "赛事编码", required = true)
 	private String playCode;
 	
-	@ApiModelProperty(value = "是否热度", required = true)
+	@ApiModelProperty(value = "是否热度:1代表热 0-代表非热", required = true)
 	private Integer isHot;
 	
-	@ApiModelProperty(value = "玩法类型", required = true)
+	@ApiModelProperty(value = "玩法类型:1-胜负,2-让分胜负,3-胜分差,4-大小分, 5-混合投注", required = true)
 	private Integer playType;
 	
 	/*@ApiModelProperty(value = "玩法信息", required = true)

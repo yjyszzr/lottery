@@ -135,8 +135,6 @@ public class LotteryMatchController {
     @Resource
     private DlMatchPlayBasketballService dlMatchPlayBasketballService;
     
-    
-	
     @ApiOperation(value = "获取筛选条件列表-足球", notes = "获取筛选条件列表-足球")
     @PostMapping("/filterConditions")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {

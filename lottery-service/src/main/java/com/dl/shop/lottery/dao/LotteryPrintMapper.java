@@ -75,6 +75,12 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public Double printLotteryRoutAmount();
 	//获取提前出票时间
 	public Integer getBetPreTime();
-
+	
+	//获取篮彩提前出票时间
+	public Integer shutDownBasketBallBetValue();
+	
+	//获取篮彩是否可投注
+	public Integer getBasketBallBetPreTime();
+	
 	public LotteryPrint getPrintLotteryByTicetId(String ticketId);
 }

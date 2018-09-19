@@ -176,4 +176,15 @@
   <select id="getBetPreTime" resultType="int">
   	 select value from dl_sys_config where business_id=4
   </select>
+  
+  <select id="shutDownBasketBallBetValue" resultType="int">
+  		select value from dl_sys_config where business_id=14
+  </select>
+  
+  <select id="getBasketBallBetPreTime" resultType="int">
+  	 select value from dl_sys_config where business_id=13
+  </select>
+  
+  
+  
 </mapper>

@@ -19,13 +19,13 @@ public class DlJcLqMatchPlayDTO implements Serializable{
 	@ApiModelProperty(value = "玩法内容", required = true)
 	public String playContent;
 	
-	@ApiModelProperty(value = "主队选项，胜平负，让球胜平负使用主客平三选项，比分也使用三选项（三个选项只有名称，没有赔率）", required = true)
+	@ApiModelProperty(value = "主队选项，", required = true)
 	private DlJcZqMatchCellDTO homeCell;
 	
 	@ApiModelProperty(value = "客队选项", required = true)
 	private DlJcZqMatchCellDTO visitingCell;
 	
-	@ApiModelProperty(value = "比赛所有选项，半全场，总进球数只使用这个属性，不使用homeCell，visitingCell，flatCell", required = true)
+	@ApiModelProperty(value = "比赛所有选项，胜分差只使用这个属性，不使用homeCell，visitingCell", required = true)
 	private List<DlJcZqMatchCellDTO> matchCells;
 	
 	@ApiModelProperty(value = "让分数", required = true)
