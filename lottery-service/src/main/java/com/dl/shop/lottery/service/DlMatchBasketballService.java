@@ -451,12 +451,12 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		visitingCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
 		dto.setVisitingCell(visitingCell);
 		for(String key: keySet) {
-			if(key.indexOf("l") == 0) {
+			if(key.indexOf("l") == 0 && key.length() == 2) {
 				String code = key.substring(1);
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
-			}else if(key.indexOf("w") == 0) {
+			}else if(key.indexOf("w" ) == 0 && key.length() == 2) {
 				String code = key.substring(1);
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
