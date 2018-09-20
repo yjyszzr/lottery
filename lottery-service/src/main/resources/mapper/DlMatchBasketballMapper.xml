@@ -59,7 +59,7 @@
 		league_name as leagueName,
 		league_abbr as leagueAddr
 	from dl_match_basketball 
-	where  is_del = 0 and is_show=1
+	where  is_del = 0 and is_show=1 and league_id != -1
   	order by leagueId
   </select>
   

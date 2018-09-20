@@ -29,7 +29,7 @@ public class DlJcLqMatchPlayDTO implements Serializable{
 	private List<DlJcZqMatchCellDTO> matchCells;
 	
 	@ApiModelProperty(value = "让分数", required = true)
-	private String fixedOdds;
+	private String fixedOdds = "";
 	
 	@ApiModelProperty(value = "单场，1可以单场，0不可以", required = true)
 	private Integer single=0;
