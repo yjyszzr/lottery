@@ -231,9 +231,17 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				dlJcLqMatchListDTO.getHotPlayList().add(matchDto);
 			} else {
 				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
+				dlJcLqMatchDTO.getPlayList().add(matchDto);
 			}
 			totalNum++;
 		}
+		
 		map.forEach((key, value) ->{
 			value.getPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
 			dlJcLqMatchListDTO.getPlayList().add(value);
