@@ -28,6 +28,8 @@ import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
 import com.dl.lottery.dto.BetPayInfoDTO;
+import com.dl.lottery.dto.DILQUserBetCellInfoDTO;
+import com.dl.lottery.dto.DILQUserBetInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
 import com.dl.lottery.dto.DIZQUserBetInfoDTO;
 import com.dl.lottery.dto.DLBetLottoInfoDTO;
@@ -170,11 +172,11 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
 	@PostMapping("/saveBasketBallBetInfo")
-	public BaseResult<BetPayInfoDTO> saveBasketBallBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+	public BaseResult<BetPayInfoDTO> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
 		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
 		}
-		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
+		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
@@ -203,7 +205,7 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
 		}
 		//校验赛事投注时间
-		MatchBetPlayDTO min = matchBetPlays.get(0);
+		MatchBasketBallBetPlayDTO min = matchBetPlays.get(0);
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
@@ -225,19 +227,19 @@ public class LotteryMatchController {
 		
 		boolean isCellError = false;
 		boolean isAllSingle = true;
-		for(MatchBetPlayDTO betPlay : matchBetPlays){
-			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
+		for(MatchBasketBallBetPlayDTO betPlay : matchBetPlays){
+			List<MatchBasketBallBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
 			if(CollectionUtils.isEmpty(matchBetCells)) {
 				isCellError = true;
 				break;
 			}
-			for(MatchBetCellDTO betCell: matchBetCells){
-				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
+			for(MatchBasketBallBetCellDTO betCell: matchBetCells){
+				List<DlJcLqMatchCellDTO> betCells = betCell.getBetCells();
 				if(CollectionUtils.isEmpty(betCells)) {
 					isCellError = true;
 					break;
 				}
-				for(DlJcZqMatchCellDTO dto: betCells) {
+				for(DlJcLqMatchCellDTO dto: betCells) {
 					String cellCode = dto.getCellCode();
 					String cellName = dto.getCellName();
 					String cellOdds = dto.getCellOdds();
@@ -311,7 +313,7 @@ public class LotteryMatchController {
 			return ResultGenerator.genResult(LotteryResultEnum.OPTION_ERROR.getCode(), LotteryResultEnum.OPTION_ERROR.getMsg());
 		}
 
-		DLZQBetInfoDTO betInfo = lotteryMatchService.getBetInfo1(param);
+		DLLQBetInfoDTO betInfo = dlMatchBasketballService.getBetInfo1(param);
 		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 		}
@@ -376,11 +378,11 @@ public class LotteryMatchController {
 		}
 		
 		//缓存订单支付信息
-		DIZQUserBetInfoDTO dto = new DIZQUserBetInfoDTO(param);
-		List<DIZQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DIZQUserBetCellInfoDTO>(matchBetPlays.size());
-		for(MatchBetPlayDTO matchCell: matchBetPlays) {
-			DIZQUserBetCellInfoDTO dizqUserBetCellInfoDTO = new DIZQUserBetCellInfoDTO(matchCell);
-			Optional<MatchBetCellDTO> findFirst = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+		DILQUserBetInfoDTO dto = new DILQUserBetInfoDTO(param);
+		List<DILQUserBetCellInfoDTO>  userBetCellInfos = new ArrayList<DILQUserBetCellInfoDTO>(matchBetPlays.size());
+		for(MatchBasketBallBetPlayDTO matchCell: matchBetPlays) {
+			DILQUserBetCellInfoDTO dizqUserBetCellInfoDTO = new DILQUserBetCellInfoDTO(matchCell);
+			Optional<MatchBasketBallBetCellDTO> findFirst = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
 			if(findFirst.isPresent()) {
 				String fixOdds = findFirst.get().getFixedOdds();
 				logger.info("**************************fixOdds="+fixOdds);
