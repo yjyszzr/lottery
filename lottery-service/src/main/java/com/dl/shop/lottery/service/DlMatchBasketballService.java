@@ -231,13 +231,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				dlJcLqMatchListDTO.getHotPlayList().add(matchDto);
 			} else {
 				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
-				dlJcLqMatchDTO.getPlayList().add(matchDto);
 			}
 			totalNum++;
 		}
