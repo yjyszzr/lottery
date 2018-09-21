@@ -248,7 +248,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 					}
 					lotteryPrint.setPlatformId(callbackStake.getPlatformId());
 					lotteryPrint.setPrintNo(callbackStake.getPrintNo());
-					if("T51".equals(dBPrint.getGame())){
+					if("T51".equals(dBPrint.getGame()) || "T52".equals(dBPrint.getGame())){
 						String sp = callbackStake.getSp();
 						lotteryPrint.setPrintSp(sp);
 					}else{
@@ -404,7 +404,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 
 					String game = lotteryPrint.getGame();
 					String printSp = null;
-					if("T51".equals(game) && StringUtils.isNotBlank(comparePrintSp)) {
+					if(("T51".equals(game) && StringUtils.isNotBlank(comparePrintSp)) || ("T52".equals(game) && StringUtils.isNotBlank(comparePrintSp))) {
 						printSp = this.getPrintSp(stakes, comparePrintSp);
 					} else if("T56".equals(game)) {
 						printSp = comparePrintSp;
@@ -1091,7 +1091,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}
 		lotteryPrint.setPlatformId("");
 		lotteryPrint.setPrintNo(param.getNumber());
-		if("T51".equals(dBPrint.getGame())){
+		if("T51".equals(dBPrint.getGame()) || "T52".equals(dBPrint.getGame())){
 			lotteryPrint.setPrintSp(getCaiXiaoMiSpFromTicketNumber(param.getNumber()));
 		}else{
 			lotteryPrint.setPrintSp("");//大乐透没有赔率

@@ -425,11 +425,12 @@ public class LotteryMatchController {
 	}
 	
 	/**
+	 * 河南 出票规定
 	 * 选择一场比赛进行的投注为单关投注；选择2场或2场以上比赛进行串关投注的为过关投注。
 		1、胜负：串关最高上限为8串1。
 		2、让分胜负：串关最高上限为8串1。
 		3、胜分差：串关最高上限为4串1。
-		4、大小分：串关最高上限为8串1。
+		4、大小分：串关最高上限为6串1。
 		5、混合过关：串关最高上限根据投注玩法而定。
 	 * @param playType
 	 * @param betType
@@ -438,13 +439,17 @@ public class LotteryMatchController {
 	public BaseResult<DLZQBetInfoDTO> validBetType(DlJcZqMatchBetParam param) {
 		String playType = param.getPlayType();
 		Integer betType = Integer.valueOf(param.getBetType());
-		if("1".equals(playType) || "2".equals(playType) || "4".equals(playType)) {
+		if("1".equals(playType) || "2".equals(playType) ) {
 			if(betType > 81) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为8串1");
 			}
 		}else if("3".equals(playType)) {
 			if(betType > 41) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为4串1");
+			}
+		}else if("4".equals(playType)) {
+			if(betType > 61) {
+				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为6串1");
 			}
 		}else if("5".equals(playType)) {
 
