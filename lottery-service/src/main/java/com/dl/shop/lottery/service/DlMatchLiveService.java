@@ -39,8 +39,6 @@ public class DlMatchLiveService extends AbstractService<DlMatchLive> {
     	if(dlMatchLive != null && !StringUtils.isEmpty(dlMatchLive.getMatchLiveInfo())) {
     		String matchLiveInfo = dlMatchLive.getMatchLiveInfo();
     		dto = this.parseJsonStr(matchLiveInfo);
-    	}else {
-    		dto.setMatchStatus(MatchStatusEnums.Fixture.getEnName());   	
     	}
     	return dto;
     }
