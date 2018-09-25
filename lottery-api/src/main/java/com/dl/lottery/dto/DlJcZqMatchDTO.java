@@ -82,4 +82,7 @@ public class DlJcZqMatchDTO implements Serializable{
 	@ApiModelProperty(value = "是否停售，0正常1停售", required = true)
 	private int isShutDown=0;
 	
+	@ApiModelProperty(value = "停售描述")
+	private String shutDownMsg="暂停售卖";
+	
 }
