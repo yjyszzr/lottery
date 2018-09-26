@@ -453,12 +453,12 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dto.setVisitingCell(visitingCell);
 		for(String key: keySet) {
 			if(key.indexOf("l") == 0 && key.length() == 2) {
-				String code = key.substring(1);
+				String code = key.substring(1);//1-6 cell_code 进行编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
 			}else if(key.indexOf("w" ) == 0 && key.length() == 2) {
-				String code = key.substring(1);
+				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 6));//7-12 cell_code 编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
