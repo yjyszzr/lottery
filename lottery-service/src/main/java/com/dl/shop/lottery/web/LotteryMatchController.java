@@ -173,15 +173,15 @@ public class LotteryMatchController {
 	@ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
 	@PostMapping("/saveBasketBallBetInfo")
 	public BaseResult<BetPayInfoDTO> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
-		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-		}
+//		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
+//			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//		}
 		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
 		//设置投注倍数
-		Integer times = param.getTimes();
+		Integer times = param.getTimes(); 
 		if(null == times || times < 1) {
 			param.setTimes(1);
 		}
@@ -461,9 +461,9 @@ public class LotteryMatchController {
 	@PostMapping("/getBasketBallBetInfo")
 	public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
 		//是否停售
-		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-		}
+//		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
+//			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//		}
 		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
