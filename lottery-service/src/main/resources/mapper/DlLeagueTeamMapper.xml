@@ -23,10 +23,10 @@
   </resultMap>
   
   <select id="getBySportteryTeamid" resultMap="BaseResultMap">
-  	select * from dl_league_team where sporttery_teamid=#{sportteryTeamid}
+  	select * from dl_league_team where sporttery_teamid=#{sportteryTeamid};
   </select>
   <select id="getByTeamId" resultMap="BaseResultMap">
-  	select * from dl_league_team where team_id=#{teamId}
+  	select * from dl_league_team where sporttery_teamid = #{teamId} limit 1;
   </select>
   
   <select id="queryLeagueTeamByTeamIds" resultMap="BaseResultMap">
