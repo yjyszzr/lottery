@@ -848,8 +848,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		for(DlJcLqMatchCellDTO dto: betCells) {
 			String cellCode = dto.getCellCode();
 			String[] arr = cellCode.split("");
-			int m = Integer.parseInt(arr[0]);
-			int n = Integer.parseInt(arr[1]);
+			int m = 0;
+			int n = 0;
+			if(arr.length == 1) {
+				m = Integer.parseInt(arr[0]);
+			}else {
+				m = Integer.parseInt(arr[0]);
+				n = Integer.parseInt(arr[1]);
+			}
 			int sum = m+n;//总进球数
 			int sub = m-n;//进球差数
 			List<Double> allOdds = new ArrayList<Double>();
