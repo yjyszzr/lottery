@@ -5,6 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
+    <id column="match_id" jdbcType="INTEGER" property="matchId" />
     <id column="changci_id" jdbcType="INTEGER" property="changciId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
     <result column="league_name" jdbcType="VARCHAR" property="leagueName" />
