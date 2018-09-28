@@ -475,17 +475,17 @@ public class LotteryMatchController {
 		if(StringUtils.isBlank(betTypeStr)) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
-		Integer betTypeInt = Integer.valueOf(betTypeStr);
-		if("1".equals(playType) || "2".equals(playType) || "4".equals(playType)) {
-			if(betTypeInt > 81) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为8串1");
-			}
-		}else if("3".equals(playType)) {
-			if(betTypeInt > 41) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为4串1");
-			}
-		}else if("5".equals(playType)) {
-		}
+//		Integer betTypeInt = Integer.valueOf(betTypeStr);
+//		if("1".equals(playType) || "2".equals(playType) || "4".equals(playType)) {
+//			if(betTypeInt > 81) {
+//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为8串1");
+//			}
+//		}else if("3".equals(playType)) {
+//			if(betTypeInt > 41) {
+//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为4串1");
+//			}
+//		}else if("5".equals(playType)) {
+//		}
 		
 		boolean isCellError = false;
 		boolean isAllSingle = true;
