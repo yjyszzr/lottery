@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.BasketBallHILOLeverlEnum;
 import com.dl.base.enums.MatchBasketBallResultHDCEnum;
 import com.dl.base.enums.MatchBasketBallResultHILOEnum;
+import com.dl.base.enums.MatchBasketResultHdEnum;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
@@ -363,8 +364,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dto.setFixedOdds(fixedOdds);
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), aOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketResultHdEnum.HD_H.getCode().toString(), MatchBasketResultHdEnum.HD_H.getMsg(), hOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketResultHdEnum.HD_D.getCode().toString(), MatchBasketResultHdEnum.HD_D.getMsg(), aOdds));
 	}
 	
 //	PLAY_TYPE_HAD(2,"HDC"), // 让分胜负
@@ -402,8 +403,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dto.setFixedOdds(fixedOdds);
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
-		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHAD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHAD_H.getMsg(), hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHAD_A.getCode().toString(), MatchBasketBallResultHDCEnum.HHAD_A.getMsg(), aOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_H.getMsg(), hOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_A.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_A.getMsg(), aOdds));
 	}
 	
 	/**
@@ -445,10 +446,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
 		Set<String> keySet = jsonObj.keySet();
-		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_H.getCode().toString(), MatchResultHadEnum.HAD_H.getMsg(), null);
+		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_H.getMsg(), null);
 		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
 		dto.setHomeCell(homeCell);
-		DlJcZqMatchCellDTO visitingCell = new DlJcZqMatchCellDTO(MatchResultHadEnum.HAD_A.getCode().toString(), MatchResultHadEnum.HAD_A.getMsg(), null);
+		DlJcZqMatchCellDTO visitingCell = new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_H.getMsg(), null);
 		visitingCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
 		dto.setVisitingCell(visitingCell);
 		for(String key: keySet) {
@@ -458,7 +459,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
 			}else if(key.indexOf("w" ) == 0 && key.length() == 2) {
-				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 6));//7-12 cell_code 编码
+				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 10));//11-16 cell_code 编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
