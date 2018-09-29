@@ -1103,12 +1103,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			for(DlJcLqMatchCellDTO dto: betCells) {
 				Integer cellCode = Integer.parseInt(dto.getCellCode());
 				Double odds = Double.valueOf(dto.getCellOdds());
-				if(MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+				if(MatchBasketResultHdEnum.HD_H.getCode().equals(cellCode)) {
 					hOdds = odds;
-				} else if(MatchResultHadEnum.HAD_D.getCode().equals(cellCode)) {
+				} else if(MatchBasketResultHdEnum.HD_D.getCode().equals(cellCode)) {
 					dOdds = odds;
-				} else if(MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
-					aOdds = odds;
 				} 
 			}
 		}
