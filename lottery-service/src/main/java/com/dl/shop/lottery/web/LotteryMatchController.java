@@ -447,7 +447,7 @@ public class LotteryMatchController {
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
-			if(parseInt < 1 || parseInt > 5) {
+			if(parseInt < 1 || parseInt > 6) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {

@@ -400,6 +400,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		String hOdds = jsonObj.getString("h");
 		String aOdds = jsonObj.getString("a");
 		String fixedOdds = jsonObj.getString("fixedodds");
+		if(StringUtils.isEmpty(fixedOdds)) {
+			fixedOdds = "0.00";
+		}
 		dto.setFixedOdds(fixedOdds);
 		Integer single = jsonObj.getInteger("single");
 		dto.setSingle(single);
@@ -703,6 +706,63 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		tem.setMinOddsList(minOdds);
 		return tem;
 	}
+
+	/**
+	 * 计算混合玩法的排斥后的该场次的几种可能赔率
+	 * @param list 混合玩法 同一场次的所有玩法选项
+	 */
+	private List<Double> allBasketBetComOdds(List<MatchBasketBallBetPlayCellDTO> list) {
+		//比分
+		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
+		MatchBasketBallBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
+		//总进球
+		Optional<MatchBasketBallBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
+		MatchBasketBallBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
+		//让球胜平负
+		Optional<MatchBasketBallBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+		MatchBasketBallBetPlayCellDTO hhadBetPlay = optional2.isPresent()?optional2.get():null;
+		//胜平负
+		Optional<MatchBasketBallBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode())).findFirst();
+		MatchBasketBallBetPlayCellDTO hadBetPlay = optional3.isPresent()?optional3.get():null;
+//		logger.info(JSONHelper.bean2json(hadBetPlay));
+		//半全场
+		Optional<MatchBasketBallBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
+		MatchBasketBallBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
+		/*if(crsBetPlay == null && ttgBetPlay != null) {
+			crsBetPlay = this.bb(ttgBetPlay);
+		}
+		if(crsBetPlay != null) {
+			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+		}
+		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);*/
+		
+		List<Double> rst = new ArrayList<Double>();
+		if(crsBetPlay != null) {
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			rst.addAll(cc);
+		}
+		if(ttgBetPlay != null) {
+			crsBetPlay = this.bb(ttgBetPlay);
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			rst.addAll(cc);
+		}
+		if(hadBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
+//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
+			rst.addAll(c);
+		}
+		if(hafuBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, null, hafuBetPlay);
+			rst.addAll(c);
+		}
+		if(hhadBetPlay != null) {
+			List<Double> c = this.cc2(hhadBetPlay, null, null);
+//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
+			rst.addAll(c);
+		}
+		return rst;
+		
+	}	
 	
 	
 	/**
