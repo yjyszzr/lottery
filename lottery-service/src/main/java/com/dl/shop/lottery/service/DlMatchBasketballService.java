@@ -132,7 +132,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
 		String playType = param.getPlayType();
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
-		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"5".equals(playType)?"":playType);
+		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"6".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
 			if(this.isStop(matchPlay)) {
 				continue;
