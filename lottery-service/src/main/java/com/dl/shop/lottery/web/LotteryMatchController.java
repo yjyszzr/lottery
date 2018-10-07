@@ -1273,7 +1273,7 @@ public class LotteryMatchController {
     }
 	
 	@ApiOperation(value = "查询篮球比赛结果", notes = "查询篮球比赛结果")
-    @PostMapping("/getBetInfoByOrderSn")
+    @PostMapping("/getBasketBallBetInfoByOrderSn")
     public BaseResult<DLLQBetInfoDTO> getBasketBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param) {
 		if(StringUtils.isBlank(param.getOrderSn())) {
 			return ResultGenerator.genFailResult();

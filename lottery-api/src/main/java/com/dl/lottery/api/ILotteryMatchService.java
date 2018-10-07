@@ -25,7 +25,7 @@ public interface ILotteryMatchService {
 	@RequestMapping(path="/lottery/match/getBetInfoByOrderSn", method=RequestMethod.POST)
 	public BaseResult<DLZQBetInfoDTO> getBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param);
 	
-	@RequestMapping(path="/lottery/match/getBetInfoByOrderSn", method=RequestMethod.POST)
+	@RequestMapping(path="/lottery/match/getBasketBallBetInfoByOrderSn", method=RequestMethod.POST)
 	public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param);
 	
 	@RequestMapping(path="/lottery/match/getBetInfoByLotto", method=RequestMethod.POST)
