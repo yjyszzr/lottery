@@ -122,13 +122,5 @@
 		order by match_time desc limit ${num}
 	</select>
 	
-	
-	<select id="getByTeamId" resultMap="BaseResultMap">
-		select * 
-		from dl_match_basketball 
-		where status=1 and
-		((home_team_id = #{homeTeamId} and visiting_team_id=#{visitingTeamId}) or (home_team_id = #{visitingTeamId} and visiting_team_id=#{homeTeamId}))
-		order by match_time desc limit ${num}
-	</select>
   
 </mapper>
