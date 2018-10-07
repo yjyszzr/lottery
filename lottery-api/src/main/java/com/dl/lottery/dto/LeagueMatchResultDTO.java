@@ -23,6 +23,9 @@ public class LeagueMatchResultDTO {
 	@ApiModelProperty(value = "场次id")
 	private String changciId;
 	
+	@ApiModelProperty(value = "场次")
+	private String changci;
+	
 	@ApiModelProperty(value = "比赛时间:时分")
 	private String matchTime;
 	
@@ -44,7 +47,16 @@ public class LeagueMatchResultDTO {
 	@ApiModelProperty(value = "半全场")
 	private String hafu;
 	
+	@ApiModelProperty(value = "篮彩胜负")
+	private String mnl;
 	
+	@ApiModelProperty(value = "篮彩让分胜负")
+	private String hdc;
 	
+	@ApiModelProperty(value = "篮彩胜分差")
+	private String wnm;
+	
+	@ApiModelProperty(value = "篮彩大小分")
+	private String hilo;
 	
 }

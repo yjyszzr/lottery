@@ -62,8 +62,10 @@ import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchPlayBasketballMapper;
+import com.dl.shop.lottery.dao2.DlResultBasketballMapper;
 import com.dl.shop.lottery.model.DlMatchBasketball;
 import com.dl.shop.lottery.model.DlMatchPlayBasketball;
+import com.dl.shop.lottery.model.DlResultBasketball;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
 import com.dl.shop.lottery.model.TMatchBetMaxAndMinOddsList;
 
@@ -90,7 +92,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 	
 	@Resource
 	private	ISwitchConfigService iSwitchConfigService;
+	
+    @Resource
+    private DlResultBasketballMapper dlResultBasketballMapper;
    
+	public List<DlResultBasketball> queryBasketBallResult(List<Integer> changciIdList) {
+		List<DlResultBasketball> resultList = dlResultBasketballMapper.queryMatchResultsByChangciIds(changciIdList);
+		return resultList;
+	}
 	
 	//是否停售
 	public boolean isBasketBallShutDownBet() {

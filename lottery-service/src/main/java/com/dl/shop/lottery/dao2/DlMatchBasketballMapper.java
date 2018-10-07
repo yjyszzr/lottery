@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
 import com.dl.shop.lottery.model.DlMatchBasketball;
+import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface DlMatchBasketballMapper extends Mapper<DlMatchBasketball> {
 	
@@ -25,10 +26,22 @@ public interface DlMatchBasketballMapper extends Mapper<DlMatchBasketball> {
 	public List<BasketBallLeagueInfoDTO> getBasketBallFilterConditions();
 	
 	
+	/**
+	 * 根据查询条件查询赛事结果
+	 * @param dateStr
+	 * @return
+	 */
+	public List<DlMatchBasketball> queryMatchByQueryCondition(@Param("dateStr") String dateStr,@Param("matchIdArr") String[] matchIdArr,
+			@Param("leagueIdArr") String[] leagueIdArr,@Param("matchFinish") String matchFinish);
 	
 	
 	
-	
+	/**
+	 * 查询最近一场比赛
+	 * @param dateStr
+	 * @return
+	 */
+	public List<DlMatchBasketball> queryLatestMatch();
 	
 	
 }

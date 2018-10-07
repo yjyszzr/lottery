@@ -1272,6 +1272,23 @@ public class LotteryMatchController {
     	return ResultGenerator.genSuccessResult("success",dto);
     }
 	
+	@ApiOperation(value = "查询篮球比赛结果", notes = "查询篮球比赛结果")
+    @PostMapping("/getBetInfoByOrderSn")
+    public BaseResult<DLLQBetInfoDTO> getBasketBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param) {
+		if(StringUtils.isBlank(param.getOrderSn())) {
+			return ResultGenerator.genFailResult();
+		}
+		/*OrderSnParam orderSnParam = new OrderSnParam();
+		orderSnParam.setOrderSn(param.getOrderSn());
+		BaseResult<OrderInfoAndDetailDTO> orderWithDetailByOrderSn = orderService.getOrderWithDetailByOrderSn(orderSnParam);
+		if(orderWithDetailByOrderSn.getCode() != 0) {
+			return ResultGenerator.genFailResult();
+		}
+		DLZQBetInfoDTO dto = lotteryMatchService.getBetInfoByOrderInfo(orderWithDetailByOrderSn.getData(), param.getOrderSn());*/
+		DLLQBetInfoDTO dto = lotteryMatchService.getBasketBetInfoByOrderInfo1( param.getOrderSn());
+    	return ResultGenerator.genSuccessResult("success",dto);
+    }
+	
 	@ApiOperation(value = "球队分析信息", notes = "球队分析信息")
     @PostMapping("/matchTeamInfosSum")
     public BaseResult<MatchTeamInfosSumDTO> matchTeamInfosSum(@Valid @RequestBody MatchTeamInfosParam param) {

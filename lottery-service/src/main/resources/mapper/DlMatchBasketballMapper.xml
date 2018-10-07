@@ -47,6 +47,30 @@
   	 order by match_time
   </select>
   
+  <select id="queryMatchByQueryCondition" parameterType ="java.lang.String" resultMap="BaseResultMap">
+  	select * from dl_match_basketball
+  	 where is_del = 0 
+     and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
+  	 	and league_id in
+  	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchIdArr !=null and matchIdArr.length != 0">
+  	 	and match_id in
+  	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
+  	 		#{matchId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchFinish != null and matchFinish != ''">
+  	 	and  status = 0
+  	 </if>
+  	 order by match_sn
+  </select>
+  
+  
     <update id="updateteaminfo">
   update dl_match_basketball set home_team_id=#{homeTeamId}, home_team_name=#{homeTeamName} where match_id=#{matchId}
   </update>
@@ -89,6 +113,15 @@
 	<select id="getByMatchId" resultMap="BaseResultMap">
 		select * from dl_match_basketball where match_id=#{matchId}
 	</select>
+	
+	<select id="getByTeamId" resultMap="BaseResultMap">
+		select * 
+		from dl_match_basketball 
+		where status=1 and
+		((home_team_id = #{homeTeamId} and visiting_team_id=#{visitingTeamId}) or (home_team_id = #{visitingTeamId} and visiting_team_id=#{homeTeamId}))
+		order by match_time desc limit ${num}
+	</select>
+	
 	
 	<select id="getByTeamId" resultMap="BaseResultMap">
 		select * 

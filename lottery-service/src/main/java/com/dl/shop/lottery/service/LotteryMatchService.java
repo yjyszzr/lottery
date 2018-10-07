@@ -43,6 +43,11 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.dl.base.enums.BasketBallHILOLeverlEnum;
+import com.dl.base.enums.MatchBasketBallResultHDCEnum;
+import com.dl.base.enums.MatchBasketBallResultHILOEnum;
+import com.dl.base.enums.MatchBasketPlayTypeEnum;
+import com.dl.base.enums.MatchBasketResultHdEnum;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.MatchResultCrsEnum;
 import com.dl.base.enums.MatchResultHadEnum;
@@ -60,8 +65,10 @@ import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLBetMatchCellDTO;
+import com.dl.lottery.dto.DLLQBetInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DLZQOrderLotteryBetInfoDTO;
+import com.dl.lottery.dto.DlJcLqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqDateMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
@@ -72,6 +79,7 @@ import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
 import com.dl.lottery.dto.LotteryPrintDTO;
+import com.dl.lottery.dto.MatchBasketBallBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetCellDTO;
 import com.dl.lottery.dto.MatchBetPlayCellDTO;
 import com.dl.lottery.dto.MatchBetPlayDTO;
@@ -104,14 +112,18 @@ import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlLeagueMatchResultMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
+import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
+import com.dl.shop.lottery.dao2.DlResultBasketballMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
 import com.dl.shop.lottery.model.DlLeagueInfo;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.DlLeagueTeam;
+import com.dl.shop.lottery.model.DlMatchBasketball;
 import com.dl.shop.lottery.model.DlMatchLive;
+import com.dl.shop.lottery.model.DlResultBasketball;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.model.LotteryMatchPlay;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
@@ -120,6 +132,7 @@ import com.dl.shop.lottery.model.TMatchBetMaxAndMinOddsList;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import io.jsonwebtoken.lang.Collections;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -172,7 +185,13 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
     @Resource
     private DlLeagueMatchResultMapper dlLeagueMatchResultMapper;
-	
+    
+    @Resource
+    private DlMatchBasketballMapper dlMatchBasketballMapper;
+    
+    @Resource
+    private DlMatchBasketballService dlMatchBasketballService;
+    
     @Resource
     private DlMatchLiveService dlMatchLiveService;
     
@@ -1157,6 +1176,41 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 	}
+	
+	private void betBasketNum2(DLBetMatchCellDTO str, int num, List<MatchBasketBallBetPlayCellDTO> list, List<DLBetMatchCellDTO> betList, Map<Integer, String> playTypeNameMap) {
+		LinkedList<MatchBasketBallBetPlayCellDTO> link = new LinkedList<MatchBasketBallBetPlayCellDTO>(list);
+		while(link.size() > 0) {
+			MatchBasketBallBetPlayCellDTO remove = link.remove(0);
+			String changci = remove.getChangci();
+			String playType = remove.getPlayType();
+			String playName = playTypeNameMap.get(Integer.valueOf(playType));
+			if(Integer.valueOf(playType).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HDC.getcode())) {
+				String fixedodds = remove.getFixedodds();
+				playName = StringUtils.isBlank(fixedodds)?playName:("["+fixedodds+"]"+playName);
+			}
+			List<DlJcLqMatchCellDTO> betCells = remove.getBetCells();
+			for(DlJcLqMatchCellDTO betCell: betCells) {
+				DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+				dto.setPlayType(playType);
+				String cellOdds = betCell.getCellOdds();
+				cellOdds = StringUtils.isBlank(cellOdds)?"-":cellOdds;
+				String betContent = str.getBetContent() + changci + "(" + playName + "_"+ betCell.getCellName() + " " + cellOdds +")X";
+				
+				if(num == 1) {
+					betContent = betContent.substring(0, betContent.length()-1);
+				}
+				dto.setBetContent(betContent);
+				dto.setBetType(str.getBetType());
+				dto.setTimes(str.getTimes());
+				if(num == 1) {
+					betList.add(dto);
+				}else {
+					betBasketNum2(dto,num-1,link, betList, playTypeNameMap);
+				}
+			}
+		}
+	}
+	
 	private void betNumtemp(Double srcAmount, int num, List<MatchBetPlayCellDTO> subList, int indexSize, BetResultInfo betResult) {
 //		LinkedList<Integer> link = new LinkedList<Integer>(subListIndex);
 		while(indexSize > 0) {
@@ -2708,6 +2762,50 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @param dateStr
 	 * @return
 	 */
+	public List<LeagueMatchResultDTO> queryJLJcOpenPrizesByDate(JCQueryParam jcParam) {
+		List<LeagueMatchResultDTO> lmrList = new ArrayList<>();
+		String dateStr = jcParam.getDateStr();
+		if(StringUtils.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
+		List<DlMatchBasketball> lotteryMatchList = dlMatchBasketballMapper.queryMatchByQueryCondition(dateStr,null,null,MatchStatusEnums.Played.getCode());
+		if(lotteryMatchList.size() == 0) {
+			return lmrList;
+		}
+		List<Integer> changciIdList = lotteryMatchList.stream().map(s->s.getChangciId()).collect(Collectors.toList());
+		List<DlResultBasketball> resultList = dlMatchBasketballService.queryBasketBallResult(changciIdList);
+		Map<Integer, List<DlResultBasketball>> leagueMatchMap = resultList.stream().collect(Collectors.groupingBy(DlResultBasketball::getChangciId));
+
+		lotteryMatchList.stream().forEach(s->{
+			LeagueMatchResultDTO lmrDto = new LeagueMatchResultDTO();
+			Integer changciId = s.getChangciId();		
+			List<DlResultBasketball> list = leagueMatchMap.get(changciId);
+			if(null != list) {
+				lmrDto.setChangciId(String.valueOf(changciId));
+				lmrDto.setChangci(s.getChangci());
+				lmrDto.setHomeTeamAbbr(s.getHomeTeamAbbr());
+				lmrDto.setVisitTeamAbbr(s.getVisitingTeamAbbr());
+				String matchTime = DateUtil.getCurrentTimeString(Long.valueOf(DateUtil.getTimeSomeDate(s.getMatchTime())),DateUtil.hh_mm_sdf);
+				lmrDto.setMatchTime(matchTime);
+				lmrDto.setWhole(s.getWhole());
+				DlResultBasketball resultBasketBall = list.get(0);
+				String dataJson = resultBasketBall.getDataJson();
+				JSONObject dataObj = JSON.parseObject(dataJson);
+				lmrDto.setMnl(dataObj.getString("mnl_result"));
+				lmrDto.setWnm(dataObj.getString("wnm_result"));
+				lmrDto.setHdc(dataObj.getString("hdc_result"));
+				lmrDto.setHilo(dataObj.getString("hilo_result")+"于"+dataObj.getString("hilo_score"));
+			}
+			lmrList.add(lmrDto);
+		});
+		return lmrList;
+	}
+	
+	/**
+	 * 查询竞彩结果
+	 * @param dateStr
+	 * @return
+	 */
 	public List<LeagueMatchResultDTO> queryJcOpenPrizesByDate(JCQueryParam jcParam) {
 		List<LeagueMatchResultDTO> lmrList = new ArrayList<>();
 		String dateStr = jcParam.getDateStr();
@@ -2889,6 +2987,56 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dto.setBetCells(orderLotteryBetInfos);
 		return dto;
 	}
+	
+	public DLLQBetInfoDTO getBasketBetInfoByOrderInfo1(String orderSn) {
+		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(1);
+		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
+		if(!Collections.isEmpty(allPlays)) {
+			for(LotteryPlayClassify type: allPlays) {
+				playTypeNameMap.put(type.getPlayType(), type.getPlayName());
+			}
+		}
+		List<DLZQOrderLotteryBetInfoDTO> orderLotteryBetInfos = new ArrayList<DLZQOrderLotteryBetInfoDTO>();
+		List<LotteryPrint> prints = lotteryPrintMapper.getByOrderSn(orderSn);
+		for(LotteryPrint lPrint: prints) {
+			String printSp = lPrint.getPrintSp();
+			String stakes = lPrint.getStakes();
+			String betType = lPrint.getBetType();
+			int num = Integer.parseInt(betType)/10;
+			String[] stakeList = stakes.split(";");
+			Map<String, String> map = this.printspMap(printSp);
+			List<MatchBasketBallBetPlayCellDTO> subList = new ArrayList<MatchBasketBallBetPlayCellDTO>(stakeList.length);
+			for(String stake: stakeList) {
+				String[] arr = stake.split("\\|");
+				String playType = arr[0];
+				String playCode = arr[1];
+				String cells = StringUtils.isBlank(map.get(playCode))?arr[2]:map.get(playCode);
+				List<DlJcLqMatchCellDTO> betCells = this.betBasketCells(cells.split(","), playType);
+				int weekNum = Integer.parseInt(String.valueOf(playCode.charAt(8)));
+				String changci = DateUtil.weekDays[weekNum-1] + playCode.substring(9);
+				MatchBasketBallBetPlayCellDTO matchBetPlayCellDto = new MatchBasketBallBetPlayCellDTO();
+				matchBetPlayCellDto.setChangci(changci);
+				matchBetPlayCellDto.setPlayType(playType);
+//				matchBetPlayCellDto.setFixedodds(fixedodds);
+				matchBetPlayCellDto.setBetCells(betCells);
+				subList.add(matchBetPlayCellDto);
+			}
+			List<DLBetMatchCellDTO> betCellList1 = new ArrayList<DLBetMatchCellDTO>();
+			DLBetMatchCellDTO dto = new DLBetMatchCellDTO();
+			dto.setBetType(betType);
+			dto.setTimes(lPrint.getTimes());
+			dto.setBetContent("");
+			dto.setBetStakes("");
+			dto.setAmount(2.0*lPrint.getTimes());
+			this.betBasketNum2(dto, num, subList, betCellList1, playTypeNameMap);
+			orderLotteryBetInfos.add(new DLZQOrderLotteryBetInfoDTO(stakes, betCellList1, lPrint.getStatus()));
+		}
+		DLLQBetInfoDTO dto = new DLLQBetInfoDTO();
+		dto.setBetCells(orderLotteryBetInfos);
+		return dto;
+	}	
+	
+	
 	private Map<String, String> printspMap(String printSp) {
 		Map<String, String> map = new HashMap<String, String>();
 		if(StringUtils.isBlank(printSp)) {
@@ -2940,6 +3088,40 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return dtos;
 	}
+	
+	private List<DlJcLqMatchCellDTO> betBasketCells(String[] cells, String playTypeStr) {
+		int playType = Integer.parseInt(playTypeStr);
+		List<DlJcLqMatchCellDTO> dtos = new ArrayList<DlJcLqMatchCellDTO>(cells.length);
+		for(String cell: cells) {
+			DlJcLqMatchCellDTO dto = new DlJcLqMatchCellDTO();
+			String cellName = cell;
+			if(cell.contains("@")) {
+				String[] split = cell.split("@");
+				cellName = split[0];
+				dto.setCellOdds(split[1]);
+			}
+			dto.setCellCode(cellName);
+			if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_HDC.getcode()) {
+				String name = MatchBasketBallResultHDCEnum.getName(Integer.parseInt(cellName));
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_MNL.getcode()) {
+				String name = MatchBasketResultHdEnum.getName(Integer.parseInt(cellName));
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_WNM.getcode()) {
+				String name = BasketBallHILOLeverlEnum.getName(cellName);
+				dto.setCellName(name);
+				dtos.add(dto);
+			}else if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode()) {
+				String name = MatchBasketBallResultHILOEnum.getName(cellName);
+				dto.setCellName(name);
+				dtos.add(dto);
+			}
+		}
+		return dtos;
+	}
+	
 	public DLZQBetInfoDTO getBetInfoByOrderInfo(OrderInfoAndDetailDTO  orderInfo, String orderSn) {
 		OrderInfoDTO order = orderInfo.getOrderInfoDTO();
 		List<OrderDetailDataDTO> selectByOrderId = orderInfo.getOrderDetailDataDTOs();

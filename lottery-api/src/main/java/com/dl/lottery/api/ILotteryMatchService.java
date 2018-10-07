@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.dl.base.result.BaseResult;
 import com.dl.lottery.dto.DLBetLottoInfoDTO;
+import com.dl.lottery.dto.DLLQBetInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -23,6 +24,9 @@ public interface ILotteryMatchService {
 	
 	@RequestMapping(path="/lottery/match/getBetInfoByOrderSn", method=RequestMethod.POST)
 	public BaseResult<DLZQBetInfoDTO> getBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param);
+	
+	@RequestMapping(path="/lottery/match/getBetInfoByOrderSn", method=RequestMethod.POST)
+	public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfoByOrderSn(@RequestBody GetBetInfoByOrderSn param);
 	
 	@RequestMapping(path="/lottery/match/getBetInfoByLotto", method=RequestMethod.POST)
 	public BaseResult<List<DLBetLottoInfoDTO>> getBetInfoByLotto(@RequestBody GetBetInfoByOrderSn param);

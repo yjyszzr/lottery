@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao2.DlResultBasketballMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlResultBasketball">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="changci_id" jdbcType="INTEGER" property="changciId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="league_from" jdbcType="INTEGER" property="leagueFrom" />
+    <result column="data_json" jdbcType="LONGVARCHAR" property="dataJson" />
+  </resultMap>
+  
+  <select id="queryMatchResultsByChangciIds" resultMap="BaseResultMap">
+  	select * from dl_result_basketball
+  	where changci_id in
+	  <foreach collection="changciIds" item="changciId" index="index" open="(" close=")" separator=",">
+		#{changciId}
+	  </foreach>
+	order by changci_id
+  </select>
+  
+</mapper>

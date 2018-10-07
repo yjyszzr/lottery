@@ -1,7 +1,6 @@
 package com.dl.lottery.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -34,7 +33,7 @@ public class MatchBasketBallBetPlayCellDTO implements Serializable{
 	private String playType;
 	@ApiModelProperty(value="投注选项")
 	private List<DlJcLqMatchCellDTO> betCells;
-	@ApiModelProperty("让球数")
+	@ApiModelProperty("让分数")
 	private String fixedodds;
 	
 	public MatchBasketBallBetPlayCellDTO() {}
