@@ -2989,7 +2989,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	public DLLQBetInfoDTO getBasketBetInfoByOrderInfo1(String orderSn) {
-		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(1);
+		List<LotteryPlayClassify> allPlays = lotteryPlayClassifyMapper.getAllPlays(3);
 		Map<Integer, String> playTypeNameMap = new HashMap<Integer, String>();
 		if(!Collections.isEmpty(allPlays)) {
 			for(LotteryPlayClassify type: allPlays) {
