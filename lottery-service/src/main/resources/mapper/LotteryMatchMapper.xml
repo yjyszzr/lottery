@@ -323,7 +323,7 @@
 	where str_to_date(match_time,'%Y-%m-%d') = #{dateStr} and is_del = 0 and is_show=1 order by leagueId
   </select>
   
-   <select id="getCancelMatches" resultType="java.lang.String">
+  <select id="getCancelMatches" resultType="java.lang.String">
 	select
 		match_sn
 	from

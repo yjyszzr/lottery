@@ -69,8 +69,11 @@ public interface LotteryPrintMapper extends Mapper<LotteryPrint> {
 	public int canBetMoney(@Param("startTime") Integer startTime);
 	//获取是否可投注
 	public int shutDownBetValue();
-	//获取最小投注金额
+	//获取足球最小投注金额
 	public Double getMinBetMoney();
+
+	//获取篮球最小投注金额
+	public Double getMinBasketBetMoney();
 
 	public Double printLotteryRoutAmount();
 	//获取提前出票时间

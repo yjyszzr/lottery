@@ -122,5 +122,9 @@
 		order by match_time desc limit ${num}
 	</select>
 	
-  
+  	
+  <select id="queryLatestMatch" resultMap="BaseResultMap">
+	select * from dl_match_basketball where status=1 order by match_time desc limit 1
+  </select>
+  	
 </mapper>

@@ -7,9 +7,14 @@ import org.apache.ibatis.annotations.Param;
 import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
 import com.dl.shop.lottery.model.DlMatchBasketball;
-import com.dl.shop.lottery.model.LotteryMatch;
 
 public interface DlMatchBasketballMapper extends Mapper<DlMatchBasketball> {
+	/**
+	 * 获取取消的赛事编码
+	 * @param playCodes
+	 * @return
+	 */
+	public List<String> getCancelMatches(@Param("playCodes") List<String> playCodes);
 	
 	/**
 	 * 

@@ -194,15 +194,11 @@ public class LotteryMatchController {
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
-			if(parseInt < 1 || parseInt > 7) {
+			if(parseInt < 1 || parseInt > 6) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
-		}
-		//2 1
-		if(Integer.valueOf(playType).equals(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode())) {
-			return ResultGenerator.genFailResult("暂不支持该玩法！", null);
 		}
 		//校验赛事投注时间
 		MatchBasketBallBetPlayDTO min = matchBetPlays.get(0);
@@ -347,7 +343,7 @@ public class LotteryMatchController {
 				return ticketData1 + betCell.getBetCells().stream().map(cell->cell.getCellCode()+"@"+cell.getCellOdds())
 						.collect(Collectors.joining(","));
 			}).collect(Collectors.joining(";"));
-			dizqUserBetCellInfoDTO.setTicketData(ticketData);;
+			dizqUserBetCellInfoDTO.setTicketData(ticketData);
 			Optional<MatchBasketBallBetCellDTO> findFirst = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
 			if(findFirst.isPresent()) {
 				String fixOdds = findFirst.get().getFixedOdds();
@@ -430,7 +426,6 @@ public class LotteryMatchController {
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
 		}
-		
 		//设置投注倍数
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
@@ -439,8 +434,7 @@ public class LotteryMatchController {
 		if(param.getTimes() >= 99999) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIMES_LIMIT.getCode(), LotteryResultEnum.BET_TIMES_LIMIT.getMsg());
 		}
-		
-		//playType非空判断
+		//playType校验
 		String playType = param.getPlayType();
 		if(StringUtils.isBlank(playType)) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
@@ -453,7 +447,6 @@ public class LotteryMatchController {
 		} catch (NumberFormatException e) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 		}
-		
 		//校验赛事投注时间
 		MatchBasketBallBetPlayDTO min = matchBetPlays.get(0);
 		if(matchBetPlays.size() > 1) {
@@ -465,28 +458,15 @@ public class LotteryMatchController {
 //		if(nowTime - betEndTime > 0) {
 //			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 //		}
+		//校验各个时间段的是否能进行投注
 //		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
 //		if(hideMatch) {
 //			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 //		}
-		
-		//校验串关
+		//校验篮彩的串关
 		String betTypeStr = param.getBetType();
-		if(StringUtils.isBlank(betTypeStr)) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
-		}
-//		Integer betTypeInt = Integer.valueOf(betTypeStr);
-//		if("1".equals(playType) || "2".equals(playType) || "4".equals(playType)) {
-//			if(betTypeInt > 81) {
-//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为8串1");
-//			}
-//		}else if("3".equals(playType)) {
-//			if(betTypeInt > 41) {
-//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为4串1");
-//			}
-//		}else if("5".equals(playType)) {
-//		}
-		
+
+		//校验投注选项，主要查看各个cell值是否为空
 		boolean isCellError = false;
 		boolean isAllSingle = true;
 		for(MatchBasketBallBetPlayDTO betPlay : matchBetPlays){
@@ -522,7 +502,6 @@ public class LotteryMatchController {
 				break;
 			}
 		}
-		//校验投注选项
 		if(isCellError) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
 		}
@@ -531,6 +510,7 @@ public class LotteryMatchController {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
 			}
 		}
+		//对于篮彩得重写这块校验的串关
 		String[] betTypes = betTypeStr.split(",");
 		boolean isCheckedBetType = true;
 		int minBetNum = 9;
@@ -568,23 +548,22 @@ public class LotteryMatchController {
 		if(danNum > danEnableNum) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_DAN_ERR.getCode(), LotteryResultEnum.BET_CELL_DAN_ERR.getMsg());
 		}
-		
 		DLLQBetInfoDTO betInfo = dlMatchBasketballService.getBetInfo1(param);
 		if(Double.valueOf(betInfo.getMaxLotteryMoney()) >= 20000) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_MONEY_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
 		int betNum = betInfo.getBetNum();
+		//投注数量限制，篮彩视情况而定
 		if(betNum >= 10000 || betNum < 0) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_NUMBER_LIMIT.getCode(), LotteryResultEnum.BET_NUMBER_LIMIT.getMsg());
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
-		Double minBetMoney = lotteryMatchService.getMinBetMoney();
+		Double minBetMoney = dlMatchBasketballService.getMinBasketBetMoney();
 		if(orderMoney < minBetMoney) {
 			return ResultGenerator.genSuccessResult("最低投注"+minBetMoney.intValue()+"元!", betInfo);
 		}
+		//篮彩的限额 需要另外定一个字段吗?
 		int canBetMoney = lotteryMatchService.canBetMoney();
 		if(orderMoney > canBetMoney) {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);

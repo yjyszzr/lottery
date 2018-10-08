@@ -118,6 +118,38 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return false;
 	}
 	
+	//获取篮球最小投注金额
+	public Double getMinBasketBetMoney() {
+		Double minBetMoney = lotteryPrintMapper.getMinBasketBetMoney();
+		if(minBetMoney == null) {
+			minBetMoney = 0.0;
+		}
+		return minBetMoney;
+	}
+	
+	public boolean isHideMatch(Integer betEndTime, Integer matchTime) {
+		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
+		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+		//0-9点的赛事在当天不能投注
+		LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+        int nowHour = localTime.getHour();
+        int betHour = betendDateTime.getHour();
+		if(betendDateTime.toLocalDate().isEqual(LocalDate.now())){
+			if(nowHour < 9 && betHour < 9) {
+				if(matchWeekDay < 6) {
+					return true;
+				} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
+					return true;
+				}
+			} else if(nowHour > 22 && betHour > 22) {//23点的比赛不再展示
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public List<BasketBallLeagueInfoDTO> getBasketBallFilterConditions() {
 		List<BasketBallLeagueInfoDTO> filterConditions = dlMatchBasketballMapper.getBasketBallFilterConditions();
 		if(filterConditions == null) {

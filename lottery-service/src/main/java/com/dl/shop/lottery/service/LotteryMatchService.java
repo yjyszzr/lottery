@@ -2795,8 +2795,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lmrDto.setWnm(dataObj.getString("wnm_result"));
 				lmrDto.setHdc(dataObj.getString("hdc_result"));
 				lmrDto.setHilo(dataObj.getString("hilo_result")+"于"+dataObj.getString("hilo_score"));
+				lmrList.add(lmrDto);
 			}
-			lmrList.add(lmrDto);
 		});
 		return lmrList;
 	}

@@ -530,10 +530,13 @@ public class DlDiscoveryPageService {
 				lotteryClassifyList.add(lotteryClassifyForOpenPrize);
 			} else if (LotteryClassifyEnum.JC_BASKETBALL.getcode() == s.getLotteryClassifyId()) {
 				List<DlMatchBasketball> lotteryMatchList = dlMatchBasketballMapper.queryLatestMatch();
-				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
-				lotteryClassifyForOpenPrize.setHomeTeam("竞彩篮球主队");
-				lotteryClassifyForOpenPrize.setScore("2:0");
-				lotteryClassifyForOpenPrize.setVisitingTeam("竞彩篮球客队");
+				DlMatchBasketball basketMatch = lotteryMatchList.get(0);
+				String mmdd = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(basketMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
+				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(basketMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
+				lotteryClassifyForOpenPrize.setDate(mmdd + "(" + zhouji + ")");
+				lotteryClassifyForOpenPrize.setHomeTeam(basketMatch.getHomeTeamAbbr());
+				lotteryClassifyForOpenPrize.setScore(basketMatch.getWhole());
+				lotteryClassifyForOpenPrize.setVisitingTeam(basketMatch.getVisitingTeamAbbr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
 			} 
@@ -1006,7 +1009,7 @@ public class DlDiscoveryPageService {
 		if (StringUtil.isEmpty(dateStr)) {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
-		String prizeMatchStr = list.size() + "比赛已开奖";
+		String prizeMatchStr = list.size() + "场比赛已开奖";
 		dto.setDateStr(dateStr);
 		dto.setPrizeMatchStr(prizeMatchStr);
 		dto.setList(list);
