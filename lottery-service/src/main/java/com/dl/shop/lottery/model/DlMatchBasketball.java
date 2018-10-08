@@ -126,6 +126,7 @@ public class DlMatchBasketball {
     /**
      * 全场比分
      */
+    @Column(name = "whole")
     private String whole;
 
     /**

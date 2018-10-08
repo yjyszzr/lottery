@@ -2776,12 +2776,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		List<DlResultBasketball> resultList = dlMatchBasketballService.queryBasketBallResult(changciIdList);
 		Map<Integer, List<DlResultBasketball>> leagueMatchMap = resultList.stream().collect(Collectors.groupingBy(DlResultBasketball::getChangciId));
 
+//		PLAY_TYPE_MNL(1,"MNL"), //胜负
+//		PLAY_TYPE_HDC(2,"HDC"), // 让分胜负
+//		PLAY_TYPE_WNM(3,"WNM"), //胜分差
+//		PLAY_TYPE_HILO(4,"HILO"); //大小分
+		
 		lotteryMatchList.stream().forEach(s->{
 			LeagueMatchResultDTO lmrDto = new LeagueMatchResultDTO();
 			Integer changciId = s.getChangciId();		
 			List<DlResultBasketball> list = leagueMatchMap.get(changciId);
 			if(null != list) {
 				lmrDto.setChangciId(String.valueOf(changciId));
+				lmrDto.setCupName(s.getLeagueAbbr());
 				lmrDto.setChangci(s.getChangci());
 				lmrDto.setHomeTeamAbbr(s.getHomeTeamAbbr());
 				lmrDto.setVisitTeamAbbr(s.getVisitingTeamAbbr());
@@ -2790,10 +2796,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				lmrDto.setWhole(s.getWhole());
 				DlResultBasketball resultBasketBall = list.get(0);
 				String dataJson = resultBasketBall.getDataJson();
+					
 				JSONObject dataObj = JSON.parseObject(dataJson);
 				lmrDto.setMnl(dataObj.getString("mnl_result"));
 				lmrDto.setWnm(dataObj.getString("wnm_result"));
-				lmrDto.setHdc(dataObj.getString("hdc_result"));
+				lmrDto.setHdc(StringUtils.isEmpty(dataObj.getString("hdc_let"))?dataObj.getString("hdc_result"):"("+dataObj.getString("hdc_let")+")"+dataObj.getString("hdc_result"));
 				lmrDto.setHilo(dataObj.getString("hilo_result")+"于"+dataObj.getString("hilo_score"));
 				lmrList.add(lmrDto);
 			}

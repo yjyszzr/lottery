@@ -71,8 +71,8 @@
   </select>
   
   
-    <update id="updateteaminfo">
-  update dl_match_basketball set home_team_id=#{homeTeamId}, home_team_name=#{homeTeamName} where match_id=#{matchId}
+  <update id="updateteaminfo">
+ 	 update dl_match_basketball set home_team_id=#{homeTeamId}, home_team_name=#{homeTeamName} where match_id=#{matchId}
   </update>
   <select id="allmatches" resultMap="BaseResultMap">
   select * from dl_match_basketball where visiting_team_abbr not in(select team_addr from dl_league_team ) order by visiting_team_abbr;
@@ -106,7 +106,7 @@
 	  	 order by match_time
   </select>
   
-  	<select id="getByChangciId" resultMap="BaseResultMap">
+	 	<select id="getByChangciId" resultMap="BaseResultMap">
 		select * from dl_match_basketball where changci_id=#{changciId}
 	</select>
 	
