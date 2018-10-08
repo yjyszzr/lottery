@@ -539,6 +539,7 @@ public class DlDiscoveryPageService {
 				lotteryClassifyForOpenPrize.setVisitingTeam(basketMatch.getVisitingTeamAbbr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类
 				lotteryClassifyForOpenPrize.setBallColor(0);// 代表篮球的颜色
+				lotteryClassifyList.add(lotteryClassifyForOpenPrize);
 			} 
 //			else if (LotteryClassifyEnum.GD_5IN11.getcode() == s.getLotteryClassifyId()) {
 //				lotteryClassifyForOpenPrize.setDate("08-28(星期二)");
