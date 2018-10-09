@@ -167,7 +167,7 @@ public class LotteryMatchController {
     @PostMapping("/getBasketBallMatchList")
     public BaseResult<DlJcLqMatchListDTO> getBasketBallMatchList(@Valid @RequestBody DlJcLqMatchListParam param) {
 		DlJcLqMatchListDTO dlJcLqMatchListDTO = dlMatchBasketballService.getMatchList(param);
-    	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcLqMatchListDTO);
+    	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcLqMatchListDTO);   
     }
 	
 	@ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")

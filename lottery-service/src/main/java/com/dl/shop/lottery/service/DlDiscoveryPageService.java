@@ -535,6 +535,7 @@ public class DlDiscoveryPageService {
 				String zhouji = DateUtil.getWeekByDateStr(DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(basketMatch.getMatchTime()).longValue(), DateUtil.date_sdf));
 				lotteryClassifyForOpenPrize.setDate(mmdd + "(" + zhouji + ")");
 				lotteryClassifyForOpenPrize.setHomeTeam(basketMatch.getHomeTeamAbbr());
+				lotteryClassifyForOpenPrize.setChangci(basketMatch.getChangci());
 				lotteryClassifyForOpenPrize.setScore(basketMatch.getWhole());
 				lotteryClassifyForOpenPrize.setVisitingTeam(basketMatch.getVisitingTeamAbbr());
 				lotteryClassifyForOpenPrize.setClassifyStatus(1);// 1代表是竞彩类

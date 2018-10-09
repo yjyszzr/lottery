@@ -175,12 +175,13 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
 		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"6".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
-			if(this.isStop(matchPlay)) {
-				continue;
-			}
+//			if(this.isStop(matchPlay)) {
+//				continue;
+//			}
 			
 			Integer changciId = matchPlay.getChangciId();
-			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);	
+			
 			if(matchPlayDto == null) {
 				continue;
 			}
@@ -291,6 +292,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return dlJcLqMatchListDTO;
 	}
 
+	//{'h': '1.69', 'l': '1.80', 'goalline': '', 'p_code': 'HILO', 'o_type': 'F', 'p_id': '490628', 
+	//'p_status': 'Selling', 'single': '0', 'allup': '0', 'fixedodds': '+164.5', 'cbt': '2', 
+	//'int': '2', 'vbt': '0', 'h_trend': '0', 'a_trend': '0', 'd_trend': '0', 'l_trend': '0'}
 	//判断是否停售
 	private boolean isStop(DlMatchPlayBasketball matchPlay) {
 		String playContent = matchPlay.getPlayContent();
