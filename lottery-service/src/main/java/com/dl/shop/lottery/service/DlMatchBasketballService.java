@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.BasketBallHILOLeverlEnum;
 import com.dl.base.enums.MatchBasketBallResultHDCEnum;
 import com.dl.base.enums.MatchBasketBallResultHILOEnum;
+import com.dl.base.enums.MatchBasketPlayTypeEnum;
 import com.dl.base.enums.MatchBasketResultHdEnum;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.MatchResultCrsEnum;
@@ -507,7 +508,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
 			}else if(key.indexOf("w" ) == 0 && key.length() == 2) {
-				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 10));//11-16 cell_code 编码
+				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 6));//11-16 cell_code 编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				visitingCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
@@ -756,112 +757,35 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 	 * 计算混合玩法的排斥后的该场次的几种可能赔率
 	 * @param list 混合玩法 同一场次的所有玩法选项
 	 */
-	private List<Double> allBasketBetComOdds(List<MatchBasketBallBetPlayCellDTO> list) {
-		//比分
-		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
-		//总进球
-		Optional<MatchBasketBallBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
-		//让球胜平负
-		Optional<MatchBasketBallBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO hhadBetPlay = optional2.isPresent()?optional2.get():null;
-		//胜平负
-		Optional<MatchBasketBallBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO hadBetPlay = optional3.isPresent()?optional3.get():null;
-//		logger.info(JSONHelper.bean2json(hadBetPlay));
-		//半全场
-		Optional<MatchBasketBallBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
-		/*if(crsBetPlay == null && ttgBetPlay != null) {
-			crsBetPlay = this.bb(ttgBetPlay);
-		}
-		if(crsBetPlay != null) {
-			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
-		}
-		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);*/
-		
-		List<Double> rst = new ArrayList<Double>();
-		if(crsBetPlay != null) {
-			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
-			rst.addAll(cc);
-		}
-		if(ttgBetPlay != null) {
-			crsBetPlay = this.bb(ttgBetPlay);
-			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
-			rst.addAll(cc);
-		}
-		if(hadBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
-			rst.addAll(c);
-		}
-		if(hafuBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, null, hafuBetPlay);
-			rst.addAll(c);
-		}
-		if(hhadBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, null, null);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
-			rst.addAll(c);
-		}
-		return rst;
-		
-	}	
-	
-	
-	/**
-	 * 计算混合玩法的排斥后的该场次的几种可能赔率
-	 * @param list 混合玩法 同一场次的所有玩法选项
-	 */
 	private List<Double> allbetComOdds(List<MatchBasketBallBetPlayCellDTO> list) {
-		//比分
-		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
+//		public enum MatchBasketPlayTypeEnum {
+//			PLAY_TYPE_MNL(1,"MNL"), //胜负
+//			PLAY_TYPE_HDC(2,"HDC"), // 让分胜负
+//			PLAY_TYPE_WNM(3,"WNM"), //胜分差
+//			PLAY_TYPE_HILO(4,"HILO"); //大小分
+		
+		//胜分差
+		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
-		//总进球
-		Optional<MatchBasketBallBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
+		//胜分差
+		Optional<MatchBasketBallBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchBasketPlayTypeEnum.PLAY_TYPE_WNM.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
-		//让球胜平负
-		Optional<MatchBasketBallBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HHAD.getcode())).findFirst();
+		//让分胜负
+		Optional<MatchBasketBallBetPlayCellDTO> optional2 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchBasketPlayTypeEnum.PLAY_TYPE_HDC.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO hhadBetPlay = optional2.isPresent()?optional2.get():null;
-		//胜平负
-		Optional<MatchBasketBallBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode())).findFirst();
+		//胜负
+		Optional<MatchBasketBallBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchBasketPlayTypeEnum.PLAY_TYPE_MNL.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO hadBetPlay = optional3.isPresent()?optional3.get():null;
-//		logger.info(JSONHelper.bean2json(hadBetPlay));
-		//半全场
-		Optional<MatchBasketBallBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
-		MatchBasketBallBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
-		/*if(crsBetPlay == null && ttgBetPlay != null) {
-			crsBetPlay = this.bb(ttgBetPlay);
-		}
-		if(crsBetPlay != null) {
-			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
-		}
-		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);*/
 		
 		List<Double> rst = new ArrayList<Double>();
 		if(crsBetPlay != null) {
-			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay);
 			rst.addAll(cc);
 		}
 		if(ttgBetPlay != null) {
 			crsBetPlay = this.bb(ttgBetPlay);
-			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
+			List<Double> cc = this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay);
 			rst.addAll(cc);
-		}
-		if(hadBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
-			rst.addAll(c);
-		}
-		if(hafuBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, null, hafuBetPlay);
-			rst.addAll(c);
-		}
-		if(hhadBetPlay != null) {
-			List<Double> c = this.cc2(hhadBetPlay, null, null);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
-			rst.addAll(c);
 		}
 		return rst;
 		
@@ -947,7 +871,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 	
 	
 	private List<Double> cc(MatchBasketBallBetPlayCellDTO crsBetPlay, MatchBasketBallBetPlayCellDTO ttgBetPlay,
-			MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay, MatchBasketBallBetPlayCellDTO hafuBetPlay) {
+			MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay) {
 		//比分的所有项
 		List<DlJcLqMatchCellDTO> betCells = crsBetPlay.getBetCells();//比分的所有选项
 		List<Double> allBetSumOdds = new ArrayList<Double>();
@@ -990,8 +914,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				int sucCode = sub + Integer.valueOf(hhadBetPlay.getFixedodds());
 				if(sucCode > 0) {
 					sucCode = MatchResultHadEnum.HAD_H.getCode();
-				}else if(sucCode < 0) {
-					sucCode = MatchResultHadEnum.HAD_A.getCode();
 				}else {
 					sucCode = MatchResultHadEnum.HAD_D.getCode();
 				}
@@ -1003,19 +925,11 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 					allOdds.add(Double.sum(old, odds));
 				}
 			}
-			//3.胜平负
+			//3.胜负
 			boolean isH=false,isA=false;
 			if(hadBetPlay != null) {
 				List<DlJcLqMatchCellDTO> betCells2 = hadBetPlay.getBetCells();
-				if(sum == 0) {//平
-					int sucCode = MatchResultHadEnum.HAD_D.getCode();
-					Optional<DlJcLqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
-					if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
-						Double odds = Double.valueOf(optional.get().getCellOdds());
-						Double old = allOdds.remove(0);
-						allOdds.add(Double.sum(old, odds));
-					}
-				}else if(sum == 1) {//胜，负
+				if(sum == 1) {//胜，负
 					if(n ==0) {
 						int sucCode = MatchResultHadEnum.HAD_H.getCode();
 						Optional<DlJcLqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
@@ -1052,81 +966,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 							Double old = allOdds.remove(0);
 							allOdds.add(Double.sum(old, odds));
 						}
-					}else {//平
-						int sucCode = MatchResultHadEnum.HAD_D.getCode();
-						Optional<DlJcLqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode).findFirst();
-						if(optional.isPresent()) {//选中的胜平负玩法的可用赔率
-							Double odds = Double.valueOf(optional.get().getCellOdds());
-							Double old = allOdds.remove(0);
-							allOdds.add(Double.sum(old, odds));
-						}
-					}
-				}
-			}
-			//4.半全场
-			if(hafuBetPlay != null) {
-				List<DlJcLqMatchCellDTO> betCells2 = hafuBetPlay.getBetCells();
-				if(sum == 0) {
-					Optional<DlJcLqMatchCellDTO> optional = betCells2.stream().filter(betCell->MatchResultHafuEnum.HAFU_DD.getCode().equals(betCell.getCellCode())).findFirst();
-					if(optional.isPresent()) {
-						Double odds = Double.valueOf(optional.get().getCellOdds());
-						Double old = allOdds.remove(0);
-						allOdds.add(Double.sum(old, odds));
-					}
-				}else if(sum  == 1) {
-					Double old = allOdds.remove(0);
-					if(isH) {
-						for(DlJcLqMatchCellDTO betCell: betCells2) {
-							String betCellCode = betCell.getCellCode();
-							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DH.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_HH.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-						}
-					}
-					if(isA) {
-						for(DlJcLqMatchCellDTO betCell: betCells2) {
-							String betCellCode = betCell.getCellCode();
-							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DA.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AA.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-						}
-					}
-				}else {
-					Double old = allOdds.remove(0);
-					if(sub > 0) {
-						for(DlJcLqMatchCellDTO betCell: betCells2) {
-							String betCellCode = betCell.getCellCode();
-							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DH.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_HH.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-							if(n != 0 && betCellCode.equals(MatchResultHafuEnum.HAFU_AH.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-						}
-					} else if(sub < 0) {
-						for(DlJcLqMatchCellDTO betCell: betCells2) {
-							String betCellCode = betCell.getCellCode();
-							if(betCellCode.equals(MatchResultHafuEnum.HAFU_DA.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AA.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-							if(n != 0 && betCellCode.equals(MatchResultHafuEnum.HAFU_HA.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-						}
-					}else {
-						for(DlJcLqMatchCellDTO betCell: betCells2) {
-							String betCellCode = betCell.getCellCode();
-							if(betCellCode.equals(MatchResultHafuEnum.HAFU_HD.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_DD.getCode()) || betCellCode.equals(MatchResultHafuEnum.HAFU_AD.getCode())) {
-								Double odds = Double.valueOf(betCell.getCellOdds());
-								allOdds.add(Double.sum(old, odds));
-							}
-						}
 					}
 				}
 			}
@@ -1135,167 +974,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return allBetSumOdds;
 	}
 	
-	
-	
-	private List<Double> cc2(MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay,
-			MatchBasketBallBetPlayCellDTO hafuBetPlay) {
-		List<Double> allBetSumOdds = new ArrayList<Double>(1);
-		//胜平负
-		List<Double> allOdds = new ArrayList<Double>();
-		Double hOdds = null, dOdds = null, aOdds = null;
-		if(hadBetPlay != null){
-			List<DlJcLqMatchCellDTO> betCells = hadBetPlay.getBetCells();
-			for(DlJcLqMatchCellDTO dto: betCells) {
-				Integer cellCode = Integer.parseInt(dto.getCellCode());
-				Double odds = Double.valueOf(dto.getCellOdds());
-				if(MatchBasketResultHdEnum.HD_H.getCode().equals(cellCode)) {
-					hOdds = odds;
-				} else if(MatchBasketResultHdEnum.HD_D.getCode().equals(cellCode)) {
-					dOdds = odds;
-				} 
-			}
-		}
-		//半全场
-		List<Double> hList = new ArrayList<Double>(0), dList = new ArrayList<Double>(0), aList=new ArrayList<Double>(0);
-		if(hafuBetPlay != null) {
-			List<DlJcLqMatchCellDTO> betCells = hafuBetPlay.getBetCells();
-			for(DlJcLqMatchCellDTO dto: betCells) {
-				Integer checkCode = Integer.parseInt(dto.getCellCode().substring(1));
-				Double odds = Double.valueOf(dto.getCellOdds());
-				if(hOdds == null && dOdds == null && aOdds == null) {
-					if(MatchResultHadEnum.HAD_H.getCode().equals(checkCode)) {
-						hList.add(odds);
-					}else if(MatchResultHadEnum.HAD_D.getCode().equals(checkCode)){
-						dList.add(odds);
-					}else if(MatchResultHadEnum.HAD_A.getCode().equals(checkCode)){
-						aList.add(odds);
-					}
-				} else {
-					if(hOdds != null && MatchResultHadEnum.HAD_H.getCode().equals(checkCode)) {
-						hList.add(odds+hOdds);
-					}
-					if(dOdds != null && MatchResultHadEnum.HAD_D.getCode().equals(checkCode)) {
-						dList.add(odds+dOdds);					
-					}
-					if(aOdds != null && MatchResultHadEnum.HAD_A.getCode().equals(checkCode)) {
-						aList.add(odds+aOdds);
-					}
-				}
-			}
-			
-		}
-		//整合前两种
-		boolean ish=false,isd=false,isa=false;
-		if(hOdds != null || hList.size() > 0) {
-			if(hList.size() == 0) {
-				hList.add(hOdds);
-			} 
-			ish = true;
-		}
-		if(dOdds != null || dList.size() > 0) {
-			if(dList.size() == 0) {
-				dList.add(dOdds);
-			}
-			isd = true;
-		}
-		if(aOdds != null || aList.size() > 0) {
-			if(aList.size() == 0) {
-				aList.add(aOdds);
-			}
-			isa = true;
-		}
-		//让球
-//		Double hhOdds = null, hdOdds = null, haOdds = null;
-		if(hhadBetPlay != null) {
-			List<DlJcLqMatchCellDTO> betCells = hhadBetPlay.getBetCells();
-			Integer fixNum = Integer.valueOf(hhadBetPlay.getFixedodds());
-			List<Double> naList = new ArrayList<Double>(aList.size()*3);
-			List<Double> ndList = new ArrayList<Double>(dList.size()*3);
-			List<Double> nhList = new ArrayList<Double>(hList.size()*3);
-			for(DlJcLqMatchCellDTO dto: betCells) {
-				Integer cellCode = Integer.parseInt(dto.getCellCode());
-				Double odds = Double.valueOf(dto.getCellOdds());
-				if(!ish && !isd && !isa) {
-					allOdds.add(odds);
-				} else {
-					if(fixNum > 0) {
-						if(ish && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
-						/*	hList.forEach(item->Double.sum(item, odds));
-							nhList.addAll(hList);*/
-							for(Double item: hList) {
-								nhList.add(Double.sum(item, odds));
-							}
-						}
-						if(isd && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
-							/*dList.forEach(item->Double.sum(item, odds));
-							ndList.addAll(dList);*/
-							for(Double item: dList) {
-								ndList.add(Double.sum(item, odds));
-							}
-						}
-						if(isa) {
-							if(!MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
-								List<Double> tnaList = new ArrayList<Double>(aList);
-								for(Double item: tnaList) {
-									naList.add(Double.sum(item, odds));
-								}
-							}
-							/*tnaList.forEach(item->Double.sum(item, odds));
-							naList.addAll(tnaList);*/
-						}
-					}else {
-						if(ish) {
-							if(!MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
-								List<Double> tnhList = new ArrayList<Double>(hList);
-								/*tnhList.forEach(item->Double.sum(item, odds));
-								nhList.addAll(tnhList);*/
-								for(Double item: tnhList) {
-									nhList.add(Double.sum(item, odds));
-								}
-							}
-						}
-						if(isd && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
-							/*dList.forEach(item->Double.sum(item, odds));
-							ndList.addAll(dList);*/
-							for(Double item: dList) {
-								ndList.add(Double.sum(item, odds));
-							}
-						}
-						if(isa && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
-							/*aList.forEach(item->Double.sum(item, odds));
-							naList.addAll(aList);*/
-							for(Double item: aList) {
-								naList.add(Double.sum(item, odds));
-							}
-						}
-					}
-				}
-			}
-			if(nhList != null) {
-				allOdds.addAll(nhList);
-			}
-			if(naList != null) {
-				allOdds.addAll(naList);
-			}
-			if(ndList != null) {
-				allOdds.addAll(ndList);
-			}
-		}
-//		if(allOdds.size() == 0){
-			if(hList != null) {
-				allOdds.addAll(hList);
-			}
-			if(aList != null) {
-				allOdds.addAll(aList);
-			}
-			if(dList != null) {
-				allOdds.addAll(dList);
-			}
-//		}
-//		logger.info("--------------" + JSONHelper.bean2json(allOdds));
-		allBetSumOdds.addAll(allOdds);
-		return allBetSumOdds;
-	}
 
 	/**
 	 * 计算投注组合

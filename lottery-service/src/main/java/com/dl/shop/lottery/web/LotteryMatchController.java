@@ -563,11 +563,11 @@ public class LotteryMatchController {
 		if(orderMoney < minBetMoney) {
 			return ResultGenerator.genSuccessResult("最低投注"+minBetMoney.intValue()+"元!", betInfo);
 		}
-		//篮彩的限额 需要另外定一个字段吗?
-		int canBetMoney = lotteryMatchService.canBetMoney();
-		if(orderMoney > canBetMoney) {
-			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);
-		}
+		//篮彩的限额 当天卖出的限制额度
+//		int canBetMoney = lotteryMatchService.canBetMoney();
+//		if(orderMoney > canBetMoney) {
+//			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);
+//		}
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	
