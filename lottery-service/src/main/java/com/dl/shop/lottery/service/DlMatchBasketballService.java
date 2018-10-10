@@ -567,10 +567,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		long end1 = System.currentTimeMillis();
 		logger.info("1计算投注排列用时：" + (end1-start)+ " - "+start);
 		Map<String, List<MatchBasketBallBetPlayCellDTO>> playCellMap = this.getMatchBetPlayMap(matchBellCellList);
-//		Map<String, List<MatchBetPlayCellDTO>> playCellMap = matchBetPlayMap.getPlayCellMap();
-//		List<Double> minOddsList = matchBetPlayMap.getMinOddsList();
-//		minOddsList.sort((item1,item2)->Double.compare(item1, item2));
-//		logger.info("-----------最小赔率展示："+JSONHelper.bean2json(minOddsList));
 		TMatchBetMaxAndMinOddsList tem = this.maxMoneyBetPlayCellsForLottery(playCellMap);
 		List<Double> maxOddsList = tem.getMaxOddsList();
 		List<Double> minOddsList = tem.getMinOddsList();
@@ -580,29 +576,21 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Double totalMaxMoney = 0.0;
 		Double totalMinMoney = Double.MAX_VALUE;
 		int betNums = 0;
-//		BetResultInfo betResult = new BetResultInfo();
 		int ticketNum = 0;
-//		double srcMoney = 2.0*param.getTimes();
 		Double maxLotteryMoney = 0.0;
-//		Map<String, Integer> cellNumsMap = matchBetPlayMap.getCellNumsMap();
-//		Map<String, List<List<MatchBetPlayCellDTO>>> betPlayCellMap = new HashMap<String, List<List<MatchBetPlayCellDTO>>>();
 		for(String betType: indexMap.keySet()) {
 			char[] charArray = betType.toCharArray();
 			int num = Integer.valueOf(String.valueOf(charArray[0]));
 			List<String> betIndexList = indexMap.get(betType);
-//			List<List<MatchBetPlayCellDTO>> result = new ArrayList<List<MatchBetPlayCellDTO>>(betIndexList.size());
 			for(String str: betIndexList) {//所有注组合
 				String[] strArr = str.split(",");
 				Double maxMoney = 2.0*param.getTimes();
 				Double minMoney = 2.0*param.getTimes();
-//				List<String> playCodes = new ArrayList<String>(strArr.length);
 				Integer betNum = 1;
 				for(String item: strArr) {//单注组合
 					MatchBasketBallBetPlayDTO betPlayDto = matchBellCellList.get(Integer.valueOf(item));
-//					String playCode = betPlayDto.getPlayCode();
 					Integer cellNums = betPlayDto.getMatchBetCells().stream().map(item1->item1.getBetCells().size()).reduce(Integer::sum).get();
 					betNum*=cellNums;
-//					playCodes.add(playCode);
 					Double double1 = maxOddsList.get(Integer.valueOf(item));
 					maxMoney = maxMoney*double1;
 					Double double2 = minOddsList.get(Integer.valueOf(item));
@@ -617,45 +605,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				log.info("minMoney:" + minMoney);
 				totalMaxMoney+=maxMoney;
 				totalMinMoney=Double.min(totalMinMoney, minMoney);
-//				List<MatchBetPlayCellDTO> dtos = new ArrayList<MatchBetPlayCellDTO>(0);
-//				this.matchBetPlayCellsForLottery(playCodes.size(), playCellMap, playCodes, dtos, result);
 				betNums+=betNum;
 			}
-//			betPlayCellMap.put(betType, result);
-			//计算投票信息
-			/*for(List<MatchBetPlayCellDTO> subList: result) {
-				Integer oldBetNum = betResult.getBetNum();//记录原始值 
-				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
-				ticketNum++;
-				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
-				if(betMoney > maxLotteryMoney) {
-					maxLotteryMoney = betMoney;
-				}
-			}*/
-			/*minMoney = 2.0*param.getTimes();
-			double allOdds = minOddsList.subList(0, num).stream().reduce((odds,item)-> odds*=item).get();
-			minMoney = minMoney*allOdds;*/
 		}
 		logger.info("***************最大预测奖金"+totalMaxMoney);
 		logger.info("***************最小预测奖金"+totalMinMoney);
 		logger.info("***************投注数："+betNums);
-//		logger.info("***************投注数2："+betNums2);
 		long end3 = System.currentTimeMillis();
 		logger.info("3计算投注基础信息用时：" + (end3-end2)+ " - "+start);
-		/*for(String betType: betPlayCellMap.keySet()) {
-			char[] charArray = betType.toCharArray();
-			int num = Integer.valueOf(String.valueOf(charArray[0]));
-			List<List<MatchBetPlayCellDTO>> betIndexList = betPlayCellMap.get(betType);
-			for(List<MatchBetPlayCellDTO> subList: betIndexList) {
-				Integer oldBetNum = betResult.getBetNum();//记录原始值 
-				this.betNumtemp(srcMoney, num, subList, subList.size(), betResult);
-				ticketNum++;
-				Double betMoney = (betResult.getBetNum() - oldBetNum)*param.getTimes()*2.0;
-				if(betMoney > maxLotteryMoney) {
-					maxLotteryMoney = betMoney;
-				}
-			}
-		}*/
 		//页面返回信息对象
 		DLLQBetInfoDTO betInfoDTO = new DLLQBetInfoDTO();
 		betInfoDTO.setMaxLotteryMoney(maxLotteryMoney.toString());
@@ -679,22 +636,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 	
 	private Map<String, List<MatchBasketBallBetPlayCellDTO>> getMatchBetPlayMap(List<MatchBasketBallBetPlayDTO> matchBellCellList) {
 		//整理投注对象
-//		TMatchBetInfoWithMinOddsList tbml = new TMatchBetInfoWithMinOddsList();
-//		List<Double> minList = new ArrayList<Double>(matchBellCellList.size());
 		Map<String, List<MatchBasketBallBetPlayCellDTO>> playCellMap = new HashMap<String, List<MatchBasketBallBetPlayCellDTO>>(matchBellCellList.size());
-//		Map<String, Double> minCellOddsMap = new HashMap<String, Double>(matchBellCellList.size());
-//		Map<String, Integer> cellNumsMap = new HashMap<String, Integer>(matchBellCellList.size());
 		matchBellCellList.forEach(betPlayDto->{
 			String playCode = betPlayDto.getPlayCode();
 			List<MatchBasketBallBetCellDTO> matchBetCells = betPlayDto.getMatchBetCells();
 			List<MatchBasketBallBetPlayCellDTO> list = playCellMap.get(playCode);
-//			Double minCellOdds = minCellOddsMap.get(playCode);
-//			Integer cellNums = cellNumsMap.get(playCode);
 			if(list == null) {
 				list = new ArrayList<MatchBasketBallBetPlayCellDTO>(matchBetCells.size());
 				playCellMap.put(playCode, list);
-//				minCellOdds = Double.MAX_VALUE;
-//				cellNums = 0;
 			}
 			
 			for(MatchBasketBallBetCellDTO cell: matchBetCells) {
@@ -702,25 +651,11 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				playCellDto.setPlayType(cell.getPlayType());
 				List<DlJcLqMatchCellDTO> betCells = cell.getBetCells();
 				playCellDto.setBetCells(betCells);
-//				logger.info("=====cell.getFixedOdds()============  " + cell.getFixedOdds());
+
 				playCellDto.setFixedodds(cell.getFixedOdds());
 				list.add(playCellDto);
-				/*if(betCells.size() == 1) {
-					String cellOdds = betCells.get(0).getCellOdds();
-					minCellOdds = Double.min(minCellOdds, Double.valueOf(cellOdds));
-				}else {
-					String cellOdds = betCells.stream().min((item1,item2)->Double.valueOf(item1.getCellOdds()).compareTo(Double.valueOf(item2.getCellOdds()))).get().getCellOdds();
-					minCellOdds = Double.min(minCellOdds, Double.valueOf(cellOdds));
-				}*/
 			}
-//			cellNums += matchBetCells.size();
-//			minCellOddsMap.put(playCode, minCellOdds);
-//			cellNumsMap.put(playCode, cellNums);
 		});
-		/*minList.addAll(minCellOddsMap.values());
-		tbml.setMinOddsList(minList);
-		tbml.setPlayCellMap(playCellMap);*/
-//		tbml.setCellNumsMap(cellNumsMap);
 		return playCellMap;
 	}
 	//计算混合玩法最大投注中奖金额
@@ -730,7 +665,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		List<Double> minOdds = new ArrayList<Double>(playCellMap.size());
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBasketBallBetPlayCellDTO> list = playCellMap.get(playCode);
-			List<Double> allbetComOdds = this.allbetComOdds(list);
+			List<Double> allbetComOdds = new ArrayList<>();    //this.allbetComOdds(list);
+			allbetComOdds.add(1.32);
+			allbetComOdds.add(2.32);
+			allbetComOdds.add(1.50);
 			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
 			if(CollectionUtils.isEmpty(allbetComOdds)) {
 				continue;
@@ -753,11 +691,23 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return tem;
 	}
 
+
+		
+	
+	
 	/**
 	 * 计算混合玩法的排斥后的该场次的几种可能赔率
 	 * @param list 混合玩法 同一场次的所有玩法选项
 	 */
 	private List<Double> allbetComOdds(List<MatchBasketBallBetPlayCellDTO> list) {
+//		PLAY_TYPE_HHAD(1,"hhad"), //让球胜平负
+//		PLAY_TYPE_HAD(2,"had"), // 胜平负
+//		PLAY_TYPE_CRS(3,"crs"), //比分
+//		PLAY_TYPE_TTG(4,"ttg"), //总进球
+//		PLAY_TYPE_HAFU(5,"hafu"), //半全场
+//		PLAY_TYPE_MIX(6,"mix"), //混合过关
+//		PLAY_TYPE_TSO(7,"tso"); //2选1
+		
 		//比分
 		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
@@ -770,17 +720,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		//胜平负
 		Optional<MatchBasketBallBetPlayCellDTO> optional3 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAD.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO hadBetPlay = optional3.isPresent()?optional3.get():null;
-//		logger.info(JSONHelper.bean2json(hadBetPlay));
 		//半全场
 		Optional<MatchBasketBallBetPlayCellDTO> optional4 = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_HAFU.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO hafuBetPlay = optional4.isPresent()?optional4.get():null;
-		/*if(crsBetPlay == null && ttgBetPlay != null) {
-			crsBetPlay = this.bb(ttgBetPlay);
-		}
-		if(crsBetPlay != null) {
-			return this.cc(crsBetPlay, ttgBetPlay, hhadBetPlay, hadBetPlay, hafuBetPlay);
-		}
-		return this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);*/
 		
 		List<Double> rst = new ArrayList<Double>();
 		if(crsBetPlay != null) {
@@ -794,7 +736,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		}
 		if(hadBetPlay != null) {
 			List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
 			rst.addAll(c);
 		}
 		if(hafuBetPlay != null) {
@@ -803,12 +744,13 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		}
 		if(hhadBetPlay != null) {
 			List<Double> c = this.cc2(hhadBetPlay, null, null);
-//			log.info("hadBetPlay is not null: "+ JSONHelper.bean2json(c));
 			rst.addAll(c);
 		}
 		return rst;
 		
 	}
+
+
 	
 	private List<Double> cc(MatchBasketBallBetPlayCellDTO crsBetPlay, MatchBasketBallBetPlayCellDTO ttgBetPlay,
 			MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay, MatchBasketBallBetPlayCellDTO hafuBetPlay) {
@@ -998,6 +940,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		}
 		return allBetSumOdds;
 	}
+	
+	
 	
 	private List<Double> cc2(MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay,
 			MatchBasketBallBetPlayCellDTO hafuBetPlay) {
