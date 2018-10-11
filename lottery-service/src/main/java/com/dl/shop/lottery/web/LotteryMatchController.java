@@ -190,7 +190,7 @@ public class LotteryMatchController {
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
-			if(parseInt < 1 || parseInt > 6) {
+			if(parseInt < 1 || parseInt > 6 || parseInt == 5) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {
@@ -201,7 +201,7 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
+		
 		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
@@ -277,6 +277,19 @@ public class LotteryMatchController {
 					if(minBetNum > num) {
 						minBetNum = num;
 					}
+					if("3".equals(playType)) {
+						if(num > 4) {
+							isCheckedBetType = false;
+						}
+					}else if("4".equals(playType)) {
+						if(num > 6) {
+							isCheckedBetType = false;
+						}
+					}else if("6".equals(playType)) {
+						if(num == 1) {
+							isCheckedBetType = false;
+						}
+					}					
 					if(num < 1 || num > 8) {
 						isCheckedBetType = false;
 					}
@@ -378,39 +391,6 @@ public class LotteryMatchController {
 		return ResultGenerator.genSuccessResult("success", payToken);
 	}
 	
-	/**
-	 * 河南 出票规定
-	 * 选择一场比赛进行的投注为单关投注；选择2场或2场以上比赛进行串关投注的为过关投注。
-		1、胜负：串关最高上限为8串1。
-		2、让分胜负：串关最高上限为8串1。
-		3、胜分差：串关最高上限为4串1。
-		4、大小分：串关最高上限为6串1。
-		5、混合过关：串关最高上限根据投注玩法而定。
-	 * @param playType
-	 * @param betType
-	 * @return
-	 */
-	public BaseResult<DLZQBetInfoDTO> validBetType(DlJcZqMatchBetParam param) {
-		String playType = param.getPlayType();
-		Integer betType = Integer.valueOf(param.getBetType());
-		if("1".equals(playType) || "2".equals(playType) ) {
-			if(betType > 81) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为8串1");
-			}
-		}else if("3".equals(playType)) {
-			if(betType > 41) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为4串1");
-			}
-		}else if("4".equals(playType)) {
-			if(betType > 61) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), "最高串关方式为6串1");
-			}
-		}else if("5".equals(playType)) {
-
-		}
-		return null;
-	}
-	
 	@ApiOperation(value = "计算篮球投注信息", notes = "计算篮球投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBasketBallBetInfo")
 	public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
@@ -437,7 +417,7 @@ public class LotteryMatchController {
 		}
 		try {
 			int parseInt = Integer.parseInt(playType);
-			if(parseInt < 1 || parseInt > 6) {
+			if(parseInt < 1 || parseInt > 6 || parseInt == 5) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_ENABLE.getMsg());
 			}
 		} catch (NumberFormatException e) {
@@ -460,7 +440,6 @@ public class LotteryMatchController {
 		}
 		//校验篮彩的串关
 		String betTypeStr = param.getBetType();
-
 		//校验投注选项，主要查看各个cell值是否为空
 		boolean isCellError = false;
 		boolean isAllSingle = true;
@@ -505,7 +484,7 @@ public class LotteryMatchController {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
 			}
 		}
-		//对于篮彩得重写这块校验的串关
+		
 		String[] betTypes = betTypeStr.split(",");
 		boolean isCheckedBetType = true;
 		int minBetNum = 9;
@@ -521,6 +500,19 @@ public class LotteryMatchController {
 					if(minBetNum > num) {
 						minBetNum = num;
 					}
+					if("3".equals(playType)) {
+						if(num > 4) {
+							isCheckedBetType = false;
+						}
+					}else if("4".equals(playType)) {
+						if(num > 6) {
+							isCheckedBetType = false;
+						}
+					}else if("6".equals(playType)) {
+						if(num == 1) {
+							isCheckedBetType = false;
+						}
+					}
 					if(num < 1 || num > 8) {
 						isCheckedBetType = false;
 					}
@@ -531,6 +523,7 @@ public class LotteryMatchController {
 			}
 		} catch (NumberFormatException e) {
 		}
+		
 		if(!isCheckedBetType) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
 		}
@@ -548,23 +541,20 @@ public class LotteryMatchController {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MONEY_LIMIT.getMsg(), betInfo);
 		}
 		int betNum = betInfo.getBetNum();
-		//投注数量限制，篮彩视情况而定
+
 		if(betNum >= 10000 || betNum < 0) {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_NUMBER_LIMIT.getMsg(), betInfo);
 		}
 		String betMoney = betInfo.getMoney();
 		Double orderMoney = Double.valueOf(betMoney);
-		Double minBetMoney = dlMatchBasketballService.getMinBasketBetMoney();
+		Double minBetMoney = lotteryMatchService.getMinBetMoney();
 		if(orderMoney < minBetMoney) {
 			return ResultGenerator.genSuccessResult("最低投注"+minBetMoney.intValue()+"元!", betInfo);
 		}
-		//篮彩的限额 当天卖出的限制额度
-//		int canBetMoney = lotteryMatchService.canBetMoney();
-//		if(orderMoney > canBetMoney) {
-//			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);
-//		}
+
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
+
 	
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")
