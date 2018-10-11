@@ -169,9 +169,9 @@ public class LotteryMatchController {
 	@ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
 	@PostMapping("/saveBasketBallBetInfo")
 	public BaseResult<String> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
-//		if(lotteryMatchService.isShutDownBet()) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-//		}
+		if(lotteryMatchService.isShutDownBet()) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -205,13 +205,13 @@ public class LotteryMatchController {
 		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-//		if(nowTime - betEndTime > 0) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
-//		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-//		if(hideMatch) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
+		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
 		//校验串关
 		String betTypeStr = param.getBetType();
 		if(StringUtils.isBlank(betTypeStr)) {
@@ -415,9 +415,9 @@ public class LotteryMatchController {
 	@PostMapping("/getBasketBallBetInfo")
 	public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
 		//是否停售
-//		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-//		}
+		if(dlMatchBasketballService.isBasketBallShutDownBet()) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
 		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -451,14 +451,13 @@ public class LotteryMatchController {
 		int betEndTime = dlMatchBasketballService.getBetEndTime(min.getMatchTime());
 		Date now = new Date();
 		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-//		if(nowTime - betEndTime > 0) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
-		//校验各个时间段的是否能进行投注
-//		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-//		if(hideMatch) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
+		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
 		//校验篮彩的串关
 		String betTypeStr = param.getBetType();
 
