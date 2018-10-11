@@ -213,9 +213,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
 			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
 			//投注结束
-//			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-//				continue;
-//			}
+			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+				continue;
+			}
 			DlJcLqMatchDTO matchDto = new DlJcLqMatchDTO();
 			matchDto.setMatchId(match.getMatchId());
 			matchDto.setIsShutDown(0);
@@ -502,12 +502,12 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		visitingCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
 		dto.setVisitingCell(visitingCell);
 		for(String key: keySet) {
-			if(key.indexOf("l") == 0 && key.length() == 2) {
+			if(key.indexOf("w") == 0 && key.length() == 2) {
 				String code = key.substring(1);//1-6 cell_code 进行编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
 				homeCell.getCellSons().add(new DlJcZqMatchCellDTO(code, name, odds));
-			}else if(key.indexOf("w" ) == 0 && key.length() == 2) {
+			}else if(key.indexOf("l" ) == 0 && key.length() == 2) {
 				String code = String.valueOf((Integer.valueOf(key.substring(1)) + 6));//11-16 cell_code 编码
 				String odds = jsonObj.getString(key);
 				String name = BasketBallHILOLeverlEnum.getName(code);
@@ -550,8 +550,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		dto.setFixedOdds(fixedOdds);
 		dto.setSingle(single);
 		fixedOdds = fixedOdds.replace("+", "");
-		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.L_SCORE.getCode().toString(), "小于"+fixedOdds+"分", hOdds));
-		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.H_SCORE.getCode().toString(), "大于"+fixedOdds+"分", aOdds));
+		dto.setHomeCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.L_SCORE.getCode().toString(), "小于"+fixedOdds+"分", aOdds));
+		dto.setVisitingCell(new DlJcZqMatchCellDTO(MatchBasketBallResultHILOEnum.H_SCORE.getCode().toString(), "大于"+fixedOdds+"分", hOdds));
 	}
 	
 	/**

@@ -84,7 +84,7 @@
 		league_name as leagueName,
 		league_abbr as leagueAddr
 	from dl_match_basketball 
-	where  is_del = 0 and is_show=1 and league_id != -1
+	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
   	order by leagueId
   </select>
   
