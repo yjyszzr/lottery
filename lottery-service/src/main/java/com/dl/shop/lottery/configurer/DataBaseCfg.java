@@ -1,4 +1,4 @@
-package com.dl.shop.base.cfg;
+package com.dl.shop.lottery.configurer;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

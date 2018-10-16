@@ -1,9 +1,9 @@
 package com.dl.shop.base;
 
-import com.dl.shop.base.cfg.DataBaseCfg;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
+import com.dl.shop.lottery.configurer.DataBaseCfg;
 
 public class TestDB {
 

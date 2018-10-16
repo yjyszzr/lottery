@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import com.dl.shop.base.cfg.DataBaseCfg;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
+import com.dl.shop.lottery.configurer.DataBaseCfg;
 
 public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 

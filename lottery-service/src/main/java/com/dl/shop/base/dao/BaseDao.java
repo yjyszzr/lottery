@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import com.dl.shop.base.cfg.DataBaseCfg;
+
+import com.dl.shop.lottery.configurer.DataBaseCfg;
 
 public class BaseDao {
 	protected final String TAG = getClass().getSimpleName();
