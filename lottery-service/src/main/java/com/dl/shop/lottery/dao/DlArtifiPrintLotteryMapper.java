@@ -1,14 +1,11 @@
 package com.dl.shop.lottery.dao;
 
 import java.util.List;
-import org.apache.ibatis.annotations.Param;
 import com.dl.base.mapper.Mapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 
 public interface DlArtifiPrintLotteryMapper extends Mapper<DlArtifiPrintLottery> {
 	
-	int batchInsert(@Param("dlArtifiLotterys") List<DlArtifiPrintLottery> dlArtifiLotterys);
-
 	/**
 	 * 获取今天未分配的票
 	 * @return

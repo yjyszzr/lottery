@@ -15,13 +15,6 @@
     <result column="operation_time" jdbcType="INTEGER" property="operationTime" />
   </resultMap>
   
-  <insert id="batchInsert" useGeneratedKeys="true" keyProperty="matchId">
-    insert into dl_artifi_print_lottery(order_sn,add_time) values
-    	<foreach collection="dlArtifiLotterys" item="dlArtifiLottery" separator=",">
-	  		(#{dlArtifiLottery.orderSn},#{dlArtifiLottery.addTime})
-  		</foreach> 
-  </insert>
-  
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
   	select * from dl_artifi_print_lottery 
   	where operation_status = 0
