@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.dl.base.util.DateUtil;
@@ -81,6 +82,7 @@ public class ArtifiDyQueueService{
 	/**
 	 * 轮训查询总队列
 	 */
+	@Scheduled(cron = "0/5 * * * * ?")
 	public void onTimerExec() {
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
