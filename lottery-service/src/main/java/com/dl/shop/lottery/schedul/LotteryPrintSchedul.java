@@ -1,28 +1,21 @@
 package com.dl.shop.lottery.schedul;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
-
 import javax.annotation.Resource;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.dl.order.api.IOrderService;
-import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
-import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
-import com.dl.shop.lottery.service.DlLeagueMatchResultService;
-import com.dl.shop.lottery.service.DlMatchSupportService;
-import com.dl.shop.lottery.service.LotteryMatchService;
-import com.dl.shop.lottery.service.LotteryPrintService;
-import com.dl.shop.lottery.service.LotteryRewardService;
+import com.dl.shop.lottery.service.ArtifiDyQueueService;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @EnableScheduling
 public class LotteryPrintSchedul {
+	
+	@Resource
+	private ArtifiDyQueueService artifiDyQueueService;
 	
 //	@Resource
 //	private LotteryPrintService lotteryPrintService;
@@ -149,5 +142,6 @@ public class LotteryPrintSchedul {
 	@Scheduled(cron = "0/5 * *  * * ?")
 	public void artifiPrintLotterySchedual() {
 		log.info("[artifiPrintLotterySchedual]" + "...");
+		artifiDyQueueService.onTimerExec();
 	}
 }
