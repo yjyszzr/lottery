@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.task.dao.DlArtifiPrintLotteryMapper">
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlArtifiPrintLottery">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="order_status" jdbcType="TINYINT" property="orderStatus" />
+    <result column="operation_status" jdbcType="TINYINT" property="operationStatus" />
+    <result column="add_time" jdbcType="INTEGER" property="addTime" />
+    <result column="admin_id" jdbcType="INTEGER" property="adminId" />
+    <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
+    <result column="operation_time" jdbcType="INTEGER" property="operationTime" />
+  </resultMap>
+  
+  <insert id="batchInsert" useGeneratedKeys="true" keyProperty="matchId">
+    insert into dl_artifi_print_lottery(order_sn,add_time) values
+    	<foreach collection="dlArtifiLotterys" item="dlArtifiLottery" separator=",">
+	  		(#{dlArtifiLottery.orderSn},#{dlArtifiLottery.addTime})
+  		</foreach> 
+  </insert>
+  
+  <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
+  	select * from dl_artifi_print_lottery 
+  	where operation_status = 0
+  </select>
+  
+  
+  <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
+  	select * from dl_artifi_print_lottery 
+  	where operation_status = 0
+  </select>
+  
+
+  
+  <update id="updateArtifiLotteryPrint">
+    update dl_artifi_print_lottery set
+           order_status = #{orderStatus},
+           operation_status = #{operationStatus},
+           add_time = #{addTime},
+           admin_id = #{adminId},
+           admin_name = #{adminName},
+           operation_time = #{operationTime}
+    where 
+           order_sn = #{orderSn}
+  </update>
+  
+  <select id="selectArtifiLotteryPrintByOrderSn" parameterType="com.dl.shop.lottery.model.DlArtifiPrintLottery" resultMap="BaseResultMap">
+  	select * from dl_artifi_print_lottery
+  	where order_sn = #{orderSn}
+  </select>
+  
+  
+</mapper>
