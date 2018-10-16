@@ -82,7 +82,6 @@ public class ArtifiDyQueueService{
 	/**
 	 * 轮训查询总队列
 	 */
-	@Scheduled(cron = "0/5 * * * * ?")
 	public void onTimerExec() {
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
