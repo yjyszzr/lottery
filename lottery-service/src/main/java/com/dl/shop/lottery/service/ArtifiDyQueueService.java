@@ -85,14 +85,14 @@ public class ArtifiDyQueueService{
 		logger.info("[onTimerExec]" + " dlArtifiPrintMapper:" + dlArtifiPrintMapper);
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-		logger.debug("[onTimerExec]" + "获取今日未分配订单:" + rList.size());
+		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rList.size());
 		if(rList != null && rList.size() > 0) {
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			//获取在线人数据
 			List<String> userList = ArtifiLoginManager.getInstance().getCopyList();
-			logger.debug("[onTimerExec]" + "在线人数:" + userList.size());
+			logger.info("[onTimerExec]" + "在线人数:" + userList.size());
 			for(int i = 0;i < userList.size();i++) {
-				logger.debug("[onTimerExec]" + " uid:" + userList.get(i));
+				logger.info("[onTimerExec]" + " uid:" + userList.get(i));
 			}
 			logger.debug("==================================================");
 			if(userList != null && userList.size() > 0) {

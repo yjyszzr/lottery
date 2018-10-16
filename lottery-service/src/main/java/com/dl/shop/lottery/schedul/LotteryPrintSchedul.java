@@ -139,9 +139,9 @@
 ////		
 ////	}
 //	
-////	@Scheduled(cron = "0/120 * *  * * ?")
-////	public void artifiPrintLotterySchedual() {
-////		log.info("[artifiPrintLotterySchedual]" + "======.....");
-////		artifiDyQueueService.onTimerExec();
-////	}
+//	@Scheduled(cron = "0/120 * *  * * ?")
+//	public void artifiPrintLotterySchedual() {
+//		log.info("[artifiPrintLotterySchedual]" + "======.....");
+//		artifiDyQueueService.onTimerExec();
+//	}
 //}
