@@ -139,7 +139,7 @@ public class LotteryPrintSchedul {
 //		
 //	}
 	
-	@Scheduled(cron = "0/5 * *  * * ?")
+	@Scheduled(cron = "0/120 * *  * * ?")
 	public void artifiPrintLotterySchedual() {
 		log.info("[artifiPrintLotterySchedual]" + "...");
 		artifiDyQueueService.onTimerExec();
