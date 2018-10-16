@@ -28,13 +28,6 @@
   </select>
   
   
-  <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
-  	select * from dl_artifi_print_lottery 
-  	where operation_status = 0
-  </select>
-  
-
-  
   <update id="updateArtifiLotteryPrint">
     update dl_artifi_print_lottery set
            order_status = #{orderStatus},
