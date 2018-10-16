@@ -82,7 +82,7 @@ public class ArtifiDyQueueService{
 	 * 轮训查询总队列
 	 */
 	public void onTimerExec() {
-		logger.info("[onTimerExec]");
+		logger.info("[onTimerExec]" + " dlArtifiPrintMapper:" + dlArtifiPrintMapper);
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
 		logger.debug("[onTimerExec]" + "获取今日未分配订单:" + rList.size());
