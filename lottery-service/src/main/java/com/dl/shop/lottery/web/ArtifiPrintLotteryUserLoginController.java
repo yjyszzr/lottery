@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,7 @@ import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 @RestController
 @RequestMapping("/artifiPrintLotteryUserLogin")
 public class ArtifiPrintLotteryUserLoginController {
+	private final static Logger logger = LoggerFactory.getLogger(ArtifiPrintLotteryUserLoginController.class);
 	@Resource
 	private ArtifiPrintLotteryUserLoginService artifiPrintLotteryUserLoginService;
 
@@ -71,7 +74,9 @@ public class ArtifiPrintLotteryUserLoginController {
 		}
 		// 校验验证码的正确性
 		String mobile = userLoginMobileParam.getMobile();
+		logger.info("手机号码为:======================" + mobile);
 		String cacheSmsCode = smsService.getRedisSmsCode(mobile);
+		logger.info("验证码为:======================" + cacheSmsCode);
 		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode())) {
 			LoginLogParam loginLogParam = new LoginLogParam();
 			loginLogParam.setUserId(-1);
