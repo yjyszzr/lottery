@@ -48,7 +48,7 @@ public class ArtifiPrintLotteryUserLoginController {
 
 	@Resource
 	private ArtifiDyQueueService artifiDyQueueService;
-	
+
 	/**
 	 * 发送短信验证码
 	 * 
@@ -108,14 +108,16 @@ public class ArtifiPrintLotteryUserLoginController {
 		// 调用用户登录
 		artifiDyQueueService.userLogin(mobile);
 		// 清空验证码
-		smsService.deleteRedisSmsCode(mobile);
-		LoginLogParam loginLogParam = new LoginLogParam();
-		loginLogParam.setUserId(Integer.parseInt(userLoginDTO.getMobile()));
-		loginLogParam.setLoginType(0);
-		loginLogParam.setLoginSstatus(0);
-		loginLogParam.setLoginParams(loginParams);
-		loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
-		userLoginService.loginLog(loginLogParam);
+		// smsService.deleteRedisSmsCode(mobile);
+		// LoginLogParam loginLogParam = new LoginLogParam();
+		// loginLogParam.setUserId(Integer.parseInt(userLoginDTO.getMobile()));
+		// loginLogParam.setLoginType(0);
+		// loginLogParam.setLoginSstatus(0);
+		// loginLogParam.setLoginParams(loginParams);
+		// loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
+		// userLoginService.loginLog(loginLogParam);
+		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam, request);
+
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO);
 	}
 
