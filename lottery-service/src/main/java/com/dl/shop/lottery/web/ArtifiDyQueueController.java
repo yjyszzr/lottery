@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiOperation;
 public class ArtifiDyQueueController {
 	private final static Logger logger = LoggerFactory.getLogger(DlArticleController.class);
 	@Resource
-	private ArtifiDyQueueService artifiDyQueueServlce;
+	private ArtifiDyQueueService artifiDyQueueService;
 	@Resource
 	private DataBaseCfg baseCfg;
 	
@@ -40,7 +40,7 @@ public class ArtifiDyQueueController {
 	@PostMapping("/tasktimer")
 	public BaseResult<?> timerTaskSchedual(@RequestBody EmptyParam emprt) {
 		logger.info("[timerTaskSchedual]" + "人工分单...");
-		artifiDyQueueServlce.onTimerExec();
+		artifiDyQueueService.onTimerExec();
 		return ResultGenerator.genSuccessResult();
 	}
 	
@@ -63,6 +63,20 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("手机号码不能为空"); 
 		}
-		return artifiDyQueueServlce.modifyOrderStatus(mobile,params.getOrderSn(),params.getOperationStatus());
+		return artifiDyQueueService.modifyOrderStatus(mobile,params.getOrderSn(),params.getOperationStatus());
+	}
+	
+	@ApiOperation(value = "测试登录", notes = "测试登录成功")
+	@PostMapping("/testlogin")
+	public BaseResult<?> testLogin(@RequestBody ArtifiLotteryQueryParam params){
+		artifiDyQueueService.userLogin(params.getMobile());
+		return ResultGenerator.genSuccessResult();
+	}
+	
+	@ApiOperation(value = "测试退出登录", notes = "测试退出登录")
+	@PostMapping("/testlogout")
+	public BaseResult<?> testLogout(@RequestBody ArtifiLotteryQueryParam params){
+		artifiDyQueueService.userLogout(params.getMobile());
+		return ResultGenerator.genSuccessResult(); 
 	}
 }
