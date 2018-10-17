@@ -86,9 +86,9 @@ public class ArtifiDyQueueService{
 	public void onTimerExec() {
 		logger.info("[onTimerExec]" + " dlArtifiPrintMapper:" + dlArtifiPrintMapper);
 		//获取今天未分配的订单
-		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rList.size());
-		if(rList != null && rList.size() > 0) {
+		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rSumList.size());
+		if(rSumList != null && rSumList.size() > 0) {
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			//获取在线人数据
 			List<String> userList = ArtifiLoginManager.getInstance().getCopyList();
@@ -96,7 +96,7 @@ public class ArtifiDyQueueService{
 			for(int i = 0;i < userList.size();i++) {
 				logger.info("[onTimerExec]" + " uid:" + userList.get(i));
 			}
-			logger.debug("==================================================");
+			logger.info("==================================================");
 			if(userList != null && userList.size() > 0) {
 				Map<String,List<DDyArtifiPrintEntity>> mMap = new HashMap<String,List<DDyArtifiPrintEntity>>();
 				for(String uid : userList) {
@@ -104,20 +104,28 @@ public class ArtifiDyQueueService{
 					mMap.put(uid,mLotteryList);
 				}
 				//开始分配订单
-				for(int i = 0;rList.size() > 0 && i < userList.size();i++) {
+				for(int i = 0;rSumList.size() > 0 && i < userList.size();i++) {
 					//获取随机一个用户
 					String uid = getRandomItem(userList);
+					userList.remove(uid);
 					//该用户的队列大小
 					List<DDyArtifiPrintEntity> mLotteryList = mMap.get(uid);
 					//如果不够30个，填充满30个
-					if(rList.size() > 0 && mLotteryList.size() < QUEUE_SIZE) {
+					if(rSumList.size() > 0 && mLotteryList.size() < QUEUE_SIZE) {
 						int size = QUEUE_SIZE - mLotteryList.size();
-						List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,uid,rList,size);
-						for(DlArtifiPrintLottery entity : allocList) {
-							allocList.remove(entity);
-							//更改已分配的状态
-							entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
-							dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+						List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,uid,rSumList,size);
+						if(allocList != null && allocList.size() > 0) {
+							for(DlArtifiPrintLottery entity : allocList) {
+								//总的队列移除
+								rSumList.remove(entity);
+								//更改已分配的状态
+								entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+								//操作人
+								int adminId = Integer.valueOf(uid);
+								entity.setAdminId(adminId);
+								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminId:" + adminId + " opStatus:" + entity.getOperationStatus());
+								dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+							}
 						}
 					}
 				}
@@ -128,6 +136,7 @@ public class ArtifiDyQueueService{
 	private List<DlArtifiPrintLottery> allocLottery(DyArtifiPrintDao dyArtifiDao,String uid,List<DlArtifiPrintLottery> rList,int size){
 		List<DlArtifiPrintLottery> mList = new ArrayList<DlArtifiPrintLottery>();
 		int s = rList.size() > size ? size : rList.size();
+		logger.info("[allocLottery]" + " s:" + s);
 		for(int i = 0;i < s ;i++){
 			DlArtifiPrintLottery entity = rList.get(i);
 			//该item数据分配给uid
