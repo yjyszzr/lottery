@@ -23,6 +23,8 @@ import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
+import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
+
 import io.swagger.annotations.ApiOperation;
 
 /**
@@ -41,6 +43,8 @@ public class ArtifiDyQueueController {
 	
 	@Resource
 	private IOrderService iOrderService;
+	@Resource
+	private ArtifiPrintLotteryUserLoginService artifiPrintLotteryUserLoginService;
 	
 	@ApiOperation(value = "人工分单", notes = "人工分单")
 	@PostMapping("/tasktimer")
@@ -57,6 +61,8 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
+		//刷新登录态
+		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
 		List<String> orderList = new ArrayList<String>();

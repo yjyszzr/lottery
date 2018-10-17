@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
@@ -55,12 +56,12 @@ public class ArtifiDyQueueService{
 	 * 退出登录
 	 * @param obj
 	 */
-	public void userLogout(String uid) {
-		logger.info("[userLogout]" + " uid:" + uid + " 退出登录...");
-		ArtifiLoginManager.getInstance().onLogout(uid);
+	public void userLogout(String mobile) {
+		logger.info("[userLogout]" + " uid:" + mobile + " 退出登录...");
+		ArtifiLoginManager.getInstance().onLogout(mobile);
 		//获取该用户队列内容
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(uid,0);
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
 		for(DDyArtifiPrintEntity dyArtiPrintEntity : rList) {
 			//查询到该订单信息
 			DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
@@ -70,14 +71,14 @@ public class ArtifiDyQueueService{
 			if(list != null && list.size() > 0) {
 				DlArtifiPrintLottery dlEntity = list.get(0);
 				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
-				dlEntity.setAdminName(uid);
+				dlEntity.setAdminName(mobile);
 				dlEntity.setOperationTime(DateUtil.getCurrentTimeLong());
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
-				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + uid);
+				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
 			}
 		}
 		//清空回收该该用户队列
-		dyArtifiDao.dropTable(uid);
+		dyArtifiDao.dropTable(mobile);
 	}
 
 	/**
