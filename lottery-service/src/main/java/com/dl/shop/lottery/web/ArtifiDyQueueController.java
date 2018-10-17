@@ -63,7 +63,7 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("手机号码不能为空"); 
 		}
-		return artifiDyQueueService.modifyOrderStatus(mobile,params.getOrderSn(),params.getOperationStatus());
+		return artifiDyQueueService.modifyOrderStatus(mobile,params.getOrderSn(),params.getOrderStatus());
 	}
 	
 	@ApiOperation(value = "测试登录", notes = "测试登录成功")

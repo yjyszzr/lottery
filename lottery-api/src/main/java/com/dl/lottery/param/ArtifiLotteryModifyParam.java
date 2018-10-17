@@ -17,5 +17,5 @@ public class ArtifiLotteryModifyParam {
 
 	@ApiModelProperty(value="订单状态  0待确认1出票成功2出票失败,默认为待确认状态")
 	@NotEmpty
-	private Integer operationStatus;
+	private Integer orderStatus;
 }
