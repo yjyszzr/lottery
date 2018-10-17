@@ -1,6 +1,13 @@
 package com.dl.shop.base.dao.entity;
 
-public class DDyArtifiPrintEntity {
+import java.io.Serializable;
+
+import lombok.Data;
+
+@Data
+public class DDyArtifiPrintEntity implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	public long _id;
 	public String orderSn;
 }

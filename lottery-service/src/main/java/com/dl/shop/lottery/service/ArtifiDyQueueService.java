@@ -58,7 +58,7 @@ public class ArtifiDyQueueService{
 		ArtifiLoginManager.getInstance().onLogout(uid);
 		//获取该用户队列内容
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(uid);
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(uid,0);
 		for(DDyArtifiPrintEntity dyArtiPrintEntity : rList) {
 			//查询到该订单信息
 			DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
@@ -98,7 +98,7 @@ public class ArtifiDyQueueService{
 			if(userList != null && userList.size() > 0) {
 				Map<String,List<DDyArtifiPrintEntity>> mMap = new HashMap<String,List<DDyArtifiPrintEntity>>();
 				for(String uid : userList) {
-					List<DDyArtifiPrintEntity> mLotteryList = dyArtifiDao.listAll(uid);
+					List<DDyArtifiPrintEntity> mLotteryList = dyArtifiDao.listAll(uid,0);
 					mMap.put(uid,mLotteryList);
 				}
 				//开始分配订单
