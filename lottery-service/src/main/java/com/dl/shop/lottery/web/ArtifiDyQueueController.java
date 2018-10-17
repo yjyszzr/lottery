@@ -54,7 +54,7 @@ public class ArtifiDyQueueController {
 	@PostMapping("/query")
 	public BaseResult<?> queryOrderList(@RequestBody ArtifiLotteryQueryParam param){
 		String mobile = param.getMobile();
-		if(mobile == null || mobile.length() <= 0) {
+		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
