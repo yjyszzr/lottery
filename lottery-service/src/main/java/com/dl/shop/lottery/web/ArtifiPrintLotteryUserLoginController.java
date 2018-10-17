@@ -81,6 +81,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		String mobile = userLoginMobileParam.getMobile();
 		logger.info("手机号码为:======================" + mobile);
 		String cacheSmsCode = smsService.getRedisSmsCode(mobile);
+		cacheSmsCode = cacheSmsCode.replace("\"", "");
 		logger.info("redis返回的验证码为:======================" + cacheSmsCode);
 		logger.info("手机端录入的验证码为:======================" + userLoginMobileParam.getSmsCode().toString());
 		logger.info("验证码为比较状态:======================" + cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString()));
