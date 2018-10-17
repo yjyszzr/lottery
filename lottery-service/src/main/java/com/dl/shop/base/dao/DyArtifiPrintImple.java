@@ -54,11 +54,11 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 	}
 
 	@Override
-	public List<DDyArtifiPrintEntity> listAll(String userId) {
+	public List<DDyArtifiPrintEntity> listAll(String userId,long start){
 		// TODO Auto-generated method stub
 		List<DDyArtifiPrintEntity> rList = new ArrayList<DDyArtifiPrintEntity>();
 		String tableName = getTNameByLgCode(userId, TABLE_NAME);
-		String sql = "select * from " + tableName;
+		String sql = "select * from " + tableName + " where _id > " + start + ";";
 		ResultSet rs = this.exeQuery(sql, null);
 		if(rs != null) {
 			try {

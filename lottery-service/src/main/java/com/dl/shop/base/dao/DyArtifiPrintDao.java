@@ -30,7 +30,7 @@ public interface DyArtifiPrintDao {
 	 * @param userId
 	 * @return
 	 */
-	public List<DDyArtifiPrintEntity> listAll(String userId);
+	public List<DDyArtifiPrintEntity> listAll(String userId,long start);
 	
 	/**
 	 * 清空该队列数据
