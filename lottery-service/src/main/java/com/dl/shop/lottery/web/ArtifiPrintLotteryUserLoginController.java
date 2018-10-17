@@ -99,9 +99,9 @@ public class ArtifiPrintLotteryUserLoginController {
 		}
 		MobileInfoParam mobileInfo = new MobileInfoParam();
 		mobileInfo.setMobile(mobile);
-		UserLoginDTO userLoginDTO = userLoginService.findByMobile(mobileInfo);
+		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
 		// 校验手机号是否存在
-		if (null == userLoginDTO) {
+		if (null == userLoginDTO.getData()) {
 			LoginLogParam loginLogParam = new LoginLogParam();
 			loginLogParam.setUserId(-1);
 			loginLogParam.setLoginType(0);
@@ -128,7 +128,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		// 调用用户登录
 		artifiDyQueueService.userLogin(mobile);
 
-		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO);
+		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
 	}
 
 	@ApiOperation(value = "退出", notes = "退出")
