@@ -112,9 +112,6 @@ public class ArtifiPrintLotteryUserLoginController {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
 		// 将手机号存入redis,置为在线状态,过期时间为15分钟
-		stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
-		// 调用用户登录
-		artifiDyQueueService.userLogin(mobile);
 		// 清空验证码
 		// smsService.deleteRedisSmsCode(mobile);
 		// LoginLogParam loginLogParam = new LoginLogParam();
@@ -125,6 +122,11 @@ public class ArtifiPrintLotteryUserLoginController {
 		// loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
 		// userLoginService.loginLog(loginLogParam);
 		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
+
+		logger.info("登录信息为:======================" + userLoginDTO);
+		stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
+		// 调用用户登录
+		artifiDyQueueService.userLogin(mobile);
 
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO);
 	}
