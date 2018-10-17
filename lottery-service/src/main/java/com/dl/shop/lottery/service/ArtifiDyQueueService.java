@@ -121,9 +121,8 @@ public class ArtifiDyQueueService{
 								//更改已分配的状态
 								entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 								//操作人
-								int adminId = Integer.valueOf(uid);
-								entity.setAdminId(adminId);
-								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminId:" + adminId + " opStatus:" + entity.getOperationStatus());
+								entity.setAdminName(uid);
+								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + uid + " opStatus:" + entity.getOperationStatus());
 								dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 							}
 						}
@@ -183,7 +182,7 @@ public class ArtifiDyQueueService{
 			printLottery = list.get(0);
 			printLottery.setOrderSn(orderSn);
 			printLottery.setOrderStatus((byte)orderStatus);
-			printLottery.setAdminId(Integer.valueOf(mobile));
+			printLottery.setAdminName(mobile);
 			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
 		}
