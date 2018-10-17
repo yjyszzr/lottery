@@ -27,6 +27,7 @@ import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.LoginLogParam;
 import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserLoginWithSmsParam;
+import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 
 @RestController
@@ -45,6 +46,9 @@ public class ArtifiPrintLotteryUserLoginController {
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
 
+	@Resource
+	private ArtifiDyQueueService artifiDyQueueService;
+	
 	/**
 	 * 发送短信验证码
 	 * 
@@ -101,7 +105,8 @@ public class ArtifiPrintLotteryUserLoginController {
 		}
 		// 将手机号存入redis,置为在线状态,过期时间为15分钟
 		stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
-		// 调用怀腾接口
+		// 调用用户登录
+		artifiDyQueueService.userLogin(mobile);
 		// 清空验证码
 		smsService.deleteRedisSmsCode(mobile);
 		LoginLogParam loginLogParam = new LoginLogParam();
@@ -118,6 +123,7 @@ public class ArtifiPrintLotteryUserLoginController {
 	@PostMapping("/logout")
 	public void logout(@RequestBody String mobile) {
 		stringRedisTemplate.delete(mobile);
-		// 调用怀腾接口
+		// 调用用户退出登录
+		artifiDyQueueService.userLogout(mobile);
 	}
 }
