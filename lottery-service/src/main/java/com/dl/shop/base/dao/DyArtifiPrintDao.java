@@ -51,4 +51,13 @@ public interface DyArtifiPrintDao {
 	 * @return
 	 */
 	public int addDyArtifiPrintInfo(String userId,DDyArtifiPrintEntity entity);
+	
+
+	/**
+	 * 删除数据
+	 * @param uid
+	 * @param orderSn
+	 * @return
+	 */
+	public int delData(String uid,String orderSn);
 }

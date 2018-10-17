@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.dl.base.result.BaseResult;
+import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
@@ -67,7 +72,7 @@ public class ArtifiDyQueueService{
 			//该订单信息回收到总池
 			if(list != null && list.size() > 0) {
 				DlArtifiPrintLottery dlEntity = list.get(0);
-				dlEntity.setOperationStatus((byte) 0);
+				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
 				dlEntity.setAdminId(Integer.valueOf(uid));
 				dlEntity.setOperationTime(DateUtil.getCurrentTimeLong());
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
@@ -114,7 +119,7 @@ public class ArtifiDyQueueService{
 						for(DlArtifiPrintLottery entity : allocList) {
 							allocList.remove(entity);
 							//更改已分配的状态
-							entity.setOperationStatus((byte) 1);
+							entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 							dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 						}
 					}
@@ -146,5 +151,36 @@ public class ArtifiDyQueueService{
 			r = mList.get(index);
 		}
 		return r;
+	}
+	
+	/**
+	 * 更改订单状态
+	 * @param uid
+	 * @param orderSn
+	 * @param status
+	 * @return
+	 */
+	public BaseResult<?> modifyOrderStatus(String mobile,String orderSn,int orderStatus){
+		//删除队列数据
+		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+		int cnt = dyArtifiDao.delData(mobile,orderSn);
+		if(cnt <= 0) {
+			return ResultGenerator.genFailResult("订单查询失败");
+		}
+		//回收到主池，更改主池队列状态
+		//查询到该订单信息
+		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
+		dlArtifiPrintLottery.setOrderSn(orderSn);
+		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
+		DlArtifiPrintLottery printLottery = null;
+		if(list != null && list.size() > 0) {
+			printLottery = list.get(0);
+			printLottery.setOrderSn(orderSn);
+			printLottery.setOrderStatus((byte)orderStatus);
+			printLottery.setAdminId(Integer.valueOf(mobile));
+			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
+		}
+		return ResultGenerator.genSuccessResult();
 	}
 }

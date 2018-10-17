@@ -4,6 +4,14 @@ import javax.persistence.*;
 
 @Table(name = "dl_artifi_print_lottery")
 public class DlArtifiPrintLottery {
+	
+	public static final byte ORDER_STATUS_INIT = 0;
+	public static final byte ORDER_STATUS_PRINTSUCC = 1;//出票成功
+	public static final byte ORDER_STATUS_PRINTFAILURE = 2;//出票失败
+	
+	public static final byte OPERATION_STATUS_INIT = 0;	//未分配
+	public static final byte OPERATION_STATUS_ALLOCATED = 1;//已分配
+	
     /**
      * id
      */

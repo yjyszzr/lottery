@@ -114,4 +114,13 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		return this.exeUpdate(sql,null);
 	}
 
+	@Override
+	public int delData(String uid, String orderSn) {
+		// TODO Auto-generated method stub
+		String tableName = getTNameByLgCode(uid,TABLE_NAME);
+		String sql = "delete from " + tableName + " where order_sn=?;";
+		String[] params = {orderSn};
+		return exeUpdate(sql, params);
+	}
+
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
@@ -53,5 +54,15 @@ public class ArtifiDyQueueController {
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
 		return ResultGenerator.genSuccessResult(null,rList);
+	}
+	
+	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
+	@PostMapping("/modify")
+	public BaseResult<?> modifyOrderStatus(@RequestBody ArtifiLotteryModifyParam params){
+		String mobile = params.getMobile();
+		if(mobile == null || mobile.length() <= 0) {
+			return ResultGenerator.genFailResult("手机号码不能为空"); 
+		}
+		return artifiDyQueueServlce.modifyOrderStatus(mobile,params.getOrderSn(),params.getOperationStatus());
 	}
 }
