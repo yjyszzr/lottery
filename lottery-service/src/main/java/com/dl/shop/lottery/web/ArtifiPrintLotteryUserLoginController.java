@@ -85,7 +85,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		logger.info("手机端录入的验证码为:======================" + userLoginMobileParam.getSmsCode().toString());
 		logger.info("验证码为比较状态:======================" + cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString()));
 
-		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode())) {
+		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString())) {
 			LoginLogParam loginLogParam = new LoginLogParam();
 			loginLogParam.setUserId(-1);
 			loginLogParam.setLoginType(0);
