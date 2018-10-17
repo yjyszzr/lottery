@@ -1,5 +1,6 @@
 package com.dl.shop.lottery.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,6 +16,8 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
+import com.dl.order.api.IOrderService;
+import com.dl.order.param.OrderSnListParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
@@ -36,6 +39,9 @@ public class ArtifiDyQueueController {
 	@Resource
 	private DataBaseCfg baseCfg;
 	
+	@Resource
+	private IOrderService iOrderService;
+	
 	@ApiOperation(value = "人工分单", notes = "人工分单")
 	@PostMapping("/tasktimer")
 	public BaseResult<?> timerTaskSchedual(@RequestBody EmptyParam emprt) {
@@ -48,12 +54,24 @@ public class ArtifiDyQueueController {
 	@PostMapping("/query")
 	public BaseResult<?> queryOrderList(@RequestBody ArtifiLotteryQueryParam param){
 		String mobile = param.getMobile();
-		if(mobile == null || mobile.length() <= 0) {
+		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
-		return ResultGenerator.genSuccessResult(null,rList);
+		List<String> orderList = new ArrayList<String>();
+		if(rList != null && rList.size() > 0) {
+			for(DDyArtifiPrintEntity printEntity : rList) {
+				orderList.add(printEntity.getOrderSn());
+			}
+		}
+		logger.info("[queryOrderList]" + " orderList.size:" + orderList.size());
+		for(String str : orderList) {
+			logger.info("[queryOrderList]" + " orderSn:" + str);
+		}
+		OrderSnListParam params = new OrderSnListParam();
+		params.setOrderSnlist(orderList);
+		return iOrderService.getManualOrderList(params);
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
