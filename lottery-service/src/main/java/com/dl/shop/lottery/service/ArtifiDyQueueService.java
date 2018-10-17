@@ -45,9 +45,9 @@ public class ArtifiDyQueueService{
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		if(dyArtifiDao.isDyQueueExist(uid) <= 0) {
 			dyArtifiDao.createDyQueue(uid);
-			logger.debug("[userLogin]" + " uid:" + uid + " table not exist");
+			logger.info("[userLogin]" + " uid:" + uid + " table not exist");
 		}else {
-			logger.debug("[userLogin]" + " uid:" + uid + " table exist");
+			logger.info("[userLogin]" + " uid:" + uid + " table exist");
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class ArtifiDyQueueService{
 			if(list != null && list.size() > 0) {
 				DlArtifiPrintLottery dlEntity = list.get(0);
 				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
-				dlEntity.setAdminId(Integer.valueOf(uid));
+				dlEntity.setAdminName(uid);
 				dlEntity.setOperationTime(DateUtil.getCurrentTimeLong());
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
 				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + uid);
