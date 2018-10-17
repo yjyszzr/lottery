@@ -26,6 +26,7 @@ import com.dl.member.api.ISMSService;
 import com.dl.member.api.IUserLoginService;
 import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.LoginLogParam;
+import com.dl.member.param.MobileInfoParam;
 import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserLoginWithSmsParam;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
@@ -96,7 +97,9 @@ public class ArtifiPrintLotteryUserLoginController {
 			userLoginService.loginLog(loginLogParam);
 			return ResultGenerator.genResult(MemberEnums.SMSCODE_WRONG.getcode(), MemberEnums.SMSCODE_WRONG.getMsg());
 		}
-		UserLoginDTO userLoginDTO = userLoginService.findByMobile(mobile);
+		MobileInfoParam mobileInfo = new MobileInfoParam();
+		mobileInfo.setMobile(mobile);
+		UserLoginDTO userLoginDTO = userLoginService.findByMobile(mobileInfo);
 		// 校验手机号是否存在
 		if (null == userLoginDTO) {
 			LoginLogParam loginLogParam = new LoginLogParam();
