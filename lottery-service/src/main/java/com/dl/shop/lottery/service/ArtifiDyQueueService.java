@@ -84,7 +84,7 @@ public class ArtifiDyQueueService{
 	 * 轮训查询总队列
 	 */
 	public void onTimerExec() {
-		logger.info("[onTimerExec]" + " dlArtifiPrintMapper:" + dlArtifiPrintMapper);
+		logger.info("[onTimerExec]");
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
 		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rSumList.size());
@@ -106,14 +106,14 @@ public class ArtifiDyQueueService{
 				//开始分配订单
 				for(int i = 0;rSumList.size() > 0 && i < userList.size();i++) {
 					//获取随机一个用户
-					String uid = getRandomItem(userList);
-					userList.remove(uid);
+					String mobile = getRandomItem(userList);
+					userList.remove(mobile);
 					//该用户的队列大小
-					List<DDyArtifiPrintEntity> mLotteryList = mMap.get(uid);
+					List<DDyArtifiPrintEntity> mLotteryList = mMap.get(mobile);
 					//如果不够30个，填充满30个
 					if(rSumList.size() > 0 && mLotteryList.size() < QUEUE_SIZE) {
 						int size = QUEUE_SIZE - mLotteryList.size();
-						List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,uid,rSumList,size);
+						List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,size);
 						if(allocList != null && allocList.size() > 0) {
 							for(DlArtifiPrintLottery entity : allocList) {
 								//总的队列移除
@@ -121,8 +121,8 @@ public class ArtifiDyQueueService{
 								//更改已分配的状态
 								entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 								//操作人
-								entity.setAdminName(uid);
-								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + uid + " opStatus:" + entity.getOperationStatus());
+								entity.setAdminName(mobile);
+								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
 								dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 							}
 						}
