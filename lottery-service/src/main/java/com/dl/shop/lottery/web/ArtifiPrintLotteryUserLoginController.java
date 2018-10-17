@@ -61,7 +61,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		return smsService.sendSmsCode(smsParam);
 	}
 
-	@ApiOperation(value = "验证码登录", notes = "发送短信验证码")
+	@ApiOperation(value = "验证码登录", notes = "验证码登录")
 	@PostMapping("/loginBySms")
 	public BaseResult<UserLoginDTO> loginBySms(@RequestBody UserLoginWithSmsParam userLoginMobileParam, HttpServletRequest request) {
 		// 校验手机号的合法性
@@ -121,7 +121,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO);
 	}
 
-	@ApiOperation(value = "发送短信验证码", notes = "发送短信验证码")
+	@ApiOperation(value = "退出", notes = "退出")
 	@PostMapping("/logout")
 	public void logout(@RequestBody String mobile) {
 		stringRedisTemplate.delete(mobile);
