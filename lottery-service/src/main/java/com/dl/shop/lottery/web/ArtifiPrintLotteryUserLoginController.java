@@ -116,7 +116,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		// loginLogParam.setLoginParams(loginParams);
 		// loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
 		// userLoginService.loginLog(loginLogParam);
-		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam, request);
+		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
 
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO);
 	}
