@@ -20,6 +20,7 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.RegexUtil;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.member.api.ISMSService;
 import com.dl.member.api.IUserLoginService;
@@ -80,8 +81,12 @@ public class ArtifiPrintLotteryUserLoginController {
 		String mobile = userLoginMobileParam.getMobile();
 		logger.info("手机号码为:======================" + mobile);
 		String cacheSmsCode = smsService.getRedisSmsCode(mobile);
-		logger.info("验证码为:======================" + cacheSmsCode);
-		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode())) {
+		cacheSmsCode = cacheSmsCode.replace("\"", "");
+		logger.info("redis返回的验证码为:======================" + cacheSmsCode);
+		logger.info("手机端录入的验证码为:======================" + userLoginMobileParam.getSmsCode().toString());
+		logger.info("验证码为比较状态:======================" + cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString()));
+
+		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString())) {
 			LoginLogParam loginLogParam = new LoginLogParam();
 			loginLogParam.setUserId(-1);
 			loginLogParam.setLoginType(0);
@@ -124,6 +129,7 @@ public class ArtifiPrintLotteryUserLoginController {
 	@ApiOperation(value = "退出", notes = "退出")
 	@PostMapping("/logout")
 	public void logout(@RequestBody String mobile) {
+		SessionUtil.getUserId();
 		stringRedisTemplate.delete(mobile);
 		// 调用用户退出登录
 		artifiDyQueueService.userLogout(mobile);
