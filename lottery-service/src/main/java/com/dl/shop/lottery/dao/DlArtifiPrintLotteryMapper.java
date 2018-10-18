@@ -26,5 +26,5 @@ public interface DlArtifiPrintLotteryMapper extends Mapper<DlArtifiPrintLottery>
 	 * @param dlPrintLottery
 	 * @return
 	 */
-	public List<DlArtifiPrintLottery> selectArtifiLotteryPrintByOrderSn(DlArtifiPrintLottery dlPrintLottery);
+	public List<DlArtifiPrintLottery> selectArtifiLotteryPrintByTicketId(DlArtifiPrintLottery dlPrintLottery);
 }

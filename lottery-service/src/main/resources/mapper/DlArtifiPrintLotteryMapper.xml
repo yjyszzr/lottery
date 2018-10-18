@@ -31,12 +31,12 @@
            admin_name = #{adminName},
            operation_time = #{operationTime}
     where 
-           order_sn = #{orderSn}
+           ticket_id = #{ticketId}
   </update>
   
-  <select id="selectArtifiLotteryPrintByOrderSn" parameterType="com.dl.shop.lottery.model.DlArtifiPrintLottery" resultMap="BaseResultMap">
+  <select id="selectArtifiLotteryPrintByTicketId" parameterType="com.dl.shop.lottery.model.DlArtifiPrintLottery" resultMap="BaseResultMap">
   	select * from dl_artifi_print_lottery
-  	where order_sn = #{orderSn}
+  	where ticket_id = #{ticketId}
   </select>
   
   
