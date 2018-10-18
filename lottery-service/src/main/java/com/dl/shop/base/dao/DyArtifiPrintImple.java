@@ -80,9 +80,9 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		DDyArtifiPrintEntity entity = new DDyArtifiPrintEntity();
 		try {
 			long id = rs.getLong("_id");
-			String orderSn = rs.getString("order_sn");
+			String ticketId = rs.getString("order_sn");
 			entity.id = id;
-			entity.orderSn = orderSn;
+			entity.orderSn = ticketId;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
