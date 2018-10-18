@@ -117,7 +117,7 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
-		//刷新登录态
+		//刷新登录态 
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
