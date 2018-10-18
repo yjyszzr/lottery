@@ -138,10 +138,11 @@ public class ArtifiPrintLotteryUserLoginController {
 
 	@ApiOperation(value = "退出", notes = "退出")
 	@PostMapping("/logout")
-	public void logout(@RequestBody String mobile) {
-		SessionUtil.getUserId();
+	public BaseResult logout(@RequestBody String mobile) {
+		logger.info("登录人UserId:======================" + SessionUtil.getUserId());
 		stringRedisTemplate.delete("XN_" + mobile);
 		// 调用用户退出登录
 		artifiDyQueueService.userLogout(mobile);
+		return ResultGenerator.genSuccessResult("退出成功", null);
 	}
 }
