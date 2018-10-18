@@ -69,7 +69,7 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("请输入手机号");
 		}
-		//刷新登录态
+		//刷新登录态 
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		List<String> mList = new ArrayList<String>();
 		mList.add(orderSn);
