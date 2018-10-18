@@ -64,8 +64,8 @@ public class ArtifiDyQueueService{
 		for(DDyArtifiPrintEntity dyArtiPrintEntity : rList) {
 			//查询到该订单信息
 			DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
-			dlArtifiPrintLottery.setTicketId(dyArtiPrintEntity.ticketId);
-			List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByTicketId(dlArtifiPrintLottery);
+			dlArtifiPrintLottery.setOrderSn(dyArtiPrintEntity.orderSn);
+			List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
 			//该订单信息回收到总池
 			if(list != null && list.size() > 0) {
 				DlArtifiPrintLottery dlEntity = list.get(0);
@@ -73,7 +73,7 @@ public class ArtifiDyQueueService{
 				dlEntity.setAdminName(mobile);
 				dlEntity.setOperationTime(DateUtil.getCurrentTimeLong());
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
-				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.ticketId + " 回收到总池... uid:" + mobile);
+				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
 			}
 		}
 		//清空回收该该用户队列
@@ -122,7 +122,7 @@ public class ArtifiDyQueueService{
 								entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 								//操作人
 								entity.setAdminName(mobile);
-								logger.info("[onTimerExec]" + " update ticketId:" + entity.getTicketId() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
+								logger.info("[onTimerExec]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
 								dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 							}
 						}
@@ -139,9 +139,9 @@ public class ArtifiDyQueueService{
 		for(int i = 0;i < s ;i++){
 			DlArtifiPrintLottery entity = rList.get(i);
 			//该item数据分配给uid
-			String ticketId = entity.getTicketId();
+			String orderSn = entity.getOrderSn();
 			DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
-			dEntity.ticketId = ticketId;
+			dEntity.orderSn = orderSn;
 			dyArtifiDao.addDyArtifiPrintInfo(uid,dEntity);
 			//分配出数据
 			mList.add(entity);
@@ -161,26 +161,26 @@ public class ArtifiDyQueueService{
 	/**
 	 * 更改订单状态
 	 * @param uid
-	 * @param ticketId
+	 * @param orderSn
 	 * @param status
 	 * @return
 	 */
-	public BaseResult<?> modifyOrderStatus(int userId,String mobile,String ticketId,int orderStatus){
+	public BaseResult<?> modifyOrderStatus(int userId,String mobile,String orderSn,int orderStatus){
 		//删除队列数据
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		int cnt = dyArtifiDao.delData(mobile,ticketId);
+		int cnt = dyArtifiDao.delData(mobile,orderSn);
 		if(cnt <= 0) {
 			return ResultGenerator.genFailResult("订单查询失败");
 		}
 		//回收到主池，更改主池队列状态
 		//查询到该订单信息
 		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
-		dlArtifiPrintLottery.setTicketId(ticketId);
-		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByTicketId(dlArtifiPrintLottery);
+		dlArtifiPrintLottery.setOrderSn(orderSn);
+		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
 		DlArtifiPrintLottery printLottery = null;
 		if(list != null && list.size() > 0) {
 			printLottery = list.get(0);
-			printLottery.setTicketId(ticketId);
+			printLottery.setOrderSn(orderSn);
 			printLottery.setOrderStatus((byte)orderStatus);
 			printLottery.setAdminName(mobile);
 			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());

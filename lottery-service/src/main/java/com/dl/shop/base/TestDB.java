@@ -25,7 +25,7 @@ public class TestDB {
 //		System.out.println("create table cnt:" + cnt);
 		
 		DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
-		dEntity.ticketId = "abcdef";
+		dEntity.orderSn = "abcdef";
 		int cnt = dyArtiDao.addDyArtifiPrintInfo(userId, dEntity);
 		System.out.println("add DyArtifiPrint cnt:" + cnt);
 		
