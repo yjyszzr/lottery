@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.ManualOrderDTO;
 import com.dl.order.param.OrderSnListParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
@@ -54,6 +56,38 @@ public class ArtifiDyQueueController {
 		return ResultGenerator.genSuccessResult();
 	}
 	
+
+	@ApiOperation(value = "订单详情", notes = "订单详情")
+	@PostMapping("/detail")
+	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
+		ManualOrderDTO orderEntity = null;
+		String orderSn = pp.getOrderSn();
+		String mobile = pp.getMobile();
+		if(orderSn == null || orderSn.length() <= 0) {
+			return ResultGenerator.genFailResult("请输入订单号参数");
+		}
+		if(mobile == null || mobile.length() <= 0) {
+			return ResultGenerator.genFailResult("请输入手机号");
+		}
+		//刷新登录态 
+		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
+		List<String> mList = new ArrayList<String>();
+		mList.add(orderSn);
+		OrderSnListParam params = new OrderSnListParam();
+		params.setOrderSnlist(mList);
+		BaseResult<List<ManualOrderDTO>> bResult = iOrderService.getManualOrderList(params);
+		if(bResult != null && bResult.isSuccess()) {
+			List<ManualOrderDTO> rList = bResult.getData();
+			if(rList != null && rList.size() > 0) {
+				orderEntity = rList.get(0);
+			}
+		}
+		if(orderEntity == null) {
+			return ResultGenerator.genFailResult("查询订单数据失败");
+		}
+		return ResultGenerator.genSuccessResult("succ",orderEntity);
+	}
+	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/query")
 	public BaseResult<?> queryOrderList(@RequestBody ArtifiLotteryQueryParam param){
@@ -65,19 +99,7 @@ public class ArtifiDyQueueController {
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
-		List<String> orderList = new ArrayList<String>();
-		if(rList != null && rList.size() > 0) {
-			for(DDyArtifiPrintEntity printEntity : rList) {
-				orderList.add(printEntity.getOrderSn());
-			}
-		}
-		logger.info("[queryOrderList]" + " orderList.size:" + orderList.size());
-		for(String str : orderList) {
-			logger.info("[queryOrderList]" + " orderSn:" + str);
-		}
-		OrderSnListParam params = new OrderSnListParam();
-		params.setOrderSnlist(orderList);
-		return iOrderService.getManualOrderList(params);
+		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
