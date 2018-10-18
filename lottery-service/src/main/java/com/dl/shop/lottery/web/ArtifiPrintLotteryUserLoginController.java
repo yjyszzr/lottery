@@ -126,7 +126,7 @@ public class ArtifiPrintLotteryUserLoginController {
 
 		logger.info("登录信息为:======================" + userLoginDTO);
 		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 900, TimeUnit.SECONDS);
-		Set<String> keys = stringRedisTemplate.keys("XN_");
+		Set<String> keys = stringRedisTemplate.keys("XN_*");
 		logger.info("登录人数为:======================" + keys.size());
 		logger.info("登录人list:======================" + keys);
 
