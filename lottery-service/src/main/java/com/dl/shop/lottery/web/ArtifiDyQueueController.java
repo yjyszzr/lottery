@@ -19,6 +19,7 @@ import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.UserIdParam;
+import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.ManualOrderDTO;
 import com.dl.order.param.OrderSnListParam;
@@ -64,9 +65,9 @@ public class ArtifiDyQueueController {
 	@PostMapping("/detail")
 	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
 		int userId = SessionUtil.getUserId();
-		UserIdParam userIdParams = new UserIdParam();
+		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
-		BaseResult<UserDTO> bR = iUserService.queryUserInfo(userIdParams);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
 		if(!bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
@@ -105,9 +106,9 @@ public class ArtifiDyQueueController {
 	@PostMapping("/query")
 	public BaseResult<?> queryOrderList(@RequestBody ArtifiLotteryQueryParam param){
 		int userId = SessionUtil.getUserId();
-		UserIdParam userIdParams = new UserIdParam();
+		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
-		BaseResult<UserDTO> bR = iUserService.queryUserInfo(userIdParams);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
@@ -128,9 +129,9 @@ public class ArtifiDyQueueController {
 	@PostMapping("/modify")
 	public BaseResult<?> modifyOrderStatus(@RequestBody ArtifiLotteryModifyParam params){
 		int userId = SessionUtil.getUserId();
-		UserIdParam userIdParams = new UserIdParam();
+		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
-		BaseResult<UserDTO> bR = iUserService.queryUserInfo(userIdParams);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
