@@ -25,10 +25,13 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.member.api.ISMSService;
 import com.dl.member.api.IUserLoginService;
+import com.dl.member.api.IUserService;
+import com.dl.member.dto.UserDTO;
 import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.LoginLogParam;
 import com.dl.member.param.MobileInfoParam;
 import com.dl.member.param.SmsParam;
+import com.dl.member.param.UserIdParam;
 import com.dl.member.param.UserLoginWithSmsParam;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
@@ -48,6 +51,9 @@ public class ArtifiPrintLotteryUserLoginController {
 
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
+
+	@Resource
+	private IUserService userService;
 
 	@Resource
 	private ArtifiDyQueueService artifiDyQueueService;
@@ -139,7 +145,14 @@ public class ArtifiPrintLotteryUserLoginController {
 	@ApiOperation(value = "退出", notes = "退出")
 	@PostMapping("/logout")
 	public BaseResult logout(@RequestBody String mobile) {
-		logger.info("登录人UserId:======================" + SessionUtil.getUserId());
+		Integer userId = SessionUtil.getUserId();
+		logger.info("登录人UserId:======================" + userId);
+		logger.info("退出人入参的手机号:======================" + mobile);
+		UserIdParam params = new UserIdParam();
+		params.setUserId(userId);
+		BaseResult<UserDTO> queryUserInfo = userService.queryUserInfo(params);
+		mobile = queryUserInfo.getData().getMobile();
+		logger.info("退出人session中获取得手机号:======================" + mobile);
 		stringRedisTemplate.delete("XN_" + mobile);
 		// 调用用户退出登录
 		artifiDyQueueService.userLogout(mobile);
