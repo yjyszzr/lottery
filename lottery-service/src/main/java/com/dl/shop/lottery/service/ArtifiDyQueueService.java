@@ -165,7 +165,7 @@ public class ArtifiDyQueueService{
 	 * @param status
 	 * @return
 	 */
-	public BaseResult<?> modifyOrderStatus(String mobile,String orderSn,int orderStatus){
+	public BaseResult<?> modifyOrderStatus(int userId,String mobile,String orderSn,int orderStatus){
 		//删除队列数据
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		int cnt = dyArtifiDao.delData(mobile,orderSn);
@@ -184,6 +184,7 @@ public class ArtifiDyQueueService{
 			printLottery.setOrderStatus((byte)orderStatus);
 			printLottery.setAdminName(mobile);
 			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+			printLottery.setAdminId(userId);
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
 		}
 		return ResultGenerator.genSuccessResult();

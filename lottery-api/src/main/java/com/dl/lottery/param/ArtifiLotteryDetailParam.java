@@ -8,7 +8,6 @@ import lombok.Data;
 @Data
 public class ArtifiLotteryDetailParam {
 	@ApiModelProperty(value="手机号")
-	@NotEmpty
 	private String mobile;
 	
 	@ApiModelProperty(value="订单号")
