@@ -2,6 +2,8 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -132,14 +134,24 @@ public class ArtifiPrintLotteryUserLoginController {
 
 		logger.info("登录信息为:======================" + userLoginDTO);
 		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 900, TimeUnit.SECONDS);
-		Set<String> keys = stringRedisTemplate.keys("XN_*");
-		logger.info("登录人数为:======================" + keys.size());
-		logger.info("登录人list:======================" + keys);
+		List<String> mobileList = getAllLoginInfo();
+		logger.info("登录人数为:======================" + mobileList.size());
+		logger.info("登录人list:======================" + mobileList);
 
 		// 调用用户登录
 		artifiDyQueueService.userLogin(mobile);
 
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
+	}
+
+	private List<String> getAllLoginInfo() {
+		Set<String> keys = stringRedisTemplate.keys("XN_*");
+		List<String> strList = new ArrayList<String>();
+		for (String str : keys) {
+			str = str.replace("XN_", "");
+			strList.add(str);
+		}
+		return strList;
 	}
 
 	@ApiOperation(value = "退出", notes = "退出")
@@ -155,6 +167,10 @@ public class ArtifiPrintLotteryUserLoginController {
 		logger.info("退出人session中获取得手机号:======================" + mobile);
 		stringRedisTemplate.delete("XN_" + mobile);
 		// 调用用户退出登录
+		List<String> mobileList = getAllLoginInfo();
+		logger.info("退出后剩余的登录人数:======================" + mobileList.size());
+		logger.info("退出后剩余人的list:======================" + mobileList);
+
 		artifiDyQueueService.userLogout(mobile);
 		return ResultGenerator.genSuccessResult("退出成功", null);
 	}
