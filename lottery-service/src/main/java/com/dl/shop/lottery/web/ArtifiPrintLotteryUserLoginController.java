@@ -2,6 +2,7 @@ package com.dl.shop.lottery.web;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Resource;
@@ -124,7 +125,11 @@ public class ArtifiPrintLotteryUserLoginController {
 		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
 
 		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
+		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 900, TimeUnit.SECONDS);
+		Set<String> keys = stringRedisTemplate.keys("XN_");
+		logger.info("登录人数为:======================" + keys.size());
+		logger.info("登录人list:======================" + keys);
+
 		// 调用用户登录
 		artifiDyQueueService.userLogin(mobile);
 
@@ -135,7 +140,7 @@ public class ArtifiPrintLotteryUserLoginController {
 	@PostMapping("/logout")
 	public void logout(@RequestBody String mobile) {
 		SessionUtil.getUserId();
-		stringRedisTemplate.delete(mobile);
+		stringRedisTemplate.delete("XN_" + mobile);
 		// 调用用户退出登录
 		artifiDyQueueService.userLogout(mobile);
 	}
