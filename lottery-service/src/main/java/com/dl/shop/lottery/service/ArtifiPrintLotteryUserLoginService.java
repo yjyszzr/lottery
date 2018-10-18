@@ -21,6 +21,10 @@ public class ArtifiPrintLotteryUserLoginService {
 	 * @param mobile
 	 */
 	public void updateUserStatus(String mobile) {
-		stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
+		try {
+			stringRedisTemplate.opsForValue().set(mobile, "1", 900, TimeUnit.SECONDS);
+		}catch(Throwable ee) {
+			ee.printStackTrace();
+		}
 	};
 }

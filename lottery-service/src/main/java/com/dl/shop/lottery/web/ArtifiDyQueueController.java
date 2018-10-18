@@ -70,7 +70,7 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genFailResult("请输入手机号");
 		}
 		//刷新登录态
-		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
+//		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		List<String> mList = new ArrayList<String>();
 		mList.add(orderSn);
 		OrderSnListParam params = new OrderSnListParam();
@@ -96,7 +96,7 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
 		//刷新登录态
-		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
+//		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
 		return ResultGenerator.genSuccessResult("succ",rList);
