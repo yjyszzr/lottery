@@ -133,13 +133,13 @@ public class ArtifiPrintLotteryUserLoginController {
 		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
 
 		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 900, TimeUnit.SECONDS);
+		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 240, TimeUnit.SECONDS);
 		List<String> mobileList = getAllLoginInfo();
 		logger.info("登录人数为:======================" + mobileList.size());
 		logger.info("登录人list:======================" + mobileList);
 
 		// 调用用户登录
-		artifiDyQueueService.userLogin(mobile,mobileList);
+		artifiDyQueueService.userLogin(mobile, mobileList);
 
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
 	}
@@ -171,7 +171,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		logger.info("退出后剩余的登录人数:======================" + mobileList.size());
 		logger.info("退出后剩余人的list:======================" + mobileList);
 
-		artifiDyQueueService.userLogout(mobile,mobileList);
+		artifiDyQueueService.userLogout(mobile, mobileList);
 		return ResultGenerator.genSuccessResult("退出成功", null);
 	}
 }
