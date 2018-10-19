@@ -25,6 +25,7 @@ import com.dl.order.param.OrderSnListParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
+import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
@@ -111,11 +112,14 @@ public class ArtifiDyQueueController {
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
-//		String mobile = param.getMobile();
 		String mobile = bR.getData().getMobile();
 		logger.info("[queryOrderList]" + " mobile:" + mobile);
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
+		}
+		//如果在登录，登录态未还在生效，那么加入到分配队列
+		if(!ArtifiLoginManager.getInstance().containMobile(mobile)) {
+			ArtifiLoginManager.getInstance().addMobile(mobile);
 		}
 		//刷新登录态 
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
