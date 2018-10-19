@@ -123,4 +123,27 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		return exeUpdate(sql, params);
 	}
 
+	@Override
+	public DDyArtifiPrintEntity queryEntityByOrderSn(String userId, String orderSn) {
+		// TODO Auto-generated method stub
+		DDyArtifiPrintEntity mEntity = null;
+		String tableName = getTNameByLgCode(userId,TABLE_NAME);
+		String sql = "select * from " + tableName + " where order_sn=?;";
+		String[] params = {orderSn};
+		ResultSet rs = this.exeQuery(sql, params);
+		if(rs != null) {
+			try {
+				if(rs.next()) {
+					mEntity = getEntityByRs(rs);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				this.closeConn(rs, null);
+			}
+		}
+		return mEntity;
+	}
+
 }

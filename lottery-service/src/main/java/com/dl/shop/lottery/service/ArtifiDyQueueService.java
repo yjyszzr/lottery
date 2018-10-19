@@ -157,7 +157,7 @@ public class ArtifiDyQueueService{
 		}
 	}
 	
-	private List<DlArtifiPrintLottery> allocLottery(DyArtifiPrintDao dyArtifiDao,String uid,List<DlArtifiPrintLottery> rList,int size){
+	private synchronized List<DlArtifiPrintLottery> allocLottery(DyArtifiPrintDao dyArtifiDao,String uid,List<DlArtifiPrintLottery> rList,int size){
 		List<DlArtifiPrintLottery> mList = new ArrayList<DlArtifiPrintLottery>();
 		int s = rList.size() > size ? size : rList.size();
 		logger.info("[allocLottery]" + " s:" + s);
@@ -165,11 +165,13 @@ public class ArtifiDyQueueService{
 			DlArtifiPrintLottery entity = rList.get(i);
 			//该item数据分配给uid
 			String orderSn = entity.getOrderSn();
-			DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
-			dEntity.orderSn = orderSn;
-			dyArtifiDao.addDyArtifiPrintInfo(uid,dEntity);
-			//分配出数据
-			mList.add(entity);
+			if(dyArtifiDao.queryEntityByOrderSn(uid,orderSn) == null) {
+				DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
+				dEntity.orderSn = orderSn;
+				dyArtifiDao.addDyArtifiPrintInfo(uid,dEntity);
+				//分配出数据
+				mList.add(entity);
+			}
 		}
 		return mList;
 	}
