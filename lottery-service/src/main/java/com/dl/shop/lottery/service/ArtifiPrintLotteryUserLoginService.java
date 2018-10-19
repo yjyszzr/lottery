@@ -18,6 +18,7 @@ import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.MobileInfoParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.auth.dto.InvalidateTokenDTO;
+import com.dl.shop.lottery.core.ProjectConstant;
 
 @Service
 public class ArtifiPrintLotteryUserLoginService {
@@ -42,7 +43,7 @@ public class ArtifiPrintLotteryUserLoginService {
 	public void updateUserStatus(String mobile) {
 		try {
 			logger.info("刷新人电话为============={}", mobile);
-			stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 240, TimeUnit.SECONDS);
+			stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
 		} catch (Throwable ee) {
 			ee.printStackTrace();
 		}

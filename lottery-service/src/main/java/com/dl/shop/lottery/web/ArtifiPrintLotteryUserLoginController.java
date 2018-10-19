@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import tk.mybatis.mapper.entity.Condition;
+
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
@@ -37,8 +39,11 @@ import com.dl.member.param.UserIdRealParam;
 import com.dl.member.param.UserLoginWithSmsParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.auth.dto.InvalidateTokenDTO;
+import com.dl.shop.lottery.core.ProjectConstant;
+import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
+import com.dl.shop.lottery.service.DlXNWhiteListService;
 
 @RestController
 @RequestMapping("/artifiPrintLotteryUserLogin")
@@ -64,6 +69,9 @@ public class ArtifiPrintLotteryUserLoginController {
 
 	@Resource
 	private ArtifiDyQueueService artifiDyQueueService;
+
+	@Resource
+	private DlXNWhiteListService dlXNWhiteListService;
 
 	/**
 	 * 发送短信验证码
@@ -113,6 +121,20 @@ public class ArtifiPrintLotteryUserLoginController {
 		}
 		MobileInfoParam mobileInfo = new MobileInfoParam();
 		mobileInfo.setMobile(mobile);
+
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile", mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			LoginLogParam loginLogParam = new LoginLogParam();
+			loginLogParam.setUserId(-1);
+			loginLogParam.setLoginType(0);
+			loginLogParam.setLoginSstatus(1);
+			loginLogParam.setLoginParams(loginParams);
+			loginLogParam.setLoginResult(MemberEnums.NO_REGISTER.getMsg());
+			userLoginService.loginLog(loginLogParam);
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
 		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
 		// 校验手机号是否存在
 		if (null == userLoginDTO.getData()) {
@@ -138,7 +160,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
 
 		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 240, TimeUnit.SECONDS);
+		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
 		List<String> mobileList = getAllLoginInfo();
 		logger.info("登录人数为:======================" + mobileList.size());
 		logger.info("登录人list:======================" + mobileList);
