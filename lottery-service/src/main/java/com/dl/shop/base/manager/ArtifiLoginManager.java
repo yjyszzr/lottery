@@ -34,4 +34,12 @@ public class ArtifiLoginManager {
 	public void setList(List<String> mList) {
 		this.mList = mList;
 	}
+	
+	public boolean containMobile(String mobile) {
+		return this.mList.contains(mobile);
+	}
+	
+	public void addMobile(String mobile){
+		this.mList.add(mobile);
+	}
 }
