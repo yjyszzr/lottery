@@ -67,7 +67,10 @@ public class ArtifiPrintLotteryUserLoginService {
 					logger.info("=======================清空该{}用户redis中的信息", str);
 					stringRedisTemplate.delete("XN_" + str);
 					MobileInfoParam mobileInfoParam = new MobileInfoParam();
+					mobileInfoParam.setMobile(str);
 					BaseResult<UserLoginDTO> mobileInfo = userLoginService.findByMobile(mobileInfoParam);
+					logger.info("=======================该用户的信息为={}", mobileInfo);
+					logger.info("=======================该用户的信息是否为空={}", null != mobileInfo.getData());
 					if (null != mobileInfo.getData()) {
 						// 清空过期用户的所有token
 						InvalidateTokenDTO invalidateTokenDTO = new InvalidateTokenDTO();
