@@ -41,6 +41,7 @@ public class ArtifiPrintLotteryUserLoginService {
 	 */
 	public void updateUserStatus(String mobile) {
 		try {
+			logger.info("刷新人电话为============={}", mobile);
 			stringRedisTemplate.opsForValue().set(mobile, "1", 240, TimeUnit.SECONDS);
 		} catch (Throwable ee) {
 			ee.printStackTrace();
@@ -63,7 +64,6 @@ public class ArtifiPrintLotteryUserLoginService {
 
 				if (expireTime < 70) {
 					// 清空该用户redis中的信息
-
 					logger.info("=======================清空该{}用户redis中的信息", str);
 					stringRedisTemplate.delete("XN_" + str);
 					MobileInfoParam mobileInfoParam = new MobileInfoParam();
@@ -75,7 +75,6 @@ public class ArtifiPrintLotteryUserLoginService {
 						// 清空过期用户的所有token
 						InvalidateTokenDTO invalidateTokenDTO = new InvalidateTokenDTO();
 						invalidateTokenDTO.setInvalidateType(2);
-						mobileInfoParam.setMobile(str);
 						invalidateTokenDTO.setUserId(Integer.parseInt(mobileInfo.getData().getMobile()));
 						logger.info("=======================清空过期{}用户的所有token", str);
 						authService.invalidate(invalidateTokenDTO);

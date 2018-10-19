@@ -35,6 +35,8 @@ import com.dl.member.param.MobileInfoParam;
 import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.member.param.UserLoginWithSmsParam;
+import com.dl.shop.auth.api.IAuthService;
+import com.dl.shop.auth.dto.InvalidateTokenDTO;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 
@@ -42,6 +44,9 @@ import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 @RequestMapping("/artifiPrintLotteryUserLogin")
 public class ArtifiPrintLotteryUserLoginController {
 	private final static Logger logger = LoggerFactory.getLogger(ArtifiPrintLotteryUserLoginController.class);
+	@Resource
+	private IAuthService authService;
+
 	@Resource
 	private ArtifiPrintLotteryUserLoginService artifiPrintLotteryUserLoginService;
 
@@ -167,10 +172,14 @@ public class ArtifiPrintLotteryUserLoginController {
 		logger.info("退出人session中获取得手机号:======================" + mobile);
 		stringRedisTemplate.delete("XN_" + mobile);
 		// 调用用户退出登录
+		InvalidateTokenDTO invalidateTokenDTO = new InvalidateTokenDTO();
+		invalidateTokenDTO.setInvalidateType(2);
+		invalidateTokenDTO.setUserId(userId);
+		logger.info("=======================清空过期{}用户的所有token", mobile);
+		authService.invalidate(invalidateTokenDTO);
 		List<String> mobileList = getAllLoginInfo();
 		logger.info("退出后剩余的登录人数:======================" + mobileList.size());
 		logger.info("退出后剩余人的list:======================" + mobileList);
-
 		artifiDyQueueService.userLogout(mobile, mobileList);
 		return ResultGenerator.genSuccessResult("退出成功", null);
 	}
