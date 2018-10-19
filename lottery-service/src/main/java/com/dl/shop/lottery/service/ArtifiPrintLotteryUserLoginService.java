@@ -25,8 +25,7 @@ public class ArtifiPrintLotteryUserLoginService {
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
 
-	@Resource
-	private IAuthService authService;
+	private static IAuthService authService;
 
 	@Resource
 	private static IUserLoginService userLoginService;
@@ -63,6 +62,8 @@ public class ArtifiPrintLotteryUserLoginService {
 
 				if (expireTime < 60) {
 					// 清空该用户redis中的信息
+
+					logger.info("=======================清空该{}用户redis中的信息", str);
 					stringRedisTemplate.delete("XN_" + str);
 					MobileInfoParam mobileInfoParam = new MobileInfoParam();
 					BaseResult<UserLoginDTO> mobileInfo = userLoginService.findByMobile(mobileInfoParam);
@@ -72,9 +73,12 @@ public class ArtifiPrintLotteryUserLoginService {
 						invalidateTokenDTO.setInvalidateType(2);
 						mobileInfoParam.setMobile(str);
 						invalidateTokenDTO.setUserId(Integer.parseInt(mobileInfo.getData().getMobile()));
+						logger.info("=======================清空过期{}用户的所有token", str);
 						authService.invalidate(invalidateTokenDTO);
 						// 剔除该登录用户
+						logger.info("=======================剔除该登录用户前的list={}", strList);
 						strList.remove(str);
+						logger.info("=======================剔除该登录用户后的list={}", strList);
 						// 去除该用户的队列
 						artifiDyQueueService.userLogout(str, strList);
 					}
