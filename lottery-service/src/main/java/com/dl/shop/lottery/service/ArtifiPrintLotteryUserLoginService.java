@@ -61,7 +61,7 @@ public class ArtifiPrintLotteryUserLoginService {
 				logger.info("登录人信息为============={},过期时间为:==========================={}", str, expireTime);
 				str = str.replace("XN_", "");
 
-				if (expireTime < 60) {
+				if (expireTime < 70) {
 					// 清空该用户redis中的信息
 
 					logger.info("=======================清空该{}用户redis中的信息", str);
