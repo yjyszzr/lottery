@@ -25,13 +25,14 @@ public class ArtifiPrintLotteryUserLoginService {
 	@Resource
 	private StringRedisTemplate stringRedisTemplate;
 
-	private static IAuthService authService;
+	@Resource
+	private IAuthService authService;
 
 	@Resource
-	private static IUserLoginService userLoginService;
+	private IUserLoginService userLoginService;
 
 	@Resource
-	private static ArtifiDyQueueService artifiDyQueueService;
+	private ArtifiDyQueueService artifiDyQueueService;
 
 	/**
 	 * 重置用户活跃时间
