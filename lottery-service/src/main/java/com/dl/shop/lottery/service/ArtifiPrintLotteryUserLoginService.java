@@ -42,7 +42,7 @@ public class ArtifiPrintLotteryUserLoginService {
 	public void updateUserStatus(String mobile) {
 		try {
 			logger.info("刷新人电话为============={}", mobile);
-			stringRedisTemplate.opsForValue().set(mobile, "1", 240, TimeUnit.SECONDS);
+			stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", 240, TimeUnit.SECONDS);
 		} catch (Throwable ee) {
 			ee.printStackTrace();
 		}
