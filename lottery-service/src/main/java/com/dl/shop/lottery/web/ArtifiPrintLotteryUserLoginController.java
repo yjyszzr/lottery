@@ -82,6 +82,12 @@ public class ArtifiPrintLotteryUserLoginController {
 	@ApiOperation(value = "发送短信验证码", notes = "发送短信验证码")
 	@PostMapping("/sendSmsCode")
 	public BaseResult<String> sendSms(@RequestBody SmsParam smsParam) {
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile", smsParam.getMobile());
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
 		return smsService.sendSmsCode(smsParam);
 	}
 
@@ -122,19 +128,6 @@ public class ArtifiPrintLotteryUserLoginController {
 		MobileInfoParam mobileInfo = new MobileInfoParam();
 		mobileInfo.setMobile(mobile);
 
-		Condition c = new Condition(DlXNWhiteList.class);
-		c.createCriteria().andEqualTo("mobile", mobile);
-		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
-		if (xnWhiteListList.size() == 0) {
-			LoginLogParam loginLogParam = new LoginLogParam();
-			loginLogParam.setUserId(-1);
-			loginLogParam.setLoginType(0);
-			loginLogParam.setLoginSstatus(1);
-			loginLogParam.setLoginParams(loginParams);
-			loginLogParam.setLoginResult(MemberEnums.NO_REGISTER.getMsg());
-			userLoginService.loginLog(loginLogParam);
-			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
-		}
 		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
 		// 校验手机号是否存在
 		if (null == userLoginDTO.getData()) {
