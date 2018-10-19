@@ -12,6 +12,12 @@ public interface DyArtifiPrintDao {
 	public static final String TABLE_NAME = "dl_artifi";
 
 	/**
+	 * @param userId
+	 * @return
+	 */
+	public DDyArtifiPrintEntity queryEntityByOrderSn(String userId,String orderSn);
+	
+	/**
 	 * 该队列是否存在
 	 * @param userId
 	 * @return
