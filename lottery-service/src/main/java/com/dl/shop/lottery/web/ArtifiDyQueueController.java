@@ -18,7 +18,6 @@ import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserDTO;
-import com.dl.member.param.UserIdParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.ManualOrderDTO;
@@ -72,9 +71,9 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
 		String orderSn = pp.getOrderSn();
-		String mobile = pp.getMobile();
+//		String mobile = pp.getMobile();
 		UserDTO userDTO = bR.getData();
-		mobile = userDTO.getMobile();
+		String mobile = userDTO.getMobile();
 		logger.info("[queryDetail]" + " mobile:" + mobile);
 		if(orderSn == null || orderSn.length() <= 0) {
 			return ResultGenerator.genFailResult("请输入订单号参数");
@@ -112,8 +111,8 @@ public class ArtifiDyQueueController {
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
-		String mobile = param.getMobile();
-		mobile = bR.getData().getMobile();
+//		String mobile = param.getMobile();
+		String mobile = bR.getData().getMobile();
 		logger.info("[queryOrderList]" + " mobile:" + mobile);
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
@@ -135,8 +134,8 @@ public class ArtifiDyQueueController {
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
 			return ResultGenerator.genFailResult("查询用户信息失败");
 		}
-		String mobile = params.getMobile();
-		mobile = bR.getData().getMobile();
+//		String mobile = params.getMobile();
+		String mobile = bR.getData().getMobile();
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("手机号码不能为空"); 
 		}
@@ -146,14 +145,14 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "测试登录", notes = "测试登录成功")
 	@PostMapping("/testlogin")
 	public BaseResult<?> testLogin(@RequestBody ArtifiLotteryQueryParam params){
-		artifiDyQueueService.userLogin(params.getMobile());
+		artifiDyQueueService.userLogin(params.getMobile(),null);
 		return ResultGenerator.genSuccessResult();
 	}
 	
 	@ApiOperation(value = "测试退出登录", notes = "测试退出登录")
 	@PostMapping("/testlogout")
 	public BaseResult<?> testLogout(@RequestBody ArtifiLotteryQueryParam params){
-		artifiDyQueueService.userLogout(params.getMobile());
+		artifiDyQueueService.userLogout(params.getMobile(),null);
 		return ResultGenerator.genSuccessResult(); 
 	}
 }

@@ -30,4 +30,8 @@ public class ArtifiLoginManager {
 	public Vector<String> getCopyList(){
 		return new Vector<String>(this.mList);
 	}
+
+	public void setList(List<String> mList) {
+		this.mList = mList;
+	}
 }

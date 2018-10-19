@@ -39,25 +39,52 @@ public class ArtifiDyQueueService{
 	 * 用户登录
 	 * @param obj
 	 */
-	public void userLogin(String uid) {
-		ArtifiLoginManager.getInstance().onLogin(uid);
+	public void userLogin(String mobile,List<String> mobileList) {
+		ArtifiLoginManager.getInstance().onLogin(mobile);
+		if(mobileList != null) {
+			ArtifiLoginManager.getInstance().setList(mobileList);
+		}
 		//该用户queue table创建
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		if(dyArtifiDao.isDyQueueExist(uid) <= 0) {
-			dyArtifiDao.createDyQueue(uid);
-			logger.info("[userLogin]" + " uid:" + uid + " table not exist");
+		if(dyArtifiDao.isDyQueueExist(mobile) <= 0) {
+			dyArtifiDao.createDyQueue(mobile);
+			logger.info("[userLogin]" + " uid:" + mobile + " table not exist");
 		}else {
-			logger.info("[userLogin]" + " uid:" + uid + " table exist");
+			logger.info("[userLogin]" + " uid:" + mobile + " table exist");
 		}
+		//查看有未分配的订单，立刻给分配
+		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+		logger.info("[userLogin]" + "今日未分配订单:" + rSumList.size() + " user:" + mobile + " 现有订单数:" + rList.size());
+		int cnt = QUEUE_SIZE - rList.size();
+		if(cnt > 0) {
+			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList, cnt);
+			if(allocList != null && allocList.size() > 0) {
+				for(DlArtifiPrintLottery entity : allocList) {
+					//总的队列移除
+					rSumList.remove(entity);
+					//更改已分配的状态
+					entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+					//操作人
+					entity.setAdminName(mobile);
+					logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
+					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+				}
+			}
+		}
+		
 	}
 	
 	/**
 	 * 退出登录
 	 * @param obj
 	 */
-	public void userLogout(String mobile) {
-		logger.info("[userLogout]" + " uid:" + mobile + " 退出登录...");
+	public void userLogout(String mobile,List<String> mobileList){
+		logger.info("[userLogout]" + " uid:" + mobile + " 退出登录... 在线人数:" + mobileList.size());
 		ArtifiLoginManager.getInstance().onLogout(mobile);
+		if(mobileList != null) {
+			ArtifiLoginManager.getInstance().setList(mobileList);
+		}
 		//获取该用户队列内容
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
@@ -85,18 +112,17 @@ public class ArtifiDyQueueService{
 	 */
 	public void onTimerExec() {
 		logger.info("[onTimerExec]");
+		//获取在线人数据
+		List<String> userList = ArtifiLoginManager.getInstance().getCopyList();
 		//获取今天未分配的订单
 		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rSumList.size());
+		logger.info("[onTimerExec]" + "获取今日未分配订单:" + rSumList.size() + " 在线人数:" + userList.size());
+		for(int i = 0;i < userList.size();i++) {
+			logger.info("[onTimerExec]" + " uid:" + userList.get(i));
+		}
+		logger.info("==================================================");
 		if(rSumList != null && rSumList.size() > 0) {
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-			//获取在线人数据
-			List<String> userList = ArtifiLoginManager.getInstance().getCopyList();
-			logger.info("[onTimerExec]" + "在线人数:" + userList.size());
-			for(int i = 0;i < userList.size();i++) {
-				logger.info("[onTimerExec]" + " uid:" + userList.get(i));
-			}
-			logger.info("==================================================");
 			if(userList != null && userList.size() > 0) {
 				Map<String,List<DDyArtifiPrintEntity>> mMap = new HashMap<String,List<DDyArtifiPrintEntity>>();
 				for(String uid : userList) {
