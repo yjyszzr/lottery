@@ -317,7 +317,13 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return betPreTime;
 	}
 	
-	public int getBetEndTime(Integer matchTime) {
+	public Integer getBetEndTimeNew(Integer matchTime) {
+		Integer betPreTime = this.getBetPreTime();
+		Integer betEndTime = matchTime - betPreTime;
+		return betEndTime;
+	}
+	
+	public Integer getBetEndTime(Integer matchTime) {
 		Integer betPreTime = this.getBetPreTime();
 		return this.getBetEndTime(matchTime, betPreTime);
 	}

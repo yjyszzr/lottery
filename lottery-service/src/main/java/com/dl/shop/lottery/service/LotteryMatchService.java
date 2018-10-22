@@ -3860,4 +3860,20 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return false;
 	}
+	
+	/**
+	 * 根据当前时间和最小比赛时间是否在这个范围判断是否可以投注：
+	 * 1-5:9-24 点可投注,其他时间不可投
+	 * 6-7:9-24 点可投注，其他时间不可投
+	 * @return
+	 */
+	public Boolean canBetByTime(Integer weekday,Integer hour) {
+        if(weekday >= 1 && weekday <= 5 && hour >= 9 && hour <= 24) {
+        	return true;
+        }
+        if(weekday >= 6 && weekday <= 7 && hour >= 9 && hour <= 24){
+        	return true;
+        }
+		return false;
+	}
 }

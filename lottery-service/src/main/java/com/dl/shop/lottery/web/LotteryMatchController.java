@@ -1,5 +1,8 @@
 package com.dl.shop.lottery.web;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +27,7 @@ import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
@@ -428,16 +432,23 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-		int betEndTime = dlMatchBasketballService.getBetEndTime(min.getMatchTime());
-		Date now = new Date();
-		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-		if(nowTime - betEndTime > 0) {
+		
+		int betEndTime = dlMatchBasketballService.getBetEndTimeNew(min.getMatchTime());		
+		Instant betEndInstant = Instant.ofEpochSecond(betEndTime);
+		LocalDateTime betEndDateTime = LocalDateTime.ofInstant(betEndInstant, ZoneId.systemDefault());
+		Boolean betEndTimeCanBz = lotteryMatchService.canBetByTime(betEndDateTime.getDayOfWeek().getValue(), betEndDateTime.getHour());
+		
+		Integer curTime = DateUtil.getCurrentTimeLong();
+		Instant instant = Instant.ofEpochSecond(curTime);
+		LocalDateTime curDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		Boolean curTimeCanBz = lotteryMatchService.canBetByTime(curDateTime.getDayOfWeek().getValue(), curDateTime.getHour());		
+		if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
-		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-		if(hideMatch) {
+		if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
+		
 		//校验篮彩的串关
 		String betTypeStr = param.getBetType();
 		//校验投注选项，主要查看各个cell值是否为空
@@ -752,17 +763,23 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
-		Date now = new Date();
-		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-		if(nowTime - betEndTime > 0) {
+
+		int betEndTime = dlMatchBasketballService.getBetEndTimeNew(min.getMatchTime());		
+		Instant betEndInstant = Instant.ofEpochSecond(betEndTime);
+		LocalDateTime betEndDateTime = LocalDateTime.ofInstant(betEndInstant, ZoneId.systemDefault());
+		Boolean betEndTimeCanBz = lotteryMatchService.canBetByTime(betEndDateTime.getDayOfWeek().getValue(), betEndDateTime.getHour());
+		
+		Integer curTime = DateUtil.getCurrentTimeLong();
+		Instant instant = Instant.ofEpochSecond(curTime);
+		LocalDateTime curDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		Boolean curTimeCanBz = lotteryMatchService.canBetByTime(curDateTime.getDayOfWeek().getValue(), curDateTime.getHour());		
+		if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
-		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-		if(hideMatch) {
+		if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
 			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
+		
 		//校验串关
 		String betTypeStr = param.getBetType();
 		if(StringUtils.isBlank(betTypeStr)) {
