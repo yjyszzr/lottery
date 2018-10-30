@@ -78,6 +78,9 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderDTO;
+import com.dl.order.param.SubmitOrderParam;
+import com.dl.order.param.SubmitOrderParam.TicketDetail;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -96,6 +99,7 @@ import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
+import com.dl.shop.payment.enums.PayEnums;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -984,6 +988,11 @@ public class LotteryMatchController {
 		betPlayInfoDTO.setThirdPartyPaid(String.format("%.2f", thirdPartyPaid));
 		return ResultGenerator.genSuccessResult("success", betPlayInfoDTO);
 	}
+	
+	
+	
+	
+	
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/nSaveBetInfo")
 	public BaseResult<String> nSaveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
@@ -1199,6 +1208,114 @@ public class LotteryMatchController {
 		stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
 		return ResultGenerator.genSuccessResult("success", payToken);
 	}
+	
+	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
+	@PostMapping("/createOrderBySimulate")
+	public BaseResult<String> createOrderBySimulate(@Valid @RequestBody DlJcZqMatchBetParam param){
+		BaseResult<String> rst = this.nSaveBetInfo(param);
+		
+		String payToken = rst.getData();
+		if (StringUtils.isBlank(payToken)) {
+			logger.info("payToken值为空！");
+			return ResultGenerator.genResult(PayEnums.PAY_TOKEN_EMPTY.getcode(), PayEnums.PAY_TOKEN_EMPTY.getMsg());
+		}
+		// 校验payToken的有效性
+		String jsonData = stringRedisTemplate.opsForValue().get(payToken);
+		if (StringUtils.isBlank(jsonData)) {
+			logger.info( "支付信息获取为空！");
+			return ResultGenerator.genResult(PayEnums.PAY_TOKEN_EXPRIED.getcode(), PayEnums.PAY_TOKEN_EXPRIED.getMsg());
+		}
+		
+		// 清除payToken
+		stringRedisTemplate.delete(payToken);
+
+		DIZQUserBetInfoDTO dto = null;
+		try {
+			dto = JSONHelper.getSingleBean(jsonData, DIZQUserBetInfoDTO.class);
+		} catch (Exception e1) {
+			logger.error("支付信息转DIZQUserBetInfoDTO对象失败！", e1);
+			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+		}
+		if (null == dto) {
+			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+		}
+		
+		Integer userId = dto.getUserId();
+		Integer currentId = SessionUtil.getUserId();
+		if (!userId.equals(currentId)) {
+			logger.info("支付信息不是当前用户的待支付彩票！");
+			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+		}
+		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form paytoken
+		BigDecimal ticketAmount = BigDecimal.valueOf(dto.getMoney());// from paytoken
+		BigDecimal bonusAmount = BigDecimal.valueOf(dto.getBonusAmount());// from paytoken
+		BigDecimal moneyPaid = BigDecimal.valueOf(dto.getMoney() - dto.getBonusAmount());// from paytoken
+		BigDecimal surplus = BigDecimal.valueOf(dto.getSurplus());// from paytoken
+		BigDecimal thirdPartyPaid = BigDecimal.valueOf(dto.getThirdPartyPaid());
+		List<DIZQUserBetCellInfoDTO> userBetCellInfos = dto.getUserBetCellInfos();
+		final String betType = dto.getBetType();
+		List<TicketDetail> ticketDetails = userBetCellInfos.stream().map(betCell -> {
+			TicketDetail ticketDetail = new TicketDetail();
+			ticketDetail.setMatch_id(betCell.getMatchId());
+			ticketDetail.setChangci(betCell.getChangci());
+			int matchTime = betCell.getMatchTime();
+			if (matchTime > 0) {
+				ticketDetail.setMatchTime(Date.from(Instant.ofEpochSecond(matchTime)));
+			}
+			ticketDetail.setMatchTeam(betCell.getMatchTeam());
+			ticketDetail.setLotteryClassifyId(betCell.getLotteryClassifyId());
+			ticketDetail.setLotteryPlayClassifyId(betCell.getLotteryPlayClassifyId());
+			ticketDetail.setTicketData(betCell.getTicketData());
+			ticketDetail.setIsDan(betCell.getIsDan());
+			ticketDetail.setIssue(betCell.getPlayCode());
+			ticketDetail.setFixedodds(betCell.getFixedodds());
+			ticketDetail.setBetType(betType);
+			return ticketDetail;
+		}).collect(Collectors.toList());
+		
+		// order生成
+		SubmitOrderParam submitOrderParam = new SubmitOrderParam();
+		submitOrderParam.setTicketNum(dto.getTicketNum());
+		submitOrderParam.setMoneyPaid(moneyPaid);
+		submitOrderParam.setTicketAmount(ticketAmount);
+		submitOrderParam.setSurplus(surplus);
+		submitOrderParam.setThirdPartyPaid(thirdPartyPaid);
+		submitOrderParam.setPayName("");
+		submitOrderParam.setUserBonusId(userBonusId);
+		submitOrderParam.setBonusAmount(bonusAmount);
+		submitOrderParam.setOrderFrom(dto.getRequestFrom());
+		int lotteryClassifyId = dto.getLotteryClassifyId();
+		submitOrderParam.setLotteryClassifyId(lotteryClassifyId);
+		int lotteryPlayClassifyId = dto.getLotteryPlayClassifyId();
+		submitOrderParam.setLotteryPlayClassifyId(lotteryPlayClassifyId);
+		submitOrderParam.setPassType(dto.getBetType());
+		submitOrderParam.setPlayType("0" + dto.getPlayType());
+		submitOrderParam.setBetNum(dto.getBetNum());
+		submitOrderParam.setCathectic(dto.getTimes());
+		if (lotteryPlayClassifyId != 8 && lotteryClassifyId == 1) {
+			if (ticketDetails.size() > 1) {
+				Optional<TicketDetail> max = ticketDetails.stream().max((detail1, detail2) -> detail1.getMatchTime().compareTo(detail2.getMatchTime()));
+				submitOrderParam.setMatchTime(max.get().getMatchTime());
+			} else {
+				submitOrderParam.setMatchTime(ticketDetails.get(0).getMatchTime());
+			}
+		}
+		submitOrderParam.setForecastMoney(dto.getForecastMoney());
+
+		submitOrderParam.setIssue(dto.getIssue());
+		submitOrderParam.setTicketDetails(ticketDetails);
+		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
+		if (createOrder.getCode() != 0) {
+			logger.info( "订单创建失败！");
+			return ResultGenerator.genFailResult("支付失败！");
+		}
+		String orderId = createOrder.getData().getOrderId().toString();
+		String orderSn = createOrder.getData().getOrderSn();
+		
+		return ResultGenerator.genSuccessResult("success", orderId);
+	}
+	
+	
     
 	@ApiOperation(value = "抓取赛事列表保存", notes = "抓取赛事列表保存")
     @PostMapping("/saveMatchList")
