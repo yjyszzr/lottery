@@ -1210,6 +1210,9 @@ public class LotteryMatchController {
 	@PostMapping("/createOrderBySimulate")
 	public BaseResult<OrderIdDTO> createOrderBySimulate(@Valid @RequestBody DlJcZqMatchBetParam param){
 		BaseResult<String> rst = this.nSaveBetInfo(param);
+		if(rst.getCode()!=0) {
+			return ResultGenerator.genResult(rst.getCode(), rst.getMsg());
+		}
 		
 		String payToken = rst.getData();
 		if (StringUtils.isBlank(payToken)) {
@@ -1243,13 +1246,11 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
 		}
 		Double orderMoney = dto.getOrderMoney();
-		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form
-																											// paytoken
+		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form paytoken
 		BigDecimal ticketAmount = BigDecimal.valueOf(orderMoney);// from
 																	// paytoken
 		BigDecimal bonusAmount = BigDecimal.ZERO;//BigDecimal.valueOf(dto.getBonusAmount());// from  paytoken
-		BigDecimal moneyPaid = BigDecimal.valueOf(orderMoney);
-		;// from paytoken
+		BigDecimal moneyPaid = BigDecimal.valueOf(orderMoney);// from paytoken
 		BigDecimal surplus =  BigDecimal.ZERO;//BigDecimal.valueOf(dto.getSurplus());// from paytoken
 		BigDecimal thirdPartyPaid =  BigDecimal.ZERO;//BigDecimal.valueOf(dto.getThirdPartyPaid());
 		List<UserBetDetailInfoDTO> userBetCellInfos = dto.getBetDetailInfos();
@@ -1300,7 +1301,6 @@ public class LotteryMatchController {
 			}
 		}
 		submitOrderParam.setForecastMoney(dto.getForecastMoney());
-
 		submitOrderParam.setIssue(dto.getIssue());
 		submitOrderParam.setTicketDetails(ticketDetails);
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
