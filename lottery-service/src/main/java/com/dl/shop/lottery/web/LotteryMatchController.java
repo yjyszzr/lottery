@@ -56,6 +56,7 @@ import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
+import com.dl.lottery.dto.OrderIdDTO;
 import com.dl.lottery.dto.QueryMatchResultDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
@@ -97,6 +98,7 @@ import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchPlayService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
+import com.dl.shop.payment.dto.PaymentDTO;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
@@ -570,7 +572,6 @@ public class LotteryMatchController {
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 
-	
 	@ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
 	@PostMapping("/getBetInfo")
 	public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
@@ -988,11 +989,7 @@ public class LotteryMatchController {
 		betPlayInfoDTO.setThirdPartyPaid(String.format("%.2f", thirdPartyPaid));
 		return ResultGenerator.genSuccessResult("success", betPlayInfoDTO);
 	}
-	
-	
-	
-	
-	
+		
 	@ApiOperation(value = "保存投注信息", notes = "保存投注信息")
 	@PostMapping("/nSaveBetInfo")
 	public BaseResult<String> nSaveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
@@ -1211,7 +1208,7 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
 	@PostMapping("/createOrderBySimulate")
-	public BaseResult<String> createOrderBySimulate(@Valid @RequestBody DlJcZqMatchBetParam param){
+	public BaseResult<OrderIdDTO> createOrderBySimulate(@Valid @RequestBody DlJcZqMatchBetParam param){
 		BaseResult<String> rst = this.nSaveBetInfo(param);
 		
 		String payToken = rst.getData();
@@ -1225,13 +1222,12 @@ public class LotteryMatchController {
 			logger.info( "支付信息获取为空！");
 			return ResultGenerator.genResult(PayEnums.PAY_TOKEN_EXPRIED.getcode(), PayEnums.PAY_TOKEN_EXPRIED.getMsg());
 		}
-		
 		// 清除payToken
 		stringRedisTemplate.delete(payToken);
 
-		DIZQUserBetInfoDTO dto = null;
+		UserBetPayInfoDTO dto = null;
 		try {
-			dto = JSONHelper.getSingleBean(jsonData, DIZQUserBetInfoDTO.class);
+			dto = JSONHelper.getSingleBean(jsonData, UserBetPayInfoDTO.class);
 		} catch (Exception e1) {
 			logger.error("支付信息转DIZQUserBetInfoDTO对象失败！", e1);
 			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
@@ -1239,21 +1235,24 @@ public class LotteryMatchController {
 		if (null == dto) {
 			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
 		}
-		
+
 		Integer userId = dto.getUserId();
 		Integer currentId = SessionUtil.getUserId();
 		if (!userId.equals(currentId)) {
 			logger.info("支付信息不是当前用户的待支付彩票！");
 			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
 		}
-		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form paytoken
-		BigDecimal ticketAmount = BigDecimal.valueOf(dto.getMoney());// from paytoken
-		BigDecimal bonusAmount = BigDecimal.valueOf(dto.getBonusAmount());// from paytoken
-		BigDecimal moneyPaid = BigDecimal.valueOf(dto.getMoney() - dto.getBonusAmount());// from paytoken
-		BigDecimal surplus = BigDecimal.valueOf(dto.getSurplus());// from paytoken
-		BigDecimal thirdPartyPaid = BigDecimal.valueOf(dto.getThirdPartyPaid());
-		List<DIZQUserBetCellInfoDTO> userBetCellInfos = dto.getUserBetCellInfos();
-		final String betType = dto.getBetType();
+		Double orderMoney = dto.getOrderMoney();
+		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form
+																											// paytoken
+		BigDecimal ticketAmount = BigDecimal.valueOf(orderMoney);// from
+																	// paytoken
+		BigDecimal bonusAmount = BigDecimal.ZERO;//BigDecimal.valueOf(dto.getBonusAmount());// from  paytoken
+		BigDecimal moneyPaid = BigDecimal.valueOf(orderMoney);
+		;// from paytoken
+		BigDecimal surplus =  BigDecimal.ZERO;//BigDecimal.valueOf(dto.getSurplus());// from paytoken
+		BigDecimal thirdPartyPaid =  BigDecimal.ZERO;//BigDecimal.valueOf(dto.getThirdPartyPaid());
+		List<UserBetDetailInfoDTO> userBetCellInfos = dto.getBetDetailInfos();
 		List<TicketDetail> ticketDetails = userBetCellInfos.stream().map(betCell -> {
 			TicketDetail ticketDetail = new TicketDetail();
 			ticketDetail.setMatch_id(betCell.getMatchId());
@@ -1269,10 +1268,10 @@ public class LotteryMatchController {
 			ticketDetail.setIsDan(betCell.getIsDan());
 			ticketDetail.setIssue(betCell.getPlayCode());
 			ticketDetail.setFixedodds(betCell.getFixedodds());
-			ticketDetail.setBetType(betType);
+			ticketDetail.setBetType(betCell.getBetType());
 			return ticketDetail;
 		}).collect(Collectors.toList());
-		
+
 		// order生成
 		SubmitOrderParam submitOrderParam = new SubmitOrderParam();
 		submitOrderParam.setTicketNum(dto.getTicketNum());
@@ -1306,13 +1305,14 @@ public class LotteryMatchController {
 		submitOrderParam.setTicketDetails(ticketDetails);
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
 		if (createOrder.getCode() != 0) {
-			logger.info( "订单创建失败！");
+			logger.info("订单创建失败！");
 			return ResultGenerator.genFailResult("支付失败！");
 		}
 		String orderId = createOrder.getData().getOrderId().toString();
 		String orderSn = createOrder.getData().getOrderSn();
-		
-		return ResultGenerator.genSuccessResult("success", orderId);
+		OrderIdDTO orderDto = new OrderIdDTO();
+		orderDto.setOrderId(orderId);
+		return ResultGenerator.genSuccessResult("success", orderDto);
 	}
 	
 	
