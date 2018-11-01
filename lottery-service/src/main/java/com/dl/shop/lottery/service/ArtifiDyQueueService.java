@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
@@ -18,7 +21,10 @@ import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 import com.dl.shop.lottery.dao.DlArtifiPrintLotteryMapper;
+import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
+import com.dl.shop.lottery.model.DlOpLog;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -32,7 +38,10 @@ public class ArtifiDyQueueService{
 	
 	@Resource
 	private DlArtifiPrintLotteryMapper dlArtifiPrintMapper;
-
+	
+	@Resource
+	private DlOpLogMapper dlOpMapper;
+	
 	private final int QUEUE_SIZE = 30;
 	
 	/**
@@ -214,6 +223,14 @@ public class ArtifiDyQueueService{
 			printLottery.setAdminId(userId);
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
 		}
+		//添加日志
+		DlOpLog log = new DlOpLog();
+		log.setAddTime(DateUtil.getCurrentTimeLong());
+		log.setPhone(mobile);
+		log.setType(2);
+		log.setOpType(orderStatus);
+		log.setOrderSn(orderSn);
+		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult();
 	}
 }

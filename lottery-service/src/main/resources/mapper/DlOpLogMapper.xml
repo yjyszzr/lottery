@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dl.shop.lottery.dao.DlOpLogMapper">
+
+  <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.DlOpLog">
+    <id column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="orderSn" jdbcType="VARCHAR" property="orderSn" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="op_type" jdbcType="INTEGER" property="opType" />
+    <result column="add_time" jdbcType="INTEGER" property="addTime" />
+  </resultMap>
+  
+</mapper>
