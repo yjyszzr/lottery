@@ -184,18 +184,24 @@ public class LotteryHallService {
 				isShowWorldCup = false;
 			}
 		}
-		
-		LotteryClassify lotteryClassify = lotteryClassifyMapper.selectLotteryClassesById(1);
-		if(lotteryClassify != null) {
+		List<DlPlayClassifyDetailDTO> playClassifyList  = lotteryPlayClassifyMapper.selectAllData(1);
+		String playClassifyUrl = playClassifyList.get(0).getRedirectUrl();
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		for(LotteryClassify lotteryClassify:classifyList) {
 			DlPlayClassifyDetailDTO dlPlayDetailDto = new DlPlayClassifyDetailDTO();
 			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
 			dlPlayDetailDto.setPlayClassifyImg(lotteryConfig.getBannerShowUrl()+lotteryClassify.getLotteryImg());
 			dlPlayDetailDto.setPlayClassifyLabelName(lotteryClassify.getSubTitle());
-			dlPlayDetailDto.setPlayClassifyName("竞彩足球");
-			dlPlayDetailDto.setRedirectUrl(lotteryClassify.getRedirectUrl());
+			dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
+			if(1 == lotteryClassify.getLotteryClassifyId()) {
+				dlPlayDetailDto.setRedirectUrl(playClassifyUrl);
+			}else {
+				dlPlayDetailDto.setRedirectUrl("");
+			}
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());		
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 		}
+
 		String isLogin = "&isLogin=0";
 		if(userId != null) {
 			isLogin = "&isLogin=1";
