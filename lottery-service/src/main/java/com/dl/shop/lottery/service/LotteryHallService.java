@@ -25,7 +25,6 @@ import com.dl.lottery.dto.DlHallDTO.DlWinningLogDTO;
 import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
 import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
-import com.dl.lottery.enums.PlayLabelEnums;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.lotto.api.ISuperLottoService;
@@ -185,8 +184,17 @@ public class LotteryHallService {
 				isShowWorldCup = false;
 			}
 		}
-
-		dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
+		
+		LotteryClassify lotteryClassify = lotteryClassifyMapper.selectLotteryClassesById(1);
+		if(lotteryClassify != null) {
+			DlPlayClassifyDetailDTO dlPlayDetailDto = new DlPlayClassifyDetailDTO();
+			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
+			dlPlayDetailDto.setPlayClassifyImg(lotteryClassify.getLotteryImg());
+			dlPlayDetailDto.setPlayClassifyLabelName("精彩足球");
+			dlPlayDetailDto.setRedirectUrl(lotteryClassify.getRedirectUrl());
+			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());		
+			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
+		}
 		String isLogin = "&isLogin=0";
 		if(userId != null) {
 			isLogin = "&isLogin=1";
