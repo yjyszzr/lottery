@@ -194,22 +194,21 @@ public class LotteryHallService {
 			dlPlayDetailDto.setPlayClassifyLabelName(lotteryClassify.getSubTitle());
 			dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
 			if(1 == lotteryClassify.getLotteryClassifyId()) {
-				dlPlayDetailDto.setRedirectUrl(playClassifyUrl);
+				String isLogin = "&isLogin=0";
+				if(userId != null) {
+					isLogin = "&isLogin=1";
+				}
+				dlPlayDetailDto.setRedirectUrl(playClassifyUrl+isLogin);
 			}else {
 				dlPlayDetailDto.setRedirectUrl("");
 			}
-			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());		
+			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 		}
 
-		String isLogin = "&isLogin=0";
-		if(userId != null) {
-			isLogin = "&isLogin=1";
-		}
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
-				dto.setRedirectUrl(dto.getRedirectUrl()+isLogin);
 				dto.setLotteryId("1");
 				if("8".equals(dto.getPlayClassifyId())) {
 					channel = channel ==null?"":channel;
