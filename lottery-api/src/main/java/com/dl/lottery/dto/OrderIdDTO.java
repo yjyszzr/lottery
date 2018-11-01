@@ -6,5 +6,8 @@ import lombok.Data;
 @Data
 public class OrderIdDTO {	
 	@ApiModelProperty("订单id")
-	 private String orderId;
+	private String orderId;
+	
+	@ApiModelProperty("订单号")
+	private String orderSn;
 }

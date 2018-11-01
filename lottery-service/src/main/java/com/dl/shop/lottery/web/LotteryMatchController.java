@@ -1311,6 +1311,7 @@ public class LotteryMatchController {
 		String orderSn = createOrder.getData().getOrderSn();
 		OrderIdDTO orderDto = new OrderIdDTO();
 		orderDto.setOrderId(orderId);
+		orderDto.setOrderSn(orderSn);
 		return ResultGenerator.genSuccessResult("success", orderDto);
 	}
 	
