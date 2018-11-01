@@ -1233,22 +1233,21 @@ public class LotteryMatchController {
 			dto = JSONHelper.getSingleBean(jsonData, UserBetPayInfoDTO.class);
 		} catch (Exception e1) {
 			logger.error("支付信息转DIZQUserBetInfoDTO对象失败！", e1);
-			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+			return ResultGenerator.genFailResult("模拟支付信息异常，模拟支付失败！");
 		}
 		if (null == dto) {
-			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+			return ResultGenerator.genFailResult("模拟支付信息异常，模拟支付失败！");
 		}
 
 		Integer userId = dto.getUserId();
 		Integer currentId = SessionUtil.getUserId();
 		if (!userId.equals(currentId)) {
 			logger.info("支付信息不是当前用户的待支付彩票！");
-			return ResultGenerator.genFailResult("支付信息异常，支付失败！");
+			return ResultGenerator.genFailResult("模拟支付信息异常，支付失败！");
 		}
 		Double orderMoney = dto.getOrderMoney();
 		Integer userBonusId = StringUtils.isBlank(dto.getBonusId()) ? 0 : Integer.valueOf(dto.getBonusId());// form paytoken
-		BigDecimal ticketAmount = BigDecimal.valueOf(orderMoney);// from
-																	// paytoken
+		BigDecimal ticketAmount = BigDecimal.valueOf(orderMoney);// from paytoken
 		BigDecimal bonusAmount = BigDecimal.ZERO;//BigDecimal.valueOf(dto.getBonusAmount());// from  paytoken
 		BigDecimal moneyPaid = BigDecimal.valueOf(orderMoney);// from paytoken
 		BigDecimal surplus =  BigDecimal.ZERO;//BigDecimal.valueOf(dto.getSurplus());// from paytoken
@@ -1306,7 +1305,7 @@ public class LotteryMatchController {
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
 		if (createOrder.getCode() != 0) {
 			logger.info("订单创建失败！");
-			return ResultGenerator.genFailResult("支付失败！");
+			return ResultGenerator.genFailResult("模拟支付失败！");
 		}
 		String orderId = createOrder.getData().getOrderId().toString();
 		String orderSn = createOrder.getData().getOrderSn();

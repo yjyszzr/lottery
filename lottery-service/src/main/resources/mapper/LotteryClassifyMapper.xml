@@ -45,4 +45,19 @@
         order by sort asc
   </select>
   
+  <select id="selectLotteryClassesById" resultMap="BaseResultMap">
+        select
+           lottery_classify_id,
+           lottery_name,
+           lottery_img,
+           sub_title,
+           status_reason,
+           status,
+           redirect_url
+        from
+            dl_lottery_classify
+        where is_show = 1 and lottery_classify_id  = #{lotteryClassifyId}
+        order by sort asc
+  </select>
+  
 </mapper>

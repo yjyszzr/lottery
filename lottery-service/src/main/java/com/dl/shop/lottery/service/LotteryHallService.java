@@ -172,7 +172,7 @@ public class LotteryHallService {
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
-		// //第一版只显示竞彩足球的子列表
+		// 第一版只显示竞彩足球的子列表
 		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
 		List<DlPlayClassifyDetailDTO> dlPlayClassifyDetailDTOs = new ArrayList<DlPlayClassifyDetailDTO>();
 		boolean isShowWorldCup = true;
@@ -187,9 +187,14 @@ public class LotteryHallService {
 		}
 
 		dlPlayClassifyDetailDTOs = lotteryPlayClassifyMapper.selectAllData(1);
+		String isLogin = "&isLogin=0";
+		if(userId != null) {
+			isLogin = "&isLogin=1";
+		}
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
+				dto.setRedirectUrl(dto.getRedirectUrl()+isLogin);
 				dto.setLotteryId("1");
 				if("8".equals(dto.getPlayClassifyId())) {
 					channel = channel ==null?"":channel;
