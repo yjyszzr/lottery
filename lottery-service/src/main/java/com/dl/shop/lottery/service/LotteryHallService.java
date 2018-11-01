@@ -189,8 +189,8 @@ public class LotteryHallService {
 		if(lotteryClassify != null) {
 			DlPlayClassifyDetailDTO dlPlayDetailDto = new DlPlayClassifyDetailDTO();
 			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
-			dlPlayDetailDto.setPlayClassifyImg(lotteryClassify.getLotteryImg());
-			dlPlayDetailDto.setPlayClassifyLabelName("精彩足球");
+			dlPlayDetailDto.setPlayClassifyImg(lotteryConfig.getBannerShowUrl()+lotteryClassify.getLotteryImg());
+			dlPlayDetailDto.setPlayClassifyLabelName("竞彩足球");
 			dlPlayDetailDto.setRedirectUrl(lotteryClassify.getRedirectUrl());
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());		
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
