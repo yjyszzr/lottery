@@ -184,6 +184,8 @@ public class LotteryHallService {
 				isShowWorldCup = false;
 			}
 		}
+		
+		String phoneChannel = "&Qd="+channel;
 		List<DlPlayClassifyDetailDTO> playClassifyList  = lotteryPlayClassifyMapper.selectAllData(1);
 		String playClassifyUrl = playClassifyList.get(0).getRedirectUrl();
 		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
@@ -192,15 +194,17 @@ public class LotteryHallService {
 			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
 			dlPlayDetailDto.setPlayClassifyImg(lotteryConfig.getBannerShowUrl()+lotteryClassify.getLotteryImg());
 			dlPlayDetailDto.setPlayClassifyLabelName(lotteryClassify.getSubTitle());
-			dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
+			
 			if(1 == lotteryClassify.getLotteryClassifyId()) {
 				String isLogin = "&isLogin=0";
 				if(userId != null) {
 					isLogin = "&isLogin=1";
 				}
-				dlPlayDetailDto.setRedirectUrl(playClassifyUrl+isLogin);
+				dlPlayDetailDto.setRedirectUrl(playClassifyUrl+isLogin+phoneChannel);
+				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
 			}else {
 				dlPlayDetailDto.setRedirectUrl("");
+				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getStatusReason());
 			}
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
