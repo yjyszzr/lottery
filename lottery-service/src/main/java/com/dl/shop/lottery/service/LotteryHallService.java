@@ -42,11 +42,14 @@ import com.dl.shop.lottery.model.LotteryClassify;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 @Service
 @Transactional(value = "transactionManager1")
+@Slf4j
 public class LotteryHallService {
 
 	@Resource
@@ -185,7 +188,8 @@ public class LotteryHallService {
 			}
 		}
 		
-		String phoneChannel = "&Qd="+channel;
+		String phoneChannel = "&qd="+channel;
+		log.info("channel:"+channel);
 		List<DlPlayClassifyDetailDTO> playClassifyList  = lotteryPlayClassifyMapper.selectAllData(1);
 		String playClassifyUrl = playClassifyList.get(0).getRedirectUrl();
 		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
