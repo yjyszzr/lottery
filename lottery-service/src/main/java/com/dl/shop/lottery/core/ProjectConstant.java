@@ -43,7 +43,7 @@ public class ProjectConstant {
 	public final static Integer CALLBACK_STAKE_FAIL = 17; // 出票回调失败状态
 	public final static Integer CALLBACK_STAKE_ING = 8; // 出票回调出票中状态
 
-	public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足中奖";
+	public static final String FORMAT_WINNING_MSG = "恭喜【{0}】投注竞足模拟中奖";
 
 	public final static String CONTENTSPLITEFLAG_ShuXian = "|";
 	public final static String CONTENTSPLITEFLAG_DouHao = ",";
@@ -453,5 +453,5 @@ public class ProjectConstant {
 
 	public static final String USER_IS_NOT_REAL = "0";// 用户已没有进行过实名认证
 	public static final String USER_IS_REAL = "1";// 用户已经进行过实名认证
-	public static final int EXPIRE_TIME = 900;// 过期时间
+	public static final int EXPIRE_TIME = 3600;// 过期时间
 }
