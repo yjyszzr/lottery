@@ -223,7 +223,12 @@ public class ArtifiPrintLotteryUserLoginController {
 			MobilePwdCreateParam mobilePwdParams = new MobilePwdCreateParam();
 			mobilePwdParams.setMobile(mobile);
 			mobilePwdParams.setPwd(pwd);
-			userLoginService.onCreateUser(mobilePwdParams);
+			BaseResult<UserLoginDTO> bResult = userLoginService.onCreateUser(mobilePwdParams);
+			if(bResult != null && bResult.isSuccess()) {
+				logger.info("[loginByPwd]" + "创建用户成功");
+			}else {
+				logger.info("[loginByPwd]" + "创建用户失败");
+			}
 		}
 		//用户登录
 		return onUserLogin(params);
