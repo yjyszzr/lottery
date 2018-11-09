@@ -39,6 +39,7 @@ import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.member.param.UserLoginWithPassParam;
 import com.dl.member.param.UserLoginWithSmsParam;
+import com.dl.member.param.UserRePwdParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.auth.dto.InvalidateTokenDTO;
 import com.dl.shop.lottery.core.ProjectConstant;
@@ -220,6 +221,9 @@ public class ArtifiPrintLotteryUserLoginController {
 		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileParams);
 		//校验手机号是否不存在,直接创建该用户
 		if (null == userLoginDTO.getData()) {
+			if(!"123456".equals(pwd)) {
+				return ResultGenerator.genResult(MemberEnums.WRONG_IDENTITY.getcode(), MemberEnums.WRONG_IDENTITY.getMsg());
+			}
 			MobilePwdCreateParam mobilePwdParams = new MobilePwdCreateParam();
 			mobilePwdParams.setMobile(mobile);
 			mobilePwdParams.setPassword(pwd);
@@ -234,6 +238,33 @@ public class ArtifiPrintLotteryUserLoginController {
 		//用户登录
 		return onUserLogin(params);
 	}
+	
+	@ApiOperation(value = "密码登录", notes = "密码登录")
+	@PostMapping("/repwd")
+	public BaseResult<?> rePwd(@RequestBody UserRePwdParam params, HttpServletRequest request){
+		String mobile = params.getMobile();
+		String pwd = params.getPassword();
+		String newPwd = params.getNewPwd();
+		logger.info("[rePwd]" + " mobile:" + mobile + " pwd:" + pwd + " newPwd:" + newPwd);
+		if(!RegexUtil.checkMobile(mobile)){
+			return ResultGenerator.genResult(MemberEnums.MOBILE_VALID_ERROR.getcode(), MemberEnums.MOBILE_VALID_ERROR.getMsg());
+		}
+		if(StringUtils.isEmpty(pwd)) {
+			return ResultGenerator.genResult(MemberEnums.PASS_FORMAT_ERROR.getcode(), MemberEnums.PASS_FORMAT_ERROR.getMsg());
+		}
+		if(StringUtils.isEmpty(newPwd)) {
+			return ResultGenerator.genResult(MemberEnums.PASS_FORMAT_ERROR.getcode(), MemberEnums.PASS_FORMAT_ERROR.getMsg());
+		}
+		//判断是否是白名单
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile", mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		return userLoginService.rePwd(params);
+	}
+	
 	
 	private List<String> getAllLoginInfo() {
 		Set<String> keys = stringRedisTemplate.keys("XN_*");
