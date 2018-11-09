@@ -34,8 +34,10 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.LoginLogParam;
 import com.dl.member.param.MobileInfoParam;
+import com.dl.member.param.MobilePwdCreateParam;
 import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserIdRealParam;
+import com.dl.member.param.UserLoginWithPassParam;
 import com.dl.member.param.UserLoginWithSmsParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.auth.dto.InvalidateTokenDTO;
@@ -164,6 +166,69 @@ public class ArtifiPrintLotteryUserLoginController {
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
 	}
 
+	private BaseResult<UserLoginDTO> onUserLogin(UserLoginWithPassParam loginPwdParams){
+		logger.info("[onUserLogin]");
+		String mobile = loginPwdParams.getMobile();
+		String loginParams = JSONHelper.bean2json(loginPwdParams);
+		MobileInfoParam mobileInfo = new MobileInfoParam();
+		mobileInfo.setMobile(loginPwdParams.getMobile());
+		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
+		// 校验手机号是否存在
+		if (null == userLoginDTO.getData()) {
+			LoginLogParam loginLogParam = new LoginLogParam();
+			loginLogParam.setUserId(-1);
+			loginLogParam.setLoginType(0);
+			loginLogParam.setLoginSstatus(1);
+			loginLogParam.setLoginParams(loginParams);
+			loginLogParam.setLoginResult(MemberEnums.NO_REGISTER.getMsg());
+			userLoginService.loginLog(loginLogParam);
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		userLoginDTO = userLoginService.loginWithPwd(loginPwdParams);
+		logger.info("登录信息为:======================" + userLoginDTO);
+		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
+		List<String> mobileList = getAllLoginInfo();
+		logger.info("登录人数为:======================" + mobileList.size());
+		logger.info("登录人list:======================" + mobileList);
+		// 调用用户登录
+		artifiDyQueueService.userLogin(mobile, mobileList);
+		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
+	}
+	
+	@ApiOperation(value = "密码登录", notes = "密码登录")
+	@PostMapping("/loginByPwd")
+	public BaseResult<UserLoginDTO> loginByPwd(@RequestBody UserLoginWithPassParam params, HttpServletRequest request){
+		String mobile = params.getMobile();
+		String pwd = params.getPassword();
+		logger.info("[loginByPwd]" + " mobile:" + mobile + " pwd:" + pwd);
+		if(!RegexUtil.checkMobile(mobile)){
+			return ResultGenerator.genResult(MemberEnums.MOBILE_VALID_ERROR.getcode(), MemberEnums.MOBILE_VALID_ERROR.getMsg());
+		}
+		if(StringUtils.isEmpty(pwd)) {
+			return ResultGenerator.genResult(MemberEnums.PASS_FORMAT_ERROR.getcode(), MemberEnums.PASS_FORMAT_ERROR.getMsg());
+		}
+		//判断是否是白名单
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile", mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		//如果彩小秘系统中没有该用户
+		MobileInfoParam mobileParams = new MobileInfoParam();
+		mobileParams.setMobile(mobile);
+		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileParams);
+		//校验手机号是否不存在,直接创建该用户
+		if (null == userLoginDTO.getData()) {
+			MobilePwdCreateParam mobilePwdParams = new MobilePwdCreateParam();
+			mobilePwdParams.setMobile(mobile);
+			mobilePwdParams.setPwd(pwd);
+			userLoginService.onCreateUser(mobilePwdParams);
+		}
+		//用户登录
+		return onUserLogin(params);
+	}
+	
 	private List<String> getAllLoginInfo() {
 		Set<String> keys = stringRedisTemplate.keys("XN_*");
 		List<String> strList = new ArrayList<String>();
