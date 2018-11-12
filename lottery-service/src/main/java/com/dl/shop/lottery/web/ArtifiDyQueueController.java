@@ -13,6 +13,7 @@ import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.enums.MemberEnums;
 import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
@@ -27,10 +28,12 @@ import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
+import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
+import com.dl.shop.lottery.service.DlXNWhiteListService;
 import io.swagger.annotations.ApiOperation;
-
+import tk.mybatis.mapper.entity.Condition;
 /**
  * 动态队列
  * @author wht
@@ -51,6 +54,8 @@ public class ArtifiDyQueueController {
 	private ArtifiPrintLotteryUserLoginService artifiPrintLotteryUserLoginService;
 	@Resource
 	private IUserService iUserService;
+	@Resource
+	private DlXNWhiteListService dlXNWhiteListService;
 	
 	@ApiOperation(value = "人工分单", notes = "人工分单")
 	@PostMapping("/tasktimer")
@@ -81,6 +86,13 @@ public class ArtifiDyQueueController {
 		}
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("请输入手机号");
+		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
 		ManualOrderDTO orderEntity = null;
 		//刷新登录态 
@@ -117,6 +129,13 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
 		//如果在登录，登录态未还在生效，那么加入到分配队列
 		if(!ArtifiLoginManager.getInstance().containMobile(mobile)) {
 			ArtifiLoginManager.getInstance().addMobile(mobile);
@@ -143,20 +162,13 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("手机号码不能为空"); 
 		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
 		return artifiDyQueueService.modifyOrderStatus(userId,mobile,params.getOrderSn(),params.getOrderStatus());
-	}
-	
-	@ApiOperation(value = "测试登录", notes = "测试登录成功")
-	@PostMapping("/testlogin")
-	public BaseResult<?> testLogin(@RequestBody ArtifiLotteryQueryParam params){
-		artifiDyQueueService.userLogin(params.getMobile(),null);
-		return ResultGenerator.genSuccessResult();
-	}
-	
-	@ApiOperation(value = "测试退出登录", notes = "测试退出登录")
-	@PostMapping("/testlogout")
-	public BaseResult<?> testLogout(@RequestBody ArtifiLotteryQueryParam params){
-		artifiDyQueueService.userLogout(params.getMobile(),null);
-		return ResultGenerator.genSuccessResult(); 
 	}
 }
