@@ -84,7 +84,7 @@ public class ArtifiDyQueueService{
 	 * @param obj
 	 */
 	public void userLogout(String mobile,List<String> mobileList){
-		logger.info("[userLogout]" + " uid:" + mobile + " 退出登录... 在线人数:" + mobileList.size());
+		logger.info("[userLogout]" + " uid:" + mobile + " 退出登录.. 在线人数:" + mobileList.size());
 		ArtifiLoginManager.getInstance().onLogout(mobile);
 		if(mobileList != null) {
 			ArtifiLoginManager.getInstance().setList(mobileList);
