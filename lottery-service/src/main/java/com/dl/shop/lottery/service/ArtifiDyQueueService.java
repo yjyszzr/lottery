@@ -108,6 +108,11 @@ public class ArtifiDyQueueService{
 				dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
 			}
 		}
+		dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+		rList = dyArtifiDao.listAll(mobile,0);
+		if(rList.size() <= 0) {
+			dyArtifiDao.dropTable(mobile);
+		}
 	}
 
 	/**
