@@ -453,5 +453,5 @@ public class ProjectConstant {
 
 	public static final String USER_IS_NOT_REAL = "0";// 用户已没有进行过实名认证
 	public static final String USER_IS_REAL = "1";// 用户已经进行过实名认证
-	public static final int EXPIRE_TIME = 120;// 过期时间
+	public static final int EXPIRE_TIME = 3600;// 过期时间
 }
