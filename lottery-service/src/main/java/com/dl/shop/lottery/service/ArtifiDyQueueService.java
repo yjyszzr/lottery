@@ -104,9 +104,9 @@ public class ArtifiDyQueueService{
 				dlEntity.setAdminName(mobile);
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
 				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
+				//移除该用户队列的该ordersn订单数据
+				dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
 			}
-			//移除该用户队列的该ordersn订单数据
-			dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
 		}
 	}
 
