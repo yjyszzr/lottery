@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
@@ -24,7 +21,6 @@ import com.dl.shop.lottery.dao.DlArtifiPrintLotteryMapper;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -106,13 +102,17 @@ public class ArtifiDyQueueService{
 				DlArtifiPrintLottery dlEntity = list.get(0);
 				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
 				dlEntity.setAdminName(mobile);
-				dlEntity.setOperationTime(DateUtil.getCurrentTimeLong());
 				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
 				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
+				//移除该用户队列的该ordersn订单数据
+				dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
 			}
 		}
-		//清空回收该该用户队列
-		dyArtifiDao.dropTable(mobile);
+		dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+		rList = dyArtifiDao.listAll(mobile,0);
+		if(rList.size() <= 0) {
+			dyArtifiDao.dropTable(mobile);
+		}
 	}
 
 	/**
@@ -205,9 +205,7 @@ public class ArtifiDyQueueService{
 		//删除队列数据
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		int cnt = dyArtifiDao.delData(mobile,orderSn);
-		if(cnt <= 0) {
-			return ResultGenerator.genFailResult("订单查询失败");
-		}
+		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
 		//回收到主池，更改主池队列状态
 		//查询到该订单信息
 		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
@@ -219,8 +217,9 @@ public class ArtifiDyQueueService{
 			printLottery.setOrderSn(orderSn);
 			printLottery.setOrderStatus((byte)orderStatus);
 			printLottery.setAdminName(mobile);
-			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
 			printLottery.setAdminId(userId);
+			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
 		}
 		//添加日志

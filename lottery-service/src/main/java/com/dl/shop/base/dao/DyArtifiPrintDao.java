@@ -51,6 +51,8 @@ public interface DyArtifiPrintDao {
 	 */
 	public int dropTable(String userId);
 	
+	public int deleteOrderSn(String userId,String orderSn);
+	
 	/**
 	 * 添加打印数据
 	 * @param entity

@@ -254,6 +254,12 @@ public class ArtifiPrintLotteryUserLoginController {
 		if(StringUtils.isEmpty(newPwd)) {
 			return ResultGenerator.genResult(MemberEnums.PASS_FORMAT_ERROR.getcode(), MemberEnums.PASS_FORMAT_ERROR.getMsg());
 		}
+		if(newPwd.length() < 6) {
+			return ResultGenerator.genResult(MemberEnums.USER_PASS_ACCOUNT_SIX.getcode(),MemberEnums.USER_PASS_ACCOUNT_SIX.getMsg());
+		}
+		if(newPwd.length() > 20) {
+			return ResultGenerator.genResult(MemberEnums.USER_PASS_ACCOUNT_20.getcode(),MemberEnums.USER_PASS_ACCOUNT_20.getMsg());
+		}
 		//判断是否是白名单
 		Condition c = new Condition(DlXNWhiteList.class);
 		c.createCriteria().andEqualTo("mobile", mobile);

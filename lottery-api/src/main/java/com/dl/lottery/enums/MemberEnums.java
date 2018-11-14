@@ -50,7 +50,11 @@ public enum MemberEnums {
 	REAL_IDCARDNO_NOTLEGAL(301057,"请输入正确的身份证号"),
 	USER_BANK_NOT_SURPPORT(301058,"很抱歉,暂不支持此银行绑定"),
 	USER_BANK_ADDING(301059,"银行卡添加中"),
-	NO_UPDATE(301060,"无最新版本");
+	NO_UPDATE(301060,"无最新版本"),
+	USER_PASS_ACCOUNT_SIX(301061,"密码长度大于6位"),
+	USER_PASS_ACCOUNT_20(301062,"密码长度应小于20位"),
+	ORDER_STATUS_FAILURE(301063,"订单状态非法");
+	
 //	MOBILE_ERROR(301012,"手机号码格式错误"),
 //	ALREADY_SMS_VERIFY(301013,"手机号已经验证过"),	
 //	NO_SHOP_MEM(301014,"用户不是店铺会员"),

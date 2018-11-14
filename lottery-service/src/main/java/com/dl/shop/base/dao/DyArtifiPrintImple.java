@@ -140,10 +140,19 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally {
-				this.closeConn(rs, null);
+				this.closeConn(rs,null);
 			}
 		}
 		return mEntity;
+	}
+
+	@Override
+	public int deleteOrderSn(String userId, String orderSn) {
+		// TODO Auto-generated method stub
+		String tableName = getTNameByLgCode(userId,TABLE_NAME);
+		String sql = "delete from " + tableName + " where order_sn = ?;";
+		String[] params = {orderSn};
+		return this.exeUpdate(sql, params);
 	}
 
 }
