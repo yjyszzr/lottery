@@ -52,7 +52,8 @@ public enum MemberEnums {
 	USER_BANK_ADDING(301059,"银行卡添加中"),
 	NO_UPDATE(301060,"无最新版本"),
 	USER_PASS_ACCOUNT_SIX(301061,"密码长度大于6位"),
-	USER_PASS_ACCOUNT_20(301062,"密码长度应小于20位");
+	USER_PASS_ACCOUNT_20(301062,"密码长度应小于20位"),
+	ORDER_STATUS_FAILURE(301063,"订单状态非法");
 	
 //	MOBILE_ERROR(301012,"手机号码格式错误"),
 //	ALREADY_SMS_VERIFY(301013,"手机号已经验证过"),	

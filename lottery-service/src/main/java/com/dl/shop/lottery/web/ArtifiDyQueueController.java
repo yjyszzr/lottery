@@ -162,6 +162,9 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) {
 			return ResultGenerator.genFailResult("手机号码不能为空"); 
 		}
+		if(params.getOrderStatus() <= 0) {
+			return ResultGenerator.genResult(MemberEnums.ORDER_STATUS_FAILURE.getcode(),MemberEnums.ORDER_STATUS_FAILURE.getMsg());
+		}
 		//判断是否在白名单内
 		Condition c = new Condition(DlXNWhiteList.class);
 		c.createCriteria().andEqualTo("mobile",mobile);
