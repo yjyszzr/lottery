@@ -124,7 +124,10 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/queryV2")
 	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParam param){
-		int userId = SessionUtil.getUserId();
+		Integer userId = SessionUtil.getUserId();
+		if(userId == null) {
+			return ResultGenerator.genFailResult("请登录");
+		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
@@ -161,7 +164,7 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/query")
 	public BaseResult<?> queryOrderList(@RequestBody ArtifiLotteryQueryParam param){
-		int userId = SessionUtil.getUserId();
+		Integer userId = SessionUtil.getUserId();
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
