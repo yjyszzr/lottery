@@ -68,7 +68,7 @@ public class ArtifiDyQueueController {
 	@PostMapping("/tasktimer")
 	public BaseResult<?> timerTaskSchedual(@RequestBody EmptyParam emprt) {
 		logger.info("[timerTaskSchedual]" + "人工分单...");
-		artifiDyQueueService.onTimerExec();
+//		artifiDyQueueService.onTimerExec();
 		return ResultGenerator.genSuccessResult();
 	}
 	
@@ -153,6 +153,9 @@ public class ArtifiDyQueueController {
 		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
 			return ResultGenerator.genFailResult("获取多媒体信息失败");
 		}
+		//进入到分单逻辑
+		artifiDyQueueService.allocLotteryV2(mobile);
+		//
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
 		DlArtifiListDTO artifiEntity = new DlArtifiListDTO();
@@ -192,6 +195,34 @@ public class ArtifiDyQueueController {
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
 		return ResultGenerator.genSuccessResult("succ",rList);
+	}
+	
+	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
+	@PostMapping("/modifyV2")
+	public BaseResult<?> modifyOrderStatusV2(@RequestBody ArtifiLotteryModifyParam params){
+		int userId = SessionUtil.getUserId();
+		UserIdRealParam userIdParams = new UserIdRealParam();
+		userIdParams.setUserId(userId);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
+		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
+			return ResultGenerator.genFailResult("查询用户信息失败");
+		}
+//		String mobile = params.getMobile();
+		String mobile = bR.getData().getMobile();
+		if(mobile == null || mobile.length() <= 0) {
+			return ResultGenerator.genFailResult("手机号码不能为空"); 
+		}
+		if(params.getOrderStatus() <= 0) {
+			return ResultGenerator.genResult(MemberEnums.ORDER_STATUS_FAILURE.getcode(),MemberEnums.ORDER_STATUS_FAILURE.getMsg());
+		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus());
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")

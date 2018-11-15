@@ -21,6 +21,7 @@ import com.dl.shop.lottery.dao.DlArtifiPrintLotteryMapper;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -57,26 +58,28 @@ public class ArtifiDyQueueService{
 		}else {
 			logger.info("[userLogin]" + " uid:" + mobile + " table exist");
 		}
-		//查看有未分配的订单，立刻给分配
-		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
-		logger.info("[userLogin]" + "今日未分配订单:" + rSumList.size() + " user:" + mobile + " 现有订单数:" + rList.size());
-		int cnt = QUEUE_SIZE - rList.size();
-		if(cnt > 0) {
-			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList, cnt);
-			if(allocList != null && allocList.size() > 0) {
-				for(DlArtifiPrintLottery entity : allocList) {
-					//总的队列移除
-					rSumList.remove(entity);
-					//更改已分配的状态
-					entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
-					//操作人
-					entity.setAdminName(mobile);
-					logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
-					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
-				}
-			}
-		}
+		//v2版本登录成功不进行分配订单
+		
+//		//查看有未分配的订单，立刻给分配
+//		List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+//		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+//		logger.info("[userLogin]" + "今日未分配订单:" + rSumList.size() + " user:" + mobile + " 现有订单数:" + rList.size());
+//		int cnt = QUEUE_SIZE - rList.size();
+//		if(cnt > 0) {
+//			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList, cnt);
+//			if(allocList != null && allocList.size() > 0) {
+//				for(DlArtifiPrintLottery entity : allocList) {
+//					//总的队列移除
+//					rSumList.remove(entity);
+//					//更改已分配的状态
+//					entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+//					//操作人
+//					entity.setAdminName(mobile);
+//					logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
+//					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+//				}
+//			}
+//		}
 	}
 	
 	/**
@@ -89,27 +92,27 @@ public class ArtifiDyQueueService{
 		if(mobileList != null) {
 			ArtifiLoginManager.getInstance().setList(mobileList);
 		}
-		//获取该用户队列内容
+//		//获取该用户队列内容
+//		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+//		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+//		for(DDyArtifiPrintEntity dyArtiPrintEntity : rList) {
+//			//查询到该订单信息
+//			DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
+//			dlArtifiPrintLottery.setOrderSn(dyArtiPrintEntity.orderSn);
+//			List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
+//			//该订单信息回收到总池
+//			if(list != null && list.size() > 0) {
+//				DlArtifiPrintLottery dlEntity = list.get(0);
+//				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
+//				dlEntity.setAdminName(mobile);
+//				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
+//				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
+//				//移除该用户队列的该ordersn订单数据
+//				dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
+//			}
+//		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
-		for(DDyArtifiPrintEntity dyArtiPrintEntity : rList) {
-			//查询到该订单信息
-			DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
-			dlArtifiPrintLottery.setOrderSn(dyArtiPrintEntity.orderSn);
-			List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
-			//该订单信息回收到总池
-			if(list != null && list.size() > 0) {
-				DlArtifiPrintLottery dlEntity = list.get(0);
-				dlEntity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_INIT);
-				dlEntity.setAdminName(mobile);
-				dlArtifiPrintMapper.updateArtifiLotteryPrint(dlEntity);
-				logger.info("[userLogout]" + " 该订单:" + dyArtiPrintEntity.orderSn + " 回收到总池... uid:" + mobile);
-				//移除该用户队列的该ordersn订单数据
-				dyArtifiDao.deleteOrderSn(mobile,dyArtiPrintEntity.orderSn);
-			}
-		}
-		dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		rList = dyArtifiDao.listAll(mobile,0);
 		if(rList.size() <= 0) {
 			dyArtifiDao.dropTable(mobile);
 		}
@@ -177,6 +180,7 @@ public class ArtifiDyQueueService{
 			if(dyArtifiDao.queryEntityByOrderSn(uid,orderSn) == null) {
 				DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
 				dEntity.orderSn = orderSn;
+				dEntity.status = 0;
 				dyArtifiDao.addDyArtifiPrintInfo(uid,dEntity);
 				//分配出数据
 				mList.add(entity);
@@ -192,6 +196,38 @@ public class ArtifiDyQueueService{
 			r = mList.get(index);
 		}
 		return r;
+	}
+	
+	public BaseResult<?> modifyOrderStatusV2(int userId,String mobile,String orderSn,int orderStatus){
+		//删除队列数据
+		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+		int cnt = dyArtifiDao.delData(mobile,orderSn);
+		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
+		//回收到主池，更改主池队列状态
+		//查询到该订单信息
+		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
+		dlArtifiPrintLottery.setOrderSn(orderSn);
+		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
+		DlArtifiPrintLottery printLottery = null;
+		if(list != null && list.size() > 0) {
+			printLottery = list.get(0);
+			printLottery.setOrderSn(orderSn);
+			printLottery.setOrderStatus((byte)orderStatus);
+			printLottery.setAdminName(mobile);
+			printLottery.setAdminId(userId);
+			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
+		}
+		//添加日志
+		DlOpLog log = new DlOpLog();
+		log.setAddTime(DateUtil.getCurrentTimeLong());
+		log.setPhone(mobile);
+		log.setType(2);
+		log.setOpType(orderStatus);
+		log.setOrderSn(orderSn);
+		dlOpMapper.insert(log);
+		return ResultGenerator.genSuccessResult();
 	}
 	
 	/**
@@ -231,5 +267,33 @@ public class ArtifiDyQueueService{
 		log.setOrderSn(orderSn);
 		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult();
+	}
+
+	/***
+	 * 分单逻辑v2
+	 * @param mobile
+	 */
+	public synchronized void allocLotteryV2(String mobile) {
+		logger.info("[allocLotteryV2]");
+		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+		logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
+		if(rList.size() <= 0) {
+			List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,10);
+			logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
+			if(allocList != null && allocList.size() > 0) {
+				for(DlArtifiPrintLottery entity : allocList) {
+					//总的队列移除
+					rSumList.remove(entity);
+					//更改已分配的状态
+					entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+					//操作人
+					entity.setAdminName(mobile);
+					logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
+					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+				}
+			}
+		}
 	}
 }

@@ -43,6 +43,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		String tableName = getTNameByLgCode(userId,TABLE_NAME);
 		String sql = "CREATE TABLE if not exists "+tableName+ "(_id bigint NOT NULL AUTO_INCREMENT," + 
 				" order_sn VARCHAR(50),"+
+				" status INTEGER," +
 				" PRIMARY KEY(_id));";
 		try {
 			 exeUpdate(sql, null);
@@ -81,8 +82,10 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		try {
 			long id = rs.getLong("_id");
 			String ticketId = rs.getString("order_sn");
+			int status = rs.getInt("status");
 			entity.id = id;
 			entity.orderSn = ticketId;
+			entity.status = status;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -101,8 +104,8 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 	public int addDyArtifiPrintInfo(String userId, DDyArtifiPrintEntity entity) {
 		// TODO Auto-generated method stub
 		String tableName = getTNameByLgCode(userId,TABLE_NAME);
-		String sql = "insert into " + tableName + " values(0,?)";
-		String[] params = {entity.orderSn};
+		String sql = "insert into " + tableName + " values(0,?,?)";
+		String[] params = {entity.orderSn,0+""};
 		return this.exeUpdate(sql, params);
 	}
 
@@ -155,4 +158,12 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		return this.exeUpdate(sql, params);
 	}
 
+	@Override
+	public int updateOrderStatus(String mobile,String orderSn,int status) {
+		// TODO Auto-generated method stub
+		String tableName = getTNameByLgCode(mobile,TABLE_NAME);
+		String sql = "update " + tableName + " set status=? where order_sn = ?;";
+		String[] params = {status+"",orderSn};
+		return this.exeUpdate(sql, params);
+	}
 }

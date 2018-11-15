@@ -68,4 +68,12 @@ public interface DyArtifiPrintDao {
 	 * @return
 	 */
 	public int delData(String uid,String orderSn);
+
+	/**
+	 * 更改订单状态
+	 * @param mobile
+	 * @param status
+	 * @return
+	 */
+	public int updateOrderStatus(String mobile,String orderSn,int status);
 }
