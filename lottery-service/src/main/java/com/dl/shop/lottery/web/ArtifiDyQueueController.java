@@ -148,7 +148,7 @@ public class ArtifiDyQueueController {
 		}
 		//获取多媒体token
 		MediaTokenParam mediaTokenParams = new MediaTokenParam();
-		mediaTokenParams.setType(1);
+		mediaTokenParams.setType(0);
 		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
 		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
 			return ResultGenerator.genFailResult("获取多媒体信息失败");
