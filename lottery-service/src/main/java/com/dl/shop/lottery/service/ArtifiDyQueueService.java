@@ -206,6 +206,11 @@ public class ArtifiDyQueueService{
 		//图片回写到表中
 		//xxxxx
 		
+		//检查是否全部都操作完
+		boolean isAll = dyArtifiDao.isOperationAll(mobile);
+		if(isAll) {
+			dyArtifiDao.clearAll(mobile);
+		}
 		//添加日志
 		DlOpLog log = new DlOpLog();
 		log.setAddTime(DateUtil.getCurrentTimeLong());

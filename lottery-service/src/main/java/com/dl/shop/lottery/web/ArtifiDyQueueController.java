@@ -114,14 +114,14 @@ public class ArtifiDyQueueController {
 			}
 		}
 		if(orderEntity == null) {
-			return ResultGenerator.genFailResult("查询订单数据失败");
+			return ResultGenerator.genResult(MemberEnums.QUERY_ORDER_FAIL.getcode(),MemberEnums.QUERY_ORDER_FAIL.getMsg());
 		}
 		//获取多媒体token
 		MediaTokenParam mediaTokenParams = new MediaTokenParam();
 		mediaTokenParams.setType(0);
 		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
 		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
-			return ResultGenerator.genFailResult("获取多媒体信息失败");
+			return ResultGenerator.genResult(MemberEnums.MEDIA_TOKEN_FAIL.getcode(),MemberEnums.MEDIA_TOKEN_FAIL.getMsg());
 		}
 		DlManalOrderDetailDTO entity = new DlManalOrderDetailDTO();
 		entity.setDetail(orderEntity);
@@ -140,7 +140,7 @@ public class ArtifiDyQueueController {
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
-			return ResultGenerator.genFailResult("查询用户信息失败");
+			return ResultGenerator.genResult(MemberEnums.QUERY_USER_FAIL.getcode(),MemberEnums.QUERY_USER_FAIL.getMsg());
 		}
 		String mobile = bR.getData().getMobile();
 		logger.info("[queryOrderList]" + " mobile:" + mobile);
@@ -202,12 +202,12 @@ public class ArtifiDyQueueController {
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
 		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
-			return ResultGenerator.genFailResult("查询用户信息失败");
+			return ResultGenerator.genResult(MemberEnums.QUERY_USER_FAIL.getcode(),MemberEnums.QUERY_USER_FAIL.getMsg());
 		}
 //		String mobile = params.getMobile();
 		String mobile = bR.getData().getMobile();
 		if(mobile == null || mobile.length() <= 0) {
-			return ResultGenerator.genFailResult("手机号码不能为空"); 
+			return ResultGenerator.genResult(MemberEnums.QUERY_MOBILE_EMPTY.getcode(),MemberEnums.QUERY_MOBILE_EMPTY.getMsg()); 
 		}
 		if(params.getOrderStatus() <= 0) {
 			return ResultGenerator.genResult(MemberEnums.ORDER_STATUS_FAILURE.getcode(),MemberEnums.ORDER_STATUS_FAILURE.getMsg());

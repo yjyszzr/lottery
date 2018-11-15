@@ -166,4 +166,25 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		String[] params = {status+"",orderSn};
 		return this.exeUpdate(sql, params);
 	}
+
+	@Override
+	public boolean isOperationAll(String mobile) {
+		// TODO Auto-generated method stub
+		boolean isAll = true;
+		String tableName = getTNameByLgCode(mobile, TABLE_NAME);
+		String sql = "select * from "  + tableName + " where status = 0;";
+		ResultSet rs = this.exeQuery(sql, null);
+		try {
+			while(rs.next()) {
+				isAll = false;
+				break;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			this.closeConn(rs, null);
+		}
+		return isAll;
+	}
 }

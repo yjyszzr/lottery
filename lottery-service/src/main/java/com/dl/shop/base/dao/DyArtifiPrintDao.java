@@ -76,4 +76,12 @@ public interface DyArtifiPrintDao {
 	 * @return
 	 */
 	public int updateOrderStatus(String mobile,String orderSn,int status);
+	
+
+	/**
+	 * 是否全部都操作完
+	 * @param mobile
+	 * @return
+	 */
+	public boolean isOperationAll(String mobile);
 }
