@@ -126,7 +126,7 @@ public class ArtifiDyQueueController {
 	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParam param){
 		Integer userId = SessionUtil.getUserId();
 		if(userId == null) {
-			return ResultGenerator.genFailResult("请登录");
+			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg());
 		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
