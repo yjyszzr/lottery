@@ -65,7 +65,7 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "人工分单", notes = "人工分单")
 	@PostMapping("/tasktimer")
 	public BaseResult<?> timerTaskSchedual(@RequestBody EmptyParam emprt) {
-		logger.info("[timerTaskSchedual]" + "人工分单...");
+//		logger.info("[timerTaskSchedual]" + "人工分单...");
 //		artifiDyQueueService.onTimerExec();
 		return ResultGenerator.genSuccessResult();
 	}
