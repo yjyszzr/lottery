@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class ArtifiLotteryQueryParam {
-
 	@ApiModelProperty(value="电话号")
 	private String mobile;
 	

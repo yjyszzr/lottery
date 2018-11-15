@@ -2,13 +2,16 @@ package com.dl.shop.lottery.web;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
@@ -18,7 +21,9 @@ import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.member.api.IUserService;
+import com.dl.member.dto.MediaTokenDTO;
 import com.dl.member.dto.UserDTO;
+import com.dl.member.param.MediaTokenParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.ManualOrderDTO;
@@ -26,12 +31,14 @@ import com.dl.order.param.OrderSnListParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
+import com.dl.shop.base.dao.entity.DlArtifiListDTO;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 import com.dl.shop.lottery.service.DlXNWhiteListService;
+
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Condition;
 /**
@@ -112,6 +119,43 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genFailResult("查询订单数据失败");
 		}
 		return ResultGenerator.genSuccessResult("succ",orderEntity);
+	}
+	
+	@ApiOperation(value = "查询列表", notes = "查询列表")
+	@PostMapping("/queryV2")
+	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParam param){
+		int userId = SessionUtil.getUserId();
+		UserIdRealParam userIdParams = new UserIdRealParam();
+		userIdParams.setUserId(userId);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
+		if(bR == null || !bR.isSuccess() || bR.getData() == null) {
+			return ResultGenerator.genFailResult("查询用户信息失败");
+		}
+		String mobile = bR.getData().getMobile();
+		logger.info("[queryOrderList]" + " mobile:" + mobile);
+		if(mobile == null || mobile.length() <= 0) { 
+			return ResultGenerator.genFailResult("手机号码不能为空");
+		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		//获取多媒体token
+		MediaTokenParam mediaTokenParams = new MediaTokenParam();
+		mediaTokenParams.setType(1);
+		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
+		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
+			return ResultGenerator.genFailResult("获取多媒体信息失败");
+		}
+		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
+		DlArtifiListDTO artifiEntity = new DlArtifiListDTO();
+		artifiEntity.setList(rList);
+		artifiEntity.setMediaToken(baseR.getData());
+		return ResultGenerator.genSuccessResult("succ",artifiEntity);
 	}
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
