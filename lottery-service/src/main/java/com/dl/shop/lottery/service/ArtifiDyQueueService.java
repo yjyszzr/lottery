@@ -198,7 +198,7 @@ public class ArtifiDyQueueService{
 		return r;
 	}
 	
-	public BaseResult<?> modifyOrderStatusV2(int userId,String mobile,String orderSn,int orderStatus,String picUrl,String failMsg){
+	public BaseResult<?> modifyOrderStatusV2(int userId,String mobile,String orderSn,Integer orderStatus,String picUrl,String failMsg){
 		//删除队列数据
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		int cnt = dyArtifiDao.updateOrderStatus(mobile,orderSn,orderStatus);
