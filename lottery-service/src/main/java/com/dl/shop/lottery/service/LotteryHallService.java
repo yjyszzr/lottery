@@ -29,7 +29,10 @@ import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.lotto.api.ISuperLottoService;
 import com.dl.lotto.dto.LottoDTO;
+import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.api.IUserService;
+import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryActivityMapper;
@@ -75,6 +78,9 @@ public class LotteryHallService {
 	
 	@Resource
 	private	ISuperLottoService iSuperLottoService;
+	
+	@Resource
+	private	ISwitchConfigService iSwitchConfigService;
 
 	/**
 	 * 获取彩票大厅数据
@@ -259,6 +265,15 @@ public class LotteryHallService {
 	 * @return
 	 */
 	private List<DlNavBannerDTO> getDlNavBannerDTO(HallParam hallParam) {
+		//查询交易版还是资讯版
+		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
+		StrParam strParam = new StrParam();
+		BaseResult<SwitchConfigDTO> switchConfigDto = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDto.getCode() == 0) {
+			Integer turnOn = switchConfigDto.getData().getTurnOn();
+			isTransaction = (turnOn == 1)?ProjectConstant.DEAL_VERSION:ProjectConstant.INFO_VERSION;
+		}
+		
 		List<DlNavBannerDTO> dlNavBannerDTOs = new LinkedList<DlNavBannerDTO>();
 		Condition condition = new Condition(LotteryClassify.class);
 		condition.setOrderByClause("banner_sort asc");
