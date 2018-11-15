@@ -35,6 +35,7 @@ import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.base.dao.entity.DlArtifiListDTO;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
+import com.dl.shop.lottery.entity.DlManalOrderDetailDTO;
 import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
@@ -119,6 +120,16 @@ public class ArtifiDyQueueController {
 		if(orderEntity == null) {
 			return ResultGenerator.genFailResult("查询订单数据失败");
 		}
+		//获取多媒体token
+		MediaTokenParam mediaTokenParams = new MediaTokenParam();
+		mediaTokenParams.setType(0);
+		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
+		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
+			return ResultGenerator.genFailResult("获取多媒体信息失败");
+		}
+		DlManalOrderDetailDTO entity = new DlManalOrderDetailDTO();
+		entity.setDetail(orderEntity);
+		entity.setMediaToken(baseR.getData());
 		return ResultGenerator.genSuccessResult("succ",orderEntity);
 	}
 	
@@ -147,22 +158,11 @@ public class ArtifiDyQueueController {
 		if (xnWhiteListList.size() == 0) {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
-		//获取多媒体token
-		MediaTokenParam mediaTokenParams = new MediaTokenParam();
-		mediaTokenParams.setType(0);
-		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
-		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
-			return ResultGenerator.genFailResult("获取多媒体信息失败");
-		}
 		//进入到分单逻辑
 		artifiDyQueueService.allocLotteryV2(mobile);
-		//
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
-		DlArtifiListDTO artifiEntity = new DlArtifiListDTO();
-		artifiEntity.setList(rList);
-		artifiEntity.setMediaToken(baseR.getData());
-		return ResultGenerator.genSuccessResult("succ",artifiEntity);
+		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")

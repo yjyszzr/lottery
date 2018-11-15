@@ -216,7 +216,7 @@ public class ArtifiDyQueueService{
 		log.setPic(picUrl);
 		log.setFailMsg(failMsg);
 		dlOpMapper.insert(log);
-		return ResultGenerator.genSuccessResult();
+		return ResultGenerator.genSuccessResult("succ");
 	}
 	
 	/**
