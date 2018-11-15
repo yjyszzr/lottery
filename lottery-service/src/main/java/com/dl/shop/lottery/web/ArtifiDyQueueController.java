@@ -126,7 +126,7 @@ public class ArtifiDyQueueController {
 		DlManalOrderDetailDTO entity = new DlManalOrderDetailDTO();
 		entity.setDetail(orderEntity);
 		entity.setMediaToken(baseR.getData());
-		return ResultGenerator.genSuccessResult("succ",orderEntity);
+		return ResultGenerator.genSuccessResult("succ",entity);
 	}
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
