@@ -198,27 +198,14 @@ public class ArtifiDyQueueService{
 		return r;
 	}
 	
-	public BaseResult<?> modifyOrderStatusV2(int userId,String mobile,String orderSn,int orderStatus){
+	public BaseResult<?> modifyOrderStatusV2(int userId,String mobile,String orderSn,int orderStatus,String picUrl,String failMsg){
 		//删除队列数据
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		int cnt = dyArtifiDao.delData(mobile,orderSn);
+		int cnt = dyArtifiDao.updateOrderStatus(mobile,orderSn,orderStatus);
 		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
-		//回收到主池，更改主池队列状态
-		//查询到该订单信息
-		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
-		dlArtifiPrintLottery.setOrderSn(orderSn);
-		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
-		DlArtifiPrintLottery printLottery = null;
-		if(list != null && list.size() > 0) {
-			printLottery = list.get(0);
-			printLottery.setOrderSn(orderSn);
-			printLottery.setOrderStatus((byte)orderStatus);
-			printLottery.setAdminName(mobile);
-			printLottery.setAdminId(userId);
-			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
-			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
-			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
-		}
+		//图片回写到表中
+		//xxxxx
+		
 		//添加日志
 		DlOpLog log = new DlOpLog();
 		log.setAddTime(DateUtil.getCurrentTimeLong());
@@ -226,6 +213,8 @@ public class ArtifiDyQueueService{
 		log.setType(2);
 		log.setOpType(orderStatus);
 		log.setOrderSn(orderSn);
+		log.setPic(picUrl);
+		log.setFailMsg(failMsg);
 		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult();
 	}

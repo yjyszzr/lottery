@@ -42,4 +42,16 @@ public class DlOpLog {
 	 */
 	@Column(name = "add_time")
 	private Integer addTime;
+	
+	/**
+	 * 图片地址
+	 */
+	@Column(name = "pic")
+	private String pic;
+
+	/**
+	 * 失败原因
+	 */
+	@Column(name = "fail_msg")
+	private String failMsg;
 }

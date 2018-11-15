@@ -19,6 +19,7 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
+import com.dl.lottery.param.ArtifiLotteryModifyParamV2;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.MediaTokenDTO;
@@ -199,7 +200,7 @@ public class ArtifiDyQueueController {
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
 	@PostMapping("/modifyV2")
-	public BaseResult<?> modifyOrderStatusV2(@RequestBody ArtifiLotteryModifyParam params){
+	public BaseResult<?> modifyOrderStatusV2(@RequestBody ArtifiLotteryModifyParamV2 params){
 		int userId = SessionUtil.getUserId();
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
@@ -222,7 +223,7 @@ public class ArtifiDyQueueController {
 		if (xnWhiteListList.size() == 0) {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
-		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus());
+		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),params.getFailMsg());
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")

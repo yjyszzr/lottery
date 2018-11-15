@@ -9,6 +9,10 @@
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="op_type" jdbcType="INTEGER" property="opType" />
     <result column="add_time" jdbcType="INTEGER" property="addTime" />
+    <result column="money_paid" jdbcType="DECIMAL" property="moneyPaid" />
+    <result column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
+    <result column="pic" jdbcType="INTEGER" property="pic" />
+    <result column="fail_msg" jdbcType="INTEGER" property="failMsg" />
   </resultMap>
   
 </mapper>
