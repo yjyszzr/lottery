@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.order.api.IOrderService;
+import com.dl.order.param.OrderPicParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
@@ -38,6 +40,8 @@ public class ArtifiDyQueueService{
 	
 	@Resource
 	private DlOpLogMapper dlOpMapper;
+	@Resource
+	private IOrderService iOrderService;
 	
 	private final int QUEUE_SIZE = 30;
 	
@@ -204,8 +208,10 @@ public class ArtifiDyQueueService{
 		int cnt = dyArtifiDao.updateOrderStatus(mobile,orderSn,orderStatus);
 		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
 		//图片回写到表中
-		//xxxxx
-		
+		OrderPicParam orderPicParams = new OrderPicParam();
+		orderPicParams.setOrderSn(orderSn);
+		orderPicParams.setOrderPic(picUrl);
+		iOrderService.saveOrderPicByOrderSn(orderPicParams);
 		//检查是否全部都操作完
 		boolean isAll = dyArtifiDao.isOperationAll(mobile);
 		if(isAll) {
