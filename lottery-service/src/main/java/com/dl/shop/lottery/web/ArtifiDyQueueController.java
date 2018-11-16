@@ -123,9 +123,11 @@ public class ArtifiDyQueueController {
 		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
 			return ResultGenerator.genResult(MemberEnums.MEDIA_TOKEN_FAIL.getcode(),MemberEnums.MEDIA_TOKEN_FAIL.getMsg());
 		}
+		MediaTokenDTO mediaEntity = baseR.getData();
+		logger.info("[queryDetail]" + " fileName:" + mediaEntity.fileName);
 		DlManalOrderDetailDTO entity = new DlManalOrderDetailDTO();
 		entity.setDetail(orderEntity);
-		entity.setMediaToken(baseR.getData());
+		entity.setMediaToken(mediaEntity);
 		return ResultGenerator.genSuccessResult("succ",entity);
 	}
 	
