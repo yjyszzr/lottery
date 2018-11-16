@@ -23,7 +23,6 @@ import com.dl.shop.lottery.dao.DlArtifiPrintLotteryMapper;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -179,16 +178,8 @@ public class ArtifiDyQueueService{
 		logger.info("[allocLottery]" + " s:" + s);
 		for(int i = 0;i < s ;i++){
 			DlArtifiPrintLottery entity = rList.get(i);
-			//该item数据分配给uid
-			String orderSn = entity.getOrderSn();
-			if(dyArtifiDao.queryEntityByOrderSn(uid,orderSn) == null) {
-				DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
-				dEntity.orderSn = orderSn;
-				dEntity.status = 0;
-				dyArtifiDao.addDyArtifiPrintInfo(uid,dEntity);
-				//分配出数据
-				mList.add(entity);
-			}
+			//分配出数据
+			mList.add(entity);
 		}
 		return mList;
 	}
@@ -282,16 +273,26 @@ public class ArtifiDyQueueService{
 			List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
 			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,10);
 			logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
+			//先批量进行更改订单状态
 			if(allocList != null && allocList.size() > 0) {
 				for(DlArtifiPrintLottery entity : allocList) {
-					//总的队列移除
-					rSumList.remove(entity);
 					//更改已分配的状态
 					entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 					//操作人
 					entity.setAdminName(mobile);
 					logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
 					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+				}
+			}
+			//然后进行分单到该人手中
+			dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+			if(allocList != null && allocList.size() > 0) {
+				for(DlArtifiPrintLottery entity : allocList) {
+					String orderSn = entity.getOrderSn();
+					DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
+					dEntity.orderSn = orderSn;
+					dEntity.status = 0;
+					dyArtifiDao.addDyArtifiPrintInfo(mobile,dEntity);
 				}
 			}
 		}
