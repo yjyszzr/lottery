@@ -284,7 +284,7 @@ public class ArtifiDyQueueService{
 					dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 				}
 			}
-			//然后进行分单到该人手中
+			//然后进行分单到该人手中 
 			dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			if(allocList != null && allocList.size() > 0) {
 				for(DlArtifiPrintLottery entity : allocList) {
