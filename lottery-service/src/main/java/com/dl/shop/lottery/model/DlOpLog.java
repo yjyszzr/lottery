@@ -1,5 +1,7 @@
 package com.dl.shop.lottery.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -18,6 +20,12 @@ public class DlOpLog {
 	 */
 	@Column(name = "type")
 	private Integer type;
+	
+	/**
+	 * 彩种id
+	 */
+	@Column(name = "lottery_classify_id")
+	private Integer lotteryClassifyId;
 
 	/**
 	 * 订单编号
@@ -42,6 +50,13 @@ public class DlOpLog {
 	 */
 	@Column(name = "add_time")
 	private Integer addTime;
+	
+	
+	/**
+	 * 实际付款金额
+	 */
+	@Column(name = "money_paid")
+	private BigDecimal moneyPaid;
 	
 	/**
 	 * 图片地址
