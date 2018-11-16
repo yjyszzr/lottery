@@ -14,8 +14,11 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.DlOpLogDTO;
+import com.dl.lottery.dto.LogPicDetailDTO;
 import com.dl.lottery.dto.OperationRecordDTO;
 import com.dl.lottery.param.DateStrParam;
+import com.dl.lottery.param.OrderSnParam;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.UserIdRealParam;
@@ -32,7 +35,6 @@ public class DlLogOpController {
 	
 	@Resource
 	private IUserService iUserService;
-	
 	
 	@ApiOperation(value = "根据时间查询打单记录", notes = "根据时间查询打单记录")
 	@PostMapping("/queryLogByTime")
@@ -59,5 +61,11 @@ public class DlLogOpController {
 		
 		return dlLogOpService.queryLogByTime(uDTO.getData().getMobile(), startTime, endTime);
 	}
-
+	
+	
+	@ApiOperation(value = "根据订单号查询彩票照片详情", notes = "根据订单号查询彩票照片详情")
+	@PostMapping("/queryLogOpByOrderSn")
+	public BaseResult<LogPicDetailDTO> queryLogOpByOrderSn(@RequestBody OrderSnParam param){
+		return dlLogOpService.queryLogOpByOrderSn(param.getOrderSn());
+	}
 }

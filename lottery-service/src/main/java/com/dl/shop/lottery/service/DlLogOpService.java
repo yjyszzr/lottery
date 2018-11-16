@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.DateUtil;
 import com.dl.lottery.dto.DlOpLogDTO;
+import com.dl.lottery.dto.LogPicDetailDTO;
 import com.dl.lottery.dto.OperationRecordDTO;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlOpLog;
@@ -50,6 +52,23 @@ public class DlLogOpService {
 		dto.setFailNum(String.valueOf(failNum));
 		dto.setSucMoney(sucMoney.toString());
 		
+		return ResultGenerator.genSuccessResult("success", dto);
+	}
+	
+	/**
+	 * 根据订单号查询操作日志
+	 * @param orderSn
+	 * @return
+	 */
+	public BaseResult<LogPicDetailDTO> queryLogOpByOrderSn(String orderSn) {
+		LogPicDetailDTO dto = new LogPicDetailDTO();
+		DlOpLog dlLog = dlOpLogMapper.queryLogByOrderSn(orderSn);
+		if(null == dlLog) {
+			return ResultGenerator.genSuccessResult("未查询到该订单的彩票照片", dto);
+		}
+		dto.setPicUrl(dlLog.getPic());
+		dto.setOptType(String.valueOf(dlLog.getOpType()));
+		dto.setDateStr(DateUtil.getTimeString(dlLog.getAddTime(), DateUtil.datetimeFormat));
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
 

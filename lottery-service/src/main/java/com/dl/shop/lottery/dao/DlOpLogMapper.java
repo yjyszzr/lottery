@@ -11,4 +11,5 @@ public interface DlOpLogMapper extends Mapper<DlOpLog> {
 	
 	List<DlOpLog> queryLogByTime(@Param("phone") String phone,@Param("startTime") Integer startTime,@Param("endTime") Integer endTime);
 	
+	DlOpLog queryLogByOrderSn(@Param("orderSn") String orderSn);
 }
