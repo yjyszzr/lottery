@@ -69,6 +69,7 @@ public class DlLogOpService {
 		dto.setPicUrl(dlLog.getPic());
 		dto.setOptType(String.valueOf(dlLog.getOpType()));
 		dto.setDateStr(DateUtil.getTimeString(dlLog.getAddTime(), DateUtil.datetimeFormat));
+		dto.setFailReason(dlLog.getFailMsg());
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
 

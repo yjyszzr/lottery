@@ -15,5 +15,8 @@ public class LogPicDetailDTO {
 	@ApiModelProperty(value = "操作日期")
 	private String dateStr;
 	
+	@ApiModelProperty(value = "出票失败原因")
+	private String failReason;
+	
 	
 }
