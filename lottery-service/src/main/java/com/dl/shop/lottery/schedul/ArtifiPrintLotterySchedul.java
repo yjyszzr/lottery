@@ -20,10 +20,10 @@ public class ArtifiPrintLotterySchedul {
 	/**
 	 * 检查用户是否退出
 	 */
-	@Scheduled(cron = "0 0/1 * * * ?")
-	public void printLottery() {
-		log.info("检查用户是否退出,定时任务启动");
-		artifiPrintLotteryUserLoginService.deleteUserInfo();
-		log.info("定时任务结束");
-	}
+//	@Scheduled(cron = "0 0/1 * * * ?")
+//	public void printLottery() {
+//		log.info("检查用户是否退出,定时任务启动");
+//		artifiPrintLotteryUserLoginService.deleteUserInfo();
+//		log.info("定时任务结束");
+//	}
 }

@@ -71,97 +71,99 @@ public class ArtifiPrintLotteryUserLoginController {
 
 	@Resource
 	private DlXNWhiteListService dlXNWhiteListService;
+	
+//  20181119 用密码登录替代	
+//	/**
+//	 * 发送短信验证码
+//	 * 
+//	 * @param mobileNumberParam
+//	 * @return
+//	 */
+//	@ApiOperation(value = "发送短信验证码", notes = "发送短信验证码")
+//	@PostMapping("/sendSmsCode")
+//	public BaseResult<String> sendSms(@RequestBody SmsParam smsParam) {
+//		Condition c = new Condition(DlXNWhiteList.class);
+//		c.createCriteria().andEqualTo("mobile", smsParam.getMobile());
+//		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+//		if (xnWhiteListList.size() == 0) {
+//			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+//		}
+//		return smsService.sendSmsCode(smsParam);
+//	}
 
-	/**
-	 * 发送短信验证码
-	 * 
-	 * @param mobileNumberParam
-	 * @return
-	 */
-	@ApiOperation(value = "发送短信验证码", notes = "发送短信验证码")
-	@PostMapping("/sendSmsCode")
-	public BaseResult<String> sendSms(@RequestBody SmsParam smsParam) {
-		Condition c = new Condition(DlXNWhiteList.class);
-		c.createCriteria().andEqualTo("mobile", smsParam.getMobile());
-		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
-		if (xnWhiteListList.size() == 0) {
-			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
-		}
-		return smsService.sendSmsCode(smsParam);
-	}
-
-	@ApiOperation(value = "验证码登录", notes = "验证码登录")
-	@PostMapping("/loginBySms")
-	public BaseResult<UserLoginDTO> loginBySms(@RequestBody UserLoginWithSmsParam userLoginMobileParam, HttpServletRequest request) {
-		// 校验手机号的合法性
-		String loginParams = JSONHelper.bean2json(userLoginMobileParam);
-		if (!RegexUtil.checkMobile(userLoginMobileParam.getMobile())) {
-			LoginLogParam loginLogParam = new LoginLogParam();
-			loginLogParam.setUserId(-1);
-			loginLogParam.setLoginType(0);
-			loginLogParam.setLoginSstatus(1);
-			loginLogParam.setLoginParams(loginParams);
-			loginLogParam.setLoginResult(MemberEnums.MOBILE_VALID_ERROR.getMsg());
-			userLoginService.loginLog(loginLogParam);
-			return ResultGenerator.genResult(MemberEnums.MOBILE_VALID_ERROR.getcode(), MemberEnums.MOBILE_VALID_ERROR.getMsg());
-		}
-		// 校验验证码的正确性
-		String mobile = userLoginMobileParam.getMobile();
-		logger.info("手机号码为:======================" + mobile);
-		String cacheSmsCode = smsService.getRedisSmsCode(mobile);
-		cacheSmsCode = cacheSmsCode.replace("\"", "");
-		logger.info("redis返回的验证码为:======================" + cacheSmsCode);
-		logger.info("手机端录入的验证码为:======================" + userLoginMobileParam.getSmsCode().toString());
-		logger.info("验证码为比较状态:======================" + cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString()));
-
-		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString())) {
-			LoginLogParam loginLogParam = new LoginLogParam();
-			loginLogParam.setUserId(-1);
-			loginLogParam.setLoginType(0);
-			loginLogParam.setLoginSstatus(1);
-			loginLogParam.setLoginParams(loginParams);
-			loginLogParam.setLoginResult(MemberEnums.SMSCODE_WRONG.getMsg());
-			userLoginService.loginLog(loginLogParam);
-			return ResultGenerator.genResult(MemberEnums.SMSCODE_WRONG.getcode(), MemberEnums.SMSCODE_WRONG.getMsg());
-		}
-		MobileInfoParam mobileInfo = new MobileInfoParam();
-		mobileInfo.setMobile(mobile);
-
-		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
-		// 校验手机号是否存在
-		if (null == userLoginDTO.getData()) {
-			LoginLogParam loginLogParam = new LoginLogParam();
-			loginLogParam.setUserId(-1);
-			loginLogParam.setLoginType(0);
-			loginLogParam.setLoginSstatus(1);
-			loginLogParam.setLoginParams(loginParams);
-			loginLogParam.setLoginResult(MemberEnums.NO_REGISTER.getMsg());
-			userLoginService.loginLog(loginLogParam);
-			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
-		}
-		// 将手机号存入redis,置为在线状态,过期时间为15分钟
-		// 清空验证码
-		// smsService.deleteRedisSmsCode(mobile);
-		// LoginLogParam loginLogParam = new LoginLogParam();
-		// loginLogParam.setUserId(Integer.parseInt(userLoginDTO.getMobile()));
-		// loginLogParam.setLoginType(0);
-		// loginLogParam.setLoginSstatus(0);
-		// loginLogParam.setLoginParams(loginParams);
-		// loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
-		// userLoginService.loginLog(loginLogParam);
-		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
-
-		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
-		List<String> mobileList = getAllLoginInfo();
-		logger.info("登录人数为:======================" + mobileList.size());
-		logger.info("登录人list:======================" + mobileList);
-
-		// 调用用户登录
-		artifiDyQueueService.userLogin(mobile, mobileList);
-
-		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
-	}
+//  20181119 用密码登录替代	
+//	@ApiOperation(value = "验证码登录", notes = "验证码登录")
+//	@PostMapping("/loginBySms")
+//	public BaseResult<UserLoginDTO> loginBySms(@RequestBody UserLoginWithSmsParam userLoginMobileParam, HttpServletRequest request) {
+//		// 校验手机号的合法性
+//		String loginParams = JSONHelper.bean2json(userLoginMobileParam);
+//		if (!RegexUtil.checkMobile(userLoginMobileParam.getMobile())) {
+//			LoginLogParam loginLogParam = new LoginLogParam();
+//			loginLogParam.setUserId(-1);
+//			loginLogParam.setLoginType(0);
+//			loginLogParam.setLoginSstatus(1);
+//			loginLogParam.setLoginParams(loginParams);
+//			loginLogParam.setLoginResult(MemberEnums.MOBILE_VALID_ERROR.getMsg());
+//			userLoginService.loginLog(loginLogParam);
+//			return ResultGenerator.genResult(MemberEnums.MOBILE_VALID_ERROR.getcode(), MemberEnums.MOBILE_VALID_ERROR.getMsg());
+//		}
+//		// 校验验证码的正确性
+//		String mobile = userLoginMobileParam.getMobile();
+//		logger.info("手机号码为:======================" + mobile);
+//		String cacheSmsCode = smsService.getRedisSmsCode(mobile);
+//		cacheSmsCode = cacheSmsCode.replace("\"", "");
+//		logger.info("redis返回的验证码为:======================" + cacheSmsCode);
+//		logger.info("手机端录入的验证码为:======================" + userLoginMobileParam.getSmsCode().toString());
+//		logger.info("验证码为比较状态:======================" + cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString()));
+//
+//		if (StringUtils.isEmpty(cacheSmsCode) || !cacheSmsCode.equals(userLoginMobileParam.getSmsCode().toString())) {
+//			LoginLogParam loginLogParam = new LoginLogParam();
+//			loginLogParam.setUserId(-1);
+//			loginLogParam.setLoginType(0);
+//			loginLogParam.setLoginSstatus(1);
+//			loginLogParam.setLoginParams(loginParams);
+//			loginLogParam.setLoginResult(MemberEnums.SMSCODE_WRONG.getMsg());
+//			userLoginService.loginLog(loginLogParam);
+//			return ResultGenerator.genResult(MemberEnums.SMSCODE_WRONG.getcode(), MemberEnums.SMSCODE_WRONG.getMsg());
+//		}
+//		MobileInfoParam mobileInfo = new MobileInfoParam();
+//		mobileInfo.setMobile(mobile);
+//
+//		BaseResult<UserLoginDTO> userLoginDTO = userLoginService.findByMobile(mobileInfo);
+//		// 校验手机号是否存在
+//		if (null == userLoginDTO.getData()) {
+//			LoginLogParam loginLogParam = new LoginLogParam();
+//			loginLogParam.setUserId(-1);
+//			loginLogParam.setLoginType(0);
+//			loginLogParam.setLoginSstatus(1);
+//			loginLogParam.setLoginParams(loginParams);
+//			loginLogParam.setLoginResult(MemberEnums.NO_REGISTER.getMsg());
+//			userLoginService.loginLog(loginLogParam);
+//			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+//		}
+//		// 将手机号存入redis,置为在线状态,过期时间为15分钟
+//		// 清空验证码
+//		// smsService.deleteRedisSmsCode(mobile);
+//		// LoginLogParam loginLogParam = new LoginLogParam();
+//		// loginLogParam.setUserId(Integer.parseInt(userLoginDTO.getMobile()));
+//		// loginLogParam.setLoginType(0);
+//		// loginLogParam.setLoginSstatus(0);
+//		// loginLogParam.setLoginParams(loginParams);
+//		// loginLogParam.setLoginResult(JSONHelper.bean2json(userLoginDTO));
+//		// userLoginService.loginLog(loginLogParam);
+//		userLoginDTO = userLoginService.loginBySms(userLoginMobileParam);
+//
+//		logger.info("登录信息为:======================" + userLoginDTO);
+//		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
+//		List<String> mobileList = getAllLoginInfo();
+//		logger.info("登录人数为:======================" + mobileList.size());
+//		logger.info("登录人list:======================" + mobileList);
+//
+//		// 调用用户登录
+//		artifiDyQueueService.userLogin(mobile, mobileList);
+//
+//		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
+//	}
 
 	private BaseResult<UserLoginDTO> onUserLogin(UserLoginWithPassParam loginPwdParams){
 		logger.info("[onUserLogin]");
@@ -186,7 +188,7 @@ public class ArtifiPrintLotteryUserLoginController {
 			return ResultGenerator.genResult(userLoginDTO.getCode(),userLoginDTO.getMsg());
 		}
 		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
+		//stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
 		List<String> mobileList = getAllLoginInfo();
 		logger.info("登录人数为:======================" + mobileList.size());
 		logger.info("登录人list:======================" + mobileList);
