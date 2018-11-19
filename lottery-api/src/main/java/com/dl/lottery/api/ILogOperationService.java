@@ -11,6 +11,6 @@ import com.dl.lottery.param.OrderSnParam;
 @FeignClient(value="lottery-service")
 public interface ILogOperationService {
 	
-	@RequestMapping(path="/lottery/logOp/queryLogOpByOrderSn", method=RequestMethod.POST)
+	@RequestMapping(path="/lottery/opLog/queryLogOpByOrderSn", method=RequestMethod.POST)
     public BaseResult<LogPicDetailDTO> queryLogOpByOrderSn(@RequestBody OrderSnParam param);
 }
