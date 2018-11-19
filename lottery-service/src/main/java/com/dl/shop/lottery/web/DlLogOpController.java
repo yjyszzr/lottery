@@ -17,6 +17,7 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlOpLogDTO;
 import com.dl.lottery.dto.LogPicDetailDTO;
 import com.dl.lottery.dto.OperationRecordDTO;
+import com.dl.lottery.param.DateStrPageParam;
 import com.dl.lottery.param.DateStrParam;
 import com.dl.lottery.param.OrderSnParam;
 import com.dl.member.api.IUserService;
@@ -38,7 +39,7 @@ public class DlLogOpController {
 	
 	@ApiOperation(value = "根据时间查询打单记录", notes = "根据时间查询打单记录")
 	@PostMapping("/queryLogByTime")
-	public BaseResult<OperationRecordDTO> queryLogByTime(@RequestBody DateStrParam param){
+	public BaseResult<OperationRecordDTO> queryLogByTime(@RequestBody DateStrPageParam param){
 		Integer userId = SessionUtil.getUserId();
 		UserIdRealParam uParam = new UserIdRealParam();
 		uParam.setUserId(userId);
@@ -59,7 +60,7 @@ public class DlLogOpController {
 			endTime = DateUtil.getTimeAfterDays(someDate,0,23,59,59);
 		}
 		
-		return dlLogOpService.queryLogByTime(uDTO.getData().getMobile(), startTime, endTime);
+		return dlLogOpService.queryLogByTime(param.getPageNum(),param.getPageSize(),uDTO.getData().getMobile(), startTime, endTime);
 	}
 	
 	
