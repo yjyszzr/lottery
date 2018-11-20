@@ -206,7 +206,22 @@ public class ArtifiDyQueueService{
 		orderPicParams.setOrderSn(orderSn);
 		orderPicParams.setOrderPic(picUrl);
 		iOrderService.saveOrderPicByOrderSn(orderPicParams);
-		
+		//状态回写到总订单池
+		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
+		dlArtifiPrintLottery.setOrderSn(orderSn);
+		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
+		DlArtifiPrintLottery printLottery = null;
+		if(list != null && list.size() > 0) {
+			printLottery = list.get(0);
+			printLottery.setOrderSn(orderSn);
+			printLottery.setOrderStatus(orderStatus.byteValue());
+			printLottery.setAdminName(mobile);
+			printLottery.setAdminId(userId);
+			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
+		}
+		//获取订单金额
 		OrderSnParam orderSnParams = new OrderSnParam();
 		orderSnParams.setOrderSn(orderSn);
 		BaseResult<OrderDTO> baseR = iOrderService.getOrderInfoByOrderSn(orderSnParams);
