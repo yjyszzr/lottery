@@ -229,6 +229,7 @@ public class ArtifiDyQueueService{
 		log.setPic(picUrl);
 		log.setFailMsg(failMsg);
 		log.setMoneyPaid(moneyPaid);
+		log.setLotteryClassifyId(1);
 		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult("succ");
 	}
