@@ -219,7 +219,7 @@ public class ArtifiDyQueueService{
 			printLottery.setAdminId(userId);
 			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
-			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
+			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery); 
 		}
 		//获取订单金额
 		OrderSnParam orderSnParams = new OrderSnParam();
