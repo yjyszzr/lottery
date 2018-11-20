@@ -30,10 +30,22 @@ public class DlLogOpService {
 	private DlOpLogMapper dlOpLogMapper;
 	
 	public BaseResult<OperationRecordDTO> queryLogByTime(Integer pageNum,Integer pageSize,String phone,Integer startTime,Integer endTime){
-		PageHelper.startPage(pageNum, pageSize);
+		OperationRecordDTO dto = new OperationRecordDTO();
 		List<DlOpLog> logList = dlOpLogMapper.queryLogByTime(phone,startTime, endTime);
+		BigDecimal sucMoney = BigDecimal.ZERO;
+		Integer sucNum = 0;
+		Integer failNum = 0;
+		if(!CollectionUtils.isEmpty(logList)) {
+			sucMoney = logList.stream().filter(s->s.getOpType() == 1).map(s->s.getMoneyPaid()).reduce(BigDecimal.ZERO, BigDecimal::add);
+			sucNum = logList.stream().filter(s->s.getOpType() == 1).collect(Collectors.toList()).size();
+			failNum = logList.stream().filter(s->s.getOpType() == 2).collect(Collectors.toList()).size();
+		}else {
+			return ResultGenerator.genSuccessResult("success", dto);
+		}
 		
-		PageInfo<DlOpLog> pageInfo = new PageInfo<DlOpLog>(logList);
+		PageHelper.startPage(pageNum, pageSize);
+		List<DlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone,startTime, endTime);
+		PageInfo<DlOpLog> pageInfo = new PageInfo<DlOpLog>(logListAll);
 		List<DlOpLogDTO> opDTOList = new ArrayList<DlOpLogDTO>();
 		logList.stream().forEach(s->{
 			DlOpLogDTO logDTO = new DlOpLogDTO();
@@ -42,23 +54,12 @@ public class DlLogOpService {
 			logDTO.setLotteryClassifyId(String.valueOf(s.getLotteryClassifyId()));
 			opDTOList.add(logDTO);
 		});
-		
 		PageInfo<DlOpLogDTO> printRecordList = new PageInfo<DlOpLogDTO>();
 		try {
 			BeanUtils.copyProperties(printRecordList, pageInfo);
 		} catch (Exception e) {
 		}
 		printRecordList.setList(opDTOList);
-		
-		BigDecimal sucMoney = BigDecimal.ZERO;
-		Integer sucNum = 0;
-		Integer failNum = 0;
-		if(!CollectionUtils.isEmpty(logList)) {
-			sucMoney = logList.stream().filter(s->s.getOpType() == 1).map(s->s.getMoneyPaid()).reduce(BigDecimal.ZERO, BigDecimal::add);
-			sucNum = logList.stream().filter(s->s.getOpType() == 1).collect(Collectors.toList()).size();
-			failNum = logList.stream().filter(s->s.getOpType() == 2).collect(Collectors.toList()).size();
-		}
-		OperationRecordDTO dto = new OperationRecordDTO();
 		dto.setOpList(printRecordList);
 		dto.setSucNum(String.valueOf(sucNum));
 		dto.setFailNum(String.valueOf(failNum));

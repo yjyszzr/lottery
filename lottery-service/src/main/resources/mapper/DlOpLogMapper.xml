@@ -21,6 +21,6 @@
   </select>
   
   <select id="queryLogByOrderSn" resultMap="BaseResultMap">
-  	select * from dl_log_operation where order_sn = #{orderSn}
+  	select * from dl_log_operation where order_sn = #{orderSn} order by  add_time desc limit 1
   </select>
 </mapper>
