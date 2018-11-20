@@ -1,5 +1,6 @@
 package com.dl.shop.lottery.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,9 @@ import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.OrderPicParam;
+import com.dl.order.param.OrderSnParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
 import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
@@ -203,6 +206,14 @@ public class ArtifiDyQueueService{
 		orderPicParams.setOrderSn(orderSn);
 		orderPicParams.setOrderPic(picUrl);
 		iOrderService.saveOrderPicByOrderSn(orderPicParams);
+		
+		OrderSnParam orderSnParams = new OrderSnParam();
+		orderSnParams.setOrderSn(orderSn);
+		BaseResult<OrderDTO> baseR = iOrderService.getOrderInfoByOrderSn(orderSnParams);
+		BigDecimal moneyPaid = null;
+		if(baseR.isSuccess() && baseR.getData() != null) {
+			moneyPaid = baseR.getData().getMoneyPaid();
+		}
 		//检查是否全部都操作完
 		boolean isAll = dyArtifiDao.isOperationAll(mobile);
 		if(isAll) {
@@ -217,6 +228,7 @@ public class ArtifiDyQueueService{
 		log.setOrderSn(orderSn);
 		log.setPic(picUrl);
 		log.setFailMsg(failMsg);
+		log.setMoneyPaid(moneyPaid);
 		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult("succ");
 	}
