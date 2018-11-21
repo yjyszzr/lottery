@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class ArtifiLotteryQueryParamV2 {
 	
-	@ApiModelProperty(value="锚点")
+	@ApiModelProperty(value="0自动刷新  1按钮手动刷新")
 	@NotEmpty
 	private Integer type; //0自动刷新  1按钮手动刷新
 }
