@@ -47,7 +47,7 @@ public class DlLogOpService {
 		List<DlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone,startTime, endTime);
 		PageInfo<DlOpLog> pageInfo = new PageInfo<DlOpLog>(logListAll);
 		List<DlOpLogDTO> opDTOList = new ArrayList<DlOpLogDTO>();
-		logList.stream().forEach(s->{
+		logListAll.stream().forEach(s->{
 			DlOpLogDTO logDTO = new DlOpLogDTO();
 			logDTO.setOrderSn(s.getOrderSn());
 			logDTO.setOptType(String.valueOf(s.getOpType()));
@@ -59,6 +59,7 @@ public class DlLogOpService {
 			BeanUtils.copyProperties(printRecordList, pageInfo);
 		} catch (Exception e) {
 		}
+
 		printRecordList.setList(opDTOList);
 		dto.setOpList(printRecordList);
 		dto.setSucNum(String.valueOf(sucNum));
