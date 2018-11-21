@@ -18,6 +18,7 @@ import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParamV2;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
+import com.dl.lottery.param.ArtifiLotteryQueryParamV2;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.MediaTokenDTO;
 import com.dl.member.dto.UserDTO;
@@ -133,7 +134,7 @@ public class ArtifiDyQueueController {
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/queryV2")
-	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParam param){
+	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
 		Integer userId = SessionUtil.getUserId();
 		if(userId == null) {
 			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg());
@@ -157,9 +158,12 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
 		//进入到分单逻辑
-		artifiDyQueueService.allocLotteryV2(mobile);
+		if(param.getType() != null && param.getType() == 1) {
+			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
+			artifiDyQueueService.allocLotteryV2(mobile);
+		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
-		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
+		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
 		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
