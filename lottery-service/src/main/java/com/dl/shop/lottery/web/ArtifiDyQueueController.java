@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.EmojiFilter;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.lottery.param.ArtifiLotteryDetailParam;
@@ -225,7 +226,10 @@ public class ArtifiDyQueueController {
 		if (xnWhiteListList.size() == 0) {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
-		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),params.getFailMsg());
+		//过滤表情content
+		String failMsg = params.getFailMsg();
+		failMsg = EmojiFilter.filterEmoji(failMsg);
+		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),failMsg);
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
