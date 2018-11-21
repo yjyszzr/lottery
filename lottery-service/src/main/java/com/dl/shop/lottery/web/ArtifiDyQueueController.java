@@ -228,8 +228,9 @@ public class ArtifiDyQueueController {
 		}
 		//过滤表情content
 		String failMsg = params.getFailMsg();
-		failMsg = EmojiFilter.filterEmoji(failMsg);
-		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),failMsg);
+		String rfailMsg = EmojiFilter.filterEmoji(failMsg);
+		logger.info("[modifyOrderStatusV2]" + " failMsg:" + failMsg + " rFailMsg:" + rfailMsg);
+		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),rfailMsg);
 	}
 	
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
