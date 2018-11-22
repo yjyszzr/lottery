@@ -66,7 +66,7 @@ public class DlArtifiPrintLottery {
     private Integer statisticsPrint;
     
     
-    public Integer getStatisticsPrint() {
+	public Integer getStatisticsPrint() {
 		return statisticsPrint;
 	}
 
