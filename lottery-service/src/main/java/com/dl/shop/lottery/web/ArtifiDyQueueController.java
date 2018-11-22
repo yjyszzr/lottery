@@ -162,6 +162,12 @@ public class ArtifiDyQueueController {
 		}
 		//进入到分单逻辑
 		if(param.getType() != null && param.getType() == 1) {
+			//检查是否全部都操作完
+			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
+			boolean isAll = dyArtifiDao.isOperationAll(mobile);
+			if(isAll) {
+				dyArtifiDao.clearAll(mobile);
+			}
 			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
 			artifiDyQueueService.allocLotteryV2(mobile);
 		}
