@@ -30,7 +30,7 @@
            admin_id = #{adminId},
            admin_name = #{adminName},
            <if test="statisticsPrint != null">
-		    statistics_print = #{statisticsPrint}
+		    statistics_print = #{statisticsPrint},
 		   </if>
            operation_time = #{operationTime}
     where 
