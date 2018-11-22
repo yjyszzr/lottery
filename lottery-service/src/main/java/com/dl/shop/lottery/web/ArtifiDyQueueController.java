@@ -3,6 +3,8 @@ package com.dl.shop.lottery.web;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -227,8 +229,12 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
 		//过滤表情content
-		String failMsg = params.getFailMsg();
-		String rfailMsg = EmojiFilter.emoji2Unicode(failMsg);
+		String rfailMsg = null;
+		String failMsg = null;
+		if(!StringUtils.isEmpty(params.getFailMsg())) {
+			failMsg = params.getFailMsg();
+			rfailMsg = EmojiFilter.emoji2Unicode(failMsg);
+		}
 		logger.info("[modifyOrderStatusV2]" + " failMsg:" + failMsg + " rFailMsg:" + rfailMsg);
 		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),rfailMsg);
 	}
