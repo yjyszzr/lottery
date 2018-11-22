@@ -61,7 +61,20 @@ public class DlArtifiPrintLottery {
     @Column(name = "operation_time")
     private Integer operationTime;
 
-    /**
+    
+    @Column(name = "statistics_print")
+    private Integer statisticsPrint;
+    
+    
+    public Integer getStatisticsPrint() {
+		return statisticsPrint;
+	}
+
+	public void setStatisticsPrint(Integer statisticsPrint) {
+		this.statisticsPrint = statisticsPrint;
+	}
+
+	/**
      * 获取id
      *
      * @return id - id

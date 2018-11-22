@@ -219,6 +219,9 @@ public class ArtifiDyQueueService{
 			printLottery.setAdminId(userId);
 			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
 			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+			if(orderStatus != null && orderStatus == 1) {//出票成功
+				printLottery.setStatisticsPrint(0);
+			}
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery); 
 		}
 		//获取订单金额

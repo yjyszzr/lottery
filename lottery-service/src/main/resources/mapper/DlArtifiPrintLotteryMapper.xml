@@ -13,6 +13,7 @@
     <result column="admin_id" jdbcType="INTEGER" property="adminId" />
     <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
     <result column="operation_time" jdbcType="INTEGER" property="operationTime" />
+    <result column="statistics_print"  jdbcType="INTEGER" property="statisticsPrint"/>
   </resultMap>
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
@@ -28,6 +29,9 @@
            add_time = #{addTime},
            admin_id = #{adminId},
            admin_name = #{adminName},
+           <if test="Statisticsprint != null">
+		    statistics_print = #{statisticsPrint}
+		   </if>
            operation_time = #{operationTime}
     where 
            order_sn = #{orderSn}
