@@ -169,7 +169,7 @@ public class ArtifiDyQueueController {
 				dyArtifiDao.clearAll(mobile);
 			}
 			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
-			artifiDyQueueService.allocLottDlArtifiPrintLotteryeryV2(mobile);
+			artifiDyQueueService.allocLotteryV2(mobile);
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
