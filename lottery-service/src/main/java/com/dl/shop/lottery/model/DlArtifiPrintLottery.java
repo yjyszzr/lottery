@@ -64,7 +64,7 @@ public class DlArtifiPrintLottery {
     
     @Column(name = "statistics_print")
     private Integer statisticsPrint;
-    
+
     
 	public Integer getStatisticsPrint() {
 		return statisticsPrint;
