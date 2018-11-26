@@ -175,6 +175,9 @@ public class ArtifiDyQueueController {
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+        if(CollectionUtils.isEmpty(rList)){
+            return ResultGenerator.genResult(LotteryResultEnum.DB_NO_DATA.getCode(),"暂无订单，请稍后尝试");
+        }
 		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
@@ -208,9 +211,6 @@ public class ArtifiDyQueueController {
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
-		if(CollectionUtils.isEmpty(rList)){
-			return ResultGenerator.genResult(LotteryResultEnum.DB_NO_DATA.getCode(),"暂无订单，请稍后尝试");
-		}
 		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
