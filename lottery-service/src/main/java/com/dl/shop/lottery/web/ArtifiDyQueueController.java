@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
 
+import com.dl.lottery.enums.LotteryResultEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -206,6 +208,9 @@ public class ArtifiDyQueueController {
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,param.getStartId());
+		if(CollectionUtils.isEmpty(rList)){
+			return ResultGenerator.genResult(LotteryResultEnum.DB_NO_DATA.getCode(),"暂无订单，请稍后尝试");
+		}
 		return ResultGenerator.genSuccessResult("succ",rList);
 	}
 	
