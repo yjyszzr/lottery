@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sun.swing.BakedArrayList;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 /**
 * Created by CodeGenerator on 2018/03/23.
 */
+
 @RestController
 @RequestMapping("/lottery/nav/banner")
 public class LotteryNavBannerController {
@@ -89,7 +89,11 @@ public class LotteryNavBannerController {
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
-            dto = new DlBannerPicDTO(navBanner.getBannerName(),navBanner.getBannerImage(),navBanner.getBannerLink(),navBanner.getStartTime(),navBanner.getEndTime());
+            dto.setBannerName(navBanner.getBannerName());
+            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+            dto.setBannerLink(navBanner.getBannerLink());
+            dto.setStartTime(navBanner.getStartTime());
+            dto.setEndTime(navBanner.getEndTime());
         }
 
         return ResultGenerator.genSuccessResult("success",dto);
