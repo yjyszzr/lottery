@@ -9,6 +9,7 @@ import com.dl.lottery.dto.DlBannerPicDTO;
 import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.dto.SwitchConfigDTO;
 import com.dl.member.param.StrParam;
+import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,9 @@ public class LotteryNavBannerController {
 
     @Resource
     private ISwitchConfigService  iSwitchConfigService;
+
+    @Resource
+    private LotteryConfig lotteryConfig;
 
 //    @ApiOperation(value = "广告图", notes = "广告图")
 //    @PostMapping("/adNavs")
@@ -64,7 +68,7 @@ public class LotteryNavBannerController {
 
     @ApiOperation(value = "开屏图", notes = "开屏图")
     @PostMapping("/openNavs")
-    public BaseResult<?> openNavs(@RequestBody EmptyParam param){
+    public BaseResult<DlBannerPicDTO> openNavs(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
         BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
         if(switchRst.getCode() != 0){
