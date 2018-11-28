@@ -13,8 +13,13 @@
     <result column="is_transaction" jdbcType="INTEGER" property="isTransaction" />
     <result column="banner_sort" jdbcType="INTEGER" property="bannerSort" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
+    <result column="show_position" jdbcType="INTEGER" property="showPosition" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="start_time" jdbcType="INTEGER" property="startTime" />
     <result column="end_time" jdbcType="INTEGER" property="endTime" />
   </resultMap>
+
+  <select id="queryNavBannerByType" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select * from dl_nav_banner where show_position = #{showPosition}
+  </select>
 </mapper>

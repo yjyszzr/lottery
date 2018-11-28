@@ -21,4 +21,13 @@ public class LotteryNavBannerService extends AbstractService<LotteryNavBanner> {
 		return lotteryNavBannerMapper.selectAll();
 	}
 
+	/**
+	 * 根据显示位置查找图片
+	 * @param showPosition
+	 * @return
+	 */
+	public List<LotteryNavBanner> queryNavBannerByType(Integer showPosition){
+		return  lotteryNavBannerMapper.queryNavBannerByType(showPosition);
+	}
+
 }

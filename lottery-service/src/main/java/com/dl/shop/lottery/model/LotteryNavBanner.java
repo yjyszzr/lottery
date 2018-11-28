@@ -44,6 +44,11 @@ public class LotteryNavBanner {
     @Column(name = "is_show")
     private Integer isShow;
 
+    @Column(name = "show_position")
+    private Integer showPosition;
+
+
+
     /**
      * 创建时间
      */
@@ -93,6 +98,14 @@ public class LotteryNavBanner {
 	public void setIsTransaction(String isTransaction) {
 		this.isTransaction = isTransaction;
 	}
+
+    public Integer getShowPosition() {
+        return showPosition;
+    }
+
+    public void setShowPosition(Integer showPosition) {
+        this.showPosition = showPosition;
+    }
 
 	/**
      * @return id
