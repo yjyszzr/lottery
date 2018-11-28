@@ -35,7 +35,7 @@ public class LotteryNavBannerController {
     @Resource
     private ISwitchConfigService  iSwitchConfigService;
 
-    @ApiOperation(value = "广告图", notes = "广告图")
+//    @ApiOperation(value = "广告图", notes = "广告图")
 //    @PostMapping("/adNavs")
 //    public BaseResult<?> queryNavs(@RequestBody EmptyParam param){
 //        Integer dealSwitch = 2;//默认交易版
