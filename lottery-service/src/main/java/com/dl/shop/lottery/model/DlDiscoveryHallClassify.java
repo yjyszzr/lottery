@@ -64,6 +64,20 @@ public class DlDiscoveryHallClassify {
     private String statusReason;
 
     /**
+     * 1-咨询版 2- 交易版
+     */
+    @Column(name = "is_transaction")
+    private Integer isTransaction;
+
+
+    /**
+     * type 发现的业务类型
+     */
+    @Column(name = "type")
+    private Integer type;
+
+
+    /**
      * 获取大厅资讯分类id
      *
      * @return classify_id - 大厅资讯分类id
@@ -142,6 +156,23 @@ public class DlDiscoveryHallClassify {
      */
     public Integer getSort() {
         return sort;
+    }
+
+
+    public Integer getIsTransaction() {
+        return isTransaction;
+    }
+
+    public void setIsTransaction(Integer isTransaction) {
+        this.isTransaction = isTransaction;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     /**

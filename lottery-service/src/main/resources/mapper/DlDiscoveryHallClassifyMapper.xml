@@ -15,5 +15,14 @@
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />
     <result column="status_reason" jdbcType="VARCHAR" property="statusReason" />
+    <result column="is_transaction" jdbcType="INTEGER" property="isTransaction" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
+
+  <select id="queryDiscoveryListByType" resultMap="BaseResultMap">
+    select * from dl_discovery_hall_classify where is_transaction = #{isTransaction}  and  type in
+      <foreach collection="typeList" item="item" index="index" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+  </select>
 </mapper>

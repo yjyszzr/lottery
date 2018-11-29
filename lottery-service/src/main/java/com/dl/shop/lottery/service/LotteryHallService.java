@@ -4,9 +4,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
+import com.dl.shop.lottery.model.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,10 +43,6 @@ import com.dl.shop.lottery.dao.LotteryClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
 import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
-import com.dl.shop.lottery.model.LotteryActivity;
-import com.dl.shop.lottery.model.LotteryClassify;
-import com.dl.shop.lottery.model.LotteryNavBanner;
-import com.dl.shop.lottery.model.LotteryWinningLogTemp;
 
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +80,9 @@ public class LotteryHallService {
 	
 	@Resource
 	private ISwitchConfigService  iSwitchConfigService;
+
+	@Resource
+	private DlDiscoveryHallClassifyService dlDiscoveryHallClassifyService;
 
 	/**
 	 * 获取彩票大厅数据
@@ -124,6 +126,8 @@ public class LotteryHallService {
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
 		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		//获取发现页的各个图标
+		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
 		// 获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
@@ -176,6 +180,8 @@ public class LotteryHallService {
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
 		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		// 发现页图标
+		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
 		// 获取中奖信息列表
 		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
@@ -258,6 +264,37 @@ public class LotteryHallService {
 		dlPlayClassifyDTO.setDlPlayClassifyDetailDTOs(dlPlayClassifyDetailDTOs);
 		return dlPlayClassifyDTO;
 	}
+
+	/**
+	 * 	获取发现页的各个图标
+	 *
+	 */
+	public List<DlDiscoveryHallClassifyDTO> queryDisHallClassByType(){
+		//查询交易版还是资讯版
+		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
+		StrParam strParam = new StrParam();
+		BaseResult<SwitchConfigDTO> switchConfigDto = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDto.getCode() == 0) {
+			Integer turnOn = switchConfigDto.getData().getTurnOn();
+			isTransaction = (turnOn == 1)?ProjectConstant.DEAL_VERSION:ProjectConstant.INFO_VERSION;
+		}
+
+		List<Integer> typeList= new ArrayList<>();
+		typeList.add(2);
+		typeList.add(7);
+		typeList.add(8);
+		typeList.add(9);
+		typeList.add(10);
+		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
+		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
+		if(discoveryList.size() > 0){
+			dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
+			)).collect(Collectors.toList());
+		}
+
+		return dtoList;
+	}
+
 
 	/**
 	 * 获取活动数据
