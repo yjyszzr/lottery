@@ -10,6 +10,9 @@ import lombok.Data;
 public class DlHallDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+
+	@ApiModelProperty(value = "发现页图标")
+	List<DlDiscoveryHallClassifyDTO> discoveryHallClassifyDTOList;
 	
 	@ApiModelProperty(value = "首页轮播图列表")
 	public List<DlNavBannerDTO> navBanners;

@@ -21,16 +21,5 @@ public class DlBannerPicDTO {
     @ApiModelProperty(value = "banner图生效截止时间")
     public Integer endTime = 0;
 
-    public DlBannerPicDTO(){
-
-    }
-
-    public DlBannerPicDTO(String bannerName,String bannerImage,String bannerLink,Integer startTime,Integer endTime){
-        this.bannerName = bannerName;
-        this.bannerImage = bannerImage;
-        this.bannerLink = bannerLink;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
 
 }
