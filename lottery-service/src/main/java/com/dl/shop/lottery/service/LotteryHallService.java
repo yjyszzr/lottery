@@ -281,10 +281,11 @@ public class LotteryHallService {
 
 		List<Integer> typeList= new ArrayList<>();
 		typeList.add(2);
+		typeList.add(4);
 		typeList.add(7);
-		typeList.add(8);
 		typeList.add(9);
 		typeList.add(10);
+		typeList.add(8);
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
 		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
 		if(discoveryList.size() > 0){
