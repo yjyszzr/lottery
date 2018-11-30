@@ -89,7 +89,7 @@ public class LotteryNavBannerController {
 
         List<DlBannerPicDTO> bannerPicDTOList = new ArrayList<DlBannerPicDTO>();
         if(navFilterList.size() > 0){
-            bannerPicDTOList =  navFilterList.stream().map(e->new DlBannerPicDTO(e.getBannerName(),e.getBannerImage(),e.getBannerLink(),e.getStartTime(),e.getEndTime())).collect(Collectors.toList());
+            bannerPicDTOList =  navFilterList.stream().map(e->new DlBannerPicDTO(e.getBannerName(),lotteryConfig.getBannerShowUrl()+e.getBannerImage(),e.getBannerLink(),e.getStartTime(),e.getEndTime())).collect(Collectors.toList());
         }
 
         return ResultGenerator.genSuccessResult("success",bannerPicDTOList);
