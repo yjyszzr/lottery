@@ -9,7 +9,7 @@ public class DlDiscoveryHallClassifyDTO {
 	@ApiModelProperty("发现页分类id")
 	private String classifyId;
 
-	@ApiModelProperty("发现页业务类型")
+	@ApiModelProperty("发现页业务类型:1-开奖结果  2-专家推荐 3-彩票学堂 4-活动中心 7-联赛资料 9-比分直播 10-线下店铺 11-查看更多")
 	private String type;
 	
 	@ApiModelProperty("名称")

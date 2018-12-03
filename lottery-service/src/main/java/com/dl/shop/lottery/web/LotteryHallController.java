@@ -3,6 +3,8 @@ package com.dl.shop.lottery.web;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.dl.base.param.EmptyParam;
+import com.dl.lottery.dto.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,10 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.lottery.dto.DLArticleDTO;
-import com.dl.lottery.dto.DlHallDTO;
-import com.dl.lottery.dto.DlHallMixDTO;
-import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.lottery.param.PageParam;
@@ -23,6 +21,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.ApiOperation;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/lottery/hall")
@@ -90,7 +90,13 @@ public class LotteryHallController {
 
 		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
 	}
-	
+
+	@ApiOperation(value = "大厅发现页面的查看更多", notes = "大厅发现页面的查看更多")
+	@PostMapping("/moreDiscoveryClass")
+	public BaseResult<List<DlDiscoveryHallClassifyDTO>> moreDiscoveryClass(@RequestBody EmptyParam param) {
+		List<DlDiscoveryHallClassifyDTO> dlHallDTO = lotteryHallService.moreDiscoveryClass();
+		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallDTO);
+	}
 	
 	@ApiOperation(value = "获取彩票玩法列表", notes = "获取彩票玩法列表")
 	@PostMapping("/getPlayClassifyList")

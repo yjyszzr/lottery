@@ -24,5 +24,6 @@
       <foreach collection="typeList" item="item" index="index" open="(" separator="," close=")">
         #{item}
       </foreach>
+    order by type
   </select>
 </mapper>

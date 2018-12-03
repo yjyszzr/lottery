@@ -285,7 +285,7 @@ public class LotteryHallService {
 		typeList.add(7);
 		typeList.add(9);
 		typeList.add(10);
-		typeList.add(8);
+		typeList.add(11);
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
 		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
 		if(discoveryList.size() > 0){
@@ -296,6 +296,35 @@ public class LotteryHallService {
 		return dtoList;
 	}
 
+	/**
+	 * 	获取发现页的各个图标
+	 *
+	 */
+	public List<DlDiscoveryHallClassifyDTO> moreDiscoveryClass(){
+		//查询交易版还是资讯版
+		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
+		StrParam strParam = new StrParam();
+		BaseResult<SwitchConfigDTO> switchConfigDto = iSwitchConfigService.querySwitch(strParam);
+		if(switchConfigDto.getCode() == 0) {
+			Integer turnOn = switchConfigDto.getData().getTurnOn();
+			isTransaction = (turnOn == 1)?ProjectConstant.DEAL_VERSION:ProjectConstant.INFO_VERSION;
+		}
+
+		List<Integer> typeList= new ArrayList<>();
+		typeList.add(1);
+		typeList.add(3);
+		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
+		if (typeList.size() > 0){
+			List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
+			if(discoveryList.size() > 0){
+				dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
+				)).collect(Collectors.toList());
+			}
+		}
+
+
+		return dtoList;
+	}
 
 	/**
 	 * 获取活动数据
