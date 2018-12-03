@@ -6,18 +6,22 @@ import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlBannerPicDTO;
+import com.dl.member.api.IDeviceControlService;
 import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.dto.DlDeviceActionControlDTO;
 import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.param.DlDeviceActionControlParam;
+import com.dl.member.param.MacParam;
 import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,9 @@ public class LotteryNavBannerController {
 
     @Resource
     private LotteryConfig lotteryConfig;
+
+    @Resource
+    private IDeviceControlService iDeviceControlService;
 
 //    @ApiOperation(value = "广告图", notes = "广告图")
 ////    @PostMapping("/adNavs")
@@ -118,11 +125,34 @@ public class LotteryNavBannerController {
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
-            dto.setBannerName(navBanner.getBannerName());
-            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-            dto.setBannerLink(navBanner.getBannerLink());
-            dto.setStartTime(navBanner.getStartTime());
-            dto.setEndTime(navBanner.getEndTime());
+            UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+            String mac = userDevice.getMac();
+            MacParam macParam = new MacParam();
+            macParam.setMac(mac);
+            BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+            if(deviceActionControlDTOBaseResult.getCode() == 0){
+                DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+                if(deviceActionControlDTO.getAlertTimes() < 1){
+                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+                    deviceParam.setAlertTimes(1);
+                    deviceParam.setBusiType(1);
+                    deviceParam.setMac(StringUtils.isEmpty(mac)?"":mac);
+                    iDeviceControlService.add(deviceParam);
+
+                    dto.setBannerName(navBanner.getBannerName());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerLink(navBanner.getBannerLink());
+                    dto.setStartTime(navBanner.getStartTime());
+                    dto.setEndTime(navBanner.getEndTime());
+                }
+            }else{
+                dto.setBannerName(navBanner.getBannerName());
+                dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                dto.setBannerLink(navBanner.getBannerLink());
+                dto.setStartTime(navBanner.getStartTime());
+                dto.setEndTime(navBanner.getEndTime());
+            }
         }
 
         return ResultGenerator.genSuccessResult("success",dto);
