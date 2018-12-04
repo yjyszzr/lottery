@@ -144,7 +144,7 @@ public class LotteryNavBannerController {
                     deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
                     deviceParam.setAlertTimes(1);
                     deviceParam.setBusiType(1);
-                    deviceParam.setMac(StringUtils.isEmpty(mac)?"":mac);
+                    deviceParam.setMac(deviceUnique);
                     iDeviceControlService.add(deviceParam);
 
                     dto.setBannerName(navBanner.getBannerName());
