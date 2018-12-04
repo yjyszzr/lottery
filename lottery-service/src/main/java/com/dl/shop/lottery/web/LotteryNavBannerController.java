@@ -126,9 +126,16 @@ public class LotteryNavBannerController {
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
-            String mac = userDevice.getMac();
+            String plat = userDevice.getPlat();
+            //1-android,2-iphone
+            String deviceUnique = "";
+            if ("android".equals(userDevice.getPlat())){
+                deviceUnique = StringUtils.isEmpty(userDevice.getAndroidid())?"":userDevice.getAndroidid();
+            }else if("iphone".equals(userDevice.getPlat())){
+                deviceUnique = StringUtils.isEmpty(userDevice.getIDFA())?"":userDevice.getIDFA());
+            }
             MacParam macParam = new MacParam();
-            macParam.setMac(mac);
+            macParam.setMac(deviceUnique);
             BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
             if(deviceActionControlDTOBaseResult.getCode() == 0){
                 DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
