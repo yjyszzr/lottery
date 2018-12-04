@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,27 +77,10 @@ public class LotteryNavBannerController {
     @ApiOperation(value = "商城banner轮播图", notes = "商城banner轮播图")
     @PostMapping("/shopBanners")
     public BaseResult<List<DlBannerPicDTO>> shopBanners(@RequestBody EmptyParam param){
-        Integer dealSwitch = 2;//默认交易版
-        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
-        if(switchRst.getCode() != 0){
-            dealSwitch = 2;
-        }else{
-            SwitchConfigDTO switchConfigDTO = switchRst.getData();
-            Integer dealTurnOn = switchConfigDTO.getTurnOn();
-            dealSwitch = dealTurnOn == 1?2:1;
-        }
-
         List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(3);
-        List<LotteryNavBanner> navFilterList = new ArrayList<>();
-        if(dealSwitch == 2){
-            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
-        }else if(dealSwitch == 1){
-            navFilterList = navList.stream().filter(s->"1".equals(s.getIsTransaction())).collect(Collectors.toList());
-        }
-
         List<DlBannerPicDTO> bannerPicDTOList = new ArrayList<DlBannerPicDTO>();
-        if(navFilterList.size() > 0){
-            bannerPicDTOList =  navFilterList.stream().map(e->new DlBannerPicDTO(e.getBannerName(),lotteryConfig.getBannerShowUrl()+e.getBannerImage(),e.getBannerLink(),e.getStartTime(),e.getEndTime())).collect(Collectors.toList());
+        if(navList.size() > 0){
+            bannerPicDTOList =  navList.stream().map(e->new DlBannerPicDTO(e.getBannerName(),lotteryConfig.getBannerShowUrl()+e.getBannerImage(),e.getBannerLink(),e.getStartTime(),e.getEndTime())).collect(Collectors.toList());
         }
 
         return ResultGenerator.genSuccessResult("success",bannerPicDTOList);
@@ -126,8 +110,7 @@ public class LotteryNavBannerController {
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
-            String plat = userDevice.getPlat();
-            //1-android,2-iphone
+            String plat = userDevice.getPlat(); //1-android,2-iphone
             String deviceUnique = "";
             if ("android".equals(userDevice.getPlat())){
                 deviceUnique = StringUtils.isEmpty(userDevice.getAndroidid())?"":userDevice.getAndroidid();
@@ -139,19 +122,28 @@ public class LotteryNavBannerController {
             BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
             if(deviceActionControlDTOBaseResult.getCode() == 0){
                 DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
-                if(deviceActionControlDTO.getAlertTimes() < 1){
+                if(deviceActionControlDTO.getAlertTimes() != null && deviceActionControlDTO.getAlertTimes() < 1){
                     DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
                     deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
                     deviceParam.setAlertTimes(1);
                     deviceParam.setBusiType(1);
                     deviceParam.setMac(deviceUnique);
                     iDeviceControlService.add(deviceParam);
-
                     dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
                     dto.setStartTime(navBanner.getStartTime());
                     dto.setEndTime(navBanner.getEndTime());
+                }else{
+                    Integer alertTime = deviceActionControlDTO.getAddTime();
+                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+                    if(alertTime - endTodayTime > 0){
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+                    }
                 }
             }else{
                 dto.setBannerName(navBanner.getBannerName());
