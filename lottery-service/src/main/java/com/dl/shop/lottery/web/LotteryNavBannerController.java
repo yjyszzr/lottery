@@ -18,6 +18,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/lottery/nav/banner")
+@Slf4j
 public class LotteryNavBannerController {
     @Resource
     private LotteryNavBannerService lotteryNavBannerService;
@@ -118,6 +120,8 @@ public class LotteryNavBannerController {
             }else if("iphone".equals(userDevice.getPlat())){
                 deviceUnique = StringUtils.isEmpty(userDevice.getIDFA())?"":userDevice.getIDFA();
             }
+
+            log.info("deviceUnique:"+deviceUnique);
             MacParam macParam = new MacParam();
             macParam.setMac(deviceUnique);
             BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
