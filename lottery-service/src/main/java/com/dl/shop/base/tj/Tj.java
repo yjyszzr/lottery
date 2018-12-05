@@ -2,7 +2,6 @@ package com.dl.shop.base.tj;
 
 import java.util.List;
 
-import com.dl.order.param.OrderSnParam;
 import com.dl.shop.base.tj.entity.TOrderEntity;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 
