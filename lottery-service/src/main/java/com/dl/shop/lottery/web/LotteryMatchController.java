@@ -411,7 +411,10 @@ public class LotteryMatchController {
 		List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
+		}else if(matchBetPlays.size() > 8) {
+
 		}
+
 		//设置投注倍数
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {
@@ -581,7 +584,10 @@ public class LotteryMatchController {
 		List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
 		if(matchBetPlays == null || matchBetPlays.size() < 1) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
+		}else if(matchBetPlays.size() > 8){
+			return ResultGenerator.genResult(LotteryResultEnum.MATCH_BEYOND_EIGHT.getCode(), LotteryResultEnum.MATCH_BEYOND_EIGHT.getMsg());
 		}
+
 		//设置投注倍数
 		Integer times = param.getTimes();
 		if(null == times || times < 1) {

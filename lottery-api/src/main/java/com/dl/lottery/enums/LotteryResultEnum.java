@@ -19,7 +19,8 @@ public enum LotteryResultEnum {
 	BET_MATCH_STOP(303014,"暂停销售！"),
 	BET_MATCH_WC(303015,"世界杯期间投注量较大，为保证出票，最少投注100元！"),
 	BET_MONEY_other(303100,""),
-	DB_NO_DATA(303016,"无数据");
+	DB_NO_DATA(303016,"无数据"),
+	MATCH_BEYOND_EIGHT(303017,"最多选择8场比赛");
 	
 	
 	private Integer code;

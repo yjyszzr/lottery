@@ -387,22 +387,22 @@ public class LotteryHallService {
 	 */
 	private DlActivityDTO getDlActivityDTO(HallParam hallParam) {
 		DlActivityDTO dlActivityDTO = new DlActivityDTO();
-		String isTransaction = hallParam.getIsTransaction();
-		if("2".equals(isTransaction) || null == isTransaction) {	
-			Condition condition = new Condition(LotteryActivity.class);
-			condition.createCriteria().andCondition("act_type=", 0).andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
-			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
-			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
-				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
-				if (null != lotteryActivity) {
-					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
-					dlActivityDTO.setActImg(lotteryActivity.getActImg());
-					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
-				}
-			}else {
-				return null;
-			}
-		}
+//		String isTransaction = hallParam.getIsTransaction();
+//		if("2".equals(isTransaction) || null == isTransaction) {
+//			Condition condition = new Condition(LotteryActivity.class);
+//			condition.createCriteria().andCondition("act_type=", 0).andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+//			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+//			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
+//				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+//				if (null != lotteryActivity) {
+//					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+//					dlActivityDTO.setActImg(lotteryActivity.getActImg());
+//					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+//				}
+//			}else {
+//				return null;
+//			}
+//		}
 		return dlActivityDTO;
 	}
 
@@ -412,23 +412,24 @@ public class LotteryHallService {
 	 * @return
 	 */
 	private List<DlWinningLogDTO> getDlWinningLogDTOs() {
-		Condition condition = new Condition(LotteryWinningLogTemp.class);
-		condition.createCriteria().andCondition("is_show=", 1);
-		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
-		if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
-			for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
-				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
-				String phone = winningLog.getPhone();
-				if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
-					continue;
-				}
-				phone = phone.substring(0, 3) + "****" + phone.substring(7);
-				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
-				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
-				dlWinningLogDTOs.add(dlWinningLogDTO);
-			}
-		}
+
+//		Condition condition = new Condition(LotteryWinningLogTemp.class);
+//		condition.createCriteria().andCondition("is_show=", 1);
+//		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+//		if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
+//			for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+//				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+//				String phone = winningLog.getPhone();
+//				if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+//					continue;
+//				}
+//				phone = phone.substring(0, 3) + "****" + phone.substring(7);
+//				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+//				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
+//				dlWinningLogDTOs.add(dlWinningLogDTO);
+//			}
+//		}
 		return dlWinningLogDTOs;
 	}
 
