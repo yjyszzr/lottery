@@ -123,41 +123,41 @@ public class LotteryNavBannerController {
                 log.info("iphone,"+deviceUnique);
             }
 
-
             log.info("deviceUnique:"+deviceUnique);
-            MacParam macParam = new MacParam();
-            macParam.setMac(deviceUnique);
-            BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
-            if(deviceActionControlDTOBaseResult.getCode() == 0){
-                DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
-                Integer alertTime = deviceActionControlDTO.getAddTime();
-                Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
-                if(alertTime !=null && endTodayTime -alertTime > 0){
+            if(!StringUtils.isEmpty(deviceUnique)){
+                MacParam macParam = new MacParam();
+                macParam.setMac(deviceUnique);
+                BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+                if(deviceActionControlDTOBaseResult.getCode() == 0){
+                    DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+                    Integer alertTime = deviceActionControlDTO.getUpdateTime();
+                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+                    if(endTodayTime - alertTime > 0){
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+                        MacParam updateMac = new MacParam();
+                        updateMac.setMac(deviceUnique);
+                        iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+                    }
+                }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
+                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+                    deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
+                    deviceParam.setAlertTimes(1);
+                    deviceParam.setBusiType(1);
+                    deviceParam.setMac(deviceUnique);
+                    iDeviceControlService.add(deviceParam);
                     dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
                     dto.setStartTime(navBanner.getStartTime());
                     dto.setEndTime(navBanner.getEndTime());
                 }
-            }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
-                DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
-                deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
-                deviceParam.setAlertTimes(1);
-                deviceParam.setBusiType(1);
-                deviceParam.setMac(deviceUnique);
-                iDeviceControlService.add(deviceParam);
-                dto.setBannerName(navBanner.getBannerName());
-                dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
-                dto.setBannerLink(navBanner.getBannerLink());
-                dto.setStartTime(navBanner.getStartTime());
-                dto.setEndTime(navBanner.getEndTime());
-            }else{
-                dto.setBannerName(navBanner.getBannerName());
-                dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-                dto.setBannerLink(navBanner.getBannerLink());
-                dto.setStartTime(navBanner.getStartTime());
-                dto.setEndTime(navBanner.getEndTime());
             }
+
         }
 
         return ResultGenerator.genSuccessResult("success",dto);
