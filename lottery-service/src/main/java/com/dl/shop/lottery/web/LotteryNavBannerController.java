@@ -102,8 +102,8 @@ public class LotteryNavBannerController {
 //            dealSwitch = dealTurnOn == 1?2:1;
 //        }
 //
-//        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
-//        List<LotteryNavBanner> navFilterList = new ArrayList<>();
+        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
+        List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
