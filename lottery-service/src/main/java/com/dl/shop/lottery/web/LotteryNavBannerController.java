@@ -93,17 +93,17 @@ public class LotteryNavBannerController {
     @PostMapping("/openNavs")
     public BaseResult<DlBannerPicDTO> openNavs(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
-        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
-        if(switchRst.getCode() != 0){
-            dealSwitch = 2;
-        }else{
-            SwitchConfigDTO switchConfigDTO = switchRst.getData();
-            Integer dealTurnOn = switchConfigDTO.getTurnOn();
-            dealSwitch = dealTurnOn == 1?2:1;
-        }
-
-        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
-        List<LotteryNavBanner> navFilterList = new ArrayList<>();
+//        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
+//        if(switchRst.getCode() != 0){
+//            dealSwitch = 2;
+//        }else{
+//            SwitchConfigDTO switchConfigDTO = switchRst.getData();
+//            Integer dealTurnOn = switchConfigDTO.getTurnOn();
+//            dealSwitch = dealTurnOn == 1?2:1;
+//        }
+//
+//        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
+//        List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
@@ -116,12 +116,13 @@ public class LotteryNavBannerController {
             String plat = userDevice.getPlat(); //1-android,2-iphone
             String deviceUnique = "";
             if ("android".equals(userDevice.getPlat())){
-                deviceUnique = StringUtils.isEmpty(userDevice.getAndroidid())?"":userDevice.getAndroidid();
+                deviceUnique = userDevice.getAndroidid();
                 log.info("android,"+deviceUnique);
             }else if("iphone".equals(userDevice.getPlat())){
-                deviceUnique = StringUtils.isEmpty(userDevice.getIDFA())?"":userDevice.getIDFA();
+                deviceUnique = userDevice.getIDFA();
                 log.info("iphone,"+deviceUnique);
             }
+
 
             log.info("deviceUnique:"+deviceUnique);
             MacParam macParam = new MacParam();
