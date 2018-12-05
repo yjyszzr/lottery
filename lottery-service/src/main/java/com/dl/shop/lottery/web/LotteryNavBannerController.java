@@ -162,7 +162,7 @@ public class LotteryNavBannerController {
 //                    dto.setStartTime(navBanner.getStartTime());
 //                    dto.setEndTime(navBanner.getEndTime());
 //                }
-//            }
+            }
 
         }
 
