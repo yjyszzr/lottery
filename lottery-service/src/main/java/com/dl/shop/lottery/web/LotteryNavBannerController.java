@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.web;
+import com.alibaba.fastjson.JSON;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
@@ -18,6 +19,7 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
 import io.swagger.annotations.ApiOperation;
+import jdk.nashorn.internal.parser.JSONParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,6 +118,7 @@ public class LotteryNavBannerController {
             String plat = userDevice.getPlat(); //1-android,2-iphone
             String deviceUnique = "";
             if ("android".equals(userDevice.getPlat())){
+                log.info(JSON.toJSONString(userDevice)));
                 deviceUnique = userDevice.getAndroidid();
                 log.info("android,"+deviceUnique);
             }else if("iphone".equals(userDevice.getPlat())){
