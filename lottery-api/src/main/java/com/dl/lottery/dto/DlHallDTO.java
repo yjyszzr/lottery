@@ -53,13 +53,13 @@ public class DlHallDTO implements Serializable{
 	public static class DlActivityDTO {
 		
 		@ApiModelProperty(value = "活动标题")
-		public String actTitle;
+		public String actTitle = "";
 		
 		@ApiModelProperty(value = "活动图片")
-		public String actImg;
+		public String actImg = "";
 		
 		@ApiModelProperty(value = "活动链接")
-		public String actUrl;
+		public String actUrl = "";
 	}
 
 	@Data

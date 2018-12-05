@@ -125,7 +125,7 @@ public class LotteryHallService {
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
-		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		dlHallDTO.setActivity(null);
 		//获取发现页的各个图标
 		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
 		// 获取中奖信息列表
@@ -179,7 +179,7 @@ public class LotteryHallService {
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
 		// 获取活动数据
-		dlHallDTO.setActivity(getDlActivityDTO(hallParam));
+		dlHallDTO.setActivity(null);
 		// 发现页图标
 		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
 		// 获取中奖信息列表
@@ -387,22 +387,22 @@ public class LotteryHallService {
 	 */
 	private DlActivityDTO getDlActivityDTO(HallParam hallParam) {
 		DlActivityDTO dlActivityDTO = new DlActivityDTO();
-//		String isTransaction = hallParam.getIsTransaction();
-//		if("2".equals(isTransaction) || null == isTransaction) {
-//			Condition condition = new Condition(LotteryActivity.class);
-//			condition.createCriteria().andCondition("act_type=", 0).andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
-//			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
-//			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
-//				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
-//				if (null != lotteryActivity) {
-//					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
-//					dlActivityDTO.setActImg(lotteryActivity.getActImg());
-//					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
-//				}
-//			}else {
-//				return null;
-//			}
-//		}
+		String isTransaction = hallParam.getIsTransaction();
+		if("2".equals(isTransaction) || null == isTransaction) {
+			Condition condition = new Condition(LotteryActivity.class);
+			condition.createCriteria().andCondition("act_type=", 0).andCondition("is_finish=", 0).andCondition("status=", 1).andGreaterThan("endTime", DateUtil.getCurrentTimeLong()).andLessThanOrEqualTo("startTime", DateUtil.getCurrentTimeLong());
+			List<LotteryActivity> lotteryActivitys = lotteryActivityMapper.selectByCondition(condition);
+			if (CollectionUtils.isNotEmpty(lotteryActivitys)) {
+				LotteryActivity lotteryActivity = lotteryActivitys.get(0);
+				if (null != lotteryActivity) {
+					dlActivityDTO.setActTitle(lotteryActivity.getActTitle());
+					dlActivityDTO.setActImg(lotteryActivity.getActImg());
+					dlActivityDTO.setActUrl(lotteryActivity.getActUrl());
+				}
+			}else {
+				return null;
+			}
+		}
 		return dlActivityDTO;
 	}
 
