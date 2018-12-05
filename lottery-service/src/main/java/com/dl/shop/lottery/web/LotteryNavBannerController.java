@@ -117,8 +117,10 @@ public class LotteryNavBannerController {
             String deviceUnique = "";
             if ("android".equals(userDevice.getPlat())){
                 deviceUnique = StringUtils.isEmpty(userDevice.getAndroidid())?"":userDevice.getAndroidid();
+                log.info("android,"+deviceUnique);
             }else if("iphone".equals(userDevice.getPlat())){
                 deviceUnique = StringUtils.isEmpty(userDevice.getIDFA())?"":userDevice.getIDFA();
+                log.info("iphone,"+deviceUnique);
             }
 
             log.info("deviceUnique:"+deviceUnique);
