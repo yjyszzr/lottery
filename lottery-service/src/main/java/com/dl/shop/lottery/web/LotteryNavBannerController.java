@@ -93,15 +93,15 @@ public class LotteryNavBannerController {
     @PostMapping("/openNavs")
     public BaseResult<DlBannerPicDTO> openNavs(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
-//        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
-//        if(switchRst.getCode() != 0){
-//            dealSwitch = 2;
-//        }else{
-//            SwitchConfigDTO switchConfigDTO = switchRst.getData();
-//            Integer dealTurnOn = switchConfigDTO.getTurnOn();
-//            dealSwitch = dealTurnOn == 1?2:1;
-//        }
-//
+        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
+        if(switchRst.getCode() != 0){
+            dealSwitch = 2;
+        }else{
+            SwitchConfigDTO switchConfigDTO = switchRst.getData();
+            Integer dealTurnOn = switchConfigDTO.getTurnOn();
+            dealSwitch = dealTurnOn == 1?2:1;
+        }
+
         List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
         List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
