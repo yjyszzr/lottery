@@ -84,6 +84,9 @@ public class LotteryHallService {
 	@Resource
 	private DlDiscoveryHallClassifyService dlDiscoveryHallClassifyService;
 
+    @Resource
+    private LotteryMatchService lotteryMatchService;
+
 	/**
 	 * 获取彩票大厅数据
 	 * 第一版本使用
@@ -413,7 +416,16 @@ public class LotteryHallService {
 	 */
 	private List<DlWinningLogDTO> getDlWinningLogDTOs() {
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
-
+        List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
+		if (CollectionUtils.isNotEmpty(latestMatchs)) {
+			for (LotteryMatch match : latestMatchs) {
+				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+				String msg = match.getHomeTeamAbbr() +" VS " + match.getVisitingTeamAbbr() + " "+ DateUtil.toStringDateByFormat(match.getMatchTime(),"yyyy-MM-dd HH:mm");
+				dlWinningLogDTO.setWinningMsg(msg);
+				dlWinningLogDTOs.add(dlWinningLogDTO);
+			}
+		}
+		return dlWinningLogDTOs;
 //		Condition condition = new Condition(LotteryWinningLogTemp.class);
 //		condition.createCriteria().andCondition("is_show=", 1);
 //		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
@@ -430,7 +442,6 @@ public class LotteryHallService {
 //				dlWinningLogDTOs.add(dlWinningLogDTO);
 //			}
 //		}
-		return dlWinningLogDTOs;
 	}
 
 	/**
