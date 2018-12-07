@@ -143,4 +143,7 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * 查询距现在最近的一场已结束比赛
 	 */
 	LotteryMatch queryLatestMatch();
+
+
+	public List<LotteryMatch> queryLatest3Match();
 }

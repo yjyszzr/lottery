@@ -3876,4 +3876,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         }
 		return false;
 	}
+
+	public List<LotteryMatch> queryLatest3Match(){
+		return lotteryMatchMapper.queryLatest3Match();
+	}
 }

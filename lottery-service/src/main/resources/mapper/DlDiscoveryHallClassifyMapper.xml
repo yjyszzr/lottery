@@ -20,7 +20,7 @@
   </resultMap>
 
   <select id="queryDiscoveryListByType" resultMap="BaseResultMap">
-    select * from dl_discovery_hall_classify where is_transaction = #{isTransaction}  and  type in
+    select * from dl_discovery_hall_classify where is_transaction = #{isTransaction} and is_show = 1 and  type in
       <foreach collection="typeList" item="item" index="index" open="(" separator="," close=")">
         #{item}
       </foreach>
