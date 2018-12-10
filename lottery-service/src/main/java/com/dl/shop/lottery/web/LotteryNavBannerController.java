@@ -128,12 +128,6 @@ public class LotteryNavBannerController {
 
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
-                dto.setBannerName(navBanner.getBannerName());
-                dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
-                dto.setBannerLink(navBanner.getBannerLink());
-                dto.setStartTime(navBanner.getStartTime());
-                dto.setEndTime(navBanner.getEndTime());
-
                 MacParam macParam = new MacParam();
                 macParam.setMac(deviceUnique);
                 BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
