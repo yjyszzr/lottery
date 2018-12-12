@@ -407,32 +407,59 @@ public class LotteryHallService {
 	 */
 	private List<DlWinningLogDTO> getDlWinningLogDTOs() {
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
-        List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
-		if (CollectionUtils.isNotEmpty(latestMatchs)) {
-			for (LotteryMatch match : latestMatchs) {
-				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
-				String msg = match.getHomeTeamAbbr() +" VS " + match.getVisitingTeamAbbr() + " "+ DateUtil.toStringDateByFormat(match.getMatchTime(),"yyyy-MM-dd HH:mm");
-				dlWinningLogDTO.setWinningMsg(msg);
-				dlWinningLogDTOs.add(dlWinningLogDTO);
+        UserDeviceInfo userDeviceInfo = new UserDeviceInfo();
+		String plat = userDeviceInfo.getPlat();
+		String version = userDeviceInfo.getPlat();
+		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
+			if(("android".equals(plat) && version.compareTo("5.6.0") > 0) || ("iphone".equals(plat) && version.compareTo("2.0.8") > 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
+				if (CollectionUtils.isNotEmpty(latestMatchs)) {
+					for (LotteryMatch match : latestMatchs) {
+						DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+						String msg = match.getHomeTeamAbbr() +" VS " + match.getVisitingTeamAbbr() + " "+ DateUtil.toStringDateByFormat(match.getMatchTime(),"yyyy-MM-dd HH:mm");
+						dlWinningLogDTO.setWinningMsg(msg);
+						dlWinningLogDTOs.add(dlWinningLogDTO);
+					}
+				}
+				return dlWinningLogDTOs;
+			}else{
+				Condition condition = new Condition(LotteryWinningLogTemp.class);
+				condition.createCriteria().andCondition("is_show=", 1);
+				List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+				if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
+					for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+						DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+						String phone = winningLog.getPhone();
+						if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+							continue;
+						}
+						phone = phone.substring(0, 3) + "****" + phone.substring(7);
+						dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+						dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
+						dlWinningLogDTOs.add(dlWinningLogDTO);
+					}
+				}
+			}
+		}else{
+			Condition condition = new Condition(LotteryWinningLogTemp.class);
+			condition.createCriteria().andCondition("is_show=", 1);
+			List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+			if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
+				for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+					DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+					String phone = winningLog.getPhone();
+					if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+						continue;
+					}
+					phone = phone.substring(0, 3) + "****" + phone.substring(7);
+					dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+					dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
+					dlWinningLogDTOs.add(dlWinningLogDTO);
+				}
 			}
 		}
+
 		return dlWinningLogDTOs;
-//		Condition condition = new Condition(LotteryWinningLogTemp.class);
-//		condition.createCriteria().andCondition("is_show=", 1);
-//		List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
-//		if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
-//			for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
-//				DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
-//				String phone = winningLog.getPhone();
-//				if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
-//					continue;
-//				}
-//				phone = phone.substring(0, 3) + "****" + phone.substring(7);
-//				dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
-//				dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
-//				dlWinningLogDTOs.add(dlWinningLogDTO);
-//			}
-//		}
 	}
 
 	/**
