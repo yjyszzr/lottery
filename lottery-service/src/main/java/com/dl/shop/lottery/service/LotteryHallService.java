@@ -421,7 +421,6 @@ public class LotteryHallService {
 						dlWinningLogDTOs.add(dlWinningLogDTO);
 					}
 				}
-				return dlWinningLogDTOs;
 			}else{
 				Condition condition = new Condition(LotteryWinningLogTemp.class);
 				condition.createCriteria().andCondition("is_show=", 1);
