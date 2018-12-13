@@ -412,7 +412,7 @@ public class LotteryHallService {
 		String channel = userDeviceInfo.getChannel();
 		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
-			if(("android".equals(plat) && "c28000".compareTo(channel) >= 0) || ("iphone".equals(plat) && "c36000".compareTo(channel) >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+			if(("android".equals(plat) && channel.contains("c300")) || ("iphone".equals(plat) && channel.contains("c360")) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
 					for (LotteryMatch match : latestMatchs) {
