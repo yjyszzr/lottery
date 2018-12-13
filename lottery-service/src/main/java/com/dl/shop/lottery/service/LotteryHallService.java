@@ -413,9 +413,8 @@ public class LotteryHallService {
 		String channel = userDeviceInfo.getChannel();
 		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
-			log.info("中奖信息的设备信息："+ JSON.toJSONString(userDeviceInfo));
 			if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
-				log.info("球多多");
+				log.info("球多多展示比赛信息");
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
 					for (LotteryMatch match : latestMatchs) {
