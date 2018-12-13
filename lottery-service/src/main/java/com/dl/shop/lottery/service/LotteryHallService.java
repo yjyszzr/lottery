@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import com.alibaba.fastjson.JSON;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.shop.lottery.model.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -412,7 +413,9 @@ public class LotteryHallService {
 		String channel = userDeviceInfo.getChannel();
 		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
+			log.info("中奖信息的设备信息："+ JSON.toJSONString(userDeviceInfo));
 			if(("android".equals(plat) && channel.contains("c300")) || ("iphone".equals(plat) && channel.contains("c360")) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+				log.info("球多多");
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
 					for (LotteryMatch match : latestMatchs) {
