@@ -409,9 +409,10 @@ public class LotteryHallService {
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
         UserDeviceInfo userDeviceInfo = new UserDeviceInfo();
 		String plat = userDeviceInfo.getPlat();
-		String version = userDeviceInfo.getPlat();
+		String channel = userDeviceInfo.getChannel();
+		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
-			if(("android".equals(plat) && version.compareTo("5.6.0") > 0) || ("iphone".equals(plat) && version.compareTo("2.0.8") > 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+			if(("android".equals(plat) && "c28000".compareTo(channel) >= 0) || ("iphone".equals(plat) && "c36000".compareTo(channel) >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
 					for (LotteryMatch match : latestMatchs) {
