@@ -1491,19 +1491,19 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "API调用(获取停售时间)", notes = "API调用(获取停售时间)")
 	@PostMapping("/getBetEndTime")
-	public int getBetEndTime( int matchTime) {
+	public int getBetEndTime(@RequestBody  int matchTime) {
 		return lotteryMatchService.getBetEndTime(matchTime);
 	}
 	
 	@ApiOperation(value = "API调用(比赛是否隐藏)", notes = "API调用(比赛是否隐藏)")
 	@PostMapping("/isHideMatch")
-	public boolean isHideMatch(IsHideParam isHideParam) {
+	public boolean isHideMatch(@RequestBody IsHideParam isHideParam) {
 		return lotteryMatchService.isHideMatch(isHideParam.getBetEndTime(),isHideParam.getMatchTime());
 	}
 	
 	@ApiOperation(value = "API调用(获取投注信息1)", notes = "API调用(获取投注信息1)")
 	@PostMapping("/getBetInfo1")
-	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param){
+	public DLZQBetInfoDTO getBetInfo1(@RequestBody DlJcZqMatchBetParam param){
 		return lotteryMatchService.getBetInfo1(param);
 	}
 	
