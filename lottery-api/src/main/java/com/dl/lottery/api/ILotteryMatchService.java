@@ -39,7 +39,7 @@ public interface ILotteryMatchService {
 	public BaseResult<List<String>> getCancelMatches(GetCancelMatchesParam param);
 
 	@RequestMapping(path="/lottery/match/getMatchList", method=RequestMethod.POST)
-	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param);
+	public  BaseResult<DlJcZqMatchListDTO> getMatchList(DlJcZqMatchListParam param);
 	
 	@RequestMapping(path="/lottery/match/isShutDownBet", method=RequestMethod.POST)
 	public boolean isShutDownBet(@RequestBody EmptyParam emptyParam);
