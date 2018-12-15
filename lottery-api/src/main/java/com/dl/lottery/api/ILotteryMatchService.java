@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLLQBetInfoDTO;
@@ -41,7 +42,7 @@ public interface ILotteryMatchService {
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param);
 	
 	@RequestMapping(path="/lottery/match/isShutDownBet", method=RequestMethod.POST)
-	public boolean isShutDownBet();
+	public boolean isShutDownBet(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getBetEndTime", method=RequestMethod.POST)
 	public int getBetEndTime( @RequestBody int matchTime);
@@ -53,8 +54,8 @@ public interface ILotteryMatchService {
 	public DLZQBetInfoDTO getBetInfo1(@RequestBody DlJcZqMatchBetParam param);
 
 	@RequestMapping(path="/lottery/match/getMinBetMoney", method=RequestMethod.POST)
-	public Double getMinBetMoney();
+	public Double getMinBetMoney(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/canBetMoney", method=RequestMethod.POST)
-	public int canBetMoney();
+	public int canBetMoney(@RequestBody EmptyParam emptyParam);
 }
