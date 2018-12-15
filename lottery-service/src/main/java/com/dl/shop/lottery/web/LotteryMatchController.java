@@ -100,7 +100,6 @@ import com.dl.shop.lottery.service.DlMatchTeamScoreService;
 import com.dl.shop.lottery.service.LotteryMatchPlayService;
 import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
-import com.dl.shop.payment.dto.PaymentDTO;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;

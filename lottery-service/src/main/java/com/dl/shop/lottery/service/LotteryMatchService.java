@@ -292,6 +292,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(param.getLeagueId());
+		logger.info("获取matchList==matchList==matchList==matchList ========+++++++++++=========="+matchList);
 		if(matchList == null || matchList.size() == 0) {
 			return dlJcZqMatchListDTO;
 		}
@@ -368,6 +369,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		long end = System.currentTimeMillis();
 		logger.info("==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
 		logger.info("==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
+		logger.info("获取最终足球赛事列表========+++++++++++=========="+dlJcZqMatchListDTO);
 	    return dlJcZqMatchListDTO;
 	}
 	//判断是否停售
