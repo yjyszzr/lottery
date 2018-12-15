@@ -48,6 +48,7 @@
     <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
     <result column="app_code_name" jdbcType="VARCHAR" property="appCodeName" />
     <result column="article_classify_ids" jdbcType="VARCHAR" property="articleClassifyIds" />
+    <result column="article_classify_ids" jdbcType="VARCHAR" property="articleClassifyIds" />
   </resultMap>
   
   <select id="findArticles" resultMap="BaseResultMap">

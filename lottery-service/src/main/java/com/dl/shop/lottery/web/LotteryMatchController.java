@@ -68,6 +68,7 @@ import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetCancelMatchesParam;
 import com.dl.lottery.param.GetFilterConditionsParam;
+import com.dl.lottery.param.IsHideParam;
 import com.dl.lottery.param.MatchTeamInfosParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
@@ -1482,7 +1483,41 @@ public class LotteryMatchController {
 		List<String> leagueInfos =  lotteryMatchService.getCancelMatches(param.getPlayCodes());
 		return ResultGenerator.genSuccessResult("success", leagueInfos);
 	}
+	@ApiOperation(value = "API调用(是否停售)", notes = "API调用(是否停售)")
+	@PostMapping("/isShutDownBet")
+	public boolean isShutDownBet() {
+		return lotteryMatchService.isShutDownBet();
+	}
 	
+	@ApiOperation(value = "API调用(获取停售时间)", notes = "API调用(获取停售时间)")
+	@PostMapping("/getBetEndTime")
+	public int getBetEndTime( int matchTime) {
+		return lotteryMatchService.getBetEndTime(matchTime);
+	}
+	
+	@ApiOperation(value = "API调用(比赛是否隐藏)", notes = "API调用(比赛是否隐藏)")
+	@PostMapping("/isHideMatch")
+	public boolean isHideMatch(IsHideParam isHideParam) {
+		return lotteryMatchService.isHideMatch(isHideParam.getBetEndTime(),isHideParam.getMatchTime());
+	}
+	
+	@ApiOperation(value = "API调用(获取投注信息1)", notes = "API调用(获取投注信息1)")
+	@PostMapping("/getBetInfo1")
+	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param){
+		return lotteryMatchService.getBetInfo1(param);
+	}
+	
+	@ApiOperation(value = "API调用(获取投注金额)", notes = "API调用(获取投注金额)")
+	@PostMapping("/getMinBetMoney")
+	public Double getMinBetMoney(){
+		return lotteryMatchService.getMinBetMoney( );
+	}
+	
+	@ApiOperation(value = "API调用(获取可投注金额)", notes = "API调用(获取可投注金额)")
+	@PostMapping("/canBetMoney")
+	public int canBetMoney(){
+		return lotteryMatchService.canBetMoney( );
+	}
 	
 	
 }
