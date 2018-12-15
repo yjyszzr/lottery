@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class IsHideParam implements Serializable{
-	
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value="投注结束时间")

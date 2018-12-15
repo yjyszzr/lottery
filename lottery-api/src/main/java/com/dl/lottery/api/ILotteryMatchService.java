@@ -44,13 +44,13 @@ public interface ILotteryMatchService {
 	public boolean isShutDownBet();
 
 	@PostMapping("/lottery/match/getBetEndTime")
-	public int getBetEndTime(int matchTime);
+	public int getBetEndTime( @RequestBody int matchTime);
 
 	@PostMapping("/lottery/match/isHideMatch")
-	public boolean isHideMatch(IsHideParam isHideParam);
+	public boolean isHideMatch( @RequestBody IsHideParam isHideParam);
 
 	@PostMapping("/lottery/match/getBetInfo1")
-	public DLZQBetInfoDTO getBetInfo1(DlJcZqMatchBetParam param);
+	public DLZQBetInfoDTO getBetInfo1(@RequestBody DlJcZqMatchBetParam param);
 
 	@PostMapping("/lottery/match/getMinBetMoney")
 	public Double getMinBetMoney();
