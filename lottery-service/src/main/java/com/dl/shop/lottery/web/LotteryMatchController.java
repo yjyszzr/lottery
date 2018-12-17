@@ -1491,8 +1491,9 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "API调用(获取停售时间)", notes = "API调用(获取停售时间)")
 	@PostMapping("/getBetEndTime")
-	public int getBetEndTime(@RequestBody MatchTimePream matchTimePream) {
-		return lotteryMatchService.getBetEndTime(matchTimePream.getMatchTime());
+	public  BaseResult<Integer> getBetEndTime(@RequestBody MatchTimePream matchTimePream) {
+		Integer result =    lotteryMatchService.getBetEndTime(matchTimePream.getMatchTime());
+		return ResultGenerator.genSuccessResult("", result);
 	}
 	
 	@ApiOperation(value = "API调用(比赛是否隐藏)", notes = "API调用(比赛是否隐藏)")

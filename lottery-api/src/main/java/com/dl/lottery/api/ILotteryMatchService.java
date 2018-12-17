@@ -44,10 +44,10 @@ public interface ILotteryMatchService {
 	public  BaseResult<DlJcZqMatchListDTO> getMatchList(DlJcZqMatchListParam param);
 	
 	@RequestMapping(path="/lottery/match/isShutDownBet", method=RequestMethod.POST)
-	public boolean isShutDownBet(@RequestBody EmptyParam emptyParam);
+	public boolean isShutDownBet( EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getBetEndTime", method=RequestMethod.POST)
-	public int getBetEndTime( @RequestBody int matchTime);
+	public  BaseResult<Integer> getBetEndTime(  int matchTime);
 
 	@RequestMapping(path="/lottery/match/isHideMatch", method=RequestMethod.POST)
 	public boolean isHideMatch( @RequestBody IsHideParam isHideParam);
@@ -62,5 +62,5 @@ public interface ILotteryMatchService {
 	public int canBetMoney(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getMatchByConditions", method=RequestMethod.POST)
-	public List<LeagueInfoDTO> getMatchByConditions(@RequestBody EmptyParam emptyParam);
+	public BaseResult<List<LeagueInfoDTO>> getMatchByConditions(@RequestBody EmptyParam emptyParam);
 }
