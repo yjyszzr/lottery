@@ -21,6 +21,7 @@ import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetCancelMatchesParam;
 import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.IsHideParam;
+import com.dl.lottery.param.MatchTimePream;
 
 @FeignClient(value="lottery-service")
 public interface ILotteryMatchService {
@@ -44,10 +45,10 @@ public interface ILotteryMatchService {
 	public  BaseResult<DlJcZqMatchListDTO> getMatchList(DlJcZqMatchListParam param);
 	
 	@RequestMapping(path="/lottery/match/isShutDownBet", method=RequestMethod.POST)
-	public  BaseResult<Boolean> isShutDownBet( EmptyParam emptyParam);
+	public  BaseResult<Boolean> isShutDownBet(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getBetEndTime", method=RequestMethod.POST)
-	public  BaseResult<Integer> getBetEndTime(  int matchTime);
+	public  BaseResult<Integer> getBetEndTime(@RequestBody  MatchTimePream matchTimePream);
 
 	@RequestMapping(path="/lottery/match/isHideMatch", method=RequestMethod.POST)
 	public   BaseResult<Boolean> isHideMatch( @RequestBody IsHideParam isHideParam);
