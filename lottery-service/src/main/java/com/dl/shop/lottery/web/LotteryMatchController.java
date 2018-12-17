@@ -1485,8 +1485,9 @@ public class LotteryMatchController {
 	}
 	@ApiOperation(value = "API调用(是否停售)", notes = "API调用(是否停售)")
 	@PostMapping("/isShutDownBet")
-	public boolean isShutDownBet(@RequestBody EmptyParam emptyParam) {
-		return lotteryMatchService.isShutDownBet();
+	public  BaseResult<Boolean>  isShutDownBet(@RequestBody EmptyParam emptyParam) {
+		boolean result =  lotteryMatchService.isShutDownBet();
+		return ResultGenerator.genSuccessResult("success", result);
 	}
 	
 	@ApiOperation(value = "API调用(获取停售时间)", notes = "API调用(获取停售时间)")
@@ -1498,26 +1499,30 @@ public class LotteryMatchController {
 	
 	@ApiOperation(value = "API调用(比赛是否隐藏)", notes = "API调用(比赛是否隐藏)")
 	@PostMapping("/isHideMatch")
-	public boolean isHideMatch(@RequestBody IsHideParam isHideParam) {
-		return lotteryMatchService.isHideMatch(isHideParam.getBetEndTime(),isHideParam.getMatchTime());
+	public BaseResult<Boolean>   isHideMatch(@RequestBody IsHideParam isHideParam) {
+		boolean result =  lotteryMatchService.isHideMatch(isHideParam.getBetEndTime(),isHideParam.getMatchTime());
+		return ResultGenerator.genSuccessResult("success", result);
 	}
 	
 	@ApiOperation(value = "API调用(获取投注信息1)", notes = "API调用(获取投注信息1)")
 	@PostMapping("/getBetInfo1")
-	public DLZQBetInfoDTO getBetInfo1(@RequestBody DlJcZqMatchBetParam param){
-		return lotteryMatchService.getBetInfo1(param);
+	public BaseResult<DLZQBetInfoDTO> getBetInfo1(@RequestBody DlJcZqMatchBetParam param){
+		DLZQBetInfoDTO betInfoDTO = lotteryMatchService.getBetInfo1(param);
+		return ResultGenerator.genSuccessResult("success", betInfoDTO);
 	}
 	
 	@ApiOperation(value = "API调用(获取投注金额)", notes = "API调用(获取投注金额)")
 	@PostMapping("/getMinBetMoney")
-	public Double getMinBetMoney(@RequestBody EmptyParam emptyParam){
-		return lotteryMatchService.getMinBetMoney();
+	public  BaseResult<Double> getMinBetMoney(@RequestBody EmptyParam emptyParam){
+		Double result =  lotteryMatchService.getMinBetMoney();
+		return ResultGenerator.genSuccessResult("success", result);
 	}
 	
 	@ApiOperation(value = "API调用(获取可投注金额)", notes = "API调用(获取可投注金额)")
 	@PostMapping("/canBetMoney")
-	public int canBetMoney(@RequestBody EmptyParam emptyParam){
-		return lotteryMatchService.canBetMoney();
+	public  BaseResult<Integer>  canBetMoney(@RequestBody EmptyParam emptyParam){
+		Integer result = lotteryMatchService.canBetMoney();
+		return ResultGenerator.genSuccessResult("success", result);
 	}
 	
 	

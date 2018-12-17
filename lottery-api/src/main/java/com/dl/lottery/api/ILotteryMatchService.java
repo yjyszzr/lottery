@@ -44,22 +44,22 @@ public interface ILotteryMatchService {
 	public  BaseResult<DlJcZqMatchListDTO> getMatchList(DlJcZqMatchListParam param);
 	
 	@RequestMapping(path="/lottery/match/isShutDownBet", method=RequestMethod.POST)
-	public boolean isShutDownBet( EmptyParam emptyParam);
+	public  BaseResult<Boolean> isShutDownBet( EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getBetEndTime", method=RequestMethod.POST)
 	public  BaseResult<Integer> getBetEndTime(  int matchTime);
 
 	@RequestMapping(path="/lottery/match/isHideMatch", method=RequestMethod.POST)
-	public boolean isHideMatch( @RequestBody IsHideParam isHideParam);
+	public   BaseResult<Boolean> isHideMatch( @RequestBody IsHideParam isHideParam);
 
 	@RequestMapping(path="/lottery/match/getBetInfo1", method=RequestMethod.POST)
-	public DLZQBetInfoDTO getBetInfo1(@RequestBody DlJcZqMatchBetParam param);
+	public   BaseResult<DLZQBetInfoDTO> getBetInfo1(@RequestBody DlJcZqMatchBetParam param);
 
 	@RequestMapping(path="/lottery/match/getMinBetMoney", method=RequestMethod.POST)
-	public Double getMinBetMoney(@RequestBody EmptyParam emptyParam);
+	public   BaseResult<Double> getMinBetMoney(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/canBetMoney", method=RequestMethod.POST)
-	public int canBetMoney(@RequestBody EmptyParam emptyParam);
+	public   BaseResult<Integer> canBetMoney(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/getMatchByConditions", method=RequestMethod.POST)
 	public BaseResult<List<LeagueInfoDTO>> getMatchByConditions(@RequestBody EmptyParam emptyParam);
