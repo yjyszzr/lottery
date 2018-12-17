@@ -61,6 +61,6 @@ public interface ILotteryMatchService {
 	@RequestMapping(path="/lottery/match/canBetMoney", method=RequestMethod.POST)
 	public int canBetMoney(@RequestBody EmptyParam emptyParam);
 
-	@RequestMapping(path="/lottery/match/filterConditions", method=RequestMethod.POST)
-	public List<LeagueInfoDTO> getFilterConditions(@RequestBody GetFilterConditionsParam emptyParam);
+	@RequestMapping(path="/lottery/match/getMatchByConditions", method=RequestMethod.POST)
+	public List<LeagueInfoDTO> getMatchByConditions(@RequestBody EmptyParam emptyParam);
 }

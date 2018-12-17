@@ -1520,4 +1520,11 @@ public class LotteryMatchController {
 	}
 	
 	
+	@ApiOperation(value = "API调用(获取足球筛选条件列表)", notes = "API调用(获取足球筛选条件列表)")
+	@PostMapping("/getMatchByConditions")
+	public  BaseResult<List<LeagueInfoDTO>>  getMatchByConditions(@RequestBody EmptyParam emptyParam){
+    	List<LeagueInfoDTO> leagueInfos = lotteryMatchService.getFilterConditions();
+    	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
+	}
+	
 }
