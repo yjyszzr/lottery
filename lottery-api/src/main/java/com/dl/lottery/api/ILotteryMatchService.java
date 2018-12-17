@@ -14,6 +14,7 @@ import com.dl.lottery.dto.DLBetLottoInfoDTO;
 import com.dl.lottery.dto.DLLQBetInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
+import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
@@ -58,4 +59,7 @@ public interface ILotteryMatchService {
 
 	@RequestMapping(path="/lottery/match/canBetMoney", method=RequestMethod.POST)
 	public int canBetMoney(@RequestBody EmptyParam emptyParam);
+
+	@RequestMapping(path="/lottery/match/filterConditions", method=RequestMethod.POST)
+	public List<LeagueInfoDTO> getFilterConditions();
 }
