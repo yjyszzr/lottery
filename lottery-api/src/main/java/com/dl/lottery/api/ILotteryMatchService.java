@@ -19,6 +19,7 @@ import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetCancelMatchesParam;
+import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.IsHideParam;
 
 @FeignClient(value="lottery-service")
@@ -61,5 +62,5 @@ public interface ILotteryMatchService {
 	public int canBetMoney(@RequestBody EmptyParam emptyParam);
 
 	@RequestMapping(path="/lottery/match/filterConditions", method=RequestMethod.POST)
-	public List<LeagueInfoDTO> getFilterConditions();
+	public List<LeagueInfoDTO> getFilterConditions(@RequestBody GetFilterConditionsParam emptyParam);
 }
