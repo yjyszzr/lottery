@@ -207,6 +207,7 @@ public class DlArticleService extends AbstractService<DlArticle> {
 		dto.setClickNumber(article.getClickNumber());
 		dto.setExtendCat(article.getExtendCat());
 		dto.setKeywords(article.getKeywords());
+		log.info("文章连接："+lotteryConfig.getShareInfoUrl() + article.getArticleId());
 		dto.setLink(lotteryConfig.getShareInfoUrl() + article.getArticleId());
 		dto.setListStyle(article.getListStyle());
 		dto.setMatchId(article.getMatchId());
