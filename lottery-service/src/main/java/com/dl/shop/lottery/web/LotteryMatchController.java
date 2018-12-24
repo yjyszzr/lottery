@@ -1309,6 +1309,7 @@ public class LotteryMatchController {
 		submitOrderParam.setForecastMoney(dto.getForecastMoney());
 		submitOrderParam.setIssue(dto.getIssue());
 		submitOrderParam.setTicketDetails(ticketDetails);
+		logger.info("订单提交信息==========="+submitOrderParam);
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
 		if (createOrder.getCode() != 0) {
 			logger.info("订单创建失败！");

@@ -27,6 +27,7 @@ public class DlJcZqMatchBetParam implements Serializable{
 	private List<MatchBetPlayDTO> matchBetPlays;
 	@ApiModelProperty(value="用户红包id,如果没有不填写，可以为空")
 	private Integer bonusId;
-	
+	@ApiModelProperty("店铺Id")
+	private String storeId;
 	
 }
