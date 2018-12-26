@@ -1,27 +1,4 @@
 package com.dl.shop.lottery.web;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
@@ -30,51 +7,9 @@ import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SessionUtil;
-import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
-import com.dl.lottery.dto.BetPayInfoDTO;
-import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
-import com.dl.lottery.dto.DIZQUserBetInfoDTO;
-import com.dl.lottery.dto.DLBetLottoInfoDTO;
-import com.dl.lottery.dto.DLFutureMatchDTO;
-import com.dl.lottery.dto.DLLQBetInfoDTO;
-import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
-import com.dl.lottery.dto.DLZQBetInfoDTO;
-import com.dl.lottery.dto.DlJcLqMatchCellDTO;
-import com.dl.lottery.dto.DlJcLqMatchListDTO;
-import com.dl.lottery.dto.DlJcZqMatchCellDTO;
-import com.dl.lottery.dto.DlJcZqMatchListDTO;
-import com.dl.lottery.dto.LeagueInfoDTO;
-import com.dl.lottery.dto.LeagueMatchAsiaDTO;
-import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
-import com.dl.lottery.dto.LeagueMatchEuropeDTO;
-import com.dl.lottery.dto.LotteryMatchDTO;
-import com.dl.lottery.dto.MatchBasketBallBetCellDTO;
-import com.dl.lottery.dto.MatchBasketBallBetPlayDTO;
-import com.dl.lottery.dto.MatchBetCellDTO;
-import com.dl.lottery.dto.MatchBetPlayDTO;
-import com.dl.lottery.dto.MatchDateDTO;
-import com.dl.lottery.dto.MatchInfoForTeamDTO;
-import com.dl.lottery.dto.MatchTeamInfosDTO;
-import com.dl.lottery.dto.MatchTeamInfosSumDTO;
-import com.dl.lottery.dto.OrderIdDTO;
-import com.dl.lottery.dto.QueryMatchResultDTO;
-import com.dl.lottery.dto.TeamSupportDTO;
+import com.dl.lottery.dto.*;
 import com.dl.lottery.enums.LotteryResultEnum;
-import com.dl.lottery.param.DateStrParam;
-import com.dl.lottery.param.DlJcLqMatchBetParam;
-import com.dl.lottery.param.DlJcLqMatchListParam;
-import com.dl.lottery.param.DlJcZqMatchBetParam;
-import com.dl.lottery.param.DlJcZqMatchListParam;
-import com.dl.lottery.param.DlPlayCodeParam;
-import com.dl.lottery.param.GetBetInfoByOrderSn;
-import com.dl.lottery.param.GetCancelMatchesParam;
-import com.dl.lottery.param.GetFilterConditionsParam;
-import com.dl.lottery.param.IsHideParam;
-import com.dl.lottery.param.MatchTeamInfosParam;
-import com.dl.lottery.param.MatchTimePream;
-import com.dl.lottery.param.QueryMatchParam;
-import com.dl.lottery.param.QueryMatchParamByType;
-import com.dl.lottery.param.StringRemindParam;
+import com.dl.lottery.param.*;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.UserBonusDTO;
@@ -88,24 +23,33 @@ import com.dl.order.param.SubmitOrderParam.TicketDetail;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
-import com.dl.shop.lottery.service.DlFutureMatchService;
-import com.dl.shop.lottery.service.DlLeagueInfoService;
-import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
-import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
-import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
-import com.dl.shop.lottery.service.DlLeagueTeamService;
-import com.dl.shop.lottery.service.DlMatchBasketballService;
-import com.dl.shop.lottery.service.DlMatchPlayBasketballService;
-import com.dl.shop.lottery.service.DlMatchSupportService;
-import com.dl.shop.lottery.service.DlMatchTeamScoreService;
-import com.dl.shop.lottery.service.LotteryMatchPlayService;
-import com.dl.shop.lottery.service.LotteryMatchService;
+import com.dl.shop.lottery.service.*;
 import com.dl.shop.lottery.utils.MD5;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
-
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
 * Created by CodeGenerator on 2018/03/21.
@@ -1535,12 +1479,12 @@ public class LotteryMatchController {
     	return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
 	}
 	
-	
-	@ApiOperation(value = "API调用(获取取消的赛事)", notes = "API调用(获取取消的赛事)")
-	@PostMapping("/getCancelMatches")
-	public  BaseResult<List<String>>  getCancelMatches(@RequestBody DlPlayCodeParam param){
-		List<String> ids = lotteryMatchService.getCancelMatches(param);
-		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", ids);
-	}
+//
+//	@ApiOperation(value = "API调用(获取取消的赛事)", notes = "API调用(获取取消的赛事)")
+//	@PostMapping("/getCancelMatches")
+//	public  BaseResult<List<String>>  getCancelMatches(@RequestBody DlPlayCodeParam param){
+//		List<String> ids = lotteryMatchService.getCancelMatches(param);
+//		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", ids);
+//	}
 	
 }
