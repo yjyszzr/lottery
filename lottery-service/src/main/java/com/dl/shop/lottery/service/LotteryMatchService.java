@@ -74,7 +74,6 @@ import com.dl.lottery.dto.DlJcZqMatchCellDTO;
 import com.dl.lottery.dto.DlJcZqMatchDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.DlJcZqMatchPlayDTO;
-import com.dl.lottery.dto.KeyValueDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.dto.LeagueMatchResultDTO;
 import com.dl.lottery.dto.LotteryMatchDTO;
@@ -94,12 +93,12 @@ import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.enums.MatchStatusEnums;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.DlPlayCodeParam;
 import com.dl.lottery.param.JCQueryParam;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
 import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.api.IUserCollectService;
-import com.dl.member.param.UserDealActionParam;
 import com.dl.order.api.IOrderDetailService;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDetailDataDTO;
@@ -114,7 +113,6 @@ import com.dl.shop.lottery.dao2.DlLeagueMatchResultMapper;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchLiveMapper;
-import com.dl.shop.lottery.dao2.DlResultBasketballMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchPlayMapper;
 import com.dl.shop.lottery.model.BetResultInfo;
@@ -132,7 +130,6 @@ import com.dl.shop.lottery.model.TMatchBetMaxAndMinOddsList;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
 
 import io.jsonwebtoken.lang.Collections;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -3880,5 +3877,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 
 	public List<LotteryMatch> queryLatest3Match(){
 		return lotteryMatchMapper.queryLatest3Match();
+	}
+	
+	public List<String> getCancelMatches(DlPlayCodeParam param) {
+		return lotteryMatchMapper.getCancelMatches(param.getPlayCodes());
 	}
 }

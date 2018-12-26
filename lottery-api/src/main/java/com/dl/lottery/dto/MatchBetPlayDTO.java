@@ -1,7 +1,6 @@
 package com.dl.lottery.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +10,6 @@ import lombok.Data;
 public class MatchBetPlayDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	
 	@ApiModelProperty(value="赛事id")
 	private Integer matchId;
 	@ApiModelProperty(value="场次id")
@@ -32,4 +30,8 @@ public class MatchBetPlayDTO implements Serializable{
 	private String playCode;
 	@ApiModelProperty(value="比赛玩法选项")
 	private List<MatchBetCellDTO> matchBetCells;
+	@ApiModelProperty(value="投注方式")
+	private String betType;
+	@ApiModelProperty(value="投注方式")
+	private String ticketData;
 }

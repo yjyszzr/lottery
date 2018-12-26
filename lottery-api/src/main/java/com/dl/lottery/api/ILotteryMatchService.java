@@ -3,7 +3,6 @@ package com.dl.lottery.api;
 import java.util.List;
 
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,9 +16,9 @@ import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
+import com.dl.lottery.param.DlPlayCodeParam;
 import com.dl.lottery.param.GetBetInfoByOrderSn;
 import com.dl.lottery.param.GetCancelMatchesParam;
-import com.dl.lottery.param.GetFilterConditionsParam;
 import com.dl.lottery.param.IsHideParam;
 import com.dl.lottery.param.MatchTimePream;
 
@@ -64,4 +63,7 @@ public interface ILotteryMatchService {
 
 	@RequestMapping(path="/lottery/match/getMatchByConditions", method=RequestMethod.POST)
 	public BaseResult<List<LeagueInfoDTO>> getMatchByConditions(@RequestBody EmptyParam emptyParam);
+
+	@RequestMapping(path="/lottery/match/getCancelMatches", method=RequestMethod.POST)
+	public BaseResult<List<String>> getCancelMatches(@RequestBody DlPlayCodeParam playCodeParam);
 }
