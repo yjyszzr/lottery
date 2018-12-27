@@ -1,26 +1,12 @@
 package com.dl.shop.lottery.service;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import com.alibaba.fastjson.JSON;
-import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
-import com.dl.shop.lottery.model.*;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.druid.util.StringUtils;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
 import com.dl.lottery.dto.DlHallDTO;
 import com.dl.lottery.dto.DlHallDTO.DlActivityDTO;
 import com.dl.lottery.dto.DlHallDTO.DlLotteryClassifyDTO;
@@ -34,21 +20,27 @@ import com.dl.lottery.param.HallParam;
 import com.dl.lotto.api.ISuperLottoService;
 import com.dl.lotto.dto.LottoDTO;
 import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.dto.SysConfigDTO;
+import com.dl.member.param.BusiIdsListParam;
 import com.dl.member.param.StrParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
-import com.dl.shop.lottery.dao.LotteryActivityMapper;
-import com.dl.shop.lottery.dao.LotteryClassifyMapper;
-import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
-import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
-import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
-
-import lombok.extern.log4j.Log4j;
+import com.dl.shop.lottery.dao.*;
+import com.dl.shop.lottery.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
+
+import javax.annotation.Resource;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(value = "transactionManager1")
@@ -87,6 +79,9 @@ public class LotteryHallService {
 
     @Resource
     private LotteryMatchService lotteryMatchService;
+
+	@Resource
+	private ISysConfigService iSysConfigService;
 
 	/**
 	 * 获取彩票大厅数据
@@ -274,15 +269,38 @@ public class LotteryHallService {
 	 *
 	 */
 	public List<DlDiscoveryHallClassifyDTO> queryDisHallClassByType(){
-		List<Integer> typeList= new ArrayList<>();
-		typeList.add(2);
-		typeList.add(4);
-		typeList.add(7);
-		typeList.add(9);
-		typeList.add(10);
-		typeList.add(11);
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+		String plat = userDeviceInfo.getPlat();
+		Integer androidTurnOn = 0;
+		Integer iosTurnOn = 0;
+		Integer h5TurnOn = 1;
+		List<Integer> typeList= Arrays.asList(2,4,7,9,10,11);//大厅的几个图标的类型
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
 		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,2);
+
+		BusiIdsListParam busiIdsListParam = new BusiIdsListParam();
+		List<Integer> busiIdList = Arrays.asList(50,51,52);//android,ios,h5的大厅店铺按钮开关
+		busiIdsListParam.setBusinessIdList(busiIdList);
+		BaseResult<List<SysConfigDTO>> sysConfigDTOSRst = iSysConfigService.querySysConfigList(busiIdsListParam);
+		List<SysConfigDTO> sysConfigDTOList = new ArrayList<>();
+		if(sysConfigDTOSRst.isSuccess()){
+			sysConfigDTOList = sysConfigDTOSRst.getData();
+		}
+
+		discoveryList.removeIf(s->s.getIsShow().equals("0") && !s.getType().equals("10"));
+		if(sysConfigDTOList.size() > 0){
+			androidTurnOn = sysConfigDTOList.get(0).getValue().intValue();
+			iosTurnOn = sysConfigDTOList.get(1).getValue().intValue();
+			h5TurnOn = sysConfigDTOList.get(2).getValue().intValue();
+		}
+
+		//根据 android,ios,h5的大厅店铺按钮开关 来决定是否显示 店铺按钮
+		if((plat.equals("android") && androidTurnOn != null  && androidTurnOn == 0)||
+		(plat.equals("iphone") && iosTurnOn != null && iosTurnOn == 0)||
+		(plat.equals("h5") && h5TurnOn != null && h5TurnOn == 0)){
+			discoveryList.removeIf(s->s.getType().equals("10"));
+		}
+
 		if(discoveryList.size() > 0){
 			dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
 			)).collect(Collectors.toList());
