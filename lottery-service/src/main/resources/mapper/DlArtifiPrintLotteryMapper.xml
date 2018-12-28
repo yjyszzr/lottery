@@ -14,6 +14,7 @@
     <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
     <result column="operation_time" jdbcType="INTEGER" property="operationTime" />
     <result column="statistics_print"  jdbcType="INTEGER" property="statisticsPrint"/>
+    <result column="store_id"  jdbcType="INTEGER" property="storeId"/>
   </resultMap>
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
