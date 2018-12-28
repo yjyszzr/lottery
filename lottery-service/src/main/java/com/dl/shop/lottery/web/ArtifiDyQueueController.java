@@ -111,6 +111,7 @@ public class ArtifiDyQueueController {
 		if(dlArtifiPrintLottery != null) {
 			storeId = dlArtifiPrintLottery.getStoreId();
 		}
+		logger.info("[queryDetail]" + " storeId:" + storeId + " printLottery:" + dlArtifiPrintLottery);
 		ManualOrderDTO orderEntity = null;
 		//刷新登录态 
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
