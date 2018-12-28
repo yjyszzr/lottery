@@ -69,4 +69,10 @@ public class DlOpLog {
 	 */
 	@Column(name = "fail_msg")
 	private String failMsg;
+	
+	/**
+	 * 店铺ID
+	 */
+	@Column(name = "store_id")
+	private Integer storeId;
 }

@@ -201,11 +201,6 @@ public class ArtifiDyQueueService{
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 		int cnt = dyArtifiDao.updateOrderStatus(mobile,orderSn,orderStatus);
 		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
-		//图片回写到表中
-		OrderPicParam orderPicParams = new OrderPicParam();
-		orderPicParams.setOrderSn(orderSn);
-		orderPicParams.setOrderPic(picUrl);
-		iOrderService.saveOrderPicByOrderSn(orderPicParams);
 		//状态回写到总订单池
 		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
 		dlArtifiPrintLottery.setOrderSn(orderSn);
@@ -224,6 +219,14 @@ public class ArtifiDyQueueService{
 			}
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery); 
 		}
+		Integer storeId = printLottery.getStoreId();
+		//图片回写到表中
+		OrderPicParam orderPicParams = new OrderPicParam();
+		orderPicParams.setOrderSn(orderSn);
+		orderPicParams.setOrderPic(picUrl);
+		orderPicParams.setStoreId(storeId);
+		iOrderService.saveOrderPicByOrderSn(orderPicParams);
+				
 		//获取订单金额
 		OrderSnParam orderSnParams = new OrderSnParam();
 		orderSnParams.setOrderSn(orderSn);
@@ -248,6 +251,7 @@ public class ArtifiDyQueueService{
 		log.setFailMsg(failMsg);
 		log.setMoneyPaid(moneyPaid);
 		log.setLotteryClassifyId(1);
+		log.setStoreId(storeId);
 		dlOpMapper.insert(log);
 		return ResultGenerator.genSuccessResult("succ");
 	}
