@@ -230,6 +230,7 @@ public class ArtifiDyQueueService{
 		//获取订单金额
 		OrderSnParam orderSnParams = new OrderSnParam();
 		orderSnParams.setOrderSn(orderSn);
+		orderSnParams.setStoreId(storeId);
 		BaseResult<OrderDTO> baseR = iOrderService.getOrderInfoByOrderSn(orderSnParams);
 		BigDecimal moneyPaid = null;
 		if(baseR.isSuccess() && baseR.getData() != null) {
