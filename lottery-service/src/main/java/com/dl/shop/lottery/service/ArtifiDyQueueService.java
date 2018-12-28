@@ -291,6 +291,17 @@ public class ArtifiDyQueueService{
 		return ResultGenerator.genSuccessResult();
 	}
 
+	public DlArtifiPrintLottery selectArtifiPrintLotteryByOrderSn(String orderSn) {
+		DlArtifiPrintLottery rPrintLottery = null;
+		DlArtifiPrintLottery printLottery = new DlArtifiPrintLottery();
+		printLottery.setOrderSn(orderSn);
+		List<DlArtifiPrintLottery> rList = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(printLottery);
+		if(rList != null && rList.size() > 0) {
+			rPrintLottery = rList.get(0);
+		}
+		return rPrintLottery;
+	}
+	
 	/***
 	 * 分单逻辑v2
 	 * @param mobile

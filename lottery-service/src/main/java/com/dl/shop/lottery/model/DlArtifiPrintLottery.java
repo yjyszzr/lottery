@@ -65,7 +65,17 @@ public class DlArtifiPrintLottery {
     @Column(name = "statistics_print")
     private Integer statisticsPrint;
 
+    @Column(name = "store_id")
+    private Integer storeId;
     
+	public Integer getStoreId() {
+		return storeId;
+	}
+	
+	public void setStoreId(Integer storeId) {
+		this.storeId = storeId;
+	}
+
 	public Integer getStatisticsPrint() {
 		return statisticsPrint;
 	}

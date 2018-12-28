@@ -38,6 +38,7 @@ import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
 import com.dl.shop.lottery.entity.DlManalOrderDetailDTO;
+import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
@@ -105,6 +106,11 @@ public class ArtifiDyQueueController {
 		if (xnWhiteListList.size() == 0) {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
+		DlArtifiPrintLottery dlArtifiPrintLottery = artifiDyQueueService.selectArtifiPrintLotteryByOrderSn(orderSn);
+		Integer storeId = null;
+		if(dlArtifiPrintLottery != null) {
+			storeId = dlArtifiPrintLottery.getStoreId();
+		}
 		ManualOrderDTO orderEntity = null;
 		//刷新登录态 
 		artifiPrintLotteryUserLoginService.updateUserStatus(mobile);
@@ -112,6 +118,7 @@ public class ArtifiDyQueueController {
 		mList.add(orderSn);
 		OrderSnListParam params = new OrderSnListParam();
 		params.setOrderSnlist(mList);
+		params.setStoreId(storeId);
 		BaseResult<List<ManualOrderDTO>> bResult = iOrderService.getManualOrderList(params);
 		if(bResult != null && bResult.isSuccess()) {
 			List<ManualOrderDTO> rList = bResult.getData();
