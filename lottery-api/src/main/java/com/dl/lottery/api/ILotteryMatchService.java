@@ -14,6 +14,7 @@ import com.dl.lottery.dto.DLLQBetInfoDTO;
 import com.dl.lottery.dto.DLZQBetInfoDTO;
 import com.dl.lottery.dto.DlJcZqMatchListDTO;
 import com.dl.lottery.dto.LeagueInfoDTO;
+import com.dl.lottery.dto.OrderIdDTO;
 import com.dl.lottery.param.DlJcZqMatchBetParam;
 import com.dl.lottery.param.DlJcZqMatchListParam;
 import com.dl.lottery.param.DlPlayCodeParam;
@@ -66,4 +67,7 @@ public interface ILotteryMatchService {
 
 	@RequestMapping(path="/lottery/match/getCancelMatches", method=RequestMethod.POST)
 	public BaseResult<List<String>> getCancelMatches(@RequestBody DlPlayCodeParam playCodeParam);
+	
+	@RequestMapping(path="/lottery/match/createOrderBySimulate", method=RequestMethod.POST)
+	public BaseResult<OrderIdDTO>  createOrderForStoreProject(@RequestBody DlJcZqMatchBetParam jcZqMatchBetParam);
 }
