@@ -26,6 +26,9 @@ import com.dl.shop.lottery.dao.DlArtifiPrintLotteryMapper;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
+import com.dl.store.api.IStoreUserMoneyService;
+import com.dl.store.param.OrderRollBackParam;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -44,6 +47,8 @@ public class ArtifiDyQueueService{
 	private DlOpLogMapper dlOpMapper;
 	@Resource
 	private IOrderService iOrderService;
+	@Resource
+	private IStoreUserMoneyService iStoreMoneyService;
 	
 	private final int QUEUE_SIZE = 30;
 	
@@ -254,6 +259,25 @@ public class ArtifiDyQueueService{
 		log.setLotteryClassifyId(1);
 		log.setStoreId(storeId);
 		dlOpMapper.insert(log);
+		
+		if(orderStatus == 2) {	//出票失败
+			OrderDTO orderDTO = null;
+			OrderSnParam p = new OrderSnParam();
+			p.setOrderSn(orderSn);
+			p.setStoreId(storeId);
+			BaseResult<OrderDTO> bResultOrder = iOrderService.getOrderInfoByOrderSn(p);
+			if(bResultOrder.isSuccess()) {
+				orderDTO = bResultOrder.getData();
+			}
+			if(orderDTO != null && orderDTO.getSurplus() != null && orderDTO.getSurplus().doubleValue() > 0) {
+				//订单回滚
+				logger.info("[modifyOrderStatusV2]" + " 余额支付订单回滚开始");
+				OrderRollBackParam rollBackParams = new OrderRollBackParam();
+				rollBackParams.setOrderSn(orderSn);
+				BaseResult<Object> bR = iStoreMoneyService.orderRollBack(rollBackParams);
+				logger.info("[modifyOrderStatusV2]" + " result:" + bR.getData());
+			}
+		}
 		return ResultGenerator.genSuccessResult("succ");
 	}
 	
