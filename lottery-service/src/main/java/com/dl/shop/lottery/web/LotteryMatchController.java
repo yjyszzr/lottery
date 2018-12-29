@@ -1193,6 +1193,7 @@ public class LotteryMatchController {
 
 		Integer userId = dto.getUserId();
 		Integer currentId = SessionUtil.getUserId();
+		logger.info("[createOrderBySimulate]" + " userId:" + userId + " curUserId:" + currentId);
 		if (!userId.equals(currentId)) {
 			logger.info("支付信息不是当前用户的待支付彩票！");
 			return ResultGenerator.genFailResult("模拟支付信息异常，支付失败！");
