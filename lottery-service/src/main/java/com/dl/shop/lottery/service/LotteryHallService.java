@@ -298,7 +298,7 @@ public class LotteryHallService {
 		if((plat.equals("android") && androidTurnOn != null  && androidTurnOn == 0)||
 		(plat.equals("iphone") && iosTurnOn != null && iosTurnOn == 0)||
 		(plat.equals("h5") && h5TurnOn != null && h5TurnOn == 0)){
-			discoveryList.removeIf(s->s.getType().equals("10"));
+			discoveryList.removeIf(s->s.getType() == 10);
 		}
 
 		if(discoveryList.size() > 0){
