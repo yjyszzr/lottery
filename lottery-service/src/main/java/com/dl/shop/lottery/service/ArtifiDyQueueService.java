@@ -225,11 +225,15 @@ public class ArtifiDyQueueService{
 			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery); 
 		}
 		Integer storeId = printLottery.getStoreId();
-		//图片回写到表中
+		//图片回写到表中,成功失败状态回写
 		OrderPicParam orderPicParams = new OrderPicParam();
 		orderPicParams.setOrderSn(orderSn);
 		orderPicParams.setOrderPic(picUrl);
 		orderPicParams.setStoreId(storeId);
+		//出票失败，订单状态修改为失败
+		if(orderStatus == 2) {
+			orderPicParams.setOrderStatus(10);
+		}
 		iOrderService.saveOrderPicByOrderSn(orderPicParams);
 				
 		//获取订单金额
