@@ -230,10 +230,6 @@ public class ArtifiDyQueueService{
 		orderPicParams.setOrderSn(orderSn);
 		orderPicParams.setOrderPic(picUrl);
 		orderPicParams.setStoreId(storeId);
-		//出票失败，订单状态修改为失败
-		if(orderStatus == 2) {
-			orderPicParams.setOrderStatus(10);
-		}
 		iOrderService.saveOrderPicByOrderSn(orderPicParams);
 				
 		//获取订单金额
