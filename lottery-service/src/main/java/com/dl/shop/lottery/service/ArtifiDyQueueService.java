@@ -260,24 +260,25 @@ public class ArtifiDyQueueService{
 		log.setStoreId(storeId);
 		dlOpMapper.insert(log);
 		
-		if(orderStatus == 2) {	//出票失败
-			OrderDTO orderDTO = null;
-			OrderSnParam p = new OrderSnParam();
-			p.setOrderSn(orderSn);
-			p.setStoreId(storeId);
-			BaseResult<OrderDTO> bResultOrder = iOrderService.getOrderInfoByOrderSn(p);
-			if(bResultOrder.isSuccess()) {
-				orderDTO = bResultOrder.getData();
-			}
-			if(orderDTO != null && orderDTO.getSurplus() != null && orderDTO.getSurplus().doubleValue() > 0) {
-				//订单回滚
-				logger.info("[modifyOrderStatusV2]" + " 余额支付订单回滚开始");
-				OrderRollBackParam rollBackParams = new OrderRollBackParam();
-				rollBackParams.setOrderSn(orderSn);
-				BaseResult<Object> bR = iStoreMoneyService.orderRollBack(rollBackParams);
-				logger.info("[modifyOrderStatusV2]" + " result:" + bR.getData());
-			}
-		}
+		//出票失败，订单回滚需要客服手动进行回滚
+//		if(orderStatus == 2) {	//出票失败
+//			OrderDTO orderDTO = null;
+//			OrderSnParam p = new OrderSnParam();
+//			p.setOrderSn(orderSn);
+//			p.setStoreId(storeId);
+//			BaseResult<OrderDTO> bResultOrder = iOrderService.getOrderInfoByOrderSn(p);
+//			if(bResultOrder.isSuccess()) {
+//				orderDTO = bResultOrder.getData();
+//			}
+//			if(orderDTO != null && orderDTO.getSurplus() != null && orderDTO.getSurplus().doubleValue() > 0) {
+//				//订单回滚
+//				logger.info("[modifyOrderStatusV2]" + " 余额支付订单回滚开始");
+//				OrderRollBackParam rollBackParams = new OrderRollBackParam();
+//				rollBackParams.setOrderSn(orderSn);
+//				BaseResult<Object> bR = iStoreMoneyService.orderRollBack(rollBackParams);
+//				logger.info("[modifyOrderStatusV2]" + " result:" + bR.getData());
+//			}
+//		}
 		return ResultGenerator.genSuccessResult("succ");
 	}
 	
