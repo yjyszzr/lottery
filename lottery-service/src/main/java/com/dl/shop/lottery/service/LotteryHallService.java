@@ -254,12 +254,12 @@ public class LotteryHallService {
 
 	private DlPlayClassifyDetailDTO buildStoreDTO() {
 		// TODO Auto-generated method stub
-		String url = "http://62.234.222.65?storeId=1&cxmxc=scm&type=1";
+		String url = "http://62.234.222.65?storeId=1&type=1";
 		DlPlayClassifyDetailDTO dto = new DlPlayClassifyDetailDTO();
 		dto.setLotteryId(999+"");
 		dto.setRedirectUrl(url);
 		dto.setPlayClassifyImg("https://static.caixiaomi.net/uploadImgs/20180913/money_@2.gif");
-		dto.setSubTitle("西安彩票店");
+		dto.setPlayClassifyLabelName("西安彩票店");
 		return dto;
 	}
 	
