@@ -224,7 +224,13 @@ public class LotteryHallService {
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 		}
-
+		if(channel != null) {
+			//天天体育ios和andr所有渠道
+			if("c26011".equals(channel) || channel.startsWith("c220")) {
+				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO();
+				dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
+			}
+		}
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
@@ -246,6 +252,17 @@ public class LotteryHallService {
 		return dlHallDTO;
 	}
 
+	private DlPlayClassifyDetailDTO buildStoreDTO() {
+		// TODO Auto-generated method stub
+		String url = "http://62.234.222.65?storeId=1&cxmxc=scm&type=1";
+		DlPlayClassifyDetailDTO dto = new DlPlayClassifyDetailDTO();
+		dto.setLotteryId(999+"");
+		dto.setRedirectUrl(url);
+		dto.setPlayClassifyImg("https://static.caixiaomi.net/uploadImgs/20180913/money_@2.gif");
+		dto.setSubTitle("西安彩票店");
+		return dto;
+	}
+	
 	/**
 	 * 获取彩票玩法列表
 	 * 
