@@ -227,7 +227,9 @@ public class LotteryHallService {
 		if(channel != null) {
 			//天天体育ios和andr所有渠道
 			if("c26011".equals(channel) || channel.startsWith("c220")) {
-				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO();
+				String token = SessionUtil.getToken();
+				int time = DateUtil.getCurrentTimeLong();
+				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO(token,time);
 				dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 			}
 		}
@@ -252,9 +254,22 @@ public class LotteryHallService {
 		return dlHallDTO;
 	}
 
-	private DlPlayClassifyDetailDTO buildStoreDTO() {
+	private String buildJumpUrl(String url,int storeId,String token,int time) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(url+"?");
+		builder.append("storeId=" + storeId + "&");
+		if(!StringUtils.isEmpty(token)) {
+			builder.append("token=" + token + "&");
+		}
+		builder.append("_t=" + time);
+		return builder.toString();
+	}
+	
+	private DlPlayClassifyDetailDTO buildStoreDTO(String token,int time) {
 		// TODO Auto-generated method stub
-		String url = "http://62.234.222.65?storeId=1&type=1";
+		String url = null;
+//		String url = "http://62.234.222.65?storeId=1&type=1";
+		url = buildJumpUrl("http://62.234.222.65",1, token, time);
 		DlPlayClassifyDetailDTO dto = new DlPlayClassifyDetailDTO();
 		dto.setLotteryId(999+"");
 		dto.setRedirectUrl(url);
