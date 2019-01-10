@@ -26,6 +26,7 @@ import com.dl.member.dto.SwitchConfigDTO;
 import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.param.BusiIdsListParam;
 import com.dl.member.param.StrParam;
+import com.dl.member.param.SysConfigParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.*;
@@ -227,9 +228,16 @@ public class LotteryHallService {
 		if(channel != null) {
 			//天天体育ios和andr所有渠道
 			if("c26011".equals(channel) || channel.startsWith("c220")) {
+				SysConfigParam sysCfgParams = new SysConfigParam();
+				sysCfgParams.setBusinessId(49);
+				BaseResult<SysConfigDTO> bR = iSysConfigService.querySysConfig(sysCfgParams);
+				String url = null;
+				if(bR != null && bR.isSuccess()) {
+					url = bR.getData().getValueTxt();
+				}
 				String token = SessionUtil.getToken();
 				int time = DateUtil.getCurrentTimeLong();
-				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO(token,time);
+				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO(url,token,time);
 				dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 			}
 		}
@@ -265,14 +273,13 @@ public class LotteryHallService {
 		return builder.toString();
 	}
 	
-	private DlPlayClassifyDetailDTO buildStoreDTO(String token,int time) {
+	private DlPlayClassifyDetailDTO buildStoreDTO(String url,String token,int time) {
 		// TODO Auto-generated method stub
-		String url = null;
 //		String url = "http://62.234.222.65?storeId=1&type=1";
-		url = buildJumpUrl("http://62.234.222.65",1, token, time);
+		String rUrl = buildJumpUrl(url,1, token, time);
 		DlPlayClassifyDetailDTO dto = new DlPlayClassifyDetailDTO();
 		dto.setLotteryId(999+"");
-		dto.setRedirectUrl(url);
+		dto.setRedirectUrl(rUrl);
 		dto.setPlayClassifyImg("https://static.caixiaomi.net/uploadImgs/20180913/money_@2.gif");
 		dto.setPlayClassifyLabelName("西安彩票店");
 		dto.setPlayClassifyName("西安彩票店");
