@@ -260,6 +260,8 @@ public class LotteryHallService {
 		dto.setRedirectUrl(url);
 		dto.setPlayClassifyImg("https://static.caixiaomi.net/uploadImgs/20180913/money_@2.gif");
 		dto.setPlayClassifyLabelName("西安彩票店");
+		dto.setPlayClassifyName("西安彩票店");
+		dto.setSubTitle("西安彩票店");
 		return dto;
 	}
 	
