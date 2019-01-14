@@ -11,4 +11,5 @@ public class DDyArtifiPrintEntity implements Serializable{
 	public long id;
 	public String orderSn;
 	public int status;//0初始状态 1成功出票 2出票失败
+	public int lotteryClassifyId;	//1足彩   2大乐透
 }

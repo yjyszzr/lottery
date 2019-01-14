@@ -360,10 +360,12 @@ public class ArtifiDyQueueService{
 			dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			if(allocList != null && allocList.size() > 0) {
 				for(DlArtifiPrintLottery entity : allocList) {
+					int lotteryClassifyId = entity.getLotteryClassifyId();
 					String orderSn = entity.getOrderSn();
 					DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
 					dEntity.orderSn = orderSn;
 					dEntity.status = 0;
+					dEntity.setLotteryClassifyId(lotteryClassifyId);
 					dyArtifiDao.addDyArtifiPrintInfo(mobile,dEntity);
 				}
 			}

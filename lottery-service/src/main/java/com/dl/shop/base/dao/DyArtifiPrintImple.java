@@ -44,6 +44,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		String sql = "CREATE TABLE if not exists "+tableName+ "(_id bigint NOT NULL AUTO_INCREMENT," + 
 				" order_sn VARCHAR(50),"+
 				" status INTEGER," +
+				" lottery_classify_id INTEGER," +
 				" PRIMARY KEY(_id));";
 		try {
 			 exeUpdate(sql, null);
@@ -83,9 +84,11 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 			long id = rs.getLong("_id");
 			String ticketId = rs.getString("order_sn");
 			int status = rs.getInt("status");
+			int lotteryClassifyId = rs.getInt("lottery_classify_id");
 			entity.id = id;
 			entity.orderSn = ticketId;
 			entity.status = status;
+			entity.lotteryClassifyId = lotteryClassifyId;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -104,8 +107,8 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 	public int addDyArtifiPrintInfo(String userId, DDyArtifiPrintEntity entity) {
 		// TODO Auto-generated method stub
 		String tableName = getTNameByLgCode(userId,TABLE_NAME);
-		String sql = "insert into " + tableName + " values(0,?,?)";
-		String[] params = {entity.orderSn,0+""};
+		String sql = "insert into " + tableName + " values(0,?,?,?)";
+		String[] params = {entity.orderSn,0+"",entity.lotteryClassifyId+""};
 		return this.exeUpdate(sql, params);
 	}
 
