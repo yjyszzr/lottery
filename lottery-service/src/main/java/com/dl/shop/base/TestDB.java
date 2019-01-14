@@ -1,6 +1,5 @@
 package com.dl.shop.base;
 
-import com.dl.base.util.EmojiFilter;
 
 public class TestDB {
 
@@ -43,13 +42,13 @@ public class TestDB {
 		//{"accKeyId":"LTAIQ2LG8kd1IU1k","accKeySecret":"Fu8InPLKtEgKSXJ6tJztj5BKnaj6DN","bucketName":"szcq-pic","url":"http://oss-cn-beijing.aliyuncs.com"}
 		//
 
-		String source = "abcdef";
-		String dest = EmojiFilter.filterEmoji(source);
-		System.out.println(dest);
+//		String source = "abcdef";
+//		String dest = EmojiFilter.filterEmoji(source);
+//		System.out.println(dest);
 	}
 	
 	
-	public static void main(String[] args) {
-		new TestDB();
-	}
+//	public static void main(String[] args) {
+//		new TestDB();
+//	}
 }
