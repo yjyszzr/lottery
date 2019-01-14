@@ -30,6 +30,7 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.MediaTokenParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.ManualLottoOrderDetailDTO;
 import com.dl.order.dto.ManualOrderDTO;
 import com.dl.order.param.OrderSnListParam;
 import com.dl.shop.base.dao.DyArtifiPrintDao;
@@ -37,6 +38,7 @@ import com.dl.shop.base.dao.DyArtifiPrintImple;
 import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
 import com.dl.shop.base.manager.ArtifiLoginManager;
 import com.dl.shop.lottery.configurer.DataBaseCfg;
+import com.dl.shop.lottery.entity.DlManalLottoOrderDetailDTO;
 import com.dl.shop.lottery.entity.DlManalOrderDetailDTO;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlXNWhiteList;
@@ -78,6 +80,66 @@ public class ArtifiDyQueueController {
 	}
 	
 
+	@ApiOperation(value = "订单详情", notes = "订单详情")
+	@PostMapping("/lottoDetail")
+	public BaseResult<DlManalLottoOrderDetailDTO> queryLottoDetail(@RequestBody ArtifiLotteryDetailParam pp){
+		int userId = SessionUtil.getUserId();
+		UserIdRealParam userIdParams = new UserIdRealParam();
+		userIdParams.setUserId(userId);
+		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
+		if(!bR.isSuccess() || bR.getData() == null) {
+			return ResultGenerator.genFailResult("查询用户信息失败");
+		}
+		String orderSn = pp.getOrderSn();
+//		String mobile = pp.getMobile();
+		UserDTO userDTO = bR.getData();
+		String mobile = userDTO.getMobile();
+		logger.info("[queryLottoDetail]" + " mobile:" + mobile);
+		if(orderSn == null || orderSn.length() <= 0) {
+			return ResultGenerator.genFailResult("请输入订单号参数");
+		}
+		if(mobile == null || mobile.length() <= 0) {
+			return ResultGenerator.genFailResult("请输入手机号");
+		}
+		//判断是否在白名单内
+		Condition c = new Condition(DlXNWhiteList.class);
+		c.createCriteria().andEqualTo("mobile",mobile);
+		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		if (xnWhiteListList.size() == 0) {
+			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
+		}
+		DlArtifiPrintLottery dlArtifiPrintLottery = artifiDyQueueService.selectArtifiPrintLotteryByOrderSn(orderSn);
+		Integer storeId = null;
+		if(dlArtifiPrintLottery != null) {
+			storeId = dlArtifiPrintLottery.getStoreId();
+		}
+		logger.info("[queryLottoDetail]" + " storeId:" + storeId + " printLottery:" + dlArtifiPrintLottery);
+		ManualLottoOrderDetailDTO mLottoOrderDetailDTO = null;
+		List<String> orderSnList = new ArrayList<String>();
+		orderSnList.add(orderSn);
+		OrderSnListParam p = new OrderSnListParam();
+		p.setOrderSnlist(orderSnList);
+		p.setStoreId(storeId);
+		BaseResult<ManualLottoOrderDetailDTO> baseResult = iOrderService.getManualLottoOrderList(p);
+		if(!baseResult.isSuccess()) {
+			return ResultGenerator.genResult(baseResult.getCode(),baseResult.getMsg());
+		}
+		mLottoOrderDetailDTO = baseResult.getData();
+		//获取多媒体token
+		MediaTokenParam mediaTokenParams = new MediaTokenParam();
+		mediaTokenParams.setType(0);
+		BaseResult<MediaTokenDTO> baseR = iUserService.getMediaTokenInfo(mediaTokenParams);
+		if(baseR == null || !baseR.isSuccess() || baseR.getData() == null) {
+			return ResultGenerator.genResult(MemberEnums.MEDIA_TOKEN_FAIL.getcode(),MemberEnums.MEDIA_TOKEN_FAIL.getMsg());
+		}
+		MediaTokenDTO mediaEntity = baseR.getData();
+		logger.info("[queryLottoDetail]" + " fileName:" + mediaEntity.fileName);
+		DlManalLottoOrderDetailDTO detailDTO = new DlManalLottoOrderDetailDTO();
+		detailDTO.setMediaToken(mediaEntity);
+		detailDTO.setDetail(mLottoOrderDetailDTO);
+		return ResultGenerator.genSuccessResult("succ",detailDTO);
+	}
+	
 	@ApiOperation(value = "订单详情", notes = "订单详情")
 	@PostMapping("/detail")
 	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
@@ -147,7 +209,7 @@ public class ArtifiDyQueueController {
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/queryV2")
-	public BaseResult<?> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
+	public BaseResult<List<DDyArtifiPrintEntity>> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
 		Integer userId = SessionUtil.getUserId();
 		if(userId == null) {
 			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg());
