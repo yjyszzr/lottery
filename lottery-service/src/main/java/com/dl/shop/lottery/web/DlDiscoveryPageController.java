@@ -167,4 +167,17 @@ public class DlDiscoveryPageController {
 		return ResultGenerator.genSuccessResult(null, dto);
 	}
 
+	
+	@ApiOperation(value = "数字彩类详情列表", notes = "数字彩类详情列表")
+	@PostMapping("/szcDetailListByStore")
+	public BaseResult<SZCPrizeDTO> szcDetailListByStore(@Valid @RequestBody DiscoveryPageParam param) {
+		Integer page = param.getPage();
+		page = null == page ? 1 : page;
+		Integer size = param.getSize();
+		size = null == size ? 20 : size;
+		PageHelper.startPage(page, size);
+		SZCPrizeDTO dto = dlDiscoveryPageService.szcDetailList(param);
+		return ResultGenerator.genSuccessResult(null, dto);
+	}
+	
 }
