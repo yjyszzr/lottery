@@ -13,6 +13,6 @@ import com.dl.lottery.param.DiscoveryPageParam;
 @FeignClient(value="lottery-service")
 public interface ILotteryDiscoveryService {
 	
-	@RequestMapping(path="/dl/discoveryPage/szcDetailList", method=RequestMethod.POST)
+	@RequestMapping(path="/lottery/discoveryPage/szcDetailList", method=RequestMethod.POST)
     public BaseResult<SZCPrizeDTO> szcDetailList(@Valid @RequestBody DiscoveryPageParam param);
 }
