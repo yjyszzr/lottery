@@ -1,15 +1,5 @@
 package com.dl.shop.lottery.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
@@ -27,9 +17,18 @@ import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
 import com.dl.store.api.IStoreUserMoneyService;
-import com.dl.store.param.OrderRollBackParam;
-
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(value = "transactionManager2")
@@ -256,7 +255,7 @@ public class ArtifiDyQueueService{
 		log.setPic(picUrl);
 		log.setFailMsg(failMsg);
 		log.setMoneyPaid(moneyPaid);
-		log.setLotteryClassifyId(1);
+		log.setLotteryClassifyId(baseR.getData().getLotteryClassifyId());
 		log.setStoreId(storeId);
 		dlOpMapper.insert(log);
 		
