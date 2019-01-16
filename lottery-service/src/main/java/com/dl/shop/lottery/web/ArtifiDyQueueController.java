@@ -126,14 +126,6 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genResult(baseResult.getCode(),baseResult.getMsg());
 		}
 		mLottoOrderDetailDTO = baseResult.getData();
-		//betnum 
-		if(mLottoOrderDetailDTO.getOrderDetailDto() != null && mLottoOrderDetailDTO.getOrderDetailDto().getCathecticResults() != null) {
-			LottoCathecticResult lottoCR = mLottoOrderDetailDTO.getOrderDetailDto().getCathecticResults().get(0);
-			if(lottoCR != null) {
-				mLottoOrderDetailDTO.setBetNum(lottoCR.getBetNum());
-				mLottoOrderDetailDTO.setIsAppend(lottoCR.getIsAppend());
-			}
-		}
 		//获取多媒体token
 		MediaTokenParam mediaTokenParams = new MediaTokenParam();
 		mediaTokenParams.setType(0);
