@@ -30,6 +30,7 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.MediaTokenParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.LottoCathecticResult;
 import com.dl.order.dto.ManualLottoOrderDetailDTO;
 import com.dl.order.dto.ManualOrderDTO;
 import com.dl.order.param.OrderSnListParam;
@@ -125,6 +126,14 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genResult(baseResult.getCode(),baseResult.getMsg());
 		}
 		mLottoOrderDetailDTO = baseResult.getData();
+		//betnum 
+		if(mLottoOrderDetailDTO.getOrderDetailDto() != null && mLottoOrderDetailDTO.getOrderDetailDto().getCathecticResults() != null) {
+			LottoCathecticResult lottoCR = mLottoOrderDetailDTO.getOrderDetailDto().getCathecticResults().get(0);
+			if(lottoCR != null) {
+				mLottoOrderDetailDTO.setBetNum(lottoCR.getBetNum());
+				mLottoOrderDetailDTO.setIsAppend(lottoCR.getIsAppend());
+			}
+		}
 		//获取多媒体token
 		MediaTokenParam mediaTokenParams = new MediaTokenParam();
 		mediaTokenParams.setType(0);
@@ -248,7 +257,21 @@ public class ArtifiDyQueueController {
         if(CollectionUtils.isEmpty(rList)){
             return ResultGenerator.genResult(LotteryResultEnum.DB_NO_DATA.getCode(),"暂无订单，请稍后尝试");
         }
+        filterList(rList);
 		return ResultGenerator.genSuccessResult("succ",rList);
+	}
+	
+	private void filterList(List<DDyArtifiPrintEntity> rList) {
+		if(rList != null) {
+			for(DDyArtifiPrintEntity entity : rList){
+				int classifyId = entity.lotteryClassifyId;
+				if(classifyId == 1) {
+					entity.logo = "https://szcq-icon.oss-cn-beijing.aliyuncs.com/jingzu.png";
+				}else if(classifyId == 2) {
+					entity.logo = "https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png";
+				}
+			}
+		}
 	}
 	
 	@ApiOperation(value = "查询列表", notes = "查询列表")
