@@ -15,5 +15,6 @@ public class DlOpLogDTO {
 	@ApiModelProperty(value = "1已出票，2出票失败")
 	private String optType;
 		
-	
+	@ApiModelProperty(value = "logo")
+	private String logo;
 }
