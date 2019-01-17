@@ -69,9 +69,9 @@ public class DlLogOpService {
 			for(DlOpLogDTO logDTO : opDTOList) {
 				String classifyId = logDTO.getLotteryClassifyId();
 				if("1".equals(classifyId)) {
-					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png");
-				}else if("2".equals(classifyId)) {
 					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/jingzu.png");
+				}else if("2".equals(classifyId)) {
+					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png");
 				}
 			}
 		}
