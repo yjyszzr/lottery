@@ -20,7 +20,7 @@
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
   	select * from dl_artifi_print_lottery 
-  	where operation_status = 0
+  	where operation_status = 0 ORDER BY lottery_classify_id DESC
   </select>
   
   

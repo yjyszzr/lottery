@@ -342,7 +342,7 @@ public class ArtifiDyQueueService{
 		logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
 		if(rList.size() <= 0) {
 			List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,10);
+			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,QUEUE_SIZE);
 			logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
 			//先批量进行更改订单状态
 			if(allocList != null && allocList.size() > 0) {
