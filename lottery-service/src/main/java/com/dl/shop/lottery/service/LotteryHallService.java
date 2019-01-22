@@ -281,9 +281,9 @@ public class LotteryHallService {
 		dto.setLotteryId(999+"");
 		dto.setRedirectUrl(rUrl);
 		dto.setPlayClassifyImg("https://static.caixiaomi.net/uploadImgs/20180913/money_@2.gif");
-		dto.setPlayClassifyLabelName("西安彩票店");
-		dto.setPlayClassifyName("西安彩票店");
-		dto.setSubTitle("西安彩票店");
+		dto.setPlayClassifyLabelName("线下店铺");
+		dto.setPlayClassifyName("线下店铺");
+		dto.setSubTitle("线下店铺");
 		return dto;
 	}
 	
