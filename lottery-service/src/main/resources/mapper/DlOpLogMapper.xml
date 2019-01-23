@@ -13,6 +13,7 @@
     <result column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
     <result column="pic" jdbcType="INTEGER" property="pic" />
     <result column="fail_msg" jdbcType="INTEGER" property="failMsg" />
+    <result column="store_id" jdbcType="INTEGER" property="storeId" />
   </resultMap>
   
   <select id="queryLogByTime"  resultMap="BaseResultMap">

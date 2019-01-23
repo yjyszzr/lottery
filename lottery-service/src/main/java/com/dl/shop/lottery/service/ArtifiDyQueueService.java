@@ -237,8 +237,10 @@ public class ArtifiDyQueueService{
 		orderSnParams.setStoreId(storeId);
 		BaseResult<OrderDTO> baseR = iOrderService.getOrderInfoByOrderSn(orderSnParams);
 		BigDecimal moneyPaid = null;
+		Integer lotteryClassifyId = 0;
 		if(baseR.isSuccess() && baseR.getData() != null) {
 			moneyPaid = baseR.getData().getMoneyPaid();
+			lotteryClassifyId = baseR.getData().getLotteryClassifyId();
 		}
 		//检查是否全部都操作完
 		boolean isAll = dyArtifiDao.isOperationAll(mobile);
@@ -255,7 +257,7 @@ public class ArtifiDyQueueService{
 		log.setPic(picUrl);
 		log.setFailMsg(failMsg);
 		log.setMoneyPaid(moneyPaid);
-		log.setLotteryClassifyId(baseR.getData().getLotteryClassifyId());
+		log.setLotteryClassifyId(lotteryClassifyId);
 		log.setStoreId(storeId);
 		dlOpMapper.insert(log);
 		
