@@ -290,37 +290,37 @@ public class ArtifiDyQueueService{
 	 * @param status
 	 * @return
 	 */
-	public BaseResult<?> modifyOrderStatus(int userId,String mobile,String orderSn,int orderStatus){
-		//删除队列数据
-		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
-		int cnt = dyArtifiDao.delData(mobile,orderSn);
-		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
-		//回收到主池，更改主池队列状态
-		//查询到该订单信息
-		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
-		dlArtifiPrintLottery.setOrderSn(orderSn);
-		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
-		DlArtifiPrintLottery printLottery = null;
-		if(list != null && list.size() > 0) {
-			printLottery = list.get(0);
-			printLottery.setOrderSn(orderSn);
-			printLottery.setOrderStatus((byte)orderStatus);
-			printLottery.setAdminName(mobile);
-			printLottery.setAdminId(userId);
-			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
-			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
-			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
-		}
-		//添加日志
-		DlOpLog log = new DlOpLog();
-		log.setAddTime(DateUtil.getCurrentTimeLong());
-		log.setPhone(mobile);
-		log.setType(2);
-		log.setOpType(orderStatus);
-		log.setOrderSn(orderSn);
-		dlOpMapper.insert(log);
-		return ResultGenerator.genSuccessResult();
-	}
+//	public BaseResult<?> modifyOrderStatus(int userId,String mobile,String orderSn,int orderStatus){
+//		//删除队列数据
+//		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+//		int cnt = dyArtifiDao.delData(mobile,orderSn);
+//		logger.info("[modifyOrderStatus]" + " cnt:" + cnt);
+//		//回收到主池，更改主池队列状态
+//		//查询到该订单信息
+//		DlArtifiPrintLottery dlArtifiPrintLottery = new DlArtifiPrintLottery();
+//		dlArtifiPrintLottery.setOrderSn(orderSn);
+//		List<DlArtifiPrintLottery> list = dlArtifiPrintMapper.selectArtifiLotteryPrintByOrderSn(dlArtifiPrintLottery);
+//		DlArtifiPrintLottery printLottery = null;
+//		if(list != null && list.size() > 0) {
+//			printLottery = list.get(0);
+//			printLottery.setOrderSn(orderSn);
+//			printLottery.setOrderStatus((byte)orderStatus);
+//			printLottery.setAdminName(mobile);
+//			printLottery.setAdminId(userId);
+//			printLottery.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+//			printLottery.setOperationTime(DateUtil.getCurrentTimeLong());
+//			dlArtifiPrintMapper.updateArtifiLotteryPrint(printLottery);
+//		}
+//		//添加日志
+//		DlOpLog log = new DlOpLog();
+//		log.setAddTime(DateUtil.getCurrentTimeLong());
+//		log.setPhone(mobile);
+//		log.setType(2);
+//		log.setOpType(orderStatus);
+//		log.setOrderSn(orderSn);
+//		dlOpMapper.insert(log);
+//		return ResultGenerator.genSuccessResult();
+//	}
 
 	public DlArtifiPrintLottery selectArtifiPrintLotteryByOrderSn(String orderSn) {
 		DlArtifiPrintLottery rPrintLottery = null;
