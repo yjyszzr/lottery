@@ -19,13 +19,13 @@ import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
 import io.swagger.annotations.ApiOperation;
-import jdk.nashorn.internal.parser.JSONParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
@@ -124,10 +124,21 @@ public class LotteryNavBannerController {
             }else if("iphone".equals(userDevice.getPlat())){
                 deviceUnique = userDevice.getIDFA();
                 log.info("iphone,"+deviceUnique);
+            }else if("h5".equals(userDevice.getPlat())){
+                deviceUnique = "h5";
+                log.info("h5,"+deviceUnique);
             }
 
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
+                if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
+                    dto.setBannerName(navBanner.getBannerName());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerLink(navBanner.getBannerLink());
+                    dto.setStartTime(navBanner.getStartTime());
+                    dto.setEndTime(navBanner.getEndTime());
+                }
+
                 MacParam macParam = new MacParam();
                 macParam.setMac(deviceUnique);
                 BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
