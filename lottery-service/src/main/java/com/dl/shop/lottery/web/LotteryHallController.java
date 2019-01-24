@@ -3,6 +3,7 @@ package com.dl.shop.lottery.web;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.lottery.dto.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.SessionUtil;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.lottery.param.PageParam;
@@ -76,10 +78,17 @@ public class LotteryHallController {
 	@ApiOperation(value = "获取彩票大厅数据和咨询列表数据:全彩种菜单20180731新增", notes = "获取彩票大厅数据和咨询列表数据:全彩种菜单20180731新增")
 	@PostMapping("/getAllLotteryInHallMixData")
 	public BaseResult<DlHallMixDTO> getHallDataMixAllLottery(@Valid @RequestBody HallParam hallParam) {
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+		String channel = "";
+		String version = "";
+		if(userDevice != null) {
+			channel = userDevice.getChannel();
+			version = userDevice.getAppv();
+		}
 		DlHallMixDTO dlHallMixDTO = new DlHallMixDTO();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		if (hallParam.getPage() == 1) {
-			dlHallDTO = lotteryHallService.getHallDataAllLottery1(hallParam);
+			dlHallDTO = lotteryHallService.getHallDataAllLottery1(hallParam,channel,version);
 		}
 
 		PageHelper.startPage(hallParam.getPage(), hallParam.getSize());

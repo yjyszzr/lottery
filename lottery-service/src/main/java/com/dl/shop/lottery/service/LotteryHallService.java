@@ -120,7 +120,7 @@ public class LotteryHallService {
 	 * @param hallParam
 	 * @return
 	 */
-	public DlHallDTO getHallDataAllLottery1(HallParam hallParam) {
+	public DlHallDTO getHallDataAllLottery1(HallParam hallParam,String channel,String version) {
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
@@ -147,7 +147,16 @@ public class LotteryHallService {
 			}else {
 				dto.setSubTitle(s.getSubTitle());
 			}
-			dto.setStatus(s.getStatus().toString());
+			if(2 == s.getLotteryClassifyId()) {
+				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version);
+				if("h5".equals(channel) || (channel.startsWith("c300") && version.compareTo("3.1.0") >= 0)){
+					dto.setStatus(0+"");
+				}else {
+					dto.setStatus(1+"");
+				}
+			}else {
+				dto.setStatus(s.getStatus().toString());
+			}
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
