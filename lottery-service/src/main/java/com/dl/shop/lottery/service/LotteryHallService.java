@@ -143,20 +143,12 @@ public class LotteryHallService {
 			dto.setLotteryImg(lotteryConfig.getBannerShowUrl()+s.getLotteryImg());
 			dto.setLotteryName(s.getLotteryName());
 			if(2 == s.getLotteryClassifyId()) {
+				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version + " classifyId:" + s.getLotteryClassifyId());
 				dto.setSubTitle(this.queryLatestLottoPrizes());
 			}else {
 				dto.setSubTitle(s.getSubTitle());
 			}
-			if(2 == s.getLotteryClassifyId()) {
-				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version);
-				if("h5".equals(channel) || (channel.startsWith("c300") && version.compareTo("3.1.0") >= 0)){
-					dto.setStatus(0+"");
-				}else {
-					dto.setStatus(1+"");
-				}
-			}else {
-				dto.setStatus(s.getStatus().toString());
-			}
+			dto.setStatus(s.getStatus()+"");
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
