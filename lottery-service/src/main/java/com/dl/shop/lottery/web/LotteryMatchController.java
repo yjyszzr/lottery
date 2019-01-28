@@ -74,12 +74,15 @@ import com.dl.lottery.param.MatchTimePream;
 import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
 import com.dl.lottery.param.StringRemindParam;
+import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
+import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
+import com.dl.member.param.SysConfigParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.SubmitOrderParam;
@@ -148,6 +151,8 @@ public class LotteryMatchController {
     private DlLeagueTeamService dlLeagueTeamService;
     @Resource
     private DlMatchPlayBasketballService dlMatchPlayBasketballService;
+    @Resource
+	private ISysConfigService iSysConfigService;
     
     @ApiOperation(value = "获取筛选条件列表-足球", notes = "获取筛选条件列表-足球")
     @PostMapping("/filterConditions")
@@ -1216,6 +1221,16 @@ public class LotteryMatchController {
 	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
 	@PostMapping("/createOrderBySimulate")
 	public BaseResult<OrderIdDTO> createOrderBySimulate(@Valid @RequestBody DlJcZqMatchBetParam param){
+		//开关是否关闭
+		SysConfigParam sysCfgParams = new SysConfigParam();
+		sysCfgParams.setBusinessId(1);
+		BaseResult<SysConfigDTO> baseR = iSysConfigService.querySysConfig(sysCfgParams);
+		if(baseR != null && baseR.isSuccess()) {
+			SysConfigDTO sysCfgDTO = baseR.getData();
+			if(sysCfgDTO.getValue().intValue() == 1) {//足彩是否停售
+				return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(),LotteryResultEnum.BET_MATCH_STOP.getMsg());
+			}
+		}
 		BaseResult<String> rst = this.nSaveBetInfo(param);
 		if(rst.getCode()!=0) {
 			return ResultGenerator.genResult(rst.getCode(), rst.getMsg());

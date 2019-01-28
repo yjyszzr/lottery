@@ -15,13 +15,15 @@
 //public class Tj {
 //
 //	public Tj() {
-//		
+//		String str = "06,08,$15,23,25|02,10";
+//		boolean isOk = str.contains("$");
+//		System.out.println(isOk);
 ////		test();
-//		List<String> rList = testXml();
-//		showList(rList);
-//		for(String str: rList) {
-//			updateUserSuperWhite(str);
-//		}
+////		List<String> rList = testXml();
+////		showList(rList);
+////		for(String str: rList) {
+////			updateUserSuperWhite(str);
+////		}
 //	}
 //
 //	private void updateUserSuperWhite(String str) {
@@ -31,9 +33,9 @@
 ////		cfg.setUserName("cxm_user_admin");
 ////		cfg.setUserPass("mwkQag0MNtF1");
 //		
-////		cfg.setUrl("jdbc:mysql://62.234.222.65:3306/store");
-////		cfg.setUserName("hanghang_db");
-////		cfg.setUserPass("hanghangabc2o18!");
+//		cfg.setUrl("jdbc:mysql://62.234.222.65:3306/store");
+//		cfg.setUserName("hanghang_db");
+//		cfg.setUserPass("hanghangabc2o18!");
 //		
 //		cfg.setDriver("com.mysql.jdbc.Driver");
 //		
@@ -56,7 +58,7 @@
 //	private List<String> testXml() {
 //		List<String> rList = new ArrayList<String>();
 //		try{     
-//            Workbook book  =  Workbook.getWorkbook(new File("c://白名单20190114.xls" ));     
+//            Workbook book  =  Workbook.getWorkbook(new File("c://新加超级白名单用户122.xls" ));     
 //             //  获得第一个表格对象      
 //             Sheet sheet  =  book.getSheet( 0 );     
 //             //拿到表格的行数  
@@ -112,7 +114,7 @@
 //		}
 //	}
 //	
-////	public static void main(String[] args) {
-////		new Tj();
-////	}
+//	public static void main(String[] args) {
+//		new Tj();
+//	}
 //}
