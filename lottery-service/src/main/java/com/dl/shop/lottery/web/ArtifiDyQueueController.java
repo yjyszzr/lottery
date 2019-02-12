@@ -3,7 +3,6 @@ package com.dl.shop.lottery.web;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Resource;
-
 import com.dl.lottery.enums.LotteryResultEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import com.dl.base.util.EmojiFilter;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.lottery.param.ArtifiLotteryDetailParam;
-import com.dl.lottery.param.ArtifiLotteryModifyParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParamV2;
 import com.dl.lottery.param.ArtifiLotteryQueryParam;
 import com.dl.lottery.param.ArtifiLotteryQueryParamV2;
@@ -30,7 +28,6 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.MediaTokenParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.order.api.IOrderService;
-import com.dl.order.dto.LottoCathecticResult;
 import com.dl.order.dto.ManualLottoOrderDetailDTO;
 import com.dl.order.dto.ManualOrderDTO;
 import com.dl.order.param.OrderSnListParam;
@@ -46,9 +43,9 @@ import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 import com.dl.shop.lottery.service.DlXNWhiteListService;
-
 import io.swagger.annotations.ApiOperation;
 import tk.mybatis.mapper.entity.Condition;
+
 /**
  * 动态队列
  * @author wht

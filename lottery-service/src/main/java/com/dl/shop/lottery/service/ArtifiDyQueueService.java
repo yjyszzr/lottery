@@ -247,20 +247,22 @@ public class ArtifiDyQueueService{
 		if(isAll) {
 			dyArtifiDao.clearAll(mobile);
 		}
-		//添加日志
-		DlOpLog log = new DlOpLog();
-		log.setAddTime(DateUtil.getCurrentTimeLong());
-		log.setPhone(mobile);
-		log.setType(2);
-		log.setOpType(orderStatus);
-		log.setOrderSn(orderSn);
-		log.setPic(picUrl);
-		log.setFailMsg(failMsg);
-		log.setMoneyPaid(moneyPaid);
-		log.setLotteryClassifyId(lotteryClassifyId);
-		log.setStoreId(storeId);
-		dlOpMapper.insert(log);
-		
+		//添加日志,去重判断
+		DlOpLog dlOpLog = dlOpMapper.queryLogByOrderSn(orderSn);
+		if(dlOpLog == null) {
+			DlOpLog log = new DlOpLog();
+			log.setAddTime(DateUtil.getCurrentTimeLong());
+			log.setPhone(mobile);
+			log.setType(2);
+			log.setOpType(orderStatus);
+			log.setOrderSn(orderSn);
+			log.setPic(picUrl);
+			log.setFailMsg(failMsg);
+			log.setMoneyPaid(moneyPaid);
+			log.setLotteryClassifyId(lotteryClassifyId);
+			log.setStoreId(storeId);
+			dlOpMapper.insert(log);
+		}
 		//出票失败，订单回滚需要客服手动进行回滚
 //		if(orderStatus == 2) {	//出票失败
 //			OrderDTO orderDTO = null;
@@ -343,7 +345,14 @@ public class ArtifiDyQueueService{
 		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
 		logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
 		if(rList.size() <= 0) {
-			List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+			List<DlArtifiPrintLottery> rSumList = null;
+			if("18182506141".equals(mobile)) {
+				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+				logger.info("[allocLotteryV2]" + " 18182506141分配" + rSumList.size() + "个订单");
+			}else {
+				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocNoLotto();
+				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
+			}
 			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,QUEUE_SIZE);
 			logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
 			//先批量进行更改订单状态

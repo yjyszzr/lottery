@@ -14,6 +14,12 @@ public interface DlArtifiPrintLotteryMapper extends Mapper<DlArtifiPrintLottery>
 	
 
 	/**
+	 * 获取今天未分配的票
+	 * @return
+	 */
+	public List<DlArtifiPrintLottery> listLotteryTodayUnAllocNoLotto();
+	
+	/**
 	 * 获取票
 	 * @param dlPrintLottery
 	 * @return
