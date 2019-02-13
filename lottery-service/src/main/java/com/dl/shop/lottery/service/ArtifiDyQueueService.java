@@ -346,13 +346,15 @@ public class ArtifiDyQueueService{
 		logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
 		if(rList.size() <= 0) {
 			List<DlArtifiPrintLottery> rSumList = null;
-			if("18182506141".equals(mobile)) {
-				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
-				logger.info("[allocLotteryV2]" + " 18182506141分配" + rSumList.size() + "个订单");
-			}else {
-				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocNoLotto();
-				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
-			}
+			rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+			//141手机号规则
+//			if("18182506141".equals(mobile)) {
+//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+//				logger.info("[allocLotteryV2]" + " 18182506141分配" + rSumList.size() + "个订单");
+//			}else {
+//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocNoLotto();
+//				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
+//			}
 			List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao,mobile,rSumList,QUEUE_SIZE);
 			logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
 			//先批量进行更改订单状态
