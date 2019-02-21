@@ -249,7 +249,7 @@ public class ArtifiDyQueueService{
 		}
 		//添加日志,去重判断
 		DlOpLog dlOpLog = dlOpMapper.queryLogByOrderSn(orderSn);
-		if(dlOpLog == null) {
+		if(dlOpLog == null || (dlOpLog != null && dlOpLog.getType()!=2)) {
 			DlOpLog log = new DlOpLog();
 			log.setAddTime(DateUtil.getCurrentTimeLong());
 			log.setPhone(mobile);
