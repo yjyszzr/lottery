@@ -1,22 +1,11 @@
 package com.dl.shop.lottery.web;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Resource;
-import com.dl.lottery.enums.LotteryResultEnum;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.EmojiFilter;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.enums.MemberEnums;
 import com.dl.lottery.param.ArtifiLotteryDetailParam;
 import com.dl.lottery.param.ArtifiLotteryModifyParamV2;
@@ -44,7 +33,19 @@ import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 import com.dl.shop.lottery.service.DlXNWhiteListService;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tk.mybatis.mapper.entity.Condition;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 动态队列
@@ -328,6 +329,9 @@ public class ArtifiDyQueueController {
 			failMsg = params.getFailMsg();
 			rfailMsg = EmojiFilter.emoji2Unicode(failMsg);
 		}
+
+
+
 		logger.info("[modifyOrderStatusV2]" + " failMsg:" + failMsg + " rFailMsg:" + rfailMsg);
 		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),rfailMsg);
 	}

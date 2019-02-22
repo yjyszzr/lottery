@@ -1,58 +1,12 @@
 package com.dl.shop.lottery.service;
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.dl.base.enums.BasketBallHILOLeverlEnum;
-import com.dl.base.enums.MatchBasketBallResultHDCEnum;
-import com.dl.base.enums.MatchBasketBallResultHILOEnum;
-import com.dl.base.enums.MatchBasketPlayTypeEnum;
-import com.dl.base.enums.MatchBasketResultHdEnum;
-import com.dl.base.enums.MatchPlayTypeEnum;
-import com.dl.base.enums.MatchResultCrsEnum;
-import com.dl.base.enums.MatchResultHadEnum;
-import com.dl.base.enums.MatchResultHafuEnum;
+import com.dl.base.enums.*;
 import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SessionUtil;
-import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
-import com.dl.lottery.dto.DLLQBetInfoDTO;
-import com.dl.lottery.dto.DlJcLqDateMatchDTO;
-import com.dl.lottery.dto.DlJcLqMatchCellDTO;
-import com.dl.lottery.dto.DlJcLqMatchDTO;
-import com.dl.lottery.dto.DlJcLqMatchListDTO;
-import com.dl.lottery.dto.DlJcLqMatchPlayDTO;
-import com.dl.lottery.dto.DlJcZqMatchCellDTO;
-import com.dl.lottery.dto.MatchBasketBallBetCellDTO;
-import com.dl.lottery.dto.MatchBasketBallBetPlayCellDTO;
-import com.dl.lottery.dto.MatchBasketBallBetPlayDTO;
-import com.dl.lottery.dto.MatchBetPlayCellDTO;
-import com.dl.lottery.dto.MatchBetPlayDTO;
+import com.dl.lottery.dto.*;
 import com.dl.lottery.param.DlJcLqMatchBetParam;
 import com.dl.lottery.param.DlJcLqMatchListParam;
 import com.dl.member.api.ISwitchConfigService;
@@ -64,13 +18,19 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.DlMatchPlayBasketballMapper;
 import com.dl.shop.lottery.dao2.DlResultBasketballMapper;
-import com.dl.shop.lottery.model.DlMatchBasketball;
-import com.dl.shop.lottery.model.DlMatchPlayBasketball;
-import com.dl.shop.lottery.model.DlResultBasketball;
-import com.dl.shop.lottery.model.LotteryPlayClassify;
-import com.dl.shop.lottery.model.TMatchBetMaxAndMinOddsList;
-
+import com.dl.shop.lottery.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(value="transactionManager2")
@@ -671,7 +631,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		List<Double> minOdds = new ArrayList<Double>(playCellMap.size());
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBasketBallBetPlayCellDTO> list = playCellMap.get(playCode);
-			List<Double> allbetComOdds = new ArrayList<>();    //this.allbetComOdds(list);
+			List<Double> allbetComOdds = new ArrayList<>();    this.allbetComOdds(list);
 			allbetComOdds.add(1.32);
 			allbetComOdds.add(2.32);
 			allbetComOdds.add(1.50);
@@ -697,9 +657,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return tem;
 	}
 
-
-		
-	
 	
 	/**
 	 * 计算混合玩法的排斥后的该场次的几种可能赔率

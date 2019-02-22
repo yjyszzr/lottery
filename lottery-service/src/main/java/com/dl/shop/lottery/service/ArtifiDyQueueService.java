@@ -263,6 +263,9 @@ public class ArtifiDyQueueService{
 			log.setStoreId(storeId);
 			dlOpMapper.insert(log);
 		}
+
+		//如果是第三方的订单,通知第三方
+
 		//出票失败，订单回滚需要客服手动进行回滚
 //		if(orderStatus == 2) {	//出票失败
 //			OrderDTO orderDTO = null;
@@ -284,6 +287,9 @@ public class ArtifiDyQueueService{
 //		}
 		return ResultGenerator.genSuccessResult("succ");
 	}
+
+
+
 	
 	/**
 	 * 更改订单状态
