@@ -27,12 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dl.base.context.BaseContextHandler;
 import com.dl.base.enums.MatchPlayTypeEnum;
+import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
+import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
 import com.dl.lottery.dto.BetPayInfoDTO;
@@ -82,9 +84,13 @@ import com.dl.lottery.param.StringRemindParam;
 import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
+import com.dl.member.dao.UserAccountMapper;
+import com.dl.member.dao.UserMapper;
 import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
+import com.dl.member.model.User;
+import com.dl.member.model.UserAccount;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.member.param.SysConfigParam;
@@ -165,6 +171,11 @@ public class LotteryMatchController {
     private IAuthService authService;
 	@Resource
 	private IUserService iUserService;
+	@Resource
+	private UserMapper userMapper;
+	@Resource
+	private UserAccountMapper userAccountMapper;
+	
 //    @Resource
 //    private MerchantService merchantService;
     
@@ -1361,7 +1372,7 @@ public class LotteryMatchController {
 //	@Transactional
 	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
 	@PostMapping("/createOrder")
-	public BaseResult<OrderIdDTO> createOrder(@Valid @RequestBody DlJcZqMatchBetParam2 param, HttpServletRequest req){
+	public synchronized BaseResult<OrderIdDTO> createOrder(@Valid @RequestBody DlJcZqMatchBetParam2 param, HttpServletRequest req){
 		
 		// 检验签名
 		boolean authFlag = true;
@@ -1459,21 +1470,83 @@ public class LotteryMatchController {
 		if(userDTO == null) {
 			return ResultGenerator.genFailResult("该用户不存在");
 		}
-		String totalStr = userDTO.getData().getTotalMoney();
+		String totalStr = userDTO.getData()
+//				.getTotalMoney()
+				.getUserMoneyLimit()
+				;
+		
 		logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
-		BigDecimal totalMoney = new BigDecimal(userDTO.getData().getTotalMoney());
-		if(totalMoney.subtract(ticketAmount).doubleValue() >= 0) {
+		BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
+		if(userMoneyLimit.subtract(ticketAmount).doubleValue() >= 0) {
 //			return ResultGenerator.genSuccessResult();
 		}else {
 			return ResultGenerator.genFailResult("商户余额不足");
 		}
 
+		
+		//扣钱
+		BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
+		User _user = new User();
+		_user.setUserId(userId);
+		_user.setUserMoneyLimit(_userMoneyLimit);
+		this.userMapper.updateUserMoneyAndUserMoneyLimit(_user);
+		
+		// 生成订单号
+		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
+		
+		//记流水
+		UserAccount userAccountParam = new UserAccount();
+		String accountSn = SNGenerator.nextSN(SNBusinessCodeEnum.ACCOUNT_SN.getCode());
+		userAccountParam.setAccountSn(accountSn);
+		userAccountParam.setUserId(userId);
+		userAccountParam.setAdminUser(null);		
+		userAccountParam.setAmount(ticketAmount);
+		userAccountParam.setCurBalance(_userMoneyLimit);
+		Integer currentTimeLong = DateUtil.getCurrentTimeLong();
+		userAccountParam.setAddTime(currentTimeLong);
+		userAccountParam.setLastTime(currentTimeLong);
+		String note = "商户支付" + ticketAmount + "元";
+		userAccountParam.setNote(note);
+		userAccountParam.setProcessType(Integer.valueOf(3));
+		userAccountParam.setOrderSn(orderSn);
+		userAccountParam.setParentSn("");
+		userAccountParam.setPayId("");
+		userAccountParam.setPaymentName("2");
+		userAccountParam.setThirdPartName("");
+		userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
+		userAccountParam.setBonusPrice(null);
+		userAccountParam.setStatus(1);
+		int insertRst = userAccountMapper.insertUserAccountBySelective(userAccountParam);
+		
+		
 		// order生成
 		SubmitOrderParam submitOrderParam = new SubmitOrderParam();
-		submitOrderParam.setTicketNum(dto.getTicketNum());
+		submitOrderParam.set_orderSn(orderSn);
+		submitOrderParam.set_userId(userId + "");
+//		order_status 
+//		print_lottery_status 
+//		print_lottery_refund_amount
+//		pay_status 
+//		pay_status 
+//		pay_id
+//		pay_code 
+//		pay_name 
+//		pay_sn
+//		money_paid
 		submitOrderParam.setMoneyPaid(moneyPaid);
 		submitOrderParam.setTicketAmount(ticketAmount);
 		submitOrderParam.setSurplus(surplus);
+//		user_surplus 
+//		user_surplus_limit   ///
+		
+		
+		submitOrderParam.setTicketNum(dto.getTicketNum());
+		
+		
+		
+		
+		
+
 		submitOrderParam.setThirdPartyPaid(thirdPartyPaid);
 		submitOrderParam.setPayName("");
 		submitOrderParam.setUserBonusId(userBonusId);
@@ -1484,7 +1557,8 @@ public class LotteryMatchController {
 		int lotteryPlayClassifyId = dto.getLotteryPlayClassifyId();
 		submitOrderParam.setLotteryPlayClassifyId(lotteryPlayClassifyId);
 		submitOrderParam.setPassType(dto.getBetType());
-		submitOrderParam.setPlayType("0" + dto.getPlayType());
+//		submitOrderParam.setPlayType("0" + dto.getPlayType());
+		submitOrderParam.setPlayType("1");
 		submitOrderParam.setBetNum(dto.getBetNum());
 		submitOrderParam.setCathectic(dto.getTimes());
 		if (null!= param.getStoreId()) {
@@ -1501,13 +1575,12 @@ public class LotteryMatchController {
 		submitOrderParam.setForecastMoney(dto.getForecastMoney());
 		submitOrderParam.setIssue(dto.getIssue());
 		submitOrderParam.setTicketDetails(ticketDetails);
-		submitOrderParam.set_userId(userId + "");
-		if (!StringUtil.isBlank(param.getMerchant())) {
-			submitOrderParam.setMerchantNo(param.getMerchant());
-		}
-		if (!StringUtil.isBlank(param.getMerchantOrderSn())) {
-			submitOrderParam.setMerchantOrderSn(param.getMerchantOrderSn());
-		}
+		
+		
+		submitOrderParam.setMerchantNo(param.getMerchant());
+		submitOrderParam.setMerchantOrderSn(param.getMerchantOrderSn());
+		
+	
 		logger.info("订单提交信息==========="+submitOrderParam);
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
 		if (createOrder.getCode() != 0) {
@@ -1515,7 +1588,6 @@ public class LotteryMatchController {
 			return ResultGenerator.genFailResult("模拟支付失败！");
 		}
 		String orderId = createOrder.getData().getOrderId().toString();
-		String orderSn = createOrder.getData().getOrderSn();
 		OrderIdDTO orderDto = new OrderIdDTO();
 		orderDto.setOrderId(orderId);
 		orderDto.setOrderSn(orderSn);
