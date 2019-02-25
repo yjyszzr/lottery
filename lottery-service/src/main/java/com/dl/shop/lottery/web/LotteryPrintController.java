@@ -47,11 +47,11 @@ public class LotteryPrintController {
 		return lotteryPrintService.queryPrintResutToMerchant(param);
 	}
 
-	@ApiOperation(value = "商户查询出票情况接口test", notes = "商户查询出票情况接口")
-	@PostMapping("/queryPrintResultToMerchantTest")
-	public BaseResult<String> queryPrintResultToMerchantTest(@Valid @RequestBody QueryPrintStakeParam param) {
-		lotteryPrintService.notifyPrintResultToMerchant("","","");
-		return ResultGenerator.genSuccessResult("投注结果通知成功","");
+	@ApiOperation(value = "通知商户查询出票情况", notes = "通知商户查询出票情况")
+	@PostMapping("/notifyPrintResultToMerchant")
+	public BaseResult<String> notifyPrintResultToMerchant(@Valid @RequestBody NotifyParam param) {
+		String rst = lotteryPrintService.notifyPrintResultToMerchant(param.getNotifyUrl(),param.getMerchantOrderSn());
+		return ResultGenerator.genSuccessResult("投注结果通知成功",rst);
 	}
 
 	@ApiOperation(value = "投注接口", notes = "投注接口")

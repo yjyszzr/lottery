@@ -11,5 +11,9 @@ public class NotifyParam {
 	@NotEmpty(message = "回调地址不能为空")
 	private String notifyUrl;
 
+	@ApiModelProperty(value="商户号")
+	@NotEmpty(message = "商户号不能为空")
+	private String merchantOrderSn;
+
 
 }

@@ -330,8 +330,6 @@ public class ArtifiDyQueueController {
 			rfailMsg = EmojiFilter.emoji2Unicode(failMsg);
 		}
 
-
-
 		logger.info("[modifyOrderStatusV2]" + " failMsg:" + failMsg + " rFailMsg:" + rfailMsg);
 		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),rfailMsg);
 	}

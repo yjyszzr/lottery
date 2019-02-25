@@ -131,7 +131,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			printStakeResultDTO.setStatus("0");
 		}else{
 			Byte printStatusByte = dlArtifiPrintLottery.getOrderStatus();
-			if(printStatusByte.byteValue() == 0){queryTicketDataListByOrderSn
+			if(printStatusByte.byteValue() == 0){
 				orderStatus = "0";
 			}else if(printStatusByte.byteValue() == 1){
 				orderStatus = "1";
@@ -175,14 +175,15 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param merchant
 	 * @param merchantOrderSn
 	 */
-	public void notifyPrintResultToMerchant(String notifyUrl,String merchant,String merchantOrderSn){
-		QueryPrintStakeParam param = new QueryPrintStakeParam();
-		param.setMerchantOrderSn(merchantOrderSn);
-		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
-		PrintStakeResultDTO printStakeResultDTO = null;
-		if(psRto.isSuccess()){
-			printStakeResultDTO = psRto.getData();
-		}
+	public String notifyPrintResultToMerchant(String notifyUrl,String merchantOrderSn){
+		PrintStakeResultDTO printStakeResultDTO = new PrintStakeResultDTO();
+//		QueryPrintStakeParam param = new QueryPrintStakeParam();
+//		param.setMerchantOrderSn(merchantOrderSn);
+//		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
+//		PrintStakeResultDTO printStakeResultDTO = null;
+//		if(psRto.isSuccess()){
+//			printStakeResultDTO = psRto.getData();
+//		}
 		for(int i = 0; i <= 2; i++){
 			boolean rst = this.doPostMerchant(printStakeResultDTO);
 			if(rst){
@@ -191,6 +192,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 				continue;
 			}
 		}
+		 return null;
 	}
 
 	/**
@@ -212,8 +214,24 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		paramMap.add("print_sp", printStakeResultDTO.getPrint_sp());
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap,headers);
 		ResponseEntity<String> response = rest.postForEntity("http://123.57.34.133:8080/merchant/notify", httpEntity, String.class);
-		log.info(response.toString());
-		return true;
+		Integer statusCode = response.getStatusCodeValue();
+		if(statusCode == 200){
+			String bodyStr = response.getBody();
+			com.alibaba.fastjson.JSONObject json = null;
+			try {
+				json = JSON.parseObject(bodyStr);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+			Integer code = json.getInteger("code");
+			if(code == 0){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
 	}
 
 	/**
