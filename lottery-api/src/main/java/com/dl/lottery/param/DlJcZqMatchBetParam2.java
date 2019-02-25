@@ -1,10 +1,12 @@
 package com.dl.lottery.param;
 
+import java.io.Serializable;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class DlJcZqMatchBetParam2 extends DlJcZqMatchBetParam {
+public class DlJcZqMatchBetParam2 extends DlJcZqMatchBetParam implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -14,6 +16,6 @@ public class DlJcZqMatchBetParam2 extends DlJcZqMatchBetParam {
 	private String version;
 	@ApiModelProperty(value="时间戳 示例：2019-02-04 16:37:35")
 	private String timestamp;
-	
-
+	@ApiModelProperty(value="商户订单号 注：对应您方彩票的唯一标识")
+	private String merchantOrderSn;
 }
