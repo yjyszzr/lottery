@@ -176,14 +176,13 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param merchantOrderSn
 	 */
 	public String notifyPrintResultToMerchant(String notifyUrl,String merchantOrderSn){
+		QueryPrintStakeParam param = new QueryPrintStakeParam();
+		param.setMerchantOrderSn(merchantOrderSn);
+		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
 		PrintStakeResultDTO printStakeResultDTO = new PrintStakeResultDTO();
-//		QueryPrintStakeParam param = new QueryPrintStakeParam();
-//		param.setMerchantOrderSn(merchantOrderSn);
-//		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
-//		PrintStakeResultDTO printStakeResultDTO = null;
-//		if(psRto.isSuccess()){
-//			printStakeResultDTO = psRto.getData();
-//		}
+		if(psRto.isSuccess()){
+			printStakeResultDTO = psRto.getData();
+		}
 		for(int i = 0; i <= 2; i++){
 			boolean rst = this.doPostMerchant(printStakeResultDTO);
 			if(rst){

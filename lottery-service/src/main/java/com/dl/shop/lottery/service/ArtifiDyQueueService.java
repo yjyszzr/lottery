@@ -18,6 +18,7 @@ import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
 import com.dl.store.api.IStoreUserMoneyService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -251,9 +252,11 @@ public class ArtifiDyQueueService{
 			dyArtifiDao.clearAll(mobile);
 		}
 
-		//主动通知商户
-//		String merchantOrderSn = baseR.getData().getMerchantOrderSn();
-//		lotteryPrintService.notifyPrintResultToMerchant("http://123.57.34.133:8080/merchant/notify",merchantOrderSn);
+		//若是商户订单号，则主动通知商户出票结果
+		String merchantOrderSn = baseR.getData().getMerchantOrderSn();
+		if(!StringUtils.isEmpty(merchantOrderSn)){
+			lotteryPrintService.notifyPrintResultToMerchant("http://123.57.34.133:8080/merchant/notify",merchantOrderSn);
+		}
 
 		//添加日志,去重判断
 		DlOpLog dlOpLog = dlOpMapper.queryLogByOrderSn(orderSn);
