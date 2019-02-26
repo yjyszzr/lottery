@@ -82,6 +82,7 @@ import com.dl.lottery.param.QueryMatchParam;
 import com.dl.lottery.param.QueryMatchParamByType;
 import com.dl.lottery.param.StringRemindParam;
 import com.dl.member.api.ISysConfigService;
+import com.dl.member.api.IUserAccountService;
 import com.dl.member.api.IUserBonusService;
 import com.dl.member.api.IUserService;
 import com.dl.member.dao.UserAccountMapper;
@@ -94,7 +95,9 @@ import com.dl.member.model.UserAccount;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.member.param.SysConfigParam;
+import com.dl.member.param.UserAccountParam;
 import com.dl.member.param.UserIdRealParam;
+import com.dl.member.param.UserParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.SubmitOrderParam;
@@ -171,13 +174,14 @@ public class LotteryMatchController {
     private IAuthService authService;
 	@Resource
 	private IUserService iUserService;
+//	@Resource
+//	private UserMapper userMapper;
 	@Resource
-	private UserMapper userMapper;
-	@Resource
-	private UserAccountMapper userAccountMapper;
+	private IUserAccountService iUserAccountService;
 	
 //    @Resource
 //    private MerchantService merchantService;
+	
     
     @ApiOperation(value = "获取筛选条件列表-足球", notes = "获取筛选条件列表-足球")
     @PostMapping("/filterConditions")
@@ -1486,20 +1490,21 @@ public class LotteryMatchController {
 		
 		//扣钱
 		BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
-		User _user = new User();
-		_user.setUserId(userId);
+		UserParam _user = new UserParam();
+		_user.setUserId(userId + "");
 		_user.setUserMoneyLimit(_userMoneyLimit);
-		this.userMapper.updateUserMoneyAndUserMoneyLimit(_user);
+//		this.userMapper.updateUserMoneyAndUserMoneyLimit(_user);
+		this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
 		
 		// 生成订单号
 		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
 		
 		//记流水
-		UserAccount userAccountParam = new UserAccount();
+		UserAccountParam userAccountParam = new UserAccountParam();
 		String accountSn = SNGenerator.nextSN(SNBusinessCodeEnum.ACCOUNT_SN.getCode());
 		userAccountParam.setAccountSn(accountSn);
 		userAccountParam.setUserId(userId);
-		userAccountParam.setAdminUser(null);		
+//		userAccountParam.setAdminUser(null);		
 		userAccountParam.setAmount(ticketAmount);
 		userAccountParam.setCurBalance(_userMoneyLimit);
 		Integer currentTimeLong = DateUtil.getCurrentTimeLong();
@@ -1509,14 +1514,14 @@ public class LotteryMatchController {
 		userAccountParam.setNote(note);
 		userAccountParam.setProcessType(Integer.valueOf(3));
 		userAccountParam.setOrderSn(orderSn);
-		userAccountParam.setParentSn("");
+//		userAccountParam.setParentSn("");
 		userAccountParam.setPayId("");
 		userAccountParam.setPaymentName("2");
 		userAccountParam.setThirdPartName("");
 		userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
 		userAccountParam.setBonusPrice(null);
 		userAccountParam.setStatus(1);
-		int insertRst = userAccountMapper.insertUserAccountBySelective(userAccountParam);
+		int insertRst = iUserAccountService.insertUserAccountBySelective(userAccountParam);
 		
 		
 		// order生成
