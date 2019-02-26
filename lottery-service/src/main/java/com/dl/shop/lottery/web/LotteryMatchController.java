@@ -1515,7 +1515,7 @@ public class LotteryMatchController {
 		userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
 		userAccountParam.setBonusPrice(null);
 		userAccountParam.setStatus(1);
-		int insertRst = iUserAccountService.insertUserAccountBySelective(userAccountParam);
+		BaseResult<Integer> flag = iUserAccountService.insertUserAccountBySelective(userAccountParam);
 		
 		
 		// order生成
