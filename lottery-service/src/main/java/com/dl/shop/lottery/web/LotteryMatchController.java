@@ -1472,6 +1472,8 @@ public class LotteryMatchController {
 //				.getTotalMoney()
 				.getUserMoneyLimit()
 				;
+		String mobile = userDTO.getData().getMobile();
+		String passWord = userDTO.getData().getPassword();
 		
 		logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
 		BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
@@ -1480,15 +1482,15 @@ public class LotteryMatchController {
 		}else {
 			return ResultGenerator.genFailResult("商户余额不足");
 		}
-
 		
 		//扣钱
 		BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
 		UserParam _user = new UserParam();
 		_user.setUserId(userId + "");
 		_user.setUserMoneyLimit(_userMoneyLimit);
-//		this.userMapper.updateUserMoneyAndUserMoneyLimit(_user);
-		this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
+		_user.setMobile(mobile);
+		_user.setPassWord(passWord);
+		BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
 		
 		// 生成订单号
 		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
@@ -1515,7 +1517,7 @@ public class LotteryMatchController {
 		userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
 		userAccountParam.setBonusPrice(null);
 		userAccountParam.setStatus(1);
-		BaseResult<Integer> flag = iUserAccountService.insertUserAccountBySelective(userAccountParam);
+		BaseResult<Integer> flag2 = iUserAccountService.insertUserAccountBySelective(userAccountParam);
 		
 		
 		// order生成
@@ -1538,14 +1540,8 @@ public class LotteryMatchController {
 //		user_surplus 
 //		user_surplus_limit   ///
 		
-		
 		submitOrderParam.setTicketNum(dto.getTicketNum());
 		
-		
-		
-		
-		
-
 		submitOrderParam.setThirdPartyPaid(thirdPartyPaid);
 		submitOrderParam.setPayName("");
 		submitOrderParam.setUserBonusId(userBonusId);
