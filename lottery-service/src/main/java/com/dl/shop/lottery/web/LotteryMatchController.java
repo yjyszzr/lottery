@@ -1543,6 +1543,7 @@ public class LotteryMatchController {
 		submitOrderParam.setSurplus(surplus);
 //		user_surplus 
 //		user_surplus_limit   ///
+
 		submitOrderParam.setTicketNum(dto.getTicketNum());
 		submitOrderParam.setThirdPartyPaid(thirdPartyPaid);
 		submitOrderParam.setPayName("");
