@@ -14,6 +14,7 @@ public class BaseDao {
 	private String URL="jdbc:mysql://localhost:3306/jewel?useUnicode=true&characterEncoding=gbk";
 	private String USER_NAME = "";
 	private String USER_PWD = "";
+	
 	private Connection conn;
 
 	public BaseDao(DataBaseCfg cfg) {
@@ -21,6 +22,7 @@ public class BaseDao {
 		URL = cfg.getUrl() + "?useUnicode=true&characterEncoding=gbk";
 		USER_NAME = cfg.getUserName();
 		USER_PWD = cfg.getUserPass();
+		System.out.println("url:" + URL + " name:" + USER_NAME + " pwd:" + USER_PWD);
 	}
 	
 	//打开数据库链接
@@ -32,7 +34,7 @@ public class BaseDao {
 			Class.forName(DRIVER);
 			conn = DriverManager.getConnection(URL,USER_NAME,USER_PWD);
 			flag = true;
-			System.out.println("open database connection->" + conn);
+//			System.out.println("open database connection->" + conn);
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 			flag = false;
@@ -50,7 +52,7 @@ public class BaseDao {
 				ps.close();
 			}
 			conn.close();
-			System.out.println("close database connection->" + conn);
+//			System.out.println("close database connection->" + conn);
 			conn = null;
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());

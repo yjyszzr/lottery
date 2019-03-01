@@ -51,6 +51,8 @@ public interface DyArtifiPrintDao {
 	 */
 	public int dropTable(String userId);
 	
+	public int deleteOrderSn(String userId,String orderSn);
+	
 	/**
 	 * 添加打印数据
 	 * @param entity
@@ -66,4 +68,20 @@ public interface DyArtifiPrintDao {
 	 * @return
 	 */
 	public int delData(String uid,String orderSn);
+
+	/**
+	 * 更改订单状态
+	 * @param mobile
+	 * @param status
+	 * @return
+	 */
+	public int updateOrderStatus(String mobile,String orderSn,int status);
+	
+
+	/**
+	 * 是否全部都操作完
+	 * @param mobile
+	 * @return
+	 */
+	public boolean isOperationAll(String mobile);
 }

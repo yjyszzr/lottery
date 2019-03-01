@@ -61,7 +61,41 @@ public class DlArtifiPrintLottery {
     @Column(name = "operation_time")
     private Integer operationTime;
 
-    /**
+    
+    @Column(name = "statistics_print")
+    private Integer statisticsPrint;
+
+    @Column(name = "store_id")
+    private Integer storeId;
+    
+    @Column(name = "lottery_classify_id")
+    private Integer lotteryClassifyId;
+    
+	public Integer getLotteryClassifyId() {
+		return lotteryClassifyId;
+	}
+
+	public void setLotteryClassifyId(Integer lotteryClassifyId) {
+		this.lotteryClassifyId = lotteryClassifyId;
+	}
+
+	public Integer getStoreId() {
+		return storeId;
+	}
+	
+	public void setStoreId(Integer storeId) {
+		this.storeId = storeId;
+	}
+
+	public Integer getStatisticsPrint() {
+		return statisticsPrint;
+	}
+
+	public void setStatisticsPrint(Integer statisticsPrint) {
+		this.statisticsPrint = statisticsPrint;
+	}
+
+	/**
      * 获取id
      *
      * @return id - id
