@@ -1379,7 +1379,7 @@ public class LotteryMatchController {
 		在Http请求中增加Authorization的Header来包含签名信息
 		 */
 		boolean authFlag = true;
-		// ~~~
+		// ~~~  
 		if (!authFlag) {
 			return ResultGenerator.genFailResult("签名不合法");
 		}
