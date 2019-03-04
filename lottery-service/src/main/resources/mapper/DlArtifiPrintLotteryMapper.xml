@@ -13,13 +13,20 @@
     <result column="admin_id" jdbcType="INTEGER" property="adminId" />
     <result column="admin_name" jdbcType="VARCHAR" property="adminName" />
     <result column="operation_time" jdbcType="INTEGER" property="operationTime" />
+    <result column="statistics_print"  jdbcType="INTEGER" property="statisticsPrint"/>
+    <result column="store_id"  jdbcType="INTEGER" property="storeId"/>
+    <result column="lottery_classify_id"  jdbcType="INTEGER" property="lotteryClassifyId"/>
   </resultMap>
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
   	select * from dl_artifi_print_lottery 
-  	where operation_status = 0
+  	where operation_status = 0 ORDER BY lottery_classify_id DESC
   </select>
   
+  <select id="listLotteryTodayUnAllocNoLotto" resultMap="BaseResultMap">
+  	select * from dl_artifi_print_lottery 
+  	where operation_status = 0 and lottery_classify_id != 2;
+  </select>
   
   <update id="updateArtifiLotteryPrint">
     update dl_artifi_print_lottery set
@@ -28,6 +35,9 @@
            add_time = #{addTime},
            admin_id = #{adminId},
            admin_name = #{adminName},
+           <if test="statisticsPrint != null">
+		    statistics_print = #{statisticsPrint},
+		   </if>
            operation_time = #{operationTime}
     where 
            order_sn = #{orderSn}

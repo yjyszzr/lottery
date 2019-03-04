@@ -394,9 +394,6 @@ public class ArtifiDyQueueService{
 					DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
 					dEntity.orderSn = orderSn;
 					dEntity.status = 0;
-					if(lotteryClassifyId == null) {
-						lotteryClassifyId = -1;
-					}
 					dEntity.setLotteryClassifyId(lotteryClassifyId);
 					dyArtifiDao.addDyArtifiPrintInfo(mobile,dEntity);
 				}
