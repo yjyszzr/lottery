@@ -32,4 +32,8 @@ public class MatchBetPlayDTO implements Serializable{
 	private String playCode;
 	@ApiModelProperty(value="比赛玩法选项")
 	private List<MatchBetCellDTO> matchBetCells;
+	@ApiModelProperty(value="投注方式")
+	private String betType;
+	@ApiModelProperty(value="投注方式")
+	private String ticketData;
 }
