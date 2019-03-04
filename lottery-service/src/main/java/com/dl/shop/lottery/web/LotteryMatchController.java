@@ -56,6 +56,7 @@ import com.dl.lottery.dto.MatchDateDTO;
 import com.dl.lottery.dto.MatchInfoForTeamDTO;
 import com.dl.lottery.dto.MatchTeamInfosDTO;
 import com.dl.lottery.dto.MatchTeamInfosSumDTO;
+import com.dl.lottery.dto.OrderIdDTO;
 import com.dl.lottery.dto.QueryMatchResultDTO;
 import com.dl.lottery.dto.TeamSupportDTO;
 import com.dl.lottery.enums.LotteryResultEnum;
@@ -78,6 +79,9 @@ import com.dl.member.dto.UserDTO;
 import com.dl.member.param.BonusLimitConditionParam;
 import com.dl.member.param.StrParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderDTO;
+import com.dl.order.param.SubmitOrderParam;
+import com.dl.order.param.SubmitOrderParam.TicketDetail;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
@@ -96,6 +100,7 @@ import com.dl.shop.lottery.service.LotteryMatchService;
 import com.dl.shop.lottery.utils.MD5;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
+import com.dl.shop.payment.enums.PayEnums;
 
 import io.swagger.annotations.ApiOperation;
 
