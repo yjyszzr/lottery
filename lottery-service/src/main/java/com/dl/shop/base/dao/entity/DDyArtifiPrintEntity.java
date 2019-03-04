@@ -19,7 +19,7 @@ public class DDyArtifiPrintEntity implements Serializable{
 	public int status;//0初始状态 1成功出票 2出票失败
 	
 	@ApiModelProperty(value = "1足彩  2大乐透")
-	public int lotteryClassifyId;	//1足彩   2大乐透
+	public Integer lotteryClassifyId;	//1足彩   2大乐透
 	
 	@ApiModelProperty(value = "logo")
 	public String logo;
