@@ -1475,10 +1475,10 @@ public class LotteryMatchController {
 		UserParam _user = new UserParam();
 		_user.setUserId(userId + "");
 		_user.setUserMoneyLimit(_userMoneyLimit);
-//		_user.setMobile(mobile);
-//		_user.setPassWord(passWord);
+		_user.setMobile(mobile);
+		_user.setPassWord(passWord); 
 		BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
-//		logger.info("商铺|1|扣钱|id:" + userId +  "|原可支付余额：" + userMoneyLimit + "|扣款:" + ticketAmount + "|现可支付余额：" + _userMoneyLimit);
+	//	logger.info("商铺|1|扣钱|id:" + userId +  "|原可支付余额：" + userMoneyLimit + "|扣款:" + ticketAmount + "|现可支付余额：" + _userMoneyLimit);
 		 
 		// 生成订单号
 		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
