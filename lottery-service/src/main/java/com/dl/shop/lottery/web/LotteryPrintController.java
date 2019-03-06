@@ -1,14 +1,19 @@
 package com.dl.shop.lottery.web;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-
+import com.dl.base.param.EmptyParam;
+import com.dl.base.result.BaseResult;
+import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.JSONHelper;
+import com.dl.lottery.dto.*;
+import com.dl.lottery.param.*;
+import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderInfoAndDetailDTO;
+import com.dl.order.param.OrderSnParam;
+import com.dl.shop.lottery.model.LotteryPrint;
+import com.dl.shop.lottery.service.LotteryMatchService;
+import com.dl.shop.lottery.service.LotteryPrintService;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,38 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dl.base.param.EmptyParam;
-import com.dl.base.result.BaseResult;
-import com.dl.base.result.ResultGenerator;
-import com.dl.base.util.JSONHelper;
-import com.dl.lottery.dto.DlQueryAccountDTO;
-import com.dl.lottery.dto.DlQueryIssueDTO;
-import com.dl.lottery.dto.DlQueryPrizeFileDTO;
-import com.dl.lottery.dto.DlQueryStakeDTO;
-import com.dl.lottery.dto.DlQueryStakeFileDTO;
-import com.dl.lottery.dto.DlToStakeDTO;
-import com.dl.lottery.dto.LotteryPrintDTO;
-import com.dl.lottery.dto.PrintLotteryRefundDTO;
-import com.dl.lottery.param.DlCallbackStakeParam;
-import com.dl.lottery.param.DlCallbackStakeSenDeParam;
-import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
-import com.dl.lottery.param.DlQueryAccountParam;
-import com.dl.lottery.param.DlQueryIssueParam;
-import com.dl.lottery.param.DlQueryPrizeFileParam;
-import com.dl.lottery.param.DlQueryStakeFileParam;
-import com.dl.lottery.param.DlQueryStakeParam;
-import com.dl.lottery.param.DlToStakeParam;
-import com.dl.lottery.param.PrintLotteryStatusByOrderSnParam;
-import com.dl.lottery.param.PrintLotterysRefundsByOrderSnParam;
-import com.dl.lottery.param.SaveLotteryPrintInfoParam;
-import com.dl.order.api.IOrderService;
-import com.dl.order.dto.OrderInfoAndDetailDTO;
-import com.dl.order.param.OrderSnParam;
-import com.dl.shop.lottery.model.LotteryPrint;
-import com.dl.shop.lottery.service.LotteryMatchService;
-import com.dl.shop.lottery.service.LotteryPrintService;
-
-import io.swagger.annotations.ApiOperation;
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lottery/print")
@@ -62,6 +40,19 @@ public class LotteryPrintController {
 
 	@Resource
 	private IOrderService orderService;
+
+	@ApiOperation(value = "商户查询出票情况接口", notes = "商户查询出票情况接口")
+	@PostMapping("/queryPrintResultToMerchant")
+	public BaseResult<PrintStakeResultDTO> queryPrintResultToMerchant(@Valid @RequestBody QueryPrintStakeParam param) {
+		return lotteryPrintService.queryPrintResutToMerchant(param);
+	}
+
+	@ApiOperation(value = "通知商户查询出票情况", notes = "通知商户查询出票情况")
+	@PostMapping("/notifyPrintResultToMerchant")
+	public BaseResult<String> notifyPrintResultToMerchant(@Valid @RequestBody NotifyParam param) {
+		String rst = lotteryPrintService.notifyPrintResultToMerchant(param.getNotifyUrl(),param.getMerchantOrderSn());
+		return ResultGenerator.genSuccessResult("投注结果通知成功",rst);
+	}
 	
 	@ApiOperation(value = "投注接口", notes = "投注接口")
     @PostMapping("/toStake")
