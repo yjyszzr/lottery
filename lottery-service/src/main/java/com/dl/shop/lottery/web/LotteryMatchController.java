@@ -1478,8 +1478,8 @@ public class LotteryMatchController {
 //		_user.setMobile(mobile);
 //		_user.setPassWord(passWord);
 		BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
-		logger.info("商铺|1|扣钱|id:" + userId +  "|原可支付余额：" + userMoneyLimit + "|扣款:" + ticketAmount + "|现可支付余额：" + _userMoneyLimit);
-		
+//		logger.info("商铺|1|扣钱|id:" + userId +  "|原可支付余额：" + userMoneyLimit + "|扣款:" + ticketAmount + "|现可支付余额：" + _userMoneyLimit);
+		 
 		// 生成订单号
 		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
 		
@@ -1506,9 +1506,9 @@ public class LotteryMatchController {
 		userAccountParam.setBonusPrice(null);
 		userAccountParam.setStatus(1);
 		BaseResult<Integer> flag2 = iUserAccountService.insertUserAccountBySelective(userAccountParam);
-		logger.info("商铺|2|记流水|id:" + userId +  "|流水号:" + accountSn 
-//				+ "|订单号:" + orderSn
-				);
+//		logger.info("商铺|2|记流水|id:" + userId +  "|流水号:" + accountSn 
+////				+ "|订单号:" + orderSn
+//				);
 		
 		// order生成
 		SubmitOrderParam submitOrderParam = new SubmitOrderParam();
@@ -1567,14 +1567,17 @@ public class LotteryMatchController {
 			logger.info("订单创建失败！");
 			return ResultGenerator.genFailResult("模拟支付失败！");
 		}
-		logger.info("商铺|3|生成订单|id:" + userId
-//				+  "|流水号:" + accountSn 
-				+ "|订单号:" + orderSn);
+//		logger.info("商铺|3|生成订单|id:" + userId
+////				+  "|流水号:" + accountSn 
+//				+ "|订单号:" + orderSn);
 		
 		String orderId = createOrder.getData().getOrderId().toString();
 		OrderIdDTO orderDto = new OrderIdDTO();
 		orderDto.setOrderId(orderId);
 		orderDto.setOrderSn(orderSn);
+		
+		logger.info("商铺|id:" + userId +  "|原可支付余额：" + userMoneyLimit + "|扣款:" + ticketAmount + "|现可支付余额：" + _userMoneyLimit +  "|流水号:" + accountSn + "|订单号:" + orderSn);
+		
 		return ResultGenerator.genSuccessResult("success", orderDto);
 	}
 	
