@@ -18,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.data.redis.core.StringRedisTemplate;
+//import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -1473,8 +1474,8 @@ public class LotteryMatchController {
 		UserParam _user = new UserParam();
 		_user.setUserId(userId + "");
 		_user.setUserMoneyLimit(_userMoneyLimit);
-		_user.setMobile(mobile);
-		_user.setPassWord(passWord);
+//		_user.setMobile(mobile);
+//		_user.setPassWord(passWord);
 		BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
 		
 		// 生成订单号

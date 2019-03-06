@@ -1,41 +1,5 @@
 package com.dl.shop.lottery.service;
 
-import io.jsonwebtoken.lang.Collections;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dl.base.configurer.RestTemplateConfig;
@@ -48,43 +12,53 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.MD5Utils;
 import com.dl.base.util.SNGenerator;
-import com.dl.lottery.dto.DlQueryAccountDTO;
-import com.dl.lottery.dto.DlQueryIssueDTO;
+import com.dl.lottery.dto.*;
 import com.dl.lottery.dto.DlQueryIssueDTO.QueryIssue;
-import com.dl.lottery.dto.DlQueryPrizeFileDTO;
-import com.dl.lottery.dto.DlQueryStakeDTO;
 import com.dl.lottery.dto.DlQueryStakeDTO.BackQueryStake;
-import com.dl.lottery.dto.DlQueryStakeFileDTO;
-import com.dl.lottery.dto.DlToStakeDTO;
 import com.dl.lottery.dto.DlToStakeDTO.BackOrderDetail;
-import com.dl.lottery.dto.LotteryPrintDTO;
-import com.dl.lottery.dto.PrintLotteryRefundDTO;
-import com.dl.lottery.param.DlCallbackStakeParam;
+import com.dl.lottery.param.*;
 import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
 import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage;
 import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage.SpMap.Odds.MatchNumber;
-import com.dl.lottery.param.DlCallbackStakeSenDeParam;
-import com.dl.lottery.param.DlCallbackStakeWeiCaiShiDaiParam;
-import com.dl.lottery.param.DlQueryAccountParam;
-import com.dl.lottery.param.DlQueryIssueParam;
-import com.dl.lottery.param.DlQueryPrizeFileParam;
-import com.dl.lottery.param.DlQueryStakeFileParam;
-import com.dl.lottery.param.DlQueryStakeParam;
-import com.dl.lottery.param.DlToStakeParam;
 import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
 import com.dl.order.api.IOrderService;
+import com.dl.order.dto.OrderDTO;
 import com.dl.order.dto.OrderDetailDataDTO;
 import com.dl.order.dto.OrderInfoAndDetailDTO;
 import com.dl.order.dto.OrderInfoDTO;
 import com.dl.order.param.LotteryPrintParam;
+import com.dl.order.param.MerchantOrderSnParam;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
-import com.dl.shop.lottery.model.DlLeagueMatchResult;
-import com.dl.shop.lottery.model.LotteryPrint;
-import com.dl.shop.lottery.model.LotteryThirdApiLog;
-import com.dl.shop.lottery.model.PeriodRewardDetail;
+import com.dl.shop.lottery.model.*;
+import io.jsonwebtoken.lang.Collections;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import com.dl.lottery.enums.MemberEnums;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -111,6 +85,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	@Resource
 	private PeriodRewardDetailMapper periodRewardDetailMapper;
 
+	@Resource
+    private ArtifiDyQueueService artifiDyQueueService;
+
 	@Value("${print.ticket.url}")
 	private String printTicketUrl;
 	
@@ -134,7 +111,132 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	
 	@Value("${spring.datasource.druid.driver-class-name}")
 	private String dbDriver;*/
-	
+
+
+	public BaseResult<PrintStakeResultDTO> queryPrintResutToMerchant(QueryPrintStakeParam param){
+		PrintStakeResultDTO printStakeResultDTO = new PrintStakeResultDTO();
+		MerchantOrderSnParam merchantParam = new MerchantOrderSnParam();
+		merchantParam.setMerchant(param.getMerchant());
+		merchantParam.setMerchantOrderSn(param.getMerchantOrderSn());
+		BaseResult<OrderDTO> orderDTOBaseResult = orderService.getOrderInfoByMerchantOrderSn(merchantParam);
+		if(!orderDTOBaseResult.isSuccess()){
+			return ResultGenerator.genResult(MemberEnums.DBDATA_IS_NULL.getcode(),"未查询到该订单");
+		}
+
+		Integer nativeOrderStatus = orderDTOBaseResult.getData().getOrderStatus();
+		String orderStatus = "0";
+		DlArtifiPrintLottery dlArtifiPrintLottery = artifiDyQueueService.selectArtifiPrintLotteryByOrderSn(orderDTOBaseResult.getData().getOrderSn());
+		if(null == dlArtifiPrintLottery){
+			printStakeResultDTO.setStatus("0");
+		}else{
+			Byte printStatusByte = dlArtifiPrintLottery.getOrderStatus();
+			if(printStatusByte.byteValue() == 0){
+				orderStatus = "0";
+			}else if(printStatusByte.byteValue() == 1){
+				orderStatus = "1";
+			}else if(printStatusByte.byteValue() == 2){
+				orderStatus = "2";
+			}
+		}
+
+		if(orderStatus.equals("1")){//已出票
+			String printSp = "";
+			com.dl.order.param.OrderSnParam orderSnParam = new com.dl.order.param.OrderSnParam();
+			orderSnParam.setOrderSn(orderDTOBaseResult.getData().getOrderSn());
+			BaseResult<String> tdsRst = orderService.getOrderTicketDatasByOrderSn(orderSnParam);
+			if(tdsRst.isSuccess()){
+				printSp = tdsRst.getData();
+			}
+			if(nativeOrderStatus == 5 || nativeOrderStatus == 9){//已中奖
+				printStakeResultDTO.setStatus("5");
+				printStakeResultDTO.setAwardMoney(orderDTOBaseResult.getData().getWinningMoney());
+				printStakeResultDTO.setPicUrl(orderDTOBaseResult.getData().getPic());
+				printStakeResultDTO.setPrint_sp(printSp);
+			}else if(nativeOrderStatus == 4){//未中奖
+				printStakeResultDTO.setStatus("4");
+				printStakeResultDTO.setPicUrl(orderDTOBaseResult.getData().getPic());
+				printStakeResultDTO.setPrint_sp(printSp);
+			}else if(nativeOrderStatus == 3){//待开奖
+				printStakeResultDTO.setStatus("3");
+				printStakeResultDTO.setPicUrl(orderDTOBaseResult.getData().getPic());
+				printStakeResultDTO.setPrint_sp(printSp);
+			}
+		}else{//待出票和出票失败
+			printStakeResultDTO.setStatus(orderStatus);
+		}
+
+		return ResultGenerator.genSuccessResult("查询出票结果成功", printStakeResultDTO);
+	}
+
+
+
+	/**
+	 * 主动通知商户出票情况
+	 * @param notifyUrl
+	 * @param merchant
+	 * @param merchantOrderSn
+	 */
+	public String notifyPrintResultToMerchant(String notifyUrl,String merchantOrderSn){
+		QueryPrintStakeParam param = new QueryPrintStakeParam();
+		param.setMerchantOrderSn(merchantOrderSn);
+		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
+		PrintStakeResultDTO printStakeResultDTO = new PrintStakeResultDTO();
+		if(psRto.isSuccess()){
+			printStakeResultDTO = psRto.getData();
+		}
+		for(int i = 0; i <= 2; i++){
+			boolean rst = this.doPostMerchant(printStakeResultDTO);
+			if(rst){
+				break;
+			}else{
+				continue;
+			}
+		}
+		return null;
+	}
+
+
+	/**
+	 *
+	 * @param printStakeResultDTO
+	 * @return
+	 */
+	public boolean doPostMerchant(PrintStakeResultDTO printStakeResultDTO){
+		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
+		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
+		HttpHeaders headers = new HttpHeaders();
+		MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
+		headers.setContentType(type);
+
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String, Object>();
+		paramMap.add("status", printStakeResultDTO.getStatus());
+		paramMap.add("picUrl", printStakeResultDTO.getPicUrl());
+		paramMap.add("awardMoney", printStakeResultDTO.getAwardMoney());
+		paramMap.add("print_sp", printStakeResultDTO.getPrint_sp());
+		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap,headers);
+		ResponseEntity<String> response = rest.postForEntity("http://123.57.34.133:8080/merchant/notify", httpEntity, String.class);
+		Integer statusCode = response.getStatusCodeValue();
+		if(statusCode == 200){
+			String bodyStr = response.getBody();
+			com.alibaba.fastjson.JSONObject json = null;
+			try {
+				json = JSON.parseObject(bodyStr);
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+			Integer code = json.getInteger("code");
+			if(code == 0){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
+
+
+
 	/**
 	 * 投注接口（竞彩足球，game参数都是T51）
 	 * @return
