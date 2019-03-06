@@ -1348,7 +1348,7 @@ public class LotteryMatchController {
 	}
 	
 	
-//	@Transactional
+//	@Transactional 
 	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
 	@PostMapping("/createOrder")
 	public synchronized BaseResult<OrderIdDTO> createOrder(@Valid @RequestBody DlJcZqMatchBetParam2 param, HttpServletRequest req){
