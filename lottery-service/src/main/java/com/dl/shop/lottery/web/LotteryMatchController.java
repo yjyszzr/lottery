@@ -1371,10 +1371,15 @@ public class LotteryMatchController {
 	@ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
 	@PostMapping("/createOrder")
 	public synchronized BaseResult<OrderIdDTO> createOrder(@Valid @RequestBody DlJcZqMatchBetParam2 param, HttpServletRequest req){
-		
 		// 检验签名
+		/**
+		使用MD5进行签名,签名对象为merchant+merchantPassword+json
+		json为请求信息中的json字符串,merchant为代理商编号，merchantPassword为代理商秘钥
+		签名之前需将签名数据以UTF-8编码方式编码
+		在Http请求中增加Authorization的Header来包含签名信息
+		 */
 		boolean authFlag = true;
-		// ~~~
+		// ~~~  
 		if (!authFlag) {
 			return ResultGenerator.genFailResult("签名不合法");
 		}
@@ -1472,6 +1477,8 @@ public class LotteryMatchController {
 //				.getTotalMoney()
 				.getUserMoneyLimit()
 				;
+		String mobile = userDTO.getData().getMobile();
+		String passWord = userDTO.getData().getPassword();
 		
 		logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
 		BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
@@ -1480,15 +1487,15 @@ public class LotteryMatchController {
 		}else {
 			return ResultGenerator.genFailResult("商户余额不足");
 		}
-
 		
 		//扣钱
 		BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
 		UserParam _user = new UserParam();
 		_user.setUserId(userId + "");
 		_user.setUserMoneyLimit(_userMoneyLimit);
-//		this.userMapper.updateUserMoneyAndUserMoneyLimit(_user);
-		this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
+		_user.setMobile(mobile);
+		_user.setPassWord(passWord);
+		BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
 		
 		// 生成订单号
 		String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
@@ -1515,8 +1522,7 @@ public class LotteryMatchController {
 		userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
 		userAccountParam.setBonusPrice(null);
 		userAccountParam.setStatus(1);
-		BaseResult<Integer> flag = iUserAccountService.insertUserAccountBySelective(userAccountParam);
-		
+		BaseResult<Integer> flag2 = iUserAccountService.insertUserAccountBySelective(userAccountParam);
 		
 		// order生成
 		SubmitOrderParam submitOrderParam = new SubmitOrderParam();
@@ -1537,15 +1543,7 @@ public class LotteryMatchController {
 		submitOrderParam.setSurplus(surplus);
 //		user_surplus 
 //		user_surplus_limit   ///
-		
-		
 		submitOrderParam.setTicketNum(dto.getTicketNum());
-		
-		
-		
-		
-		
-
 		submitOrderParam.setThirdPartyPaid(thirdPartyPaid);
 		submitOrderParam.setPayName("");
 		submitOrderParam.setUserBonusId(userBonusId);
@@ -1574,12 +1572,9 @@ public class LotteryMatchController {
 		submitOrderParam.setForecastMoney(dto.getForecastMoney());
 		submitOrderParam.setIssue(dto.getIssue());
 		submitOrderParam.setTicketDetails(ticketDetails);
-		
-		
 		submitOrderParam.setMerchantNo(param.getMerchant());
 		submitOrderParam.setMerchantOrderSn(param.getMerchantOrderSn());
 		
-	
 		logger.info("订单提交信息==========="+submitOrderParam);
 		BaseResult<OrderDTO> createOrder = orderService.createOrder(submitOrderParam);
 		if (createOrder.getCode() != 0) {
