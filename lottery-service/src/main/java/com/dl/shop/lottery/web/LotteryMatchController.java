@@ -136,8 +136,8 @@ public class LotteryMatchController {
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
-		Integer allMatchCount = Integer.valueOf(dlJcZqMatchListDTO.getAllMatchCount());
-		if(allMatchCount <= 0){
+		String allMatchCount = dlJcZqMatchListDTO.getAllMatchCount();
+		if(allMatchCount == null || Integer.valueOf(allMatchCount) <= 0){
 			return ResultGenerator.genResult(LotteryResultEnum.NO_MATCH.getCode(),LotteryResultEnum.NO_MATCH.getMsg());
 		}
     	return ResultGenerator.genSuccessResult("获取赛事列表成功", dlJcZqMatchListDTO);
