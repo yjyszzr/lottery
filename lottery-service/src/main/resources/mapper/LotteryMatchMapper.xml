@@ -52,7 +52,7 @@
 		is_show,is_del,match_sn,is_hot
 	from
 	dl_match 
-	where is_del = 0 and is_show=1 and create_time = 1551969988;
+	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
   	 <if test="leagueIds!=null and leagueIds != ''">
   	 	and league_id in
   	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
