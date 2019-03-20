@@ -343,16 +343,10 @@ public class LotteryHallService {
 			discoveryList.removeIf(s->s.getType() == 10);
 		}
 
-
-		if(discoveryList.size() > 0){
-			dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
-			)).collect(Collectors.toList());
-		}
-
 		//大厅店铺的url需要特殊处理
-		for(DlDiscoveryHallClassify c:discoveryList){
+		for(int i = 0;i < discoveryList.size();i++){
 			log.info("newUrl......");
-			if(c.getClassifyId() == 9){
+			if(discoveryList.get(i).getClassifyId() == 9){
 				log.info("newUrl......");
 				String url = "";
 				String token = SessionUtil.getToken();
@@ -366,9 +360,14 @@ public class LotteryHallService {
 				}
 				String newUrl = this.buildJumpUrl(url,storeId,token,curTime);
 				log.info("newUrl......:"+newUrl);
-				c.setRedirectUrl(c.getRedirectUrl()+"&"+newUrl);
+				discoveryList.get(i).setRedirectUrl(discoveryList.get(i).getRedirectUrl()+"&"+newUrl);
 				break;
 			}
+		}
+
+		if(discoveryList.size() > 0){
+			dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
+			)).collect(Collectors.toList());
 		}
 
 		return dtoList;
