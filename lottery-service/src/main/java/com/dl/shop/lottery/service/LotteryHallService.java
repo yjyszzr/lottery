@@ -345,9 +345,7 @@ public class LotteryHallService {
 
 		//大厅店铺的url需要特殊处理
 		for(int i = 0;i < discoveryList.size();i++){
-			log.info("newUrl......");
 			if(discoveryList.get(i).getClassifyId() == 9){
-				log.info("newUrl......");
 				String url = "";
 				String token = SessionUtil.getToken();
 				Integer storeId = 1;
@@ -359,8 +357,7 @@ public class LotteryHallService {
 					url = bResult.getData().getValueTxt();
 				}
 				String newUrl = this.buildJumpUrl(url,storeId,token,curTime);
-				log.info("newUrl......:"+newUrl);
-				discoveryList.get(i).setRedirectUrl(discoveryList.get(i).getRedirectUrl()+"&"+newUrl);
+				discoveryList.get(i).setRedirectUrl(newUrl);
 				break;
 			}
 		}
