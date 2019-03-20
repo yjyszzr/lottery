@@ -343,12 +343,48 @@ public class LotteryHallService {
 			discoveryList.removeIf(s->s.getType() == 10);
 		}
 
+
 		if(discoveryList.size() > 0){
 			dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
 			)).collect(Collectors.toList());
 		}
 
+		//大厅店铺的url需要特殊处理
+		for(DlDiscoveryHallClassify c:discoveryList){
+			log.info("newUrl......");
+			if(c.getClassifyId() == 9){
+				log.info("newUrl......");
+				String url = "";
+				String token = SessionUtil.getToken();
+				Integer storeId = 1;
+				Integer curTime = DateUtil.getCurrentTimeLong();
+				SysConfigParam sysCfgParams = new SysConfigParam();
+				sysCfgParams.setBusinessId(49);
+				BaseResult<SysConfigDTO> bResult = iSysConfigService.querySysConfig(sysCfgParams);
+				if(bResult != null && bResult.getData() != null) {
+					url = bResult.getData().getValueTxt();
+				}
+				String newUrl = this.buildJumpUrl(url,storeId,token,curTime);
+				log.info("newUrl......:"+newUrl);
+				c.setRedirectUrl(c.getRedirectUrl()+"&"+newUrl);
+				break;
+			}
+		}
+
 		return dtoList;
+	}
+
+
+
+	public static String buildJumpUrl(String url,Integer storeId,String token,Integer time) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(url+"?");
+		builder.append("storeId=" + storeId + "&");
+		if(!org.springframework.util.StringUtils.isEmpty(token)) {
+			builder.append("token=" + token + "&");
+		}
+		builder.append("_t=" + time);
+		return builder.toString();
 	}
 
 	/**
