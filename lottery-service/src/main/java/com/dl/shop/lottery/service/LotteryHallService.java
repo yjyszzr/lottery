@@ -348,6 +348,7 @@ public class LotteryHallService {
 			if(discoveryList.get(i).getClassifyId() == 9){
 				String url = "";
 				String token = SessionUtil.getToken();
+				log.info("--------------是否有token:"+token);
 				Integer storeId = 1;
 				Integer curTime = DateUtil.getCurrentTimeLong();
 				SysConfigParam sysCfgParams = new SysConfigParam();
@@ -357,6 +358,7 @@ public class LotteryHallService {
 					url = bResult.getData().getValueTxt();
 				}
 				String newUrl = this.buildJumpUrl(url,storeId,token,curTime);
+				log.info("---------------newUrl:"+newUrl);
 				discoveryList.get(i).setRedirectUrl(newUrl);
 				break;
 			}
