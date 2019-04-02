@@ -1029,6 +1029,7 @@ public class LotteryMatchController {
 		
 		boolean isCellError = false;
 		boolean isAllSingle = true;
+		boolean isMonyPlay = false;
 		for(MatchBetPlayDTO betPlay : matchBetPlays){
 			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
 			if(CollectionUtils.isEmpty(matchBetCells)) {
@@ -1040,6 +1041,9 @@ public class LotteryMatchController {
 				if(CollectionUtils.isEmpty(betCells)) {
 					isCellError = true;
 					break;
+				}
+				if(betCells.size()>1) {
+					isMonyPlay = true;
 				}
 				for(DlJcZqMatchCellDTO dto: betCells) {
 					String cellCode = dto.getCellCode();
@@ -1069,6 +1073,11 @@ public class LotteryMatchController {
 		if(betTypeStr.contains("11")) {
 			if(!isAllSingle) {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
+			}
+		}
+		if("6".equals(param.getPlayType())) {//混合投注只能选择一种玩法
+			if(isMonyPlay) {
+				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
 			}
 		}
 		String[] betTypes = betTypeStr.split(",");
