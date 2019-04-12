@@ -121,6 +121,7 @@ public class LotteryHallService {
 	 * @return
 	 */
 	public DlHallDTO getHallDataAllLottery1(HallParam hallParam,String channel,String version) {
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
@@ -136,7 +137,9 @@ public class LotteryHallService {
 		List<DlLotteryClassifyDTO> lotteryClassifys = new ArrayList<DlLotteryClassifyDTO>();
 
 		//新版本展示的是不同彩种的logo相关信息
-		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses(appCodeName);
 		for(LotteryClassify s:classifyList){
 			DlLotteryClassifyDTO  dto = new DlLotteryClassifyDTO();
 			dto.setLotteryId(s.getLotteryClassifyId().toString());
@@ -179,13 +182,13 @@ public class LotteryHallService {
 		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
-		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
-		// 获取活动数据
-		dlHallDTO.setActivity(null);
-		// 发现页图标
-		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
-		// 获取中奖信息列表
-		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
+//		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
+//		// 获取活动数据
+//		dlHallDTO.setActivity(null);
+//		// 发现页图标
+//		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
+//		// 获取中奖信息列表
+//		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
 		// 第一版只显示竞彩足球的子列表
