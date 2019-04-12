@@ -176,6 +176,7 @@ public class LotteryHallService {
 	 */
 	public DlHallDTO getHallData(HallParam hallParam) {
 		Integer userId = SessionUtil.getUserId();
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
@@ -203,9 +204,12 @@ public class LotteryHallService {
 		
 		String phoneChannel = "&qd="+channel;
 		log.info("channel:"+channel);
+
 		List<DlPlayClassifyDetailDTO> playClassifyList  = lotteryPlayClassifyMapper.selectAllData(1);
 		String playClassifyUrl = playClassifyList.get(0).getRedirectUrl();
-		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses(appCodeName);
 		for(LotteryClassify lotteryClassify:classifyList) {
 			DlPlayClassifyDetailDTO dlPlayDetailDto = new DlPlayClassifyDetailDTO();
 			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
@@ -416,7 +420,6 @@ public class LotteryHallService {
 				)).collect(Collectors.toList());
 			}
 		}
-
 
 		return dtoList;
 	}

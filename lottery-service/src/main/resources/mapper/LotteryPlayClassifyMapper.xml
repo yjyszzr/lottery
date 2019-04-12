@@ -13,6 +13,7 @@
     <result column="play_label_id" jdbcType="INTEGER" property="playLabelId" />
     <result column="sort" jdbcType="INTEGER" property="sort" />
     <result column="status" jdbcType="INTEGER" property="status" />
+      <result column="app_code_name" jdbcType="INTEGER" property="appCodeName" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
     <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />

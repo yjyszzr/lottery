@@ -14,6 +14,7 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_show" jdbcType="INTEGER" property="isShow" />
     <result column="create_time" jdbcType="INTEGER" property="createTime" />
+      <result column="app_code_name" jdbcType="INTEGER" property="appCodeName" />
     <result column="redirect_url" jdbcType="VARCHAR" property="redirectUrl" />
   </resultMap>
   
@@ -41,7 +42,7 @@
            redirect_url
         from
             dl_lottery_classify
-        where is_show = 1
+        where is_show = 1 and app_code_name = #{appCodeName}
         order by sort asc
   </select>
   
