@@ -393,6 +393,7 @@ public class LotteryHallService {
 	 *
 	 */
 	public List<DlDiscoveryHallClassifyDTO> moreDiscoveryClass(){
+        UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		//查询交易版还是资讯版
 		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
 		StrParam strParam = new StrParam();
@@ -407,7 +408,9 @@ public class LotteryHallService {
 		typeList.add(3);
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
 		if (typeList.size() > 0){
-			List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
+            String appCodeNameStr = userDeviceInfo.getAppCodeName();
+            Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+			List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,appCodeName,Integer.valueOf(isTransaction));
 			if(discoveryList.size() > 0){
 				dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
 				)).collect(Collectors.toList());
