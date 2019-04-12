@@ -318,7 +318,10 @@ public class LotteryHallService {
 		Integer h5TurnOn = 1;
 		List<Integer> typeList= Arrays.asList(2,4,7,9,10,11);//大厅的几个图标的类型
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
-		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,2);
+
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,appCodeName,2);
 
 		BusiIdsListParam busiIdsListParam = new BusiIdsListParam();
 		List<Integer> busiIdList = Arrays.asList(50,51,52);//android,ios,h5的大厅店铺按钮开关

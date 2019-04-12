@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface DlDiscoveryHallClassifyMapper extends Mapper<DlDiscoveryHallClassify> {
 
-    List<DlDiscoveryHallClassify> queryDiscoveryListByType(@Param("typeList") List<Integer> typeList, @Param("isTransaction") Integer isTransaction);
+    List<DlDiscoveryHallClassify> queryDiscoveryListByType(@Param("typeList") List<Integer> typeList, @Param("appCodeName") Integer appCodeName, @Param("isTransaction") Integer isTransaction);
 
 }
