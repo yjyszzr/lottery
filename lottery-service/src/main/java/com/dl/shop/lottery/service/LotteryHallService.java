@@ -182,13 +182,13 @@ public class LotteryHallService {
 		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
-//		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
-//		// 获取活动数据
-//		dlHallDTO.setActivity(null);
-//		// 发现页图标
-//		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
-//		// 获取中奖信息列表
-//		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
+		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
+		// 获取活动数据
+		dlHallDTO.setActivity(null);
+		// 发现页图标
+		dlHallDTO.setDiscoveryHallClassifyDTOList(queryDisHallClassByType());
+		// 获取中奖信息列表
+		dlHallDTO.setWinningMsgs(getDlWinningLogDTOs());
 		// 获取彩票分类列表
 		// dlHallDTO.setLotteryClassifys(getDlLotteryClassifyDTOs());
 		// 第一版只显示竞彩足球的子列表
