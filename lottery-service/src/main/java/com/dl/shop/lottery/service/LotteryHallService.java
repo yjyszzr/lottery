@@ -226,29 +226,28 @@ public class LotteryHallService {
 				}
 				dlPlayDetailDto.setRedirectUrl(playClassifyUrl+isLogin+phoneChannel);
 				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
+			}else if(10 == lotteryClassify.getLotteryClassifyId()){
+				if(channel != null) {
+					SysConfigParam sysCfgParams = new SysConfigParam();
+					sysCfgParams.setBusinessId(49);
+					BaseResult<SysConfigDTO> bR = iSysConfigService.querySysConfig(sysCfgParams);
+					String url = null;
+					if(bR != null && bR.isSuccess()) {
+						url = bR.getData().getValueTxt();
+					}
+					String token = SessionUtil.getToken();
+					int time = DateUtil.getCurrentTimeLong();
+					dlPlayDetailDto = buildStoreDTO(url,token,time);
+				}
 			}else {
 				dlPlayDetailDto.setRedirectUrl("");
 				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getStatusReason());
 			}
+
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 		}
-		if(channel != null) {
-			//天天体育ios和andr所有渠道
-			if("c26011".equals(channel) || channel.startsWith("c220")) {
-				SysConfigParam sysCfgParams = new SysConfigParam();
-				sysCfgParams.setBusinessId(49);
-				BaseResult<SysConfigDTO> bR = iSysConfigService.querySysConfig(sysCfgParams);
-				String url = null;
-				if(bR != null && bR.isSuccess()) {
-					url = bR.getData().getValueTxt();
-				}
-				String token = SessionUtil.getToken();
-				int time = DateUtil.getCurrentTimeLong();
-				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO(url,token,time);
-				dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
-			}
-		}
+
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
