@@ -17,6 +17,13 @@ public class DlDiscoveryHallClassify {
     @Column(name = "class_name")
     private String className;
 
+
+    /**
+     * 名称
+     */
+    @Column(name = "app_code_name")
+    private String appCodeName;
+
     /**
      * img
      */
@@ -272,5 +279,13 @@ public class DlDiscoveryHallClassify {
      */
     public void setStatusReason(String statusReason) {
         this.statusReason = statusReason;
+    }
+
+    public String getAppCodeName() {
+        return appCodeName;
+    }
+
+    public void setAppCodeName(String appCodeName) {
+        this.appCodeName = appCodeName;
     }
 }
