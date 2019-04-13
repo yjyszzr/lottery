@@ -1036,14 +1036,14 @@ public class LotteryMatchController {
 				isCellError = true;
 				break;
 			}
+			if(matchBetCells.size()>1) {
+				isMonyPlay = true;
+			}
 			for(MatchBetCellDTO betCell: matchBetCells){
 				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
 				if(CollectionUtils.isEmpty(betCells)) {
 					isCellError = true;
 					break;
-				}
-				if(betCells.size()>1) {
-					isMonyPlay = true;
 				}
 				for(DlJcZqMatchCellDTO dto: betCells) {
 					String cellCode = dto.getCellCode();
