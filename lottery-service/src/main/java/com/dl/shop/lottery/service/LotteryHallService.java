@@ -121,6 +121,7 @@ public class LotteryHallService {
 	 * @return
 	 */
 	public DlHallDTO getHallDataAllLottery1(HallParam hallParam,String channel,String version) {
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
@@ -136,7 +137,9 @@ public class LotteryHallService {
 		List<DlLotteryClassifyDTO> lotteryClassifys = new ArrayList<DlLotteryClassifyDTO>();
 
 		//新版本展示的是不同彩种的logo相关信息
-		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses(appCodeName);
 		for(LotteryClassify s:classifyList){
 			DlLotteryClassifyDTO  dto = new DlLotteryClassifyDTO();
 			dto.setLotteryId(s.getLotteryClassifyId().toString());
@@ -176,6 +179,7 @@ public class LotteryHallService {
 	 */
 	public DlHallDTO getHallData(HallParam hallParam) {
 		Integer userId = SessionUtil.getUserId();
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		DlHallDTO dlHallDTO = new DlHallDTO();
 		// 获取首页轮播图列表
 		dlHallDTO.setNavBanners(getDlNavBannerDTO(hallParam));
@@ -203,9 +207,12 @@ public class LotteryHallService {
 		
 		String phoneChannel = "&qd="+channel;
 		log.info("channel:"+channel);
+
 		List<DlPlayClassifyDetailDTO> playClassifyList  = lotteryPlayClassifyMapper.selectAllData(1);
 		String playClassifyUrl = playClassifyList.get(0).getRedirectUrl();
-		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<LotteryClassify> classifyList = lotteryClassifyMapper.selectAllLotteryClasses(appCodeName);
 		for(LotteryClassify lotteryClassify:classifyList) {
 			DlPlayClassifyDetailDTO dlPlayDetailDto = new DlPlayClassifyDetailDTO();
 			dlPlayDetailDto.setLotteryId(String.valueOf(lotteryClassify.getLotteryClassifyId()));
@@ -219,29 +226,28 @@ public class LotteryHallService {
 				}
 				dlPlayDetailDto.setRedirectUrl(playClassifyUrl+isLogin+phoneChannel);
 				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getLotteryName());
+			}else if(10 == lotteryClassify.getLotteryClassifyId()){
+				if(channel != null) {
+					SysConfigParam sysCfgParams = new SysConfigParam();
+					sysCfgParams.setBusinessId(49);
+					BaseResult<SysConfigDTO> bR = iSysConfigService.querySysConfig(sysCfgParams);
+					String url = null;
+					if(bR != null && bR.isSuccess()) {
+						url = bR.getData().getValueTxt();
+					}
+					String token = SessionUtil.getToken();
+					int time = DateUtil.getCurrentTimeLong();
+					dlPlayDetailDto = buildStoreDTO(url,token,time);
+				}
 			}else {
 				dlPlayDetailDto.setRedirectUrl("");
 				dlPlayDetailDto.setPlayClassifyName(lotteryClassify.getStatusReason());
 			}
+
 			dlPlayDetailDto.setSubTitle(lotteryClassify.getSubTitle());
 			dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
 		}
-		if(channel != null) {
-			//天天体育ios和andr所有渠道
-			if("c26011".equals(channel) || channel.startsWith("c220")) {
-				SysConfigParam sysCfgParams = new SysConfigParam();
-				sysCfgParams.setBusinessId(49);
-				BaseResult<SysConfigDTO> bR = iSysConfigService.querySysConfig(sysCfgParams);
-				String url = null;
-				if(bR != null && bR.isSuccess()) {
-					url = bR.getData().getValueTxt();
-				}
-				String token = SessionUtil.getToken();
-				int time = DateUtil.getCurrentTimeLong();
-				DlPlayClassifyDetailDTO dlPlayDetailDto = buildStoreDTO(url,token,time);
-				dlPlayClassifyDetailDTOs.add(dlPlayDetailDto);
-			}
-		}
+
 		if (CollectionUtils.isNotEmpty(dlPlayClassifyDetailDTOs)) {
 			DlPlayClassifyDetailDTO wcDTO = null;
 			for (DlPlayClassifyDetailDTO dto : dlPlayClassifyDetailDTOs) {
@@ -318,7 +324,10 @@ public class LotteryHallService {
 		Integer h5TurnOn = 1;
 		List<Integer> typeList= Arrays.asList(2,4,7,9,10,11);//大厅的几个图标的类型
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
-		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,2);
+
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,appCodeName,2);
 
 		BusiIdsListParam busiIdsListParam = new BusiIdsListParam();
 		List<Integer> busiIdList = Arrays.asList(50,51,52);//android,ios,h5的大厅店铺按钮开关
@@ -390,6 +399,7 @@ public class LotteryHallService {
 	 *
 	 */
 	public List<DlDiscoveryHallClassifyDTO> moreDiscoveryClass(){
+        UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		//查询交易版还是资讯版
 		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
 		StrParam strParam = new StrParam();
@@ -404,13 +414,14 @@ public class LotteryHallService {
 		typeList.add(3);
 		List<DlDiscoveryHallClassifyDTO> dtoList = new ArrayList<>();
 		if (typeList.size() > 0){
-			List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,Integer.valueOf(isTransaction));
+            String appCodeNameStr = userDeviceInfo.getAppCodeName();
+            Integer appCodeName = StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+			List<DlDiscoveryHallClassify> discoveryList = dlDiscoveryHallClassifyService.queryDiscoveryListByType(typeList,appCodeName,Integer.valueOf(isTransaction));
 			if(discoveryList.size() > 0){
 				dtoList = discoveryList.stream().map(s->new DlDiscoveryHallClassifyDTO(String.valueOf(s.getClassifyId()),String.valueOf(s.getType()),s.getClassName(),lotteryConfig.getBannerShowUrl() + s.getClassImg(),s.getStatus(),s.getStatusReason(),s.getRedirectUrl()
 				)).collect(Collectors.toList());
 			}
 		}
-
 
 		return dtoList;
 	}

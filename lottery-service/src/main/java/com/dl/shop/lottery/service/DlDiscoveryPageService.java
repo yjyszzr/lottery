@@ -1,34 +1,5 @@
 package com.dl.shop.lottery.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
-import tk.mybatis.mapper.util.StringUtil;
-
 import com.dl.base.enums.LotteryClassifyEnum;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
@@ -36,55 +7,13 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.PinyinUtil;
 import com.dl.base.util.SessionUtil;
-import com.dl.lottery.dto.ActiveCenterDTO;
-import com.dl.lottery.dto.DLArticleDTO;
-import com.dl.lottery.dto.DLFindListDTO;
-import com.dl.lottery.dto.DlBannerForActive;
-import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
-import com.dl.lottery.dto.DlDiscoveryPageDTO;
+import com.dl.lottery.dto.*;
 import com.dl.lottery.dto.DlHallDTO.DlNavBannerDTO;
-import com.dl.lottery.dto.DlLeagueContryDTO;
-import com.dl.lottery.dto.DlLeagueDetailDTO;
-import com.dl.lottery.dto.DlLeagueDetailForDiscoveryDTO;
-import com.dl.lottery.dto.DlLeagueIntegralDTO;
-import com.dl.lottery.dto.DlLeagueMatchDTO;
-import com.dl.lottery.dto.DlLeagueScoreDTO;
-import com.dl.lottery.dto.DlLeagueSeason500wDTO;
-import com.dl.lottery.dto.DlLeagueShooterDTO;
-import com.dl.lottery.dto.DlLeagueTeamDTO;
-import com.dl.lottery.dto.DlLotteryClassifyForOpenPrizeDTO;
-import com.dl.lottery.dto.DlMatchGroupData500WDTO;
-import com.dl.lottery.dto.DlMatchInfoFutureDTO;
 import com.dl.lottery.dto.DlMatchInfoFutureDTO.MatchInfoFutureDTO;
-import com.dl.lottery.dto.DlPlayerDTO;
-import com.dl.lottery.dto.DlPlayerInfoDTO;
-import com.dl.lottery.dto.DlRecentRecordDTO;
 import com.dl.lottery.dto.DlRecentRecordDTO.RecentRecordInfoDTO;
-import com.dl.lottery.dto.DlSZCDTO;
-import com.dl.lottery.dto.DlSeason500wDTO;
-import com.dl.lottery.dto.DlSuperLottoDTO;
-import com.dl.lottery.dto.DlSuperLottoDetailsDTO;
-import com.dl.lottery.dto.DlSuperLottoRewardDetailsDTO;
-import com.dl.lottery.dto.DlTeamDetailForDiscoveryDTO;
-import com.dl.lottery.dto.DlTopScorerDTO;
-import com.dl.lottery.dto.GroupLeagueDTO;
-import com.dl.lottery.dto.InfoCatDTO;
-import com.dl.lottery.dto.JCResultDTO;
-import com.dl.lottery.dto.LeagueInfoDTO;
-import com.dl.lottery.dto.LeagueMatchResultDTO;
-import com.dl.lottery.dto.SZCPrizeDTO;
-import com.dl.lottery.dto.SZCResultDTO;
 import com.dl.lottery.enums.DiscoveryClassifyEnums;
 import com.dl.lottery.enums.LottoRewardLevelEnums;
-import com.dl.lottery.enums.MatchStatusEnums;
-import com.dl.lottery.param.CatArticleParam;
-import com.dl.lottery.param.DiscoveryPageParam;
-import com.dl.lottery.param.JCQueryParam;
-import com.dl.lottery.param.LeagueDetailForDiscoveryParam;
-import com.dl.lottery.param.LeagueDetailParam;
-import com.dl.lottery.param.LeagueListByGroupIdParam;
-import com.dl.lottery.param.SZCQueryParam;
-import com.dl.lottery.param.TeamParam;
+import com.dl.lottery.param.*;
 import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.dto.SwitchConfigDTO;
 import com.dl.member.param.StrParam;
@@ -94,26 +23,27 @@ import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
 import com.dl.shop.lottery.dao2.DlLeagueInfoMapper;
 import com.dl.shop.lottery.dao2.DlMatchBasketballMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
-import com.dl.shop.lottery.model.DlArticle;
-import com.dl.shop.lottery.model.DlArticleClassify;
-import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
-import com.dl.shop.lottery.model.DlLeagueInfo500W;
-import com.dl.shop.lottery.model.DlLeaguePlayer;
-import com.dl.shop.lottery.model.DlMatchBasketball;
-import com.dl.shop.lottery.model.DlPhoneChannel;
-import com.dl.shop.lottery.model.DlSeason500w;
-import com.dl.shop.lottery.model.DlSorts;
-import com.dl.shop.lottery.model.DlSuperLotto;
-import com.dl.shop.lottery.model.DlSuperLottoReward;
-import com.dl.shop.lottery.model.DlTeam500W;
-import com.dl.shop.lottery.model.DlTeamFuture500W;
-import com.dl.shop.lottery.model.DlTeamRecord500W;
-import com.dl.shop.lottery.model.DlTeamResult500W;
-import com.dl.shop.lottery.model.LotteryClassify;
-import com.dl.shop.lottery.model.LotteryMatch;
-import com.dl.shop.lottery.model.LotteryNavBanner;
+import com.dl.shop.lottery.model.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+import tk.mybatis.mapper.util.StringUtil;
+
+import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -486,7 +416,10 @@ public class DlDiscoveryPageService {
 	public List<DlLotteryClassifyForOpenPrizeDTO> openPrize() {
 		// 获取彩种相关信息
 		List<DlLotteryClassifyForOpenPrizeDTO> lotteryClassifyList = new ArrayList<DlLotteryClassifyForOpenPrizeDTO>();
-		List<LotteryClassify> classifyList = lotteryClassifyService.selectAllLotteryClasses();
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = com.alibaba.druid.util.StringUtils.isEmpty(appCodeNameStr)?10:Integer.valueOf(appCodeNameStr);
+		List<LotteryClassify> classifyList = lotteryClassifyService.selectAllLotteryClasses(appCodeName);
 		for (LotteryClassify s : classifyList) {
 			DlLotteryClassifyForOpenPrizeDTO lotteryClassifyForOpenPrize = new DlLotteryClassifyForOpenPrizeDTO();
 			if (null != s.getLotteryName()) {

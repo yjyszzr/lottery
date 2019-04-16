@@ -16,8 +16,8 @@ public class DlDiscoveryHallClassifyService extends AbstractService<DlDiscoveryH
     @Resource
     private DlDiscoveryHallClassifyMapper dlDiscoveryHallClassifyMapper;
 
-    public List<DlDiscoveryHallClassify> queryDiscoveryListByType(List<Integer> typeList, Integer isTransaction){
-       return  dlDiscoveryHallClassifyMapper.queryDiscoveryListByType(typeList,isTransaction);
+    public List<DlDiscoveryHallClassify> queryDiscoveryListByType(List<Integer> typeList, Integer appCodeName,Integer isTransaction){
+       return  dlDiscoveryHallClassifyMapper.queryDiscoveryListByType(typeList,appCodeName,isTransaction);
     }
 
 }

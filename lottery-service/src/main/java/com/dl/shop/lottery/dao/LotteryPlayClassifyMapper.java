@@ -1,12 +1,11 @@
 package com.dl.shop.lottery.dao;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.shop.lottery.model.LotteryPlayClassify;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface LotteryPlayClassifyMapper extends Mapper<LotteryPlayClassify> {
 	
