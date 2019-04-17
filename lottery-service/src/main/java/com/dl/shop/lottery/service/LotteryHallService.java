@@ -545,7 +545,7 @@ public class LotteryHallService {
 						dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 //						问题二：大厅页跑马灯文案模拟字样去掉
 						if (appCodeNameStr.equals("11")) {
-							dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg().replace("模拟", ""));
+							dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
 						}
 						dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 						dlWinningLogDTOs.add(dlWinningLogDTO);
@@ -567,7 +567,7 @@ public class LotteryHallService {
 					dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 //					问题二：大厅页跑马灯文案模拟字样去掉
 					if (appCodeNameStr.equals("11")) {
-						dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg().replace("模拟", ""));
+						dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
 					}
 					dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 					dlWinningLogDTOs.add(dlWinningLogDTO);
