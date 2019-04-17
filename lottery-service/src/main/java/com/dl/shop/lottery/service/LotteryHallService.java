@@ -1,5 +1,18 @@
 package com.dl.shop.lottery.service;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.druid.util.StringUtils;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
@@ -29,19 +42,21 @@ import com.dl.member.param.StrParam;
 import com.dl.member.param.SysConfigParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.core.ProjectConstant;
-import com.dl.shop.lottery.dao.*;
-import com.dl.shop.lottery.model.*;
+import com.dl.shop.lottery.dao.LotteryActivityMapper;
+import com.dl.shop.lottery.dao.LotteryClassifyMapper;
+import com.dl.shop.lottery.dao.LotteryNavBannerMapper;
+import com.dl.shop.lottery.dao.LotteryPlayClassifyMapper;
+import com.dl.shop.lottery.dao.LotteryWinningLogTempMapper;
+import com.dl.shop.lottery.model.DlDiscoveryHallClassify;
+import com.dl.shop.lottery.model.LotteryActivity;
+import com.dl.shop.lottery.model.LotteryClassify;
+import com.dl.shop.lottery.model.LotteryMatch;
+import com.dl.shop.lottery.model.LotteryNavBanner;
+import com.dl.shop.lottery.model.LotteryWinningLogTemp;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example.Criteria;
-
-import javax.annotation.Resource;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(value = "transactionManager1")
@@ -517,9 +532,11 @@ public class LotteryHallService {
 		String appCodeNameStr = userDeviceInfo.getAppCodeName();
 		String plat = userDeviceInfo.getPlat();
 		String channel = userDeviceInfo.getChannel();
+		log.info("channelInfo======={}", channel);
 		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
 			if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+				log.info("1111======测试android");
 				log.info("球多多展示比赛信息");
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
