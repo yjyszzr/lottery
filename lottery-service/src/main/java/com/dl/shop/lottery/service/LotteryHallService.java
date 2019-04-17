@@ -551,8 +551,10 @@ public class LotteryHallService {
 				Condition condition = new Condition(LotteryWinningLogTemp.class);
 				condition.createCriteria().andCondition("is_show=", 1);
 				List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+
 				if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
 					for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+						log.info("winningLog========{}", winningLog);
 						DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 						String phone = winningLog.getPhone();
 						if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
@@ -561,6 +563,7 @@ public class LotteryHallService {
 						phone = phone.substring(0, 3) + "****" + phone.substring(7);
 						dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 //						问题二：大厅页跑马灯文案模拟字样去掉
+						log.info("appCodeNameStr======{}", appCodeNameStr);
 						if (appCodeNameStr.equals("11")) {
 							dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
 						}
