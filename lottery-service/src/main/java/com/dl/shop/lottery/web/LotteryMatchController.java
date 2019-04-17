@@ -707,6 +707,9 @@ public class LotteryMatchController {
 		if(orderMoney > canBetMoney) {
 			return ResultGenerator.genSuccessResult(LotteryResultEnum.BET_MATCH_STOP.getMsg(), betInfo);
 		}
+//		问题六：预测奖金后面需要添加单位：元；
+		betInfo.setMaxBonus(betInfo.getMaxBonus() + "元");
+		
 		return ResultGenerator.genSuccessResult("", betInfo);
 	}
 	
