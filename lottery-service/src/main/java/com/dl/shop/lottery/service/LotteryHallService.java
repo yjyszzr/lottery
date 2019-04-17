@@ -536,7 +536,6 @@ public class LotteryHallService {
 		String version = userDeviceInfo.getAppv();
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
 			if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
-				log.info("1111======测试android");
 				log.info("球多多展示比赛信息");
 				List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
 				if (CollectionUtils.isNotEmpty(latestMatchs)) {
@@ -554,12 +553,12 @@ public class LotteryHallService {
 
 				if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
 					for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
-						log.info("winningLog========{}", winningLog);
 						DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 						String phone = winningLog.getPhone();
 						if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
 							continue;
 						}
+						log.info("winningLog========{}", winningLog);
 						phone = phone.substring(0, 3) + "****" + phone.substring(7);
 						dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
 //						问题二：大厅页跑马灯文案模拟字样去掉

@@ -3,6 +3,8 @@ package com.dl.shop.lottery.model;
 import java.math.BigDecimal;
 import javax.persistence.*;
 
+import lombok.Data;
+@Data
 @Table(name = "dl_winning_log_temp")
 public class LotteryWinningLogTemp {
     /**
