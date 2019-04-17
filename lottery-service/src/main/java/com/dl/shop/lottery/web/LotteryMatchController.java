@@ -1080,7 +1080,7 @@ public class LotteryMatchController {
 		}
 		if("6".equals(param.getPlayType())) {//混合投注只能选择一种玩法
 			if(isMonyPlay) {
-				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
+//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
 			}
 		}
 		String[] betTypes = betTypeStr.split(",");
