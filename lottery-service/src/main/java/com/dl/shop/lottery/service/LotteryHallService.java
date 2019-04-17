@@ -555,7 +555,8 @@ public class LotteryHallService {
 					for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
 						DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
 						String phone = winningLog.getPhone();
-						if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+						log.info("phone========{},{}", phone, org.apache.commons.lang3.StringUtils.isBlank(phone));
+						if (org.apache.commons.lang3.StringUtils.isBlank(phone)) {
 							continue;
 						}
 						log.info("winningLog========{}", winningLog);
