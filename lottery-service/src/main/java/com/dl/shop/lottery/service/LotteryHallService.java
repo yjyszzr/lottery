@@ -514,6 +514,7 @@ public class LotteryHallService {
 	private List<DlWinningLogDTO> getDlWinningLogDTOs() {
 		List<DlWinningLogDTO> dlWinningLogDTOs = new ArrayList<DlWinningLogDTO>();
         UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
 		String plat = userDeviceInfo.getPlat();
 		String channel = userDeviceInfo.getChannel();
 		String version = userDeviceInfo.getAppv();
@@ -542,6 +543,10 @@ public class LotteryHallService {
 						}
 						phone = phone.substring(0, 3) + "****" + phone.substring(7);
 						dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+//						问题二：大厅页跑马灯文案模拟字样去掉
+						if (appCodeNameStr.equals("11")) {
+							dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg().replace("模拟", ""));
+						}
 						dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 						dlWinningLogDTOs.add(dlWinningLogDTO);
 					}
@@ -560,10 +565,15 @@ public class LotteryHallService {
 					}
 					phone = phone.substring(0, 3) + "****" + phone.substring(7);
 					dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+//					问题二：大厅页跑马灯文案模拟字样去掉
+					if (appCodeNameStr.equals("11")) {
+						dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg().replace("模拟", ""));
+					}
 					dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
 					dlWinningLogDTOs.add(dlWinningLogDTO);
 				}
 			}
+			
 		}
 
 		return dlWinningLogDTOs;
