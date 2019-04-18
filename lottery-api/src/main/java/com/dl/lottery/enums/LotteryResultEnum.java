@@ -23,7 +23,8 @@ public enum LotteryResultEnum {
 	MATCH_BEYOND_EIGHT(303017,"最多选择8场比赛"),
 	NO_MATCH(303018,"暂无比赛"),
 	BET_PLAY_NOT_MONY(303019,"每次比赛只能选择一种玩法！"),
-	BET_SYS_TIME_LIMIT(303020,"所选比赛已超时，请重新投注！");
+	BET_SYS_TIME_LIMIT(303020,"所选比赛已超时，请重新投注！"),
+	BET_ORDER_MONEY_LIMIT(303021,"投注金额不能高于20万！");
 	
 	
 	private Integer code;

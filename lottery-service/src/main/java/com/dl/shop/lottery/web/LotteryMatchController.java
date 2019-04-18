@@ -6,10 +6,7 @@ import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.base.util.DateUtil;
-import com.dl.base.util.JSONHelper;
-import com.dl.base.util.SNGenerator;
-import com.dl.base.util.SessionUtil;
+import com.dl.base.util.*;
 import com.dl.lottery.dto.*;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DateStrParam;
@@ -1027,8 +1024,8 @@ public class LotteryMatchController {
 
 		//提前1h 就不能买了
 		Integer sysLimitBetTime = lotteryMatchService.getBetPreTime();
-		Integer betEndTime =  min.getMatchTime() - sysLimitBetTime;
-		if(min.getMatchTime() - betEndTime <= 0){
+		Integer nowTime = DateUtilNew.getCurrentTimeLong();
+		if(min.getMatchTime() - sysLimitBetTime  <= nowTime){
 			return ResultGenerator.genResult(LotteryResultEnum.BET_SYS_TIME_LIMIT.getCode(), LotteryResultEnum.BET_SYS_TIME_LIMIT.getMsg());
 		}
 
@@ -1146,6 +1143,10 @@ public class LotteryMatchController {
 		int canBetMoney = lotteryMatchService.canBetMoney();
 		if(orderMoney > canBetMoney) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+		}
+
+		if(orderMoney > 200000 ){
+			return ResultGenerator.genResult(LotteryResultEnum.BET_ORDER_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_ORDER_MONEY_LIMIT.getMsg());
 		}
 		
 		//缓存订单支付信息
