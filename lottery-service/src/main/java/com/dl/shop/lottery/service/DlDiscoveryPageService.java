@@ -425,14 +425,12 @@ public class DlDiscoveryPageService {
 			if (null != s.getLotteryName()) {
 				lotteryClassifyForOpenPrize.setLotteryInitials(PinyinUtil.ToPinyin(s.getLotteryName()));
 			}
-			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
-			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
-			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
-			
 			if(appCodeName==11) {//生和彩店
 				s.setLotteryClassifyId(s.getLotteryClassifyId()/1000); //例如：数据库id是1000  ，  判断中枚举值为1
 			}
-			
+			lotteryClassifyForOpenPrize.setLotteryId(s.getLotteryClassifyId());
+			lotteryClassifyForOpenPrize.setLotteryName(s.getLotteryName());
+			lotteryClassifyForOpenPrize.setLotteryIcon(lotteryConfig.getBannerShowUrl() + s.getLotteryImg());
 			if (LotteryClassifyEnum.JC_FOOTBALL.getcode() == s.getLotteryClassifyId()) {
 				LotteryMatch dlMatch = lotteryMatchMapper.queryLatestMatch();
 				String mmdd = DateUtil.getCurrentTimeString(DateUtil.getTimeSomeDate(dlMatch.getMatchTime()).longValue(), DateUtil.hh_mm_sdf);
