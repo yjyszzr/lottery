@@ -1010,24 +1010,16 @@ public class LotteryMatchController {
 		if(matchBetPlays.size() > 1) {
 			min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
 		}
-//		int betEndTime = min.getMatchTime() - ProjectConstant.BET_PRESET_TIME;
-//		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
-//		Date now = new Date();
-//		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-//		if(nowTime - betEndTime > 0) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
-//		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-//		if(hideMatch) {
-//			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-//		}
 
-		//提前1h 就不能买了
-		Integer sysLimitBetTime = lotteryMatchService.getBetPreTime();
-		Integer nowTime = DateUtilNew.getCurrentTimeLong();
-		logger.info("min.getMatchTime():"+min.getMatchTime());
-		if(min.getMatchTime() - sysLimitBetTime  <= nowTime){
-			return ResultGenerator.genResult(LotteryResultEnum.BET_SYS_TIME_LIMIT.getCode(), LotteryResultEnum.BET_SYS_TIME_LIMIT.getMsg());
+		int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
+		Date now = new Date();
+		int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
+		if(nowTime - betEndTime > 0) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+		}
+		boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+		if(hideMatch) {
+			return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 		}
 
 		//校验串关
