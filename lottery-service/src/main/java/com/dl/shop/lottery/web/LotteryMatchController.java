@@ -1025,6 +1025,7 @@ public class LotteryMatchController {
 		//提前1h 就不能买了
 		Integer sysLimitBetTime = lotteryMatchService.getBetPreTime();
 		Integer nowTime = DateUtilNew.getCurrentTimeLong();
+		logger.info("min.getMatchTime():"+min.getMatchTime());
 		if(min.getMatchTime() - sysLimitBetTime  <= nowTime){
 			return ResultGenerator.genResult(LotteryResultEnum.BET_SYS_TIME_LIMIT.getCode(), LotteryResultEnum.BET_SYS_TIME_LIMIT.getMsg());
 		}
@@ -1140,10 +1141,10 @@ public class LotteryMatchController {
 		if(orderMoney < minBetMoney) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
 		}
-		int canBetMoney = lotteryMatchService.canBetMoney();
-		if(orderMoney > canBetMoney) {
-			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-		}
+//		int canBetMoney = lotteryMatchService.canBetMoney();
+//		if(orderMoney > canBetMoney) {
+//			return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//		}
 
 		if(orderMoney > 200000 ){
 			return ResultGenerator.genResult(LotteryResultEnum.BET_ORDER_MONEY_LIMIT.getCode(), LotteryResultEnum.BET_ORDER_MONEY_LIMIT.getMsg());
