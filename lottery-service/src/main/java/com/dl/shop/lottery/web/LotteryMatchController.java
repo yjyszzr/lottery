@@ -1028,7 +1028,7 @@ public class LotteryMatchController {
 		//提前1h 就不能买了
 		Integer sysLimitBetTime = lotteryMatchService.getBetPreTime();
 		Integer betEndTime =  min.getMatchTime() - sysLimitBetTime;
-		if(betEndTime >= 0){
+		if(min.getMatchTime() - betEndTime <= 0){
 			return ResultGenerator.genResult(LotteryResultEnum.BET_SYS_TIME_LIMIT.getCode(), LotteryResultEnum.BET_SYS_TIME_LIMIT.getMsg());
 		}
 
