@@ -22,32 +22,40 @@ import com.dl.shop.lottery.model.DlOpLog;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class DlLogOpService {
-	
+
 	@Resource
 	private DlOpLogMapper dlOpLogMapper;
-	
-	public BaseResult<OperationRecordDTO> queryLogByTime(Integer pageNum,Integer pageSize,String phone,Integer startTime,Integer endTime){
+
+	public BaseResult<OperationRecordDTO> queryLogByTime(Integer pageNum, Integer pageSize, String phone, Integer startTime, Integer endTime) {
+		log.info("queryLogByTime_pageNum==========={}", pageNum);
+		log.info("queryLogByTime_pageSize==========={}", pageSize);
+		log.info("queryLogByTime_phone==========={}", phone);
+		log.info("queryLogByTime_startTime==========={}", startTime);
+		log.info("queryLogByTime_endTime==========={}", endTime);
 		OperationRecordDTO dto = new OperationRecordDTO();
-		List<DlOpLog> logList = dlOpLogMapper.queryLogByTime(phone,startTime, endTime);
+		List<DlOpLog> logList = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
+		log.info("queryLogByTime_logList==========={}", logList);
 		BigDecimal sucMoney = BigDecimal.ZERO;
 		Integer sucNum = 0;
 		Integer failNum = 0;
-		if(!CollectionUtils.isEmpty(logList)) {
-			sucMoney = logList.stream().filter(s->s.getOpType() == 1).map(s->s.getMoneyPaid()).reduce(BigDecimal.ZERO, BigDecimal::add);
-			sucNum = logList.stream().filter(s->s.getOpType() == 1).collect(Collectors.toList()).size();
-			failNum = logList.stream().filter(s->s.getOpType() == 2).collect(Collectors.toList()).size();
-		}else {
+		if (!CollectionUtils.isEmpty(logList)) {
+			sucMoney = logList.stream().filter(s -> s.getOpType() == 1).map(s -> s.getMoneyPaid()).reduce(BigDecimal.ZERO, BigDecimal::add);
+			sucNum = logList.stream().filter(s -> s.getOpType() == 1).collect(Collectors.toList()).size();
+			failNum = logList.stream().filter(s -> s.getOpType() == 2).collect(Collectors.toList()).size();
+		} else {
 			return ResultGenerator.genSuccessResult("success", dto);
 		}
-		
+
 		PageHelper.startPage(pageNum, pageSize);
-		List<DlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone,startTime, endTime);
+		List<DlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
 		PageInfo<DlOpLog> pageInfo = new PageInfo<DlOpLog>(logListAll);
 		List<DlOpLogDTO> opDTOList = new ArrayList<DlOpLogDTO>();
-		logListAll.stream().forEach(s->{
+		logListAll.stream().forEach(s -> {
 			DlOpLogDTO logDTO = new DlOpLogDTO();
 			logDTO.setOrderSn(s.getOrderSn());
 			logDTO.setOptType(String.valueOf(s.getOpType()));
@@ -65,28 +73,30 @@ public class DlLogOpService {
 		dto.setSucNum(String.valueOf(sucNum));
 		dto.setFailNum(String.valueOf(failNum));
 		dto.setSucMoney(sucMoney.toString());
-		if(opDTOList != null) {
-			for(DlOpLogDTO logDTO : opDTOList) {
+		if (opDTOList != null) {
+			for (DlOpLogDTO logDTO : opDTOList) {
 				String classifyId = logDTO.getLotteryClassifyId();
-				if("1".equals(classifyId)) {
+				if ("1".equals(classifyId)) {
 					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/jingzu.png");
-				}else if("2".equals(classifyId)) {
+				} else if ("2".equals(classifyId)) {
 					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png");
 				}
 			}
 		}
+		log.info("queryLogByTime_dto==========={}", dto);
 		return ResultGenerator.genSuccessResult("success", dto);
 	}
-	
+
 	/**
 	 * 根据订单号查询操作日志
+	 * 
 	 * @param orderSn
 	 * @return
 	 */
 	public BaseResult<LogPicDetailDTO> queryLogOpByOrderSn(String orderSn) {
 		LogPicDetailDTO dto = new LogPicDetailDTO();
 		DlOpLog dlLog = dlOpLogMapper.queryLogByOrderSn(orderSn);
-		if(null == dlLog) {
+		if (null == dlLog) {
 			return ResultGenerator.genSuccessResult("未查询到该订单的彩票照片", dto);
 		}
 		dto.setPicUrl(dlLog.getPic());
