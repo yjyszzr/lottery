@@ -534,6 +534,30 @@ public class LotteryHallService {
 		String channel = userDeviceInfo.getChannel();
 		log.info("channelInfo======={}", channel);
 		String version = userDeviceInfo.getAppv();
+		if (appCodeNameStr.equals("11")) { //圣和彩店
+			Condition condition = new Condition(LotteryWinningLogTemp.class);
+			condition.createCriteria().andCondition("is_show=", 1);
+			List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+			if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
+				for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+					DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+					String phone = winningLog.getPhone();
+					if(org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+						continue;
+					}
+					phone = phone.substring(0, 3) + "****" + phone.substring(7);
+					dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+//					问题二：大厅页跑马灯文案模拟字样去掉
+					if (appCodeNameStr.equals("11")) {
+						dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
+					}
+					dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
+					dlWinningLogDTOs.add(dlWinningLogDTO);
+				}
+			}
+			return dlWinningLogDTOs;
+		}
+		
 		if(!StringUtils.isEmpty(plat) && !StringUtils.isEmpty(version)){
 			if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
 				log.info("球多多展示比赛信息");
