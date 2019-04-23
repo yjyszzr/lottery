@@ -74,8 +74,21 @@ public class LotteryNavBanner {
      */
     @Column(name = "is_transaction")
     private String isTransaction; 
+    /**
+     * 平台名称
+     */
+    @Column(name = "app_code_name")
+    private String appCodeName;
     
-    public Integer getStartTime() {
+    public String getAppCodeName() {
+		return appCodeName;
+	}
+
+	public void setAppCodeName(String appCodeName) {
+		this.appCodeName = appCodeName;
+	}
+
+	public Integer getStartTime() {
 		return startTime;
 	}
 

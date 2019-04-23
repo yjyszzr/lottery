@@ -447,6 +447,11 @@ public class LotteryHallService {
 	 * @return
 	 */
 	private List<DlNavBannerDTO> getDlNavBannerDTO(HallParam hallParam) {
+		UserDeviceInfo udinfo = SessionUtil.getUserDevice();
+		String appCodeName = udinfo.getAppCodeName();
+		if(StringUtils.isEmpty(appCodeName)) {//如果为空则默认为10:球多多
+			appCodeName = "10";
+		}
 		//查询交易版还是资讯版
 		String isTransaction = ProjectConstant.DEAL_VERSION;//默认交易版
 		StrParam strParam = new StrParam();
@@ -464,6 +469,7 @@ public class LotteryHallService {
 		criteria.andCondition("end_time >", DateUtil.getCurrentTimeLong());
 		criteria.andCondition("is_show=", 1);
 		criteria.andCondition("show_position=", 0);
+		criteria.andCondition("app_code_name=", appCodeName);
 		if(isTransaction.equals(ProjectConstant.INFO_VERSION)) {
 			criteria.andCondition("is_transaction =",Integer.valueOf(ProjectConstant.INFO_VERSION));
 		}
