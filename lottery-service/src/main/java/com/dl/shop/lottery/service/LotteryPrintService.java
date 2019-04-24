@@ -184,7 +184,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 			printStakeResultDTO = psRto.getData();
 		}
 		for(int i = 0; i <= 2; i++){
-			boolean rst = this.doPostMerchant(printStakeResultDTO,notifyUrl);
+			boolean rst = this.doPostMerchant(printStakeResultDTO);
 			if(rst){
 				break;
 			}else{
@@ -199,11 +199,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param printStakeResultDTO
 	 * @return
 	 */
-	public boolean doPostMerchant(PrintStakeResultDTO printStakeResultDTO,String notifyUrl){
-		if(StringUtils.isEmpty(notifyUrl)) {
-//			notifyUrl = "http://123.57.34.133:8080/merchant/notify";
-			notifyUrl = "http://47.100.81.221:8080/api/callback/ticket/status";//商户接口
-		}
+	public boolean doPostMerchant(PrintStakeResultDTO printStakeResultDTO){
 		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
 		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
 		HttpHeaders headers = new HttpHeaders();
@@ -216,7 +212,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		paramMap.add("awardMoney", printStakeResultDTO.getAwardMoney());
 		paramMap.add("print_sp", printStakeResultDTO.getPrint_sp());
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap,headers);
-		ResponseEntity<String> response = rest.postForEntity(notifyUrl, httpEntity, String.class);
+		ResponseEntity<String> response = rest.postForEntity("http://123.57.34.133:8080/merchant/notify", httpEntity, String.class);
 		Integer statusCode = response.getStatusCodeValue();
 		if(statusCode == 200){
 			String bodyStr = response.getBody();
