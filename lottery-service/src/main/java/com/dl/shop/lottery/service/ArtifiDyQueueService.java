@@ -255,7 +255,8 @@ public class ArtifiDyQueueService{
 		//若是商户订单号，则主动通知商户出票结果
 		String merchantOrderSn = baseR.getData().getMerchantOrderSn();
 		if(!StringUtils.isEmpty(merchantOrderSn)){
-			lotteryPrintService.notifyPrintResultToMerchant("http://123.57.34.133:8080/merchant/notify",merchantOrderSn);
+//			lotteryPrintService.notifyPrintResultToMerchant("http://123.57.34.133:8080/merchant/notify",merchantOrderSn);
+			lotteryPrintService.notifyPrintResultToMerchant("http://47.100.81.221:8080/api/callback/ticket/status",merchantOrderSn);
 		}
 
 		//添加日志,去重判断
