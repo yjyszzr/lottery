@@ -1782,7 +1782,7 @@ public class LotteryMatchController {
 		if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {
 			return lotteryMatchService.queryMatchResultNewQdd(dateStrParamByType);
 		}
-    	return lotteryMatchService.queryMatchResultNewQdd(dateStrParamByType);
+    	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
     }
 	
 	@ApiOperation(value = "查询大乐透比赛结果", notes = "查询大乐透比赛结果")
