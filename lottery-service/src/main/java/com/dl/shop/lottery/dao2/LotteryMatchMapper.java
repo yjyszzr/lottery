@@ -9,6 +9,7 @@ import com.dl.base.mapper.Mapper;
 import com.dl.lottery.dto.LeagueInfoDTO;
 import com.dl.shop.lottery.model.DlLeagueMatchResult;
 import com.dl.shop.lottery.model.LotteryMatch;
+import com.dl.shop.lottery.model.LotteryMatchQdd;
 
 public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	
@@ -62,6 +63,22 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 * @return
 	 */
 	public LinkedList<LotteryMatch> queryMatchByQueryConditionNew(@Param("dateStr") String dateStr,@Param("matchIdArr") Integer[] matchIdArr,
+			@Param("leagueIdArr") String[] leagueIdArr,@Param("type") String type);		
+	
+	/**
+	 * 根据查询条件查询赛事结果
+	 * @param dateStr
+	 * @return
+	 */
+	public List<LotteryMatchQdd> queryMatchByQueryConditionQdd(@Param("dateStr") String dateStr,@Param("matchIdArr") String[] matchIdArr,
+			@Param("leagueIdArr") String[] leagueIdArr,@Param("matchFinish") String matchFinish);
+	
+	/**
+	 * 根据查询条件查询赛事结果最新
+	 * @param dateStr
+	 * @return
+	 */
+	public LinkedList<LotteryMatchQdd> queryMatchByQueryConditionNewQdd(@Param("dateStr") String dateStr,@Param("matchIdArr") Integer[] matchIdArr,
 			@Param("leagueIdArr") String[] leagueIdArr,@Param("type") String type);		
 	
 	/**

@@ -1778,7 +1778,11 @@ public class LotteryMatchController {
 	@ApiOperation(value = "根据条件查询比赛比分新:2018-07-06 新接口", notes = "根据条件查询比赛结果新:2018-07-06 新接口")
     @PostMapping("/queryMatchResultNew")
     public BaseResult<QueryMatchResultDTO> queryMatchResultNew(@RequestBody QueryMatchParamByType dateStrParamByType) {
-    	return lotteryMatchService.queryMatchResultNew(dateStrParamByType);
+		UserDeviceInfo uinfo = SessionUtil.getUserDevice();
+		if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {
+			return lotteryMatchService.queryMatchResultNewQdd(dateStrParamByType);
+		}
+    	return lotteryMatchService.queryMatchResultNewQdd(dateStrParamByType);
     }
 	
 	@ApiOperation(value = "查询大乐透比赛结果", notes = "查询大乐透比赛结果")

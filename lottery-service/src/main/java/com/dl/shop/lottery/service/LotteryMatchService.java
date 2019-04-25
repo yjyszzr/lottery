@@ -2660,6 +2660,149 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	/**
+	 * 根据查询条件查看比赛结果  2018-07-06 新加
+	 * @param dateStr
+	 * @return
+	 */
+	public BaseResult<QueryMatchResultDTO> queryMatchResultNewQdd(QueryMatchParamByType queryMatchParamByType) {
+		log.info("queryMatchResultNewQdd()*&&&*All开始执行begin={}"+DateUtilNew.getCurrentDateTime());
+		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
+		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
+		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
+		Integer[] matchIdArr = new Integer[] {};
+		LinkedList<LotteryMatchQdd> lotteryMatchList = new LinkedList<>();
+		Integer matchSize = 0;
+		List<Integer> matchIdList = new ArrayList<>();
+		Integer userId = SessionUtil.getUserId();
+		String[] leagueIdArr = new String[] {};
+		String dateStr = queryMatchParamByType.getDateStr();
+		if (!StringUtils.isEmpty(queryMatchParamByType.getLeagueIds())) {
+			leagueIdArr = queryMatchParamByType.getLeagueIds().split(",");
+		}
+		if(StringUtils.isEmpty(dateStr)) {
+			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
+		}
+		log.info("queryMatchResultNewQdd()*&&&*查询收藏赛事begin*开始执行begin={}"+DateUtilNew.getCurrentDateTime());
+		if (null != userId) {//登录状态下查询收藏的赛事
+			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
+			dateStrParam.setDateStr(dateStr);
+			BaseResult<List<Integer>> matchIdsRst = iUserCollectService.matchIdlist(dateStrParam);
+			if (matchIdsRst.getCode() == 0) {
+				matchIdList = matchIdsRst.getData();
+				if (matchIdList.size() > 0) {
+					matchIdArr = matchIdList.stream().toArray(Integer[]::new);
+				}
+			}else {
+				log.error("赛事比分查询收藏结果异常:"+matchIdsRst.getMsg());
+			}
+		}
+		log.info("queryMatchResultNewQdd()*收藏赛事查询结束，我的赛事收藏begin*开始执行："+DateUtilNew.getCurrentDateTime());
+		if ("2".equals(queryMatchParamByType.getType())) {//我的赛事收藏
+			if (null == userId) {
+				return ResultGenerator.genNeedLoginResult("请登录");
+			}
+			if(matchIdArr.length > 0) {
+				lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNewQdd(null,matchIdArr, leagueIdArr, "");
+				matchSize = lotteryMatchList.size();
+			}
+		} else if("0".equals(queryMatchParamByType.getType())) {//未结束
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNewQdd(dateStr,null, leagueIdArr,null);
+			matchSize = lotteryMatchList.size();
+			//查询的是当天的，把当天比赛放入其中
+			if(DateUtil.isToday(dateStr, "yyyy-MM-dd")) {
+				List<LotteryMatchQdd> lotteryMatchNowList = lotteryMatchMapper.queryMatchByQueryConditionQdd(dateStr, null, leagueIdArr, null);
+				for(LotteryMatchQdd l:lotteryMatchNowList) {
+					lotteryMatchList.addFirst(l);
+				}
+			}		
+		} else if("1".equals(queryMatchParamByType.getType())) {//已结束
+			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNewQdd(dateStr,null, leagueIdArr,null);
+			matchSize = lotteryMatchList.size();
+		}
+		log.info("queryMatchResultNewQdd()*我的收藏赛事查询结束，查询球队赛事 begin*开始执行："+DateUtilNew.getCurrentDateTime());
+		
+		if (CollectionUtils.isEmpty(lotteryMatchList)) {
+			return ResultGenerator.genSuccessResult("success", returnDTO);
+		}
+		// 查询球队logo
+		List<Integer> homeTeamIdList = lotteryMatchList.stream().map(s -> s.getHomeTeamId()).collect(Collectors.toList());
+		List<Integer> visitingTeamIdList = lotteryMatchList.stream().map(s -> s.getVisitingTeamId()).collect(Collectors.toList());
+		homeTeamIdList.addAll(visitingTeamIdList);
+		List<DlLeagueTeam> leagueList = dlLeagueTeamMapper.queryLeagueTeamByTeamIds(homeTeamIdList);
+		log.info("queryMatchResultNewQdd()*查询球队赛事 1*开始执行："+DateUtilNew.getCurrentDateTime());
+		for (LotteryMatchQdd s : lotteryMatchList) {
+			LotteryMatchDTO lotteryMatchDTO = new LotteryMatchDTO();
+			BeanUtils.copyProperties(s, lotteryMatchDTO);
+			for (DlLeagueTeam ss : leagueList) {
+				if(s.getHomeTeamId().equals(ss.getSportteryTeamid())) {
+					lotteryMatchDTO.setHomeTeamLogo(ss.getTeamPic());
+				}
+				if(s.getVisitingTeamId().equals(ss.getSportteryTeamid())) {
+					lotteryMatchDTO.setVisitingTeamLogo(ss.getTeamPic());
+				}
+				continue;
+			}
+			lotteryMatchDTO.setMatchTime(DateUtil.getYMD(s.getMatchTime()));
+			Long matchTime = s.getMatchTime().getTime()/1000;
+			lotteryMatchDTO.setMatchTimeStart(String.valueOf((matchTime)));
+			lotteryMatchDTO.setChangci(s.getChangci());
+			lotteryMatchDTO.setChangciId(s.getChangciId());
+			if (null != userId) {
+				if (matchIdList.contains(s.getMatchId())) {
+					lotteryMatchDTO.setIsCollect("1");
+				} else {
+					lotteryMatchDTO.setIsCollect("0");
+				}
+			} else {
+				lotteryMatchDTO.setIsCollect("0");
+			}
+			log.info("queryMatchResultNewQdd()*查询球队赛事 2*开始执行："+DateUtilNew.getCurrentDateTime());
+			//用直播表查询这4个实时数据
+	
+			if(!StringUtils.isEmpty(s.getMatchLiveInfo())) {
+				MatchMinuteAndScoreDTO dto =  dlMatchLiveService.parseJsonStr(s.getMatchLiveInfo());
+				if(StringUtils.isNotEmpty(dto.getMatchStatus())) {
+					lotteryMatchDTO.setFirstHalf(dto.getFirstHalf());
+					lotteryMatchDTO.setWhole(dto.getWhole());
+					lotteryMatchDTO.setMinute(dto.getMinute());
+					//冗余异常数据：比赛进行了150min还未结束,状态按结束算
+					if(MatchStatusEnums.Playing.getEnName().equals(dto.getMatchStatus()) && this.beyond150min(s.getMatchTime())) {
+						lotteryMatchDTO.setMatchFinish(MatchStatusEnums.Played.getCode());
+					}else {
+						lotteryMatchDTO.setMatchFinish(MatchStatusEnums.getCodeByEnName(dto.getMatchStatus()));
+					}
+				}else {
+					lotteryMatchDTO.setFirstHalf("0:0");
+					lotteryMatchDTO.setWhole("0:0");
+					lotteryMatchDTO.setMinute("0");
+					lotteryMatchDTO.setMatchFinish(String.valueOf(s.getStatus()));
+				}
+	    	}
+			log.info("queryMatchResultNewQdd()*查询球队赛事 3*开始执行："+DateUtilNew.getCurrentDateTime());
+			lotteryMatchDTOList.add(lotteryMatchDTO);
+		}
+		log.info("queryMatchResultNewQdd()*查询球队赛事 4*开始执行："+DateUtilNew.getCurrentDateTime());
+		if(queryMatchParamByType.getType().equals("0")) {//未结束
+			lotteryMatchDTOList.removeIf(s->MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+		    List<LotteryMatchDTO> unique = lotteryMatchDTOList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(LotteryMatchDTO::getChangciId))), ArrayList::new));
+			lotteryMatchDTOList = unique;
+			//优先展示正在进行的比赛
+			unique.stream().sorted(Comparator.comparing(LotteryMatchDTO::getMatchFinish).reversed().thenComparing(LotteryMatchDTO::getChangciId));
+			String weekDay = DateUtil.getWeekByDateStr(dateStr);
+			matchSize = unique.stream().filter(s->s.getChangci().indexOf(weekDay) > -1).collect(Collectors.toList()).size();
+		}else if(queryMatchParamByType.getType().equals("1")) {//已结束
+			lotteryMatchDTOList.removeIf(s->!MatchStatusEnums.Played.getCode().equals(s.getMatchFinish()));
+			matchSize = lotteryMatchDTOList.size();
+		}
+		
+		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
+		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
+		
+		log.info("queryMatchResultNewQdd()*查询球队赛事结束，All end*开始执行end={}"+DateUtilNew.getCurrentDateTime());
+		return ResultGenerator.genSuccessResult("success", returnDTO);
+	}
+	
+	/**
 	 * 显示比分日期字符串
 	 * @param dateStr
 	 * @param matchSize
