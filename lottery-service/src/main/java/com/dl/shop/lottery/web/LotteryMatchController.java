@@ -1544,7 +1544,7 @@ public class LotteryMatchController {
 		}
 		
 		
-		if(StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
+		if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
 			UpdateOrderInfoParam updateOrderInfoParam = new UpdateOrderInfoParam();
 			updateOrderInfoParam.setOrderSn(orderSn);
 			updateOrderInfoParam.setOrderStatus(3);
