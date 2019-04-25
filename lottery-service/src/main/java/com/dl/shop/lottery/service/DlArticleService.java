@@ -62,7 +62,9 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	public PageInfo<DLArticleDTO> findArticles(String catArticle) {
 		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
 		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		log.info("appCodeNameStr=========={}", appCodeNameStr);
 		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr) ? 10 : Integer.valueOf(appCodeNameStr);
+		log.info("appCodeName=========={}", appCodeName);
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		List<DlArticle> findAll = new ArrayList<>();
 		if (catArticle.equals("-1")) {// 全部
