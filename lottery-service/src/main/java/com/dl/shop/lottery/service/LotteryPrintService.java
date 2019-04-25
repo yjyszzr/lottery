@@ -123,7 +123,6 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		if(!orderDTOBaseResult.isSuccess()){
 			return ResultGenerator.genResult(MemberEnums.DBDATA_IS_NULL.getcode(),"未查询到该订单");
 		}
-
 		Integer nativeOrderStatus = orderDTOBaseResult.getData().getOrderStatus();
 		String orderStatus = "0";
 		DlArtifiPrintLottery dlArtifiPrintLottery = artifiDyQueueService.selectArtifiPrintLotteryByOrderSn(orderDTOBaseResult.getData().getOrderSn());
@@ -165,7 +164,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		}else{//待出票和出票失败
 			printStakeResultDTO.setStatus(orderStatus);
 		}
-
+		printStakeResultDTO.setOrderSn(orderDTOBaseResult.getData().getOrderSn());
+		printStakeResultDTO.setMerchantOrderSn(param.getMerchantOrderSn());
 		return ResultGenerator.genSuccessResult("查询出票结果成功", printStakeResultDTO);
 	}
 
@@ -215,6 +215,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		paramMap.add("picUrl", printStakeResultDTO.getPicUrl());
 		paramMap.add("awardMoney", printStakeResultDTO.getAwardMoney());
 		paramMap.add("print_sp", printStakeResultDTO.getPrint_sp());
+		paramMap.add("orderSn", printStakeResultDTO.getOrderSn());
+		paramMap.add("merchantOrderSn", printStakeResultDTO.getMerchantOrderSn());
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap,headers);
 		ResponseEntity<String> response = rest.postForEntity(notifyUrl, httpEntity, String.class);
 		Integer statusCode = response.getStatusCodeValue();
