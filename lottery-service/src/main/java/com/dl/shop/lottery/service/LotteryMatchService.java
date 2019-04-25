@@ -26,6 +26,7 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao2.*;
 import com.dl.shop.lottery.model.*;
 import com.dl.shop.lottery.utils.PlayTypeUtil;
+
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -2524,6 +2525,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	 * @return
 	 */
 	public BaseResult<QueryMatchResultDTO> queryMatchResultNew(QueryMatchParamByType queryMatchParamByType) {
+		log.info("queryMatchResultNew()*&&&*All开始执行begin={}"+DateUtilNew.getCurrentDateTime());
 		log.info("查看比赛结果 参数:" + JSON.toJSONString(queryMatchParamByType));
 		QueryMatchResultDTO returnDTO = new QueryMatchResultDTO();
 		List<LotteryMatchDTO> lotteryMatchDTOList = new ArrayList<LotteryMatchDTO>();
@@ -2540,7 +2542,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		if(StringUtils.isEmpty(dateStr)) {
 			dateStr = DateUtil.getCurrentDateTime(LocalDateTime.now(), DateUtil.date_sdf);
 		}
-		
+		log.info("queryMatchResultNew()*&&&*查询收藏赛事begin*开始执行begin={}"+DateUtilNew.getCurrentDateTime());
 		if (null != userId) {//登录状态下查询收藏的赛事
 			com.dl.member.param.DateStrParam dateStrParam = new com.dl.member.param.DateStrParam();
 			dateStrParam.setDateStr(dateStr);
@@ -2554,7 +2556,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				log.error("赛事比分查询收藏结果异常:"+matchIdsRst.getMsg());
 			}
 		}
-		
+		log.info("queryMatchResultNew()*收藏赛事查询结束，我的赛事收藏begin*开始执行："+DateUtilNew.getCurrentDateTime());
 		if ("2".equals(queryMatchParamByType.getType())) {//我的赛事收藏
 			if (null == userId) {
 				return ResultGenerator.genNeedLoginResult("请登录");
@@ -2577,6 +2579,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			lotteryMatchList = lotteryMatchMapper.queryMatchByQueryConditionNew(dateStr,null, leagueIdArr,null);
 			matchSize = lotteryMatchList.size();
 		}
+		log.info("queryMatchResultNew()*我的收藏赛事查询结束，查询球队赛事 begin*开始执行："+DateUtilNew.getCurrentDateTime());
 		
 		if (CollectionUtils.isEmpty(lotteryMatchList)) {
 			return ResultGenerator.genSuccessResult("success", returnDTO);
@@ -2649,6 +2652,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		
 		returnDTO.setMatchDateStr(this.createMatchDateStr(dateStr, matchSize));
 		returnDTO.setLotteryMatchDTOList(lotteryMatchDTOList);
+		
+		log.info("queryMatchResultNew()*查询球队赛事结束，All end*开始执行end={}"+DateUtilNew.getCurrentDateTime());
 		return ResultGenerator.genSuccessResult("success", returnDTO);
 	}
 	
