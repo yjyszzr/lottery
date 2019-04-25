@@ -23,6 +23,7 @@ import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.SubmitOrderParam;
 import com.dl.order.param.SubmitOrderParam.TicketDetail;
+import com.dl.order.param.UpdateOrderInfoParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
@@ -36,6 +37,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jsoup.helper.DataUtil;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -1540,6 +1542,17 @@ public class LotteryMatchController {
 			logger.info("订单创建失败！");
 			return ResultGenerator.genFailResult("模拟支付失败！");
 		}
+		
+		
+		if(StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
+			UpdateOrderInfoParam updateOrderInfoParam = new UpdateOrderInfoParam();
+			updateOrderInfoParam.setOrderSn(orderSn);
+			updateOrderInfoParam.setOrderStatus(3);
+			updateOrderInfoParam.setPayStatus(1);
+			updateOrderInfoParam.setPayTime(DateUtil.getCurrentTimeLong());
+			orderService.updateOrderInfoStatus(updateOrderInfoParam);///修改为支付状态
+		}
+		
 		String orderId = createOrder.getData().getOrderId().toString();
 		OrderIdDTO orderDto = new OrderIdDTO();
 		orderDto.setOrderId(orderId);
