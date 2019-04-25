@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dl.shop.lottery.dao2.LotteryMatchMapper">
+  <resultMap type="com.dl.shop.lottery.model.LotteryMatchQdd" id="BaseResultMapQdd"></resultMap>
   <resultMap id="BaseResultMap" type="com.dl.shop.lottery.model.LotteryMatch">
     <id column="match_id" jdbcType="INTEGER" property="matchId" />
     <result column="league_id" jdbcType="INTEGER" property="leagueId" />
@@ -147,7 +148,107 @@
   	 </if>
   	 order by match_sn
   </select>
-
+  
+   <select id="queryMatchByQueryConditionQdd" parameterType ="java.lang.String" resultMap="BaseResultMapQdd">
+  	select
+  		dm.match_id matchId,
+		dm.league_id leagueId,
+		dm.league_name leagueName,
+		dm.league_addr leagueAddr,
+		dm.changci_id changciId,
+		dm.changci,
+		dm.home_team_id homeTeamId,
+		dm.home_team_name homeTeamName,
+		dm.home_team_abbr homeTeamAbbr,
+		dm.home_team_rank homeTeamRank,
+		dm.visiting_team_id visitingTeamId,
+		dm.visiting_team_name visitingTeamName,
+		dm.visiting_team_abbr visitingTeamAbbr,
+		dm.visiting_team_rank visitingTeamRank,
+		dm.match_time matchTime,
+		dm.show_time showTime,
+		dm.create_time createTime,
+		dm.is_show isShow,
+		dm.is_del isDel,
+		dm.match_sn matchSn,
+		dm.first_half firstHalf,
+		dm.whole whole,
+		dm.status,
+		dm.is_hot isHot,
+		dml.match_live_info matchLiveInfo
+  	from dl_match dm left join dl_match_live dml on dm.changci_id = dml.changci_id
+  	 where is_del = 0 
+     and is_show = 1
+  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
+  	 	and league_id in
+  	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchIdArr !=null and matchIdArr.length != 0">
+  	 	and match_id in
+  	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
+  	 		#{matchId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchFinish != null and matchFinish != ''">
+  	 	and  status = 1
+  	 </if>
+  	 order by match_sn
+  </select>
+  
+  
+  <select id="queryMatchByQueryConditionNewQdd" parameterType ="java.lang.String" resultMap="BaseResultMapQdd">
+  	select
+  		dm.match_id matchId,
+		dm.league_id leagueId,
+		dm.league_name leagueName,
+		dm.league_addr leagueAddr,
+		dm.changci_id changciId,
+		dm.changci,
+		dm.home_team_id homeTeamId,
+		dm.home_team_name homeTeamName,
+		dm.home_team_abbr homeTeamAbbr,
+		dm.home_team_rank homeTeamRank,
+		dm.visiting_team_id visitingTeamId,
+		dm.visiting_team_name visitingTeamName,
+		dm.visiting_team_abbr visitingTeamAbbr,
+		dm.visiting_team_rank visitingTeamRank,
+		dm.match_time matchTime,
+		dm.show_time showTime,
+		dm.create_time createTime,
+		dm.is_show isShow,
+		dm.is_del isDel,
+		dm.match_sn matchSn,
+		dm.first_half firstHalf,
+		dm.whole whole,
+		dm.status,
+		dm.is_hot isHot,
+		dml.match_live_info matchLiveInfo
+	from dl_match dm left join dl_match_live dml on dm.changci_id = dml.changci_id
+  	 where is_del = 0 
+     and is_show = 1
+  	 <if test="dateStr !=null and dateStr != ''">
+		and str_to_date(show_time,'%Y-%m-%d') = #{dateStr}
+  	 </if>
+  	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
+  	 	and league_id in
+  	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="matchIdArr !=null and matchIdArr.length != 0">
+  	 	and match_id in
+  	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
+  	 		#{matchId}
+  	 	</foreach>
+  	 </if>
+  	 <if test="type != null and type != ''">
+  	 	and  status = #{type}
+  	 </if>
+  	 order by match_sn
+  </select>
   <select id="queryNotFinishMatchByQueryCondition" parameterType ="java.lang.String" resultMap="BaseResultMap">
   	select * from dl_match
   	 where is_del = 0 
