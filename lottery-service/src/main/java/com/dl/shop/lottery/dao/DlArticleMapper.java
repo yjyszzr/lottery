@@ -11,7 +11,7 @@ import com.dl.shop.lottery.model.DlPhoneChannel;
 
 public interface DlArticleMapper extends Mapper<DlArticle> {
 
-	List<DlArticle> findArticles();
+	List<DlArticle> findArticles(@Param("appCodeName") Integer appCodeName);
 
 	List<DlArticle> findArticlesByIds(@Param("articleIds") List<Integer> articleIds);
 

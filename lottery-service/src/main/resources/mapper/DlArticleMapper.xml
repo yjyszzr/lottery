@@ -52,9 +52,16 @@
   </resultMap>
   
   <select id="findArticles" resultMap="BaseResultMap">
-  	select * from dl_article
-  	where status=1
-  	order by is_stick asc,add_time desc
+		SELECT
+			* 
+		FROM
+			dl_article 
+		WHERE
+			STATUS = 1 
+			AND app_code_name IN ( #{appCodeName},1 ) 
+		ORDER BY
+			is_stick ASC,
+			add_time DESC
   </select>
   
   <select id="findArticlesRelated"  resultMap="BaseResultMap">

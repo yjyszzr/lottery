@@ -9,13 +9,12 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
 import com.dl.base.service.AbstractService;
 import com.dl.base.util.DateUtil;
@@ -33,6 +32,8 @@ import com.dl.shop.lottery.model.DlArticleClassify;
 import com.dl.shop.lottery.model.DlPhoneChannel;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional(value = "transactionManager1")
@@ -55,15 +56,17 @@ public class DlArticleService extends AbstractService<DlArticle> {
 	/**
 	 * 全部文章,catArticle:
 	 * 
-	 * @param catArticle
-	 *            -1:全部文章，非-1：其他分类文章
+	 * @param catArticle -1:全部文章，非-1：其他分类文章
 	 * @return
 	 */
 	public PageInfo<DLArticleDTO> findArticles(String catArticle) {
+		UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+		String appCodeNameStr = userDeviceInfo.getAppCodeName();
+		Integer appCodeName = StringUtils.isEmpty(appCodeNameStr) ? 10 : Integer.valueOf(appCodeNameStr);
 		List<DLArticleDTO> dtos = new ArrayList<DLArticleDTO>(0);
 		List<DlArticle> findAll = new ArrayList<>();
 		if (catArticle.equals("-1")) {// 全部
-			findAll = dlArticleMapper.findArticles();
+			findAll = dlArticleMapper.findArticles(appCodeName);
 		} else {
 			findAll = dlArticleMapper.findArticlesByCat(catArticle);
 		}

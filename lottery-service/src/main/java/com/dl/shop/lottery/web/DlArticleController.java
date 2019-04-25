@@ -1,7 +1,5 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,9 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example.Criteria;
 
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
@@ -55,6 +50,10 @@ import com.dl.shop.lottery.service.DlDiscoveryHallClassifyService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example.Criteria;
+
 /**
  * Created by CodeGenerator on 2018/04/19.
  */
@@ -81,12 +80,11 @@ public class DlArticleController {
 
 	/*
 	 * @PostMapping("/add") public BaseResult add(DlArticle dlArticle) {
-	 * dlArticleService.save(dlArticle); return
-	 * ResultGenerator.genSuccessResult(); }
+	 * dlArticleService.save(dlArticle); return ResultGenerator.genSuccessResult();
+	 * }
 	 * 
-	 * @PostMapping("/delete") public BaseResult delete(@RequestParam Integer
-	 * id) { dlArticleService.deleteById(id); return
-	 * ResultGenerator.genSuccessResult(); }
+	 * @PostMapping("/delete") public BaseResult delete(@RequestParam Integer id) {
+	 * dlArticleService.deleteById(id); return ResultGenerator.genSuccessResult(); }
 	 * 
 	 * @PostMapping("/update") public BaseResult update(DlArticle dlArticle) {
 	 * dlArticleService.update(dlArticle); return
