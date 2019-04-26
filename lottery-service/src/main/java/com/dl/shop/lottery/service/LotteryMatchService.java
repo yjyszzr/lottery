@@ -3,6 +3,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dl.base.enums.*;
 import com.dl.base.exception.ServiceException;
+import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.service.AbstractService;
@@ -201,6 +202,114 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		logger.info("==============getmatchlist1 对象过滤用时 ："+(end-start) + " playType="+param.getPlayType() + "  leagueId="+leagueId);
 		return dlJcZqMatchListDTO;
 	}
+	 /**
+     * 获取赛事列表
+     * @param param
+     * @return
+     */
+	public DlJcZqMatchListDTO getMatchListQdd(DlJcZqMatchListParam param) {
+		long start = System.currentTimeMillis();
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
+		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(param.getLeagueId());
+		logger.info("getMatchListQdd获取matchList的大小="+matchList.size());
+		if(matchList == null || matchList.size() == 0) {
+			return dlJcZqMatchListDTO;
+		}
+		List<Integer> changciIds = matchList.stream().map(match->match.getChangciId()).collect(Collectors.toList());
+		String playType = param.getPlayType();
+		Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcZqMatchPlayDTO>>();
+		if("7".equals(playType)) {
+			List<LotteryMatchPlayQdd> hmatchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIdsQdd(changciIds.toArray(new Integer[changciIds.size()]), "1");
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "2");
+			Map<Integer, LotteryMatchPlay> playMap = new HashMap<Integer, LotteryMatchPlay>(matchPlayList.size());
+			matchPlayList.forEach(item->{
+				playMap.put(item.getChangciId(), item);
+			});
+			for(LotteryMatchPlayQdd matchPlay: hmatchPlayList) {
+				if(this.isStopQdd(matchPlay)) {
+					continue;
+				}
+				Integer changciId = matchPlay.getChangciId();
+				LotteryMatchPlay lotteryMatchPlay = playMap.get(changciId);
+				if(lotteryMatchPlay == null)continue;
+				String playContent = matchPlay.getPlayContent();
+				JSONObject hhadJo = JSON.parseObject(playContent);
+				String fixedodds = hhadJo.getString("fixedodds");
+				if(StringUtils.isBlank(fixedodds)) {
+					continue;
+				}
+				String playContent2 = lotteryMatchPlay.getPlayContent();
+				JSONObject hadJo = JSON.parseObject(playContent2);
+				DlJcZqMatchPlayDTO matchPlayDto = new DlJcZqMatchPlayDTO();
+				if(Integer.parseInt(fixedodds) == 1) {
+					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("32", "主不败", hhadJo.getString("h")));
+					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("30", "主败", hadJo.getString("a")));
+				} else if(Integer.parseInt(fixedodds) == -1) {
+					matchPlayDto.setVisitingCell(new DlJcZqMatchCellDTO("33", "主不胜", hhadJo.getString("a")));
+					matchPlayDto.setHomeCell(new DlJcZqMatchCellDTO("31", "主胜", hadJo.getString("h")));
+				}else {
+					continue;
+				}
+				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
+				if(dlJcZqMatchPlayDTOs == null){
+					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+					matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
+				}
+				matchPlayDto.setPlayType(MatchPlayTypeEnum.PLAY_TYPE_TSO.getcode());
+				matchPlayDto.setFixedOdds(fixedodds);
+				dlJcZqMatchPlayDTOs.add(matchPlayDto);
+			}
+		}else {
+			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
+			for(LotteryMatchPlay matchPlay: matchPlayList) {
+				if(this.isStop(matchPlay)) {
+					continue;
+				}
+				Integer playType2 = matchPlay.getPlayType();
+				if("6".equals(playType) && playType2 == 7) {
+					continue;
+				}
+				Integer changciId = matchPlay.getChangciId();
+				DlJcZqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);
+				if(matchPlayDto == null) {
+					continue;
+				}
+				List<DlJcZqMatchPlayDTO> dlJcZqMatchPlayDTOs = matchPlayMap.get(changciId);
+				if(dlJcZqMatchPlayDTOs == null){
+					dlJcZqMatchPlayDTOs = new ArrayList<DlJcZqMatchPlayDTO>();
+					matchPlayMap.put(changciId, dlJcZqMatchPlayDTOs);
+				}
+				dlJcZqMatchPlayDTOs.add(matchPlayDto);
+			}
+		}
+		long end1 = System.currentTimeMillis();
+		logger.info("getMatchListQdd==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
+		dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playType, matchPlayMap);
+		long end = System.currentTimeMillis();
+		logger.info("getMatchListQdd==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
+		logger.info("getMatchListQdd==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
+	    return dlJcZqMatchListDTO;
+	}
+	private boolean isStopQdd(LotteryMatchPlayQdd matchPlay) {
+			String playContent = matchPlay.getPlayContent();
+			JSONObject jsonObj = JSON.parseObject(playContent);
+			String cbtValue = jsonObj.getString("cbt");
+			if("2".equals(cbtValue)) {
+				Boolean isStop = Boolean.TRUE;
+				/****************20180820 据抓取工程师说，停售时（00-09）,cbt也是2，我们不能隐藏赛事因此增加逻辑**************/
+				String matchLiveInfo = matchPlay.getMatchLiveInfo();
+				if(!StringUtils.isEmpty(matchLiveInfo)){			
+					JSONObject matchLiveJsonObj = JSON.parseObject(matchLiveInfo);
+					String matchStatus = matchLiveJsonObj.getString("match_status");
+	                if("Fixture".equalsIgnoreCase(matchStatus)){
+						isStop = Boolean.FALSE;
+					}
+				}
+				/****************20180820 据抓取工程师说，停售时（00-09）,cbt也是2，我们不能隐藏赛事因此增加逻辑**************/
+				return isStop;
+			}
+			return false;
+		}
     /**
      * 获取赛事列表
      * @param param

@@ -134,7 +134,13 @@ public class LotteryMatchController {
 	@ApiOperation(value = "获取赛事列表-足球", notes = "获取赛事列表-足球")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
-		DlJcZqMatchListDTO dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = null;
+		UserDeviceInfo uinfo = SessionUtil.getUserDevice();
+		if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {
+			dlJcZqMatchListDTO = lotteryMatchService.getMatchListQdd(param);
+		}else {
+			dlJcZqMatchListDTO = lotteryMatchService.getMatchList(param);
+		}
 		String allMatchCount = dlJcZqMatchListDTO.getAllMatchCount();
 		if(allMatchCount == null || Integer.valueOf(allMatchCount) <= 0){
 			return ResultGenerator.genResult(LotteryResultEnum.NO_MATCH.getCode(),LotteryResultEnum.NO_MATCH.getMsg());

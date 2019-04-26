@@ -177,25 +177,25 @@
 		dm.is_hot isHot,
 		dml.match_live_info matchLiveInfo
   	from dl_match dm left join dl_match_live dml on dm.changci_id = dml.changci_id
-  	 where is_del = 0 
-     and is_show = 1
-  	 and str_to_date(match_time,'%Y-%m-%d') = #{dateStr} 
+  	 where dm.is_del = 0 
+     and dm.is_show = 1
+  	 and str_to_date(dm.match_time,'%Y-%m-%d') = #{dateStr} 
   	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
-  	 	and league_id in
+  	 	and dm.league_id in
   	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
   	 		#{leagueId}
   	 	</foreach>
   	 </if>
   	 <if test="matchIdArr !=null and matchIdArr.length != 0">
-  	 	and match_id in
+  	 	and dm.match_id in
   	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
   	 		#{matchId}
   	 	</foreach>
   	 </if>
   	 <if test="matchFinish != null and matchFinish != ''">
-  	 	and  status = 1
+  	 	and  dm.status = 1
   	 </if>
-  	 order by match_sn
+  	 order by dm.match_sn
   </select>
   
   
@@ -227,27 +227,27 @@
 		dm.is_hot isHot,
 		dml.match_live_info matchLiveInfo
 	from dl_match dm left join dl_match_live dml on dm.changci_id = dml.changci_id
-  	 where is_del = 0 
-     and is_show = 1
+  	 where dm.is_del = 0 
+     and dm.is_show = 1
   	 <if test="dateStr !=null and dateStr != ''">
-		and str_to_date(show_time,'%Y-%m-%d') = #{dateStr}
+		and str_to_date(dm.show_time,'%Y-%m-%d') = #{dateStr}
   	 </if>
   	 <if test="leagueIdArr !=null and leagueIdArr.length != 0">
-  	 	and league_id in
+  	 	and dm.league_id in
   	 	<foreach collection="leagueIdArr" item="leagueId" index="index" open="(" close=")" separator=",">
   	 		#{leagueId}
   	 	</foreach>
   	 </if>
   	 <if test="matchIdArr !=null and matchIdArr.length != 0">
-  	 	and match_id in
+  	 	and dm.match_id in
   	 	<foreach collection="matchIdArr" item="matchId" index="index" open="(" close=")" separator=",">
   	 		#{matchId}
   	 	</foreach>
   	 </if>
   	 <if test="type != null and type != ''">
-  	 	and  status = #{type}
+  	 	and  dm.status = #{type}
   	 </if>
-  	 order by match_sn
+  	 order by dm.match_sn
   </select>
   <select id="queryNotFinishMatchByQueryCondition" parameterType ="java.lang.String" resultMap="BaseResultMap">
   	select * from dl_match
