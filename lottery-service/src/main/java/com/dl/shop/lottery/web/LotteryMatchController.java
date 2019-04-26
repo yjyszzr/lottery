@@ -1346,7 +1346,20 @@ public class LotteryMatchController {
 		在Http请求中增加Authorization的Header来包含签名信息
 		 */
 		boolean authFlag = true;
-		// ~~~  
+		if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
+			UserIdParam up = new UserIdParam();
+			up.setUserId(1000000000);	//1000000000  久幺
+			UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
+			if(user!=null) {
+				String strjson = JSONHelper.bean2json(param);
+				String strSign = user.getMerchantNo()+user.getMerchantPass()+strjson;
+				String sign = MD5.getSign(strSign);
+				logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign+"&&&&&&json="+strjson);
+				if(!sign.equalsIgnoreCase(param.getSign())) { //签名不一致
+					authFlag = false;
+				}
+			}
+		}
 		if (!authFlag) {
 			return ResultGenerator.genFailResult("签名不合法");
 		}

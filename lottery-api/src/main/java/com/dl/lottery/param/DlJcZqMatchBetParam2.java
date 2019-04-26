@@ -18,4 +18,6 @@ public class DlJcZqMatchBetParam2 extends DlJcZqMatchBetParam implements Seriali
 	private String timestamp;
 	@ApiModelProperty(value="商户订单号 注：对应您方彩票的唯一标识")
 	private String merchantOrderSn;
+	@ApiModelProperty(value="签名")
+	private String sign;
 }
