@@ -1412,7 +1412,7 @@ public class LotteryMatchController {
 		在Http请求中增加Authorization的Header来包含签名信息
 		 */
 		String ss = req.getHeader("Authorization")+"";
-		logger.info("请求头签名："+ss);
+		logger.info("请求头签名："+ss.toUpperCase());
 		boolean authFlag = true;
 		if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
 			UserIdParam up = new UserIdParam();
@@ -1423,7 +1423,7 @@ public class LotteryMatchController {
 				String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
 				String sign = MD5.getSign(strSign);
 				logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
-				if(!sign.equalsIgnoreCase(param.getSign()) && !ss.equalsIgnoreCase(param.getSign())) { //签名不一致
+				if(!sign.equalsIgnoreCase(param.getSign()) && !ss.equalsIgnoreCase(sign)) { //签名不一致
 					authFlag = false;
 				}
 			}
