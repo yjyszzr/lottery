@@ -223,7 +223,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		String timestamp = DateUtil.getCurrentDateTime();
 		UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
 		if(user!=null) {
-			String strSign = user.getMerchantNo()+user.getMerchantPass()+timestamp+printStakeResultDTO.getMerchantOrderSn();
+			String strSign = user.getMerchantNo()+user.getMerchantPass()+timestamp+printStakeResultDTO.getOrderSn();
 			sign = MD5.getSign(strSign);
 			
 		}
