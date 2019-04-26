@@ -22,6 +22,9 @@ import com.dl.lottery.param.DlCallbackStakeParam.CallbackStake;
 import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage;
 import com.dl.lottery.param.DlCallbackStakeSenDeParam.SendeResultMessage.SpMap.Odds.MatchNumber;
 import com.dl.lottery.param.DlToStakeParam.PrintTicketOrderParam;
+import com.dl.member.api.IUserService;
+import com.dl.member.dto.UserDTO;
+import com.dl.member.param.UserIdParam;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.dto.OrderDetailDataDTO;
@@ -35,6 +38,8 @@ import com.dl.shop.lottery.dao.LotteryPrintMapper;
 import com.dl.shop.lottery.dao.PeriodRewardDetailMapper;
 import com.dl.shop.lottery.dao2.LotteryMatchMapper;
 import com.dl.shop.lottery.model.*;
+import com.dl.shop.lottery.utils.MD5;
+
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
@@ -86,6 +91,9 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 
 	@Resource
 	private ArtifiDyQueueService artifiDyQueueService;
+	
+	@Resource
+	private IUserService iUserService;
 	
 	@Resource
 	private PeriodRewardDetailMapper periodRewardDetailMapper;
@@ -209,7 +217,17 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		HttpHeaders headers = new HttpHeaders();
 		MediaType type = MediaType.parseMediaType("application/json;charset=UTF-8");
 		headers.setContentType(type);
-
+		UserIdParam up = new UserIdParam();
+		up.setUserId(1000000000);	//1000000000  久幺
+		String sign = "";
+		String timestamp = DateUtil.getCurrentDateTime();
+		UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
+		if(user!=null) {
+			String strSign = user.getMerchantNo()+user.getMerchantPass()+timestamp+printStakeResultDTO.getMerchantOrderSn();
+			sign = MD5.getSign(strSign);
+			
+		}
+		headers.set("Authorization", sign);
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<String, Object>();
 		paramMap.add("status", printStakeResultDTO.getStatus());
 		paramMap.add("picUrl", printStakeResultDTO.getPicUrl());
@@ -217,6 +235,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		paramMap.add("print_sp", printStakeResultDTO.getPrint_sp());
 		paramMap.add("orderSn", printStakeResultDTO.getOrderSn());
 		paramMap.add("merchantOrderSn", printStakeResultDTO.getMerchantOrderSn());
+		paramMap.add("timestamp", timestamp);
 		HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<MultiValueMap<String, Object>>(paramMap,headers);
 		ResponseEntity<String> response = rest.postForEntity(notifyUrl, httpEntity, String.class);
 		Integer statusCode = response.getStatusCodeValue();
