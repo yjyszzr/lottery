@@ -1411,6 +1411,8 @@ public class LotteryMatchController {
 		签名之前需将签名数据以UTF-8编码方式编码
 		在Http请求中增加Authorization的Header来包含签名信息
 		 */
+		String ss = req.getHeader("Authorization");
+		logger.info("请求头签名："+ss);
 		boolean authFlag = true;
 		if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
 			UserIdParam up = new UserIdParam();
