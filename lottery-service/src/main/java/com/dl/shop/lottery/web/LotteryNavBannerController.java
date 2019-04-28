@@ -82,7 +82,7 @@ public class LotteryNavBannerController {
     @ApiOperation(value = "商城banner轮播图", notes = "商城banner轮播图")
     @PostMapping("/shopBanners")
     public BaseResult<List<DlBannerPicDTO>> shopBanners(@RequestBody EmptyParam param){
-        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(3);
+        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(3,null);
         List<DlBannerPicDTO> bannerPicDTOList = new ArrayList<DlBannerPicDTO>();
         if(navList.size() > 0){
             bannerPicDTOList =  navList.stream().map(e->new DlBannerPicDTO(e.getBannerName(),lotteryConfig.getBannerShowUrl()+e.getBannerImage(),e.getBannerLink(),e.getStartTime(),e.getEndTime())).collect(Collectors.toList());
