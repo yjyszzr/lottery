@@ -25,7 +25,7 @@ public class LotteryNavBannerService extends AbstractService<LotteryNavBanner> {
 	 * @return
 	 */
 	public List<LotteryNavBanner> queryNavBannerByType(Integer showPosition,String appCodeName){
-		return  lotteryNavBannerMapper.queryNavBannerByType(showPosition);
+		return  lotteryNavBannerMapper.queryNavBannerByType(showPosition,appCodeName);
 	}
 
 }
