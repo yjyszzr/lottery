@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface LotteryNavBannerMapper extends Mapper<LotteryNavBanner> {
 
-    List<LotteryNavBanner> queryNavBannerByType(@Param("showPosition") Integer showPosition);
+    List<LotteryNavBanner> queryNavBannerByType(@Param("showPosition") Integer showPosition,@Param("appCodeName") String appCodeName);
 
 }

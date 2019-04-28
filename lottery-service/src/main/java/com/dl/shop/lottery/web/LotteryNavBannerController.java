@@ -104,7 +104,10 @@ public class LotteryNavBannerController {
             dealSwitch = dealTurnOn == 1?2:1;
         }
 
-        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2);
+        UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo.getAppCodeName();
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
+        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(2,appCodeName);
         List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
