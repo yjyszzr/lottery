@@ -1,31 +1,4 @@
 package com.dl.shop.lottery.web;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.dl.base.context.BaseContextHandler;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
@@ -37,51 +10,10 @@ import com.dl.base.util.DateUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
-import com.dl.lottery.dto.BasketBallLeagueInfoDTO;
-import com.dl.lottery.dto.BetPayInfoDTO;
-import com.dl.lottery.dto.DIZQUserBetCellInfoDTO;
-import com.dl.lottery.dto.DIZQUserBetInfoDTO;
-import com.dl.lottery.dto.DLBetLottoInfoDTO;
-import com.dl.lottery.dto.DLFutureMatchDTO;
-import com.dl.lottery.dto.DLLQBetInfoDTO;
-import com.dl.lottery.dto.DLLeagueTeamScoreInfoDTO;
-import com.dl.lottery.dto.DLZQBetInfoDTO;
-import com.dl.lottery.dto.DlJcLqMatchCellDTO;
-import com.dl.lottery.dto.DlJcLqMatchListDTO;
-import com.dl.lottery.dto.DlJcZqMatchCellDTO;
-import com.dl.lottery.dto.DlJcZqMatchListDTO;
-import com.dl.lottery.dto.LeagueInfoDTO;
-import com.dl.lottery.dto.LeagueMatchAsiaDTO;
-import com.dl.lottery.dto.LeagueMatchDaoXiaoDTO;
-import com.dl.lottery.dto.LeagueMatchEuropeDTO;
-import com.dl.lottery.dto.LotteryMatchDTO;
-import com.dl.lottery.dto.MatchBasketBallBetCellDTO;
-import com.dl.lottery.dto.MatchBasketBallBetPlayDTO;
-import com.dl.lottery.dto.MatchBetCellDTO;
-import com.dl.lottery.dto.MatchBetPlayDTO;
-import com.dl.lottery.dto.MatchDateDTO;
-import com.dl.lottery.dto.MatchInfoForTeamDTO;
-import com.dl.lottery.dto.MatchTeamInfosDTO;
-import com.dl.lottery.dto.MatchTeamInfosSumDTO;
-import com.dl.lottery.dto.OrderIdDTO;
-import com.dl.lottery.dto.QueryMatchResultDTO;
-import com.dl.lottery.dto.TeamSupportDTO;
+import com.dl.lottery.dto.*;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DateStrParam;
-import com.dl.lottery.param.DlJcLqMatchBetParam;
-import com.dl.lottery.param.DlJcLqMatchListParam;
-import com.dl.lottery.param.DlJcZqMatchBetParam;
-import com.dl.lottery.param.DlJcZqMatchBetParam2;
-import com.dl.lottery.param.DlJcZqMatchListParam;
-import com.dl.lottery.param.GetBetInfoByOrderSn;
-import com.dl.lottery.param.GetCancelMatchesParam;
-import com.dl.lottery.param.GetFilterConditionsParam;
-import com.dl.lottery.param.IsHideParam;
-import com.dl.lottery.param.MatchTeamInfosParam;
-import com.dl.lottery.param.MatchTimePream;
-import com.dl.lottery.param.QueryMatchParam;
-import com.dl.lottery.param.QueryMatchParamByType;
-import com.dl.lottery.param.StringRemindParam;
+import com.dl.lottery.param.*;
 import com.dl.member.api.ISysConfigService;
 import com.dl.member.api.IUserAccountService;
 import com.dl.member.api.IUserBonusService;
@@ -89,13 +21,7 @@ import com.dl.member.api.IUserService;
 import com.dl.member.dto.SysConfigDTO;
 import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.dto.UserDTO;
-import com.dl.member.param.BonusLimitConditionParam;
-import com.dl.member.param.StrParam;
-import com.dl.member.param.SysConfigParam;
-import com.dl.member.param.UserAccountParam;
-import com.dl.member.param.UserIdParam;
-import com.dl.member.param.UserIdRealParam;
-import com.dl.member.param.UserParam;
+import com.dl.member.param.*;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.SubmitOrderParam;
@@ -105,24 +31,34 @@ import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.lottery.core.ProjectConstant;
 import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
-import com.dl.shop.lottery.service.DlFutureMatchService;
-import com.dl.shop.lottery.service.DlLeagueInfoService;
-import com.dl.shop.lottery.service.DlLeagueMatchAsiaService;
-import com.dl.shop.lottery.service.DlLeagueMatchDaoXiaoService;
-import com.dl.shop.lottery.service.DlLeagueMatchEuropeService;
-import com.dl.shop.lottery.service.DlLeagueTeamService;
-import com.dl.shop.lottery.service.DlMatchBasketballService;
-import com.dl.shop.lottery.service.DlMatchPlayBasketballService;
-import com.dl.shop.lottery.service.DlMatchSupportService;
-import com.dl.shop.lottery.service.DlMatchTeamScoreService;
-import com.dl.shop.lottery.service.LotteryMatchPlayService;
-import com.dl.shop.lottery.service.LotteryMatchService;
+import com.dl.shop.lottery.service.*;
 import com.dl.shop.lottery.utils.MD5;
 import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
-
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 //import com.dl.shop.lottery.service.MerchantService;
 
@@ -1105,6 +1041,17 @@ public class LotteryMatchController {
 		boolean isCellError = false;
 		boolean isAllSingle = true;
 		boolean isMonyPlay = false;
+		boolean mixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
+		boolean mixPlayTurnOn = true;//混合投注每场比赛禁止多种选项的投注 开关
+		//混合投注每场比赛禁止多种选项的投注
+		SysConfigParam sysConfigParam = new SysConfigParam();
+		sysConfigParam.setBusinessId(61);
+		BaseResult<SysConfigDTO> sysConfigDTOBaseResult = iSysConfigService.querySysConfig(sysConfigParam);
+		if(sysConfigDTOBaseResult.getCode() == 0){
+			BigDecimal value = sysConfigDTOBaseResult.getData().getValue();
+			mixPlayTurnOn = value.equals(BigDecimal.ZERO)?false:true;
+		}
+
 		for(MatchBetPlayDTO betPlay : matchBetPlays){
 			List<MatchBetCellDTO> matchBetCells = betPlay.getMatchBetCells();
 			if(CollectionUtils.isEmpty(matchBetCells)) {
@@ -1114,6 +1061,12 @@ public class LotteryMatchController {
 			if(matchBetCells.size()>1) {
 				isMonyPlay = true;
 			}
+
+			Integer lotteryPlayClassifyId = betPlay.getLotteryPlayClassifyId();
+			if(mixPlayTurnOn == true && lotteryPlayClassifyId == 6 && matchBetCells.size() > 1){//混合投注每场比赛禁止多种选项的投注
+				mixPlayForbbidon = true;
+			}
+
 			for(MatchBetCellDTO betCell: matchBetCells){
 				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
 				if(CollectionUtils.isEmpty(betCells)) {
@@ -1124,6 +1077,7 @@ public class LotteryMatchController {
 					String cellCode = dto.getCellCode();
 					String cellName = dto.getCellName();
 					String cellOdds = dto.getCellOdds();
+
 					if(StringUtils.isBlank(cellCode) || StringUtils.isBlank(cellName) || StringUtils.isBlank(cellOdds)) {
 						isCellError = true;
 						break;
@@ -1141,6 +1095,12 @@ public class LotteryMatchController {
 				break;
 			}
 		}
+
+		//混合投注每场比赛禁止多种选项的投注
+		if(mixPlayForbbidon){
+			return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
+		}
+
 		//校验投注选项
 		if(isCellError) {
 			return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
@@ -1420,7 +1380,7 @@ public class LotteryMatchController {
 			UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
 			if(user!=null) {
 //				String strjson = JSONHelper.bean2json(param);
-				String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
+				String strSign = "";//user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
 				String sign = MD5.getSign(strSign);
 				logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
 				if(!sign.equalsIgnoreCase(param.getSign()) && !ss.equalsIgnoreCase(sign)) { //签名不一致
