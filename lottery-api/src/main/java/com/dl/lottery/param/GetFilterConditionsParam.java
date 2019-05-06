@@ -9,4 +9,5 @@ import lombok.Data;
 @Data
 public class GetFilterConditionsParam {
 	
+	private String leagueId;
 }
