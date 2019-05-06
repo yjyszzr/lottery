@@ -1203,7 +1203,8 @@ public class LotteryMatchController {
 		dto.setTimes(param.getTimes());
 		dto.setBetType(param.getBetType());
 		dto.setPlayType(param.getPlayType());
-		dto.setPlayTypeDetail(StringUtils.join(playTypeDetail.toArray(), ","));
+		String playTypeDetailStr = StringUtils.join(playTypeDetail.toArray(), ",");
+		dto.setPlayTypeDetail(playTypeDetailStr);
 		dto.setLotteryClassifyId(param.getLotteryClassifyId());
 		dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
 		dto.setBetDetailInfos(betDetailInfos);
