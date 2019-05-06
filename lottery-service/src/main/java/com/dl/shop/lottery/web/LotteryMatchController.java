@@ -1423,7 +1423,7 @@ public class LotteryMatchController {
 				String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
 				String sign = MD5.getSign(strSign);
 				logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
-				if(!ss.equalsIgnoreCase(sign)) { //签名不一致
+				if(!sign.equalsIgnoreCase(param.getSign()) && !ss.equalsIgnoreCase(sign)) { //签名不一致
 					authFlag = false;
 				}
 			}
