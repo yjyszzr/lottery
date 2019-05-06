@@ -53,10 +53,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -1043,6 +1040,7 @@ public class LotteryMatchController {
 		boolean isMonyPlay = false;
 		boolean mixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
 		boolean mixPlayTurnOn = true;//混合投注每场比赛禁止多种选项的投注 开关
+		Set<String> playTypeDetail = new HashSet<>();
 		//混合投注每场比赛禁止多种选项的投注
 		SysConfigParam sysConfigParam = new SysConfigParam();
 		sysConfigParam.setBusinessId(61);
@@ -1068,6 +1066,7 @@ public class LotteryMatchController {
 			}
 
 			for(MatchBetCellDTO betCell: matchBetCells){
+				playTypeDetail.add(betCell.getPlayType());
 				List<DlJcZqMatchCellDTO> betCells = betCell.getBetCells();
 				if(CollectionUtils.isEmpty(betCells)) {
 					isCellError = true;
@@ -1110,11 +1109,7 @@ public class LotteryMatchController {
 				return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
 			}
 		}
-		if("6".equals(param.getPlayType())) {//混合投注只能选择一种玩法
-			if(isMonyPlay) {
-//				return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
-			}
-		}
+
 		String[] betTypes = betTypeStr.split(",");
 		boolean isCheckedBetType = true;
 		int minBetNum = 9;
@@ -1208,6 +1203,7 @@ public class LotteryMatchController {
 		dto.setTimes(param.getTimes());
 		dto.setBetType(param.getBetType());
 		dto.setPlayType(param.getPlayType());
+		dto.setPlayTypeDetail(StringUtils.join(playTypeDetail.toArray(), ","));
 		dto.setLotteryClassifyId(param.getLotteryClassifyId());
 		dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
 		dto.setBetDetailInfos(betDetailInfos);
