@@ -1047,7 +1047,7 @@ public class LotteryMatchController {
 		BaseResult<SysConfigDTO> sysConfigDTOBaseResult = iSysConfigService.querySysConfig(sysConfigParam);
 		if(sysConfigDTOBaseResult.getCode() == 0){
 			BigDecimal value = sysConfigDTOBaseResult.getData().getValue();
-			mixPlayTurnOn = value.equals(BigDecimal.ZERO)?false:true;
+			mixPlayTurnOn = value.compareTo(BigDecimal.ZERO) == 0?false:true;
 		}
 
 		for(MatchBetPlayDTO betPlay : matchBetPlays){
@@ -1204,7 +1204,7 @@ public class LotteryMatchController {
 		dto.setBetType(param.getBetType());
 		dto.setPlayType(param.getPlayType());
 		String playTypeDetailStr = StringUtils.join(playTypeDetail.toArray(), ",");
-		dto.setPlayTypeDetailStr(playTypeDetailStr);
+		dto.setMixPlayDetail(playTypeDetailStr);
 		dto.setLotteryClassifyId(param.getLotteryClassifyId());
 		dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
 		dto.setBetDetailInfos(betDetailInfos);
@@ -1377,7 +1377,7 @@ public class LotteryMatchController {
 			UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
 			if(user!=null) {
 //				String strjson = JSONHelper.bean2json(param);
-				String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
+				String strSign = "";//user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
 				String sign = MD5.getSign(strSign);
 				logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
 				if(!ss.equalsIgnoreCase(sign)) { //签名不一致
