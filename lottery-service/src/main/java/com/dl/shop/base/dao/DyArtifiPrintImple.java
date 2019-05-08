@@ -61,7 +61,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		// TODO Auto-generated method stub
 		List<DDyArtifiPrintEntity> rList = new ArrayList<DDyArtifiPrintEntity>();
 		String tableName = getTNameByLgCode(userId, TABLE_NAME);
-		String sql = "select * from " + tableName + "a left join dl_order o on a.order_sn = o.order_sn  where o.play_type_detail like '%,%' and _id > " + start + ";";
+		String sql = "select * from " + tableName + "a left join dl_order o on a.order_sn = o.order_sn  where a._id > " + start + ";";
 		ResultSet rs = this.exeQuery(sql, null);
 		if(rs != null) {
 			try {

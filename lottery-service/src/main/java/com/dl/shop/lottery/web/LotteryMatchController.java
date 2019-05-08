@@ -1341,6 +1341,7 @@ public class LotteryMatchController {
         submitOrderParam.setLotteryPlayClassifyId(lotteryPlayClassifyId);
         submitOrderParam.setPassType(dto.getBetType());
         submitOrderParam.setPlayType("0" + dto.getPlayType());
+        submitOrderParam.setPlayTypeDetail(dto.getPlayTypeDetail());
         submitOrderParam.setBetNum(dto.getBetNum());
         submitOrderParam.setCathectic(dto.getTimes());
         if (null!= param.getStoreId()) {
