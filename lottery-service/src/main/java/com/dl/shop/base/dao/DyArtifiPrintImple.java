@@ -86,7 +86,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 			String ticketId = rs.getString("order_sn");
 			int status = rs.getInt("status");
 			int lotteryClassifyId = rs.getInt("lottery_classify_id");
-			String playDetailType = rs.getString("play_detail_type");
+			String playDetailType = rs.getString("play_type_detail");
 			String mixPlayBz = playDetailType.contains(",")?"1":"0";
 			entity.id = id;
 			entity.orderSn = ticketId;
