@@ -1,11 +1,12 @@
 package com.dl.shop.base.dao;
 
+import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
+import com.dl.shop.lottery.configurer.DataBaseCfg;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import com.dl.shop.base.dao.entity.DDyArtifiPrintEntity;
-import com.dl.shop.lottery.configurer.DataBaseCfg;
 
 public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 
@@ -60,7 +61,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		// TODO Auto-generated method stub
 		List<DDyArtifiPrintEntity> rList = new ArrayList<DDyArtifiPrintEntity>();
 		String tableName = getTNameByLgCode(userId, TABLE_NAME);
-		String sql = "select * from " + tableName + " where _id > " + start + ";";
+		String sql = "select * from " + tableName + "a left join dl_order o on a.order_sn = o.order_sn  where o.play_type_detail like '%,%' and _id > " + start + ";";
 		ResultSet rs = this.exeQuery(sql, null);
 		if(rs != null) {
 			try {
@@ -85,10 +86,13 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 			String ticketId = rs.getString("order_sn");
 			int status = rs.getInt("status");
 			int lotteryClassifyId = rs.getInt("lottery_classify_id");
+			String playDetailType = rs.getString("play_detail_type");
+			String mixPlayBz = playDetailType.contains(",")?"1":"0";
 			entity.id = id;
 			entity.orderSn = ticketId;
 			entity.status = status;
 			entity.lotteryClassifyId = lotteryClassifyId;
+			entity.mixPlayBz = mixPlayBz;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
