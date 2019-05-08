@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.web;
+
 import com.dl.base.context.BaseContextHandler;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
@@ -1222,7 +1223,7 @@ public class LotteryMatchController {
         dto.setBetType(param.getBetType());
         dto.setPlayType(param.getPlayType());
         String playTypeDetailStr = StringUtils.join(playTypeDetail.toArray(), ",");
-        dto.setTt(playTypeDetailStr);
+        dto.setSy(playTypeDetailStr);
         dto.setLotteryClassifyId(param.getLotteryClassifyId());
         dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
         dto.setBetDetailInfos(betDetailInfos);
