@@ -37,7 +37,6 @@ import com.dl.shop.payment.dto.UserBetDetailInfoDTO;
 import com.dl.shop.payment.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
 import io.swagger.annotations.ApiOperation;
-import org.apache.catalina.manager.util.SessionUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -1052,7 +1051,7 @@ public class LotteryMatchController {
         List<Integer> bidList = new ArrayList<>();
         bidList.add(61);
         bidList.add(62);
-        busiIdsListParam.setBusinessIdList();
+        busiIdsListParam.setBusinessIdList(bidList);
         BaseResult<List<SysConfigDTO>> sysConfigDTOBaseResult =  iSysConfigService.querySysConfigList(busiIdsListParam);
         if(sysConfigDTOBaseResult.getCode() == 0){
             BigDecimal qddValue = sysConfigDTOBaseResult.getData().get(0).getValue();
@@ -1223,6 +1222,7 @@ public class LotteryMatchController {
         dto.setBetType(param.getBetType());
         dto.setPlayType(param.getPlayType());
         String playTypeDetailStr = StringUtils.join(playTypeDetail.toArray(), ",");
+        dto.setSomp(playTypeDetailStr);
         dto.setLotteryClassifyId(param.getLotteryClassifyId());
         dto.setLotteryPlayClassifyId(param.getLotteryPlayClassifyId());
         dto.setBetDetailInfos(betDetailInfos);
