@@ -1039,7 +1039,7 @@ public class LotteryMatchController {
         boolean isCellError = false;
         boolean isAllSingle = true;
         boolean isMonyPlay = false;
-        boolean qddmixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
+        boolean mixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
         boolean shdmixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
         boolean qddmixPlayTurnOn = true;//球多多混合投注每场比赛禁止多种选项的投注 开关
         boolean shmixPlayTurnOn = true;//圣和混合投注每场比赛禁止多种选项的投注 开关
@@ -1072,12 +1072,8 @@ public class LotteryMatchController {
             }
 
             Integer lotteryPlayClassifyId = betPlay.getLotteryPlayClassifyId();
-            if(qddmixPlayTurnOn == true && lotteryPlayClassifyId == 6 && matchBetCells.size() > 1){//混合投注每场比赛禁止多种选项的投注
-                qddmixPlayForbbidon = true;
-            }
-
-            if(shmixPlayTurnOn == true && lotteryPlayClassifyId == 6 && matchBetCells.size() > 1){//混合投注每场比赛禁止多种选项的投注
-                shdmixPlayForbbidon = true;
+            if(lotteryPlayClassifyId == 6 && matchBetCells.size() > 1){//混合投注每场比赛禁止多种选项的投注
+                mixPlayForbbidon = true;
             }
 
             for(MatchBetCellDTO betCell: matchBetCells){
@@ -1111,11 +1107,11 @@ public class LotteryMatchController {
         }
 
         //混合投注每场比赛禁止多种选项的投注
-        if(qddmixPlayForbbidon){
+        if("10".equals(appCodeName) && qddmixPlayTurnOn && mixPlayForbbidon){
             return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
         }
 
-        if(shdmixPlayForbbidon){
+        if("11".equals(appCodeName) && shmixPlayTurnOn && mixPlayForbbidon){
             return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_NOT_MONY.getCode(), LotteryResultEnum.BET_PLAY_NOT_MONY.getMsg());
         }
 
