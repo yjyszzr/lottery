@@ -1393,7 +1393,7 @@ public class LotteryMatchController {
             UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
             if(user!=null) {
 //				String strjson = JSONHelper.bean2json(param);
-                String strSign = "";//user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
+                String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
                 String sign = MD5.getSign(strSign);
                 logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
                 if(!ss.equalsIgnoreCase(sign)) { //签名不一致
