@@ -1044,7 +1044,7 @@ public class LotteryMatchController {
         boolean qddmixPlayTurnOn = true;//球多多混合投注每场比赛禁止多种选项的投注 开关
         boolean shmixPlayTurnOn = true;//圣和混合投注每场比赛禁止多种选项的投注 开关
         UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
-        String appCodeNameStr = userDeviceInfo.getAppCodeName();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
         String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
         Set<String> playTypeDetail = new HashSet<>();
         //混合投注每场比赛禁止多种选项的投注
