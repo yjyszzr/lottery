@@ -558,7 +558,10 @@ public class LotteryMatchController {
     @PostMapping("/getBetInfo")
     public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
     	Integer userId = SessionUtil.getUserId();
-    	if(userId==1000000077) {//财务账号--禁止购彩
+    	SysConfigParam cfg = new SysConfigParam();
+		cfg.setBusinessId(67);//读取财务账号id
+		int cwuserId = iUserAccountService.queryBusinessLimit(cfg).getData()!=null?iUserAccountService.queryBusinessLimit(cfg).getData().getValue().intValue():0;
+    	if(userId==cwuserId) {//财务账号--禁止购彩
     		return ResultGenerator.genResult(LotteryResultEnum.BET_USER_NOT_PAY.getCode(), LotteryResultEnum.BET_USER_NOT_PAY.getMsg());
     	}
         if(lotteryMatchService.isShutDownBet()) {
