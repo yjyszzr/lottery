@@ -1527,7 +1527,7 @@ public class LotteryMatchController {
             BaseResult<Object> result = userStoreMoneyService.orderAwardTwo(jyparam);//扣钱并且记录流水
             String or = result.getData()!=null?result.getData().toString():"";
             logger.info("createOrder:返回结果是"+or);
-            if("fail".equals(or)) {
+            if("false".equals(or)) {
             	return ResultGenerator.genFailResult("商户余额不足");
             }
         } else {
