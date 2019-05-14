@@ -1516,11 +1516,6 @@ public class LotteryMatchController {
 
         logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
         BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
-        if(userMoneyLimit.subtract(ticketAmount).doubleValue() >= 0) {
-//			return ResultGenerator.genSuccessResult();
-        }else {
-            return ResultGenerator.genFailResult("商户余额不足");
-        }
         // 生成订单号
         String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
         //扣钱
@@ -1528,9 +1523,20 @@ public class LotteryMatchController {
             AwardParam jyparam = new AwardParam();
             jyparam.setUserId(1000000000);
             jyparam.setStoreId(1);
-            jyparam.setTicketAmount(BigDecimal.ZERO.subtract(ticketAmount));
-            userStoreMoneyService.orderAwardTwo(jyparam);//扣钱并且记录流水
+            jyparam.setTicketAmount(ticketAmount);
+            BaseResult<Object> result = userStoreMoneyService.orderAwardTwo(jyparam);//扣钱并且记录流水
+            String or = result.getData()!=null?result.getData().toString():"";
+            if("fail".equals(or)) {
+            	return ResultGenerator.genFailResult("商户余额不足");
+            }
         } else {
+        	
+        	if(userMoneyLimit.subtract(ticketAmount).doubleValue() >= 0) {
+//    			return ResultGenerator.genSuccessResult();
+            }else {
+                return ResultGenerator.genFailResult("商户余额不足");
+            }
+        	
         	BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
             UserParam _user = new UserParam();
             _user.setUserId(userId + "");
