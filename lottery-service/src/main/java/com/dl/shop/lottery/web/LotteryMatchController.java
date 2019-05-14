@@ -37,6 +37,9 @@ import com.dl.shop.lottery.utils.MD5;
 import com.dl.lottery.dto.UserBetDetailInfoDTO;
 import com.dl.lottery.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
+import com.dl.store.api.IStoreUserMoneyService;
+import com.dl.store.param.AwardParam;
+
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +115,9 @@ public class LotteryMatchController {
 //	private UserMapper userMapper;
     @Resource
     private IUserAccountService iUserAccountService;
+    @Resource
+	private IStoreUserMoneyService userStoreMoneyService;
+    
 
 //    @Resource
 //    private MerchantService merchantService;
@@ -1515,43 +1521,48 @@ public class LotteryMatchController {
         }else {
             return ResultGenerator.genFailResult("商户余额不足");
         }
-
-        //扣钱
-        BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
-        UserParam _user = new UserParam();
-        _user.setUserId(userId + "");
-        _user.setUserMoneyLimit(_userMoneyLimit);
-        _user.setMobile(mobile);
-        _user.setPassWord(passWord);
-        BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
-
         // 生成订单号
         String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
-
-        //记流水
-        UserAccountParam userAccountParam = new UserAccountParam();
-        String accountSn = SNGenerator.nextSN(SNBusinessCodeEnum.ACCOUNT_SN.getCode());
-        userAccountParam.setAccountSn(accountSn);
-        userAccountParam.setUserId(userId);
-//		userAccountParam.setAdminUser(null);		
-        userAccountParam.setAmount(ticketAmount);
-        userAccountParam.setCurBalance(_userMoneyLimit);
-        Integer currentTimeLong = DateUtil.getCurrentTimeLong();
-        userAccountParam.setAddTime(currentTimeLong);
-        userAccountParam.setLastTime(currentTimeLong);
-        String note = "商户支付" + ticketAmount + "元";
-        userAccountParam.setNote(note);
-        userAccountParam.setProcessType(Integer.valueOf(3));
-        userAccountParam.setOrderSn(orderSn);
-//		userAccountParam.setParentSn("");
-        userAccountParam.setPayId("");
-        userAccountParam.setPaymentName("2");
-        userAccountParam.setThirdPartName("");
-        userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
-        userAccountParam.setBonusPrice(null);
-        userAccountParam.setStatus(1);
-        BaseResult<Integer> flag2 = iUserAccountService.insertUserAccountBySelective(userAccountParam);
-
+        //扣钱
+        if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单 久幺扣款
+            AwardParam jyparam = new AwardParam();
+            jyparam.setUserId(1000000000);
+            jyparam.setStoreId(1);
+            jyparam.setTicketAmount(BigDecimal.ZERO.subtract(ticketAmount));
+            userStoreMoneyService.orderAwardTwo(jyparam);//扣钱并且记录流水
+        } else {
+        	BigDecimal _userMoneyLimit = userMoneyLimit.subtract(ticketAmount);
+            UserParam _user = new UserParam();
+            _user.setUserId(userId + "");
+            _user.setUserMoneyLimit(_userMoneyLimit);
+            _user.setMobile(mobile);
+            _user.setPassWord(passWord);
+            BaseResult<Integer> flag1 = this.iUserAccountService.updateUserMoneyAndUserMoneyLimit(_user);
+          //记流水
+            UserAccountParam userAccountParam = new UserAccountParam();
+            String accountSn = SNGenerator.nextSN(SNBusinessCodeEnum.ACCOUNT_SN.getCode());
+            userAccountParam.setAccountSn(accountSn);
+            userAccountParam.setUserId(userId);
+//    		userAccountParam.setAdminUser(null);		
+            userAccountParam.setAmount(ticketAmount);
+            userAccountParam.setCurBalance(_userMoneyLimit);
+            Integer currentTimeLong = DateUtil.getCurrentTimeLong();
+            userAccountParam.setAddTime(currentTimeLong);
+            userAccountParam.setLastTime(currentTimeLong);
+            String note = "商户支付" + ticketAmount + "元";
+            userAccountParam.setNote(note);
+            userAccountParam.setProcessType(Integer.valueOf(3));
+            userAccountParam.setOrderSn(orderSn);
+//    		userAccountParam.setParentSn("");
+            userAccountParam.setPayId("");
+            userAccountParam.setPaymentName("2");
+            userAccountParam.setThirdPartName("");
+            userAccountParam.setUserSurplusLimit(new BigDecimal(0.00));
+            userAccountParam.setBonusPrice(null);
+            userAccountParam.setStatus(1);
+            BaseResult<Integer> flag2 = iUserAccountService.insertUserAccountBySelective(userAccountParam);
+        }
+        
         // order生成
         SubmitOrderParam submitOrderParam = new SubmitOrderParam();
         submitOrderParam.set_orderSn(orderSn);
