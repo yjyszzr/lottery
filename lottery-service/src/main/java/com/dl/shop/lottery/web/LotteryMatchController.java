@@ -563,12 +563,12 @@ public class LotteryMatchController {
     @ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
     @PostMapping("/getBetInfo") 
     public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
-    	int userId = SessionUtil.getUserId();   
+    	Integer userId = SessionUtil.getUserId();   
     	SysConfigParam cfg = new SysConfigParam();
 		cfg.setBusinessId(67);//读取财务账号id
 		int cwuserId = iUserAccountService.queryBusinessLimit(cfg).getData()!=null?iUserAccountService.queryBusinessLimit(cfg).getData().getValue().intValue():0;
     	logger.info("getbetinfo***********"+userId+"###"+cfg+"###"+cwuserId);
-		if(userId==cwuserId) {//财务账号--禁止购彩
+		if(userId!=null && userId==cwuserId) {//财务账号--禁止购彩
     		return ResultGenerator.genResult(LotteryResultEnum.BET_USER_NOT_PAY.getCode(), LotteryResultEnum.BET_USER_NOT_PAY.getMsg());
     	}
         if(lotteryMatchService.isShutDownBet()) {
