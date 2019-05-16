@@ -561,7 +561,7 @@ public class LotteryMatchController {
     }
 
     @ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
-    @PostMapping("/getBetInfo")
+    @PostMapping("/getBetInfo") 
     public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
     	Integer userId = SessionUtil.getUserId();
     	SysConfigParam cfg = new SysConfigParam();
