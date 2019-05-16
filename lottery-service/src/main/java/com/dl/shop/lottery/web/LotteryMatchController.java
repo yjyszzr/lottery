@@ -565,7 +565,7 @@ public class LotteryMatchController {
     public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
     	Integer userId = SessionUtil.getUserId();   
     	SysConfigParam cfg = new SysConfigParam();
-		cfg.setBusinessId(67);//读取财务账号id
+		cfg.setBusinessId(67);//读取财务账号id 
 		int cwuserId = iUserAccountService.queryBusinessLimit(cfg).getData()!=null?iUserAccountService.queryBusinessLimit(cfg).getData().getValue().intValue():0;
     	logger.info("getbetinfo***********"+userId+"###"+cfg+"###"+cwuserId);
 		if(userId!=null && userId==cwuserId) {//财务账号--禁止购彩
