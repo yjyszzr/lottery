@@ -8,6 +8,7 @@ import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.IpUtil;
 import com.dl.base.util.JSONHelper;
 import com.dl.base.util.SNGenerator;
 import com.dl.base.util.SessionUtil;
@@ -44,6 +45,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -117,7 +119,6 @@ public class LotteryMatchController {
     private IUserAccountService iUserAccountService;
     @Resource
 	private IStoreUserMoneyService userStoreMoneyService;
-    
 
 //    @Resource
 //    private MerchantService merchantService;
@@ -1391,26 +1392,36 @@ public class LotteryMatchController {
     @ApiOperation(value = "模拟生成订单", notes = "模拟生成订单")
     @PostMapping("/createOrder")
     public synchronized BaseResult<OrderIdDTO> createOrder(@Valid @RequestBody DlJcZqMatchBetParam2 param, HttpServletRequest req){
-        // 检验签名
-        /**
-         使用MD5进行签名,签名对象为merchant+merchantPassword+json
-         json为请求信息中的json字符串,merchant为代理商编号，merchantPassword为代理商秘钥
-         签名之前需将签名数据以UTF-8编码方式编码
-         在Http请求中增加Authorization的Header来包含签名信息
-         */
-        String ss = req.getHeader("Authorization")+"";
-        logger.info("请求头签名："+ss.toUpperCase());
+        // 检验Ip和签名
         boolean authFlag = true;
         if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单
+        	String jyip = IpUtil.getIpAddr(req);//获取发起请求服务器IP
+        	logger.info("createOrder请求服务器IP："+jyip);
+        	SysConfigParam cfg = new SysConfigParam();
+        	cfg.setBusinessId(69);//读取久幺服务器IP配置
+        	SysConfigDTO sysConfigDTO = iUserAccountService.queryBusinessLimit(cfg)!=null?iUserAccountService.queryBusinessLimit(cfg).getData():null;
+    	    if(sysConfigDTO!=null) {
+    	    	int jyOpen = sysConfigDTO.getValue().intValue();//判断Ip限制开关是否开启
+    	    	if(jyOpen==1) {//开启IP限制
+    	    		String ipStr = sysConfigDTO.getValueTxt()!=null?sysConfigDTO.getValueTxt():"";
+    	    		if(!ipStr.contains(jyip)) {
+    	    			return ResultGenerator.genFailResult("服务器IP不合法");
+    	    		}
+    	    	}
+    	    } else {//若未配置IP默认为开启IP限制
+    	    	return ResultGenerator.genFailResult("服务器IP不合法");
+    	    }
+    	    
+    	    String reqSign = req.getHeader("Authorization")+"";
+            logger.info("请求头签名："+reqSign.toUpperCase());
             UserIdParam up = new UserIdParam();
             up.setUserId(1000000000);	//1000000000  久幺
             UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;
             if(user!=null) {
-//				String strjson = JSONHelper.bean2json(param);
                 String strSign = user.getMerchantNo()+user.getMerchantPass()+param.getTimestamp()+param.getMerchantOrderSn();
                 String sign = MD5.getSign(strSign);
                 logger.info("createOrder(this)签名前="+strSign+"************签名后="+sign);
-                if(!ss.equalsIgnoreCase(sign)) { //签名不一致
+                if(!reqSign.equalsIgnoreCase(sign)) { //签名不一致
                     authFlag = false;
                 }
             }
@@ -1501,22 +1512,6 @@ public class LotteryMatchController {
             return ticketDetail;
         }).collect(Collectors.toList());
 
-//		检查商户余额是否充足
-        UserIdRealParam userIdParam = new UserIdRealParam();
-        userIdParam.setUserId(userId);
-        BaseResult<UserDTO> userDTO = iUserService.queryUserInfoReal(userIdParam);
-        if(userDTO == null) {
-            return ResultGenerator.genFailResult("该用户不存在");
-        }
-        String totalStr = userDTO.getData()
-//				.getTotalMoney()
-                .getUserMoneyLimit()
-                ;
-        String mobile = userDTO.getData().getMobile();
-        String passWord = userDTO.getData().getPassword();
-
-        logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
-        BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
         // 生成订单号
         String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
         //扣钱
@@ -1532,7 +1527,23 @@ public class LotteryMatchController {
             	return ResultGenerator.genFailResult("商户余额不足");
             }
         } else {
-        	
+//    		检查商户余额是否充足
+            UserIdRealParam userIdParam = new UserIdRealParam();
+            userIdParam.setUserId(userId);
+            BaseResult<UserDTO> userDTO = iUserService.queryUserInfoReal(userIdParam);
+            if(userDTO == null) {
+                return ResultGenerator.genFailResult("该用户不存在");
+            }
+            String totalStr = userDTO.getData()
+//    				.getTotalMoney()
+                    .getUserMoneyLimit()
+                    ;
+            String mobile = userDTO.getData().getMobile();
+            String passWord = userDTO.getData().getPassword();
+
+            logger.info("[checkMerchantAccount]" +" userId:"  + userId +" totalAmt:" +totalStr);
+            BigDecimal userMoneyLimit = new BigDecimal(userDTO.getData().getUserMoneyLimit());
+            
         	if(userMoneyLimit.subtract(ticketAmount).doubleValue() >= 0) {
 //    			return ResultGenerator.genSuccessResult();
             }else {
