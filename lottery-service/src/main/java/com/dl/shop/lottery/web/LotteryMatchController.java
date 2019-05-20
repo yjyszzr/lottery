@@ -1413,7 +1413,7 @@ public class LotteryMatchController {
     	    }
     	    
     	    String reqSign = req.getHeader("Authorization")+"";
-            logger.info("请求头签名："+reqSign.toUpperCase());
+            logger.info("createOrder请求头签名："+reqSign.toUpperCase());
             UserIdParam up = new UserIdParam();
             up.setUserId(1000000000);	//1000000000  久幺
             UserDTO user = iUserService.queryUserInfo(up)!=null?iUserService.queryUserInfo(up).getData():null;

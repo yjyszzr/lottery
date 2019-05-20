@@ -225,6 +225,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		if(user!=null) {
 			String strSign = user.getMerchantNo()+user.getMerchantPass()+timestamp+printStakeResultDTO.getOrderSn();
 			sign = MD5.getSign(strSign);
+			log.info("doPostMerchant签名为&&&签名前"+strSign+"***签名后"+sign);
 			
 		}
 		headers.set("Authorization", sign);
