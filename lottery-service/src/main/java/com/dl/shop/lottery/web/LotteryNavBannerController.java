@@ -102,7 +102,7 @@ public class LotteryNavBannerController {
 
     @ApiOperation(value = "开屏图", notes = "开屏图")
     @PostMapping("/openNavs")
-    public BaseResult<HashMap<String, Object>> openNavs(@RequestBody EmptyParam param){
+    public BaseResult<List<Object>> openNavs(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
         BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
         if(switchRst.getCode() != 0){
@@ -185,22 +185,19 @@ public class LotteryNavBannerController {
             }
 
         }
-        HashMap<String, Object> result = new HashMap();
-        result.put("DlBannerPicDTO", dto);
+        List<Object> list = new ArrayList<>();
+        list.add(dto);
         BaseResult<UserBonusDTO> userBonus = new BaseResult<UserBonusDTO>();
         if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
-        	result.put("BonusDTO", userBonus.getData());
+        	list.add(userBonus.getData());
         }else {
         	//获取用户可用红包数量和金额
             UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
             userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
             userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
-            result.put("BonusDTO", userBonus.getData());
+            list.add(userBonus.getData());
         }
-        
-      
-        
-        return ResultGenerator.genSuccessResult("success",result);
+        return ResultGenerator.genSuccessResult("success",list);
     }
 
 }
