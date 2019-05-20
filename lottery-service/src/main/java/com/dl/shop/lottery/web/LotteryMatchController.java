@@ -1402,7 +1402,7 @@ public class LotteryMatchController {
         	SysConfigDTO sysConfigDTO = iUserAccountService.queryBusinessLimit(cfg)!=null?iUserAccountService.queryBusinessLimit(cfg).getData():null;
     	    if(sysConfigDTO!=null) {
     	    	int jyOpen = sysConfigDTO.getValue().intValue();//判断Ip限制开关是否开启
-    	    	if(jyOpen==1) {//开启IP限制
+    	    	if(jyOpen==1) {//开启IP限制 
     	    		String ipStr = sysConfigDTO.getValueTxt()!=null?sysConfigDTO.getValueTxt():"";
     	    		if(!ipStr.contains(jyip)) {
     	    			return ResultGenerator.genFailResult("服务器IP不合法");
