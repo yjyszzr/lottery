@@ -1,4 +1,18 @@
 package com.dl.shop.lottery.web;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.alibaba.fastjson.JSON;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
@@ -9,28 +23,21 @@ import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlBannerPicDTO;
 import com.dl.member.api.IDeviceControlService;
 import com.dl.member.api.ISwitchConfigService;
+import com.dl.member.api.IUserBonusService;
 import com.dl.member.dto.DlDeviceActionControlDTO;
 import com.dl.member.dto.SwitchConfigDTO;
+import com.dl.member.dto.UserBonusDTO;
 import com.dl.member.enums.MemberEnums;
 import com.dl.member.param.DlDeviceActionControlParam;
 import com.dl.member.param.MacParam;
 import com.dl.member.param.StrParam;
+import com.dl.member.param.UserBonusIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
 import com.dl.shop.lottery.service.LotteryNavBannerService;
+
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
 * Created by CodeGenerator on 2018/03/23.
@@ -52,6 +59,8 @@ public class LotteryNavBannerController {
     @Resource
     private IDeviceControlService iDeviceControlService;
 
+    @Resource
+    private IUserBonusService iUserBonusService;
 //    @ApiOperation(value = "广告图", notes = "广告图")
 ////    @PostMapping("/adNavs")
 ////    public BaseResult<?> queryNavs(@RequestBody EmptyParam param){
@@ -93,7 +102,7 @@ public class LotteryNavBannerController {
 
     @ApiOperation(value = "开屏图", notes = "开屏图")
     @PostMapping("/openNavs")
-    public BaseResult<DlBannerPicDTO> openNavs(@RequestBody EmptyParam param){
+    public BaseResult<HashMap<String, Object>> openNavs(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
         BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
         if(switchRst.getCode() != 0){
@@ -176,8 +185,22 @@ public class LotteryNavBannerController {
             }
 
         }
-
-        return ResultGenerator.genSuccessResult("success",dto);
+        HashMap<String, Object> result = new HashMap();
+        result.put("DlBannerPicDTO", dto);
+        BaseResult<UserBonusDTO> userBonus = new BaseResult<UserBonusDTO>();
+        if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
+        	result.put("DlBannerPicDTO", userBonus.getData());
+        }else {
+        	//获取用户可用红包数量和金额
+            UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
+            userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
+            userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
+            result.put("DlBannerPicDTO", userBonus.getData());
+        }
+        
+      
+        
+        return ResultGenerator.genSuccessResult("success",result);
     }
 
 }
