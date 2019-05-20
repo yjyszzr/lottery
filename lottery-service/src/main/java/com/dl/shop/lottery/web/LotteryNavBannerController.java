@@ -189,13 +189,13 @@ public class LotteryNavBannerController {
         result.put("DlBannerPicDTO", dto);
         BaseResult<UserBonusDTO> userBonus = new BaseResult<UserBonusDTO>();
         if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
-        	result.put("DlBannerPicDTO", userBonus.getData());
+        	result.put("BonusDTO", userBonus.getData());
         }else {
         	//获取用户可用红包数量和金额
             UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
             userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
             userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
-            result.put("DlBannerPicDTO", userBonus.getData());
+            result.put("BonusDTO", userBonus.getData());
         }
         
       
