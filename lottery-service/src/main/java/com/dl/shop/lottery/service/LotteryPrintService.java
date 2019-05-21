@@ -210,7 +210,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public boolean doPostMerchant(PrintStakeResultDTO printStakeResultDTO,String notifyUrl){
 		if(StringUtils.isEmpty(notifyUrl)) {
 //			notifyUrl = "http://123.57.34.133:8080/merchant/notify";
-			notifyUrl = "http://47.100.81.221:8080/api/callback/ticket/status";//商户接口
+//			notifyUrl = "http://47.100.81.221:8080/api/callback/ticket/status";//商户测试接口
+			notifyUrl = "http://app.shoumiba.cn/api/callback/ticket/status";//商户正式接口
 		}
 		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
 		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);

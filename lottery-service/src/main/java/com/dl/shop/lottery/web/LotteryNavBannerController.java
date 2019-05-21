@@ -193,7 +193,7 @@ public class LotteryNavBannerController {
         dto.setBannerName("测试活动");
         dto.setStartTime(1541779199);
         dto.setEndTime(1641779199);
-        result.put("name", "活动");
+        result.put("name", "1");
         result.put("bannerImage", dto.getBannerImage());
         result.put("bannerLink", dto.getBannerLink());
         result.put("bannerName", dto.getBannerName());
@@ -207,7 +207,7 @@ public class LotteryNavBannerController {
             userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
             BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
             result = new HashMap();
-            result.put("name", "红包");
+            result.put("name", "2");
             result.put("bonusPrice", userBonus.getData().getBonusPrice());
             result.put("bonusNumber", userBonus.getData().getBonusId());
             list.add(result);

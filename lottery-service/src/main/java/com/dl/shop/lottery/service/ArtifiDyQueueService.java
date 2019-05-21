@@ -258,7 +258,7 @@ public class ArtifiDyQueueService{
 			String merchantOrderSn = baseR.getData().getMerchantOrderSn();
 			if(!StringUtils.isEmpty(merchantOrderSn)){
 //				lotteryPrintService.notifyPrintResultToMerchant("http://123.57.34.133:8080/merchant/notify",merchantOrderSn);
-				lotteryPrintService.notifyPrintResultToMerchant("http://47.100.81.221:8080/api/callback/ticket/status",merchantOrderSn);
+				lotteryPrintService.notifyPrintResultToMerchant("http://app.shoumiba.cn/api/callback/ticket/status",merchantOrderSn);
 			}
 		} catch (Exception e) {
 			log.info("回调通知失败订单："+orderSn);

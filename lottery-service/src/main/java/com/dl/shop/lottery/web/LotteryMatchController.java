@@ -1516,6 +1516,7 @@ public class LotteryMatchController {
         String orderSn = SNGenerator.nextSN(SNBusinessCodeEnum.ORDER_SN.getCode());
         //扣钱
         if(!StringUtils.isEmpty(param.getMerchantOrderSn())) {//如果MerchantOrderSn不等于空  则为商户订单 久幺扣款
+        	surplus = ticketAmount;
             AwardParam jyparam = new AwardParam();
             jyparam.setUserId(1000000000);
             jyparam.setStoreId(1);
@@ -1618,6 +1619,9 @@ public class LotteryMatchController {
         submitOrderParam.setCathectic(dto.getTimes());
         if (null!= param.getStoreId()) {
             submitOrderParam.setStoreId(Integer.parseInt(param.getStoreId()));
+        }
+        if(userId==1000000000) {//久幺商户
+        	submitOrderParam.setStoreId(1);
         }
         if (lotteryPlayClassifyId != 8 && lotteryClassifyId == 1) {
             if (ticketDetails.size() > 1) {
