@@ -1,4 +1,5 @@
 package com.dl.shop.lottery.web;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -208,8 +209,8 @@ public class LotteryNavBannerController {
             BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
             result = new HashMap();
             result.put("name", "2");
-            result.put("bonusPrice", userBonus.getData().getBonusPrice());
-            result.put("bonusNumber", userBonus.getData().getBonusId());
+            result.put("bonusPrice", userBonus.getData()!=null?(userBonus.getData().getBonusPrice()!=null?userBonus.getData().getBonusPrice():BigDecimal.ZERO):BigDecimal.ZERO);
+            result.put("bonusNumber", userBonus.getData()!=null?userBonus.getData().getBonusId():0);
             list.add(result);
         }
         return ResultGenerator.genSuccessResult("success",list);
