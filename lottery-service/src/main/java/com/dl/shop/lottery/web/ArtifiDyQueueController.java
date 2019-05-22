@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 动态队列
+ * 动态队列1
  * @author wht
  * @date 2018.10.16
  */
