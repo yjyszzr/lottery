@@ -190,7 +190,7 @@ public class LotteryNavBannerController {
         List<Object> list = new ArrayList();
         HashMap<String, Object> result = new HashMap();
         dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
-        dto.setBannerLink("http://www.baidu.com");
+        dto.setBannerLink("https://m.caixiaomi.net/index/consult?id=1771");
         dto.setBannerName("测试活动");
         dto.setStartTime(1541779199);
         dto.setEndTime(1641779199);
