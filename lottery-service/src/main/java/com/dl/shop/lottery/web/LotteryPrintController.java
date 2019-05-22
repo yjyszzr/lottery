@@ -49,7 +49,7 @@ public class LotteryPrintController {
 
 	@ApiOperation(value = "通知商户查询出票情况", notes = "通知商户查询出票情况")
 	@PostMapping("/notifyPrintResultToMerchant")
-	public BaseResult<String> notifyPrintResultToMerchant(@Valid @RequestBody NotifyParam param) {
+	public BaseResult<String> notifyPrintResultToMerchant(@RequestBody NotifyParam param) {
 		String rst = lotteryPrintService.notifyPrintResultToMerchant(param.getNotifyUrl(),param.getMerchantOrderSn());
 		return ResultGenerator.genSuccessResult("投注结果通知成功",rst);
 	}
