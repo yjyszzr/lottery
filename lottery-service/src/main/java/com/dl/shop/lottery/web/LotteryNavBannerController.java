@@ -212,7 +212,7 @@ public class LotteryNavBannerController {
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
 
-        DlBannerPicDTO dto = new DlBannerPicDTO();
+        DlBannerPicDTO dto = null;
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
@@ -234,6 +234,7 @@ public class LotteryNavBannerController {
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
                 if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
+                	dto = new DlBannerPicDTO();
                     dto.setBannerName(navBanner.getBannerName());
                     dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
@@ -249,6 +250,7 @@ public class LotteryNavBannerController {
                     Integer alertTime = deviceActionControlDTO.getUpdateTime();
                     Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
                     if(endTodayTime - alertTime > 0){
+                    	dto = new DlBannerPicDTO();
                         dto.setBannerName(navBanner.getBannerName());
                         dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
                         dto.setBannerLink(navBanner.getBannerLink());
@@ -266,6 +268,7 @@ public class LotteryNavBannerController {
                     deviceParam.setBusiType(1);
                     deviceParam.setMac(deviceUnique);
                     iDeviceControlService.add(deviceParam);
+                    dto = new DlBannerPicDTO();
                     dto.setBannerName(navBanner.getBannerName());
                     dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
@@ -277,26 +280,28 @@ public class LotteryNavBannerController {
         }
         
         List<Object> list = new ArrayList();
-        HashMap<String, Object> result = new HashMap();
-//        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
-//        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
-//        dto.setBannerName("测试活动");
-//        dto.setStartTime(1541779199);
-//        dto.setEndTime(1641779199);
-        result.put("name", "1");
-        result.put("bannerImage", dto.getBannerImage());
-        result.put("bannerLink", dto.getBannerLink());
-        result.put("bannerName", dto.getBannerName());
-        result.put("endTime", dto.getEndTime());
-        result.put("startTime", dto.getStartTime());
-        list.add(result);
+        if(dto!=null) {
+	        HashMap<String, Object> result = new HashMap();
+	//        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
+	//        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
+	//        dto.setBannerName("测试活动");
+	//        dto.setStartTime(1541779199);
+	//        dto.setEndTime(1641779199);
+	        result.put("name", "1");
+	        result.put("bannerImage", dto.getBannerImage());
+	        result.put("bannerLink", dto.getBannerLink());
+	        result.put("bannerName", dto.getBannerName());
+	        result.put("endTime", dto.getEndTime());
+	        result.put("startTime", dto.getStartTime());
+	        list.add(result);
+        }
         if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
         }else {
         	//获取用户可用红包数量和金额
             UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
             userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
             BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
-            result = new HashMap();
+            HashMap<String, Object> result = new HashMap();
             result.put("name", "2");
             result.put("bonusPrice", userBonus.getData()!=null?(userBonus.getData().getBonusPrice()!=null?userBonus.getData().getBonusPrice():BigDecimal.ZERO):BigDecimal.ZERO);
             result.put("bonusNumber", userBonus.getData()!=null?userBonus.getData().getBonusId():0);
