@@ -282,11 +282,11 @@ public class LotteryNavBannerController {
         List<Object> list = new ArrayList();
         if(dto!=null) {
 	        HashMap<String, Object> result = new HashMap();
-	//        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
-	//        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
-	//        dto.setBannerName("测试活动");
-	//        dto.setStartTime(1541779199);
-	//        dto.setEndTime(1641779199);
+	        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
+	        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
+	        dto.setBannerName("测试活动");
+	        dto.setStartTime(1541779199);
+	        dto.setEndTime(1641779199);
 	        result.put("name", "1");
 	        result.put("bannerImage", dto.getBannerImage());
 	        result.put("bannerLink", dto.getBannerLink());
