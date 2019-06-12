@@ -280,12 +280,12 @@ public class LotteryNavBannerController {
         }
         
         List<Object> list = new ArrayList();
-        dto = new DlBannerPicDTO();
-        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
-        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
-        dto.setBannerName("测试活动");
-        dto.setStartTime(1541779199);
-        dto.setEndTime(1641779199);
+//        dto = new DlBannerPicDTO();
+//        dto.setBannerImage("http://img1.efu.com.cn/upfile/fashion/photo/15310/360408.jpg");
+//        dto.setBannerLink("http://39.106.18.39:8765/api/lottery/freebuy/singleNote?cxmxc=scm&type=3&id=1");
+//        dto.setBannerName("测试活动");
+//        dto.setStartTime(1541779199);
+//        dto.setEndTime(1641779199);
         if(dto!=null) {
 	        HashMap<String, Object> result = new HashMap();
 	        result.put("name", "1");
@@ -302,11 +302,13 @@ public class LotteryNavBannerController {
             UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
             userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
             BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
-            HashMap<String, Object> result = new HashMap();
-            result.put("name", "2");
-            result.put("bonusPrice", userBonus.getData()!=null?(userBonus.getData().getBonusPrice()!=null?userBonus.getData().getBonusPrice():BigDecimal.ZERO):BigDecimal.ZERO);
-            result.put("bonusNumber", userBonus.getData()!=null?userBonus.getData().getBonusId():0);
-            list.add(result);
+            if(userBonus.getData()!=null&&userBonus.getData().getBonusId()>0) {
+            	HashMap<String, Object> result = new HashMap();
+	            result.put("name", "2");
+	            result.put("bonusPrice", userBonus.getData()!=null?(userBonus.getData().getBonusPrice()!=null?userBonus.getData().getBonusPrice():BigDecimal.ZERO):BigDecimal.ZERO);
+	            result.put("bonusNumber", userBonus.getData()!=null?userBonus.getData().getBonusId():0);
+	            list.add(result);
+            }
         }
         return ResultGenerator.genSuccessResult("success",list);
     }
