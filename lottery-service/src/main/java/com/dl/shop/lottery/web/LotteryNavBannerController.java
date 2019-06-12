@@ -287,7 +287,16 @@ public class LotteryNavBannerController {
 //        dto.setBannerName("测试活动");
 //        dto.setStartTime(1541779199);
 //        dto.setEndTime(1641779199);
-      
+        if(dto!=null) {
+	        HashMap<String, Object> result = new HashMap();
+	        result.put("name", "1");
+	        result.put("bannerImage", dto.getBannerImage());
+	        result.put("bannerLink", dto.getBannerLink());
+	        result.put("bannerName", dto.getBannerName());
+	        result.put("endTime", dto.getEndTime());
+	        result.put("startTime", dto.getStartTime());
+	        list.add(result);
+        }
         //优惠券弹出
         boolean isQshow = false;
         if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
@@ -337,17 +346,6 @@ public class LotteryNavBannerController {
 		            list.add(result);
 	            }
         	}
-        }
-        
-        if(dto!=null) {
-	        HashMap<String, Object> result = new HashMap();
-	        result.put("name", "1");
-	        result.put("bannerImage", dto.getBannerImage());
-	        result.put("bannerLink", dto.getBannerLink());
-	        result.put("bannerName", dto.getBannerName());
-	        result.put("endTime", dto.getEndTime());
-	        result.put("startTime", dto.getStartTime());
-	        list.add(result);
         }
         return ResultGenerator.genSuccessResult("success",list);
     }
