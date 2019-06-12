@@ -214,23 +214,22 @@ public class LotteryNavBannerController {
 
         DlBannerPicDTO dto = null;
         String deviceUnique = "";
+        UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+        String plat = userDevice.getPlat(); //1-android,2-iphone
+        if ("android".equals(userDevice.getPlat())){
+            log.info(JSON.toJSONString(userDevice));
+            deviceUnique = userDevice.getAndroidid();
+            log.info("android,"+deviceUnique);
+        }else if("iphone".equals(userDevice.getPlat())){
+            deviceUnique = userDevice.getIDFA();
+            log.info("iphone,"+deviceUnique);
+        }else if("h5".equals(userDevice.getPlat())){
+            deviceUnique = "h5";
+            log.info("h5,"+deviceUnique);
+        }
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
             LotteryNavBanner navBanner = navList.get(0);
-            UserDeviceInfo userDevice = SessionUtil.getUserDevice();
-            String plat = userDevice.getPlat(); //1-android,2-iphone
-            if ("android".equals(userDevice.getPlat())){
-                log.info(JSON.toJSONString(userDevice));
-                deviceUnique = userDevice.getAndroidid();
-                log.info("android,"+deviceUnique);
-            }else if("iphone".equals(userDevice.getPlat())){
-                deviceUnique = userDevice.getIDFA();
-                log.info("iphone,"+deviceUnique);
-            }else if("h5".equals(userDevice.getPlat())){
-                deviceUnique = "h5";
-                log.info("h5,"+deviceUnique);
-            }
-
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
                 if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
