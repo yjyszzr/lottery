@@ -130,9 +130,11 @@ public class LotteryNavBannerController {
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
             String plat = userDevice.getPlat(); //1-android,2-iphone
             String deviceUnique = "";
+            boolean isflag = false;
             if ("android".equals(userDevice.getPlat())){
                 log.info(JSON.toJSONString(userDevice));
                 deviceUnique = userDevice.getAndroidid();
+                isflag = true;
                 log.info("android,"+deviceUnique);
             }else if("iphone".equals(userDevice.getPlat())){
                 deviceUnique = userDevice.getIDFA();
@@ -152,36 +154,44 @@ public class LotteryNavBannerController {
                     dto.setEndTime(navBanner.getEndTime());
                 }
 
-                MacParam macParam = new MacParam();
-                macParam.setMac(deviceUnique);
-                BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
-                if(deviceActionControlDTOBaseResult.getCode() == 0){
-                    DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
-                    Integer alertTime = deviceActionControlDTO.getUpdateTime();
-                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
-                    if(endTodayTime - alertTime > 0){
-                        dto.setBannerName(navBanner.getBannerName());
-                        dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-                        dto.setBannerLink(navBanner.getBannerLink());
-                        dto.setStartTime(navBanner.getStartTime());
-                        dto.setEndTime(navBanner.getEndTime());
-                        MacParam updateMac = new MacParam();
-                        updateMac.setMac(deviceUnique);
-                        iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
-                    }
-                }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
-                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
-                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setAlertTimes(1);
-                    deviceParam.setBusiType(1);
-                    deviceParam.setMac(deviceUnique);
-                    iDeviceControlService.add(deviceParam);
-                    dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
+                if(isflag) {
+                	dto.setBannerName(navBanner.getBannerName());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
                     dto.setStartTime(navBanner.getStartTime());
                     dto.setEndTime(navBanner.getEndTime());
+                }else {
+                	MacParam macParam = new MacParam();
+                    macParam.setMac(deviceUnique);
+                    BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+                    if(deviceActionControlDTOBaseResult.getCode() == 0){
+                        DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+                        Integer alertTime = deviceActionControlDTO.getUpdateTime();
+                        Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+                        if(endTodayTime - alertTime > 0){
+                            dto.setBannerName(navBanner.getBannerName());
+                            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                            dto.setBannerLink(navBanner.getBannerLink());
+                            dto.setStartTime(navBanner.getStartTime());
+                            dto.setEndTime(navBanner.getEndTime());
+                            MacParam updateMac = new MacParam();
+                            updateMac.setMac(deviceUnique);
+                            iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+                        }
+                    }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
+                        DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+                        deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+                        deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
+                        deviceParam.setAlertTimes(1);
+                        deviceParam.setBusiType(1);
+                        deviceParam.setMac(deviceUnique);
+                        iDeviceControlService.add(deviceParam);
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+                    }
                 }
             }
 
