@@ -154,7 +154,7 @@ public class LotteryNavBannerController {
                     dto.setStartTime(navBanner.getStartTime());
                     dto.setEndTime(navBanner.getEndTime());
                 }
-
+                log.info("isflag："+isflag);
                 if(isflag) {
                 	log.info("isflag："+isflag);
                 	dto.setBannerName(navBanner.getBannerName());
