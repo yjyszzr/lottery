@@ -156,6 +156,7 @@ public class LotteryNavBannerController {
                 }
 
                 if(isflag) {
+                	log.info("isflag："+isflag);
                 	dto.setBannerName(navBanner.getBannerName());
                     dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
                     dto.setBannerLink(navBanner.getBannerLink());
