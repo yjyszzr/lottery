@@ -297,55 +297,56 @@ public class LotteryNavBannerController {
 	        result.put("startTime", dto.getStartTime());
 	        list.add(result);
         }
-        //优惠券弹出
-        boolean isQshow = false;
+        
         if(SessionUtil.getUserId()==null || "".equals(SessionUtil.getUserId())) {//用户未登录
         }else {
-        	if(!StringUtils.isEmpty(deviceUnique)){
-                if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
-                	isQshow = true;
-                }
-
-                MacParam macParam = new MacParam();
-                macParam.setMac(deviceUnique);
-                macParam.setBusiType(2);
-                BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
-                if(deviceActionControlDTOBaseResult.getCode() == 0){
-                    DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
-                    Integer alertTime = deviceActionControlDTO.getUpdateTime();
-                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
-                    if(endTodayTime - alertTime > 0){
-                    	isQshow = true;
-                        MacParam updateMac = new MacParam();
-                        updateMac.setMac(deviceUnique);
-                        updateMac.setBusiType(2);
-                        iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
-                    }
-                }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
-                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
-                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setAlertTimes(1);
-                    deviceParam.setBusiType(2);
-                    deviceParam.setMac(deviceUnique);
-                    iDeviceControlService.add(deviceParam);
-                    isQshow = true;
-                }
-            }
+        	//优惠券弹出
+            boolean isQshow = false;
+        	//获取用户可用红包数量和金额
+            UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
+            userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
+            BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
+            if(userBonus.getData()!=null&&userBonus.getData().getBonusId()>0) {//有用户红包
+	        	if(!StringUtils.isEmpty(deviceUnique)){
+	                if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
+	                	isQshow = true;
+	                }
+	
+	                MacParam macParam = new MacParam();
+	                macParam.setMac(deviceUnique);
+	                macParam.setBusiType(2);
+	                BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+	                if(deviceActionControlDTOBaseResult.getCode() == 0){
+	                    DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+	                    Integer alertTime = deviceActionControlDTO.getUpdateTime();
+	                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+	                    if(endTodayTime - alertTime > 0){
+	                    	isQshow = true;
+	                        MacParam updateMac = new MacParam();
+	                        updateMac.setMac(deviceUnique);
+	                        updateMac.setBusiType(2);
+	                        iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+	                    }
+	                }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
+	                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+	                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+	                    deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
+	                    deviceParam.setAlertTimes(1);
+	                    deviceParam.setBusiType(2);
+	                    deviceParam.setMac(deviceUnique);
+	                    iDeviceControlService.add(deviceParam);
+	                    isQshow = true;
+	                }
+	            }
         	
-        	if(isQshow) {
-	        	//获取用户可用红包数量和金额
-	            UserBonusIdParam userBonusIdParam = new UserBonusIdParam();
-	            userBonusIdParam.setUserBonusId(SessionUtil.getUserId());
-	            BaseResult<UserBonusDTO> userBonus = iUserBonusService.queryUserBonusNumAndPrice(userBonusIdParam);
-	            if(userBonus.getData()!=null&&userBonus.getData().getBonusId()>0) {
+	        	if(isQshow) {
 	            	HashMap<String, Object> result = new HashMap();
 		            result.put("name", "2");
 		            result.put("bonusPrice", userBonus.getData()!=null?(userBonus.getData().getBonusPrice()!=null?userBonus.getData().getBonusPrice():BigDecimal.ZERO):BigDecimal.ZERO);
 		            result.put("bonusNumber", userBonus.getData()!=null?userBonus.getData().getBonusId():0);
 		            list.add(result);
-	            }
-        	}
+	        	}
+            }
         }
         return ResultGenerator.genSuccessResult("success",list);
     }
