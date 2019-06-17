@@ -222,7 +222,9 @@ public class LotteryNavBannerController {
         if(dealSwitch == 2){
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
-
+        
+//        navFilterList=navFilterList.stream().filter(s->s.getId()==316).collect(Collectors.toList());//过滤ID为316的新版升级开屏图
+        
         DlBannerPicDTO dto = null;
         String deviceUnique = "";
         UserDeviceInfo userDevice = SessionUtil.getUserDevice();

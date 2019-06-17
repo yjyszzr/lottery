@@ -997,9 +997,18 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存投注信息", notes = "保存投注信息")
     @PostMapping("/nSaveBetInfo")
     public BaseResult<String> nSaveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
-        if(lotteryMatchService.isShutDownBet()) {
+    	int val = lotteryMatchService.countShutDownBet();//是否停售 0:否  1:是  2:工作日停售 3:周末停售
+    	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+        }else if(val==2) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为21:40");
+        }else if(val==3) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为22:40");
         }
+    	
+//        if(lotteryMatchService.isShutDownBet()) {
+//            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//        }
         List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());

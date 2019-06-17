@@ -3961,6 +3961,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 //		}
 		return false;
 	}
+	//是否停售
+	public int countShutDownBet() {
+		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
+		return shutDownBetValue;
+	}
 	//获取最小投注金额
 	public Double getMinBetMoney() {
 		Double minBetMoney = lotteryPrintMapper.getMinBetMoney();
