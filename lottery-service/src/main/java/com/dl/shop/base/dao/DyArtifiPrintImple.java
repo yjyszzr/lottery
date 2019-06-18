@@ -61,7 +61,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 		// TODO Auto-generated method stub
 		List<DDyArtifiPrintEntity> rList = new ArrayList<DDyArtifiPrintEntity>();
 		String tableName = getTNameByLgCode(userId, TABLE_NAME);
-		String sql = "select * from " + tableName + "  a left join dl_order o on a.order_sn = o.order_sn  where a._id > " + start + ";";
+		String sql = "select a.*, o.play_type_detail, u.is_old  from " + tableName + "  a left join dl_order o on a.order_sn = o.order_sn 	LEFT JOIN dl_user u ON o.user_id = u.user_id where a._id > " + start + ";";
 		ResultSet rs = this.exeQuery(sql, null);
 		if(rs != null) {
 			try {
@@ -87,6 +87,7 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 			int status = rs.getInt("status");
 			int lotteryClassifyId = rs.getInt("lottery_classify_id");
 			String playDetailType = rs.getString("play_type_detail");
+			String isOld = rs.getString("is_old");
 			if(playDetailType==null) {playDetailType="";}
 			String mixPlayBz = playDetailType.contains(",")?"1":"0";
 			entity.id = id;
@@ -94,6 +95,9 @@ public class DyArtifiPrintImple extends BaseDao implements DyArtifiPrintDao{
 			entity.status = status;
 			entity.lotteryClassifyId = lotteryClassifyId;
 			entity.mixPlayBz = mixPlayBz;
+			if(null!=isOld && isOld.equals("1")) {
+				entity.mixPlayBz = "1";
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
