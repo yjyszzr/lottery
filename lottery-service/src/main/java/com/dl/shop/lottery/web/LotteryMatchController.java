@@ -1001,9 +1001,9 @@ public class LotteryMatchController {
     	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
         }else if(val==2) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为21:40");
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为21:50");
         }else if(val==3) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为22:40");
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为22:50");
         }
     	
 //        if(lotteryMatchService.isShutDownBet()) {
