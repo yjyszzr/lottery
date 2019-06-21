@@ -284,7 +284,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		long end1 = System.currentTimeMillis();
 		logger.info("getMatchListQdd==============getmatchlist 准备用时 ："+(end1-start) + " playType="+param.getPlayType());
-		dlJcZqMatchListDTO = this.getMatchListDTO(matchList, playType, matchPlayMap);
+		dlJcZqMatchListDTO = this.getMatchListDTOQdd(matchList, playType, matchPlayMap);
 		long end = System.currentTimeMillis();
 		logger.info("getMatchListQdd==============getmatchlist 对象转化用时 ："+(end-end1) + " playType="+param.getPlayType());
 		logger.info("getMatchListQdd==============getmatchlist 用时 ："+(end-start) + " playType="+param.getPlayType());
@@ -422,7 +422,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		return false;
 	}
 	
-	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
+	private DlJcZqMatchListDTO getMatchListDTOQdd(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
 		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
@@ -470,10 +470,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					continue;
 				}
 			}*/
-			//投注结束
+			//投注结束（23点之前）
 			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 				continue;
 			}
+			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			matchDto.setIsShutDown(shutDownBetValue);
 			matchDto.setBetEndTime(betEndTime);
@@ -548,7 +549,139 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		dlJcZqMatchListDTO.setLotteryPlayClassifyId(lotteryPlayClassifyId);
 		return dlJcZqMatchListDTO;
 	}
-	
+	private DlJcZqMatchListDTO getMatchListDTO(List<LotteryMatch> matchList, String playType,	Map<Integer, List<DlJcZqMatchPlayDTO>> matchPlayMap) {
+		int shutDownBetValue = lotteryPrintMapper.shutDownBetValue();
+		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
+		Map<String, DlJcZqDateMatchDTO> map = new HashMap<String, DlJcZqDateMatchDTO>();
+		Integer totalNum = 0;
+		Integer betPreTime = this.getBetPreTime();
+//		Locale defaultLocal = Locale.getDefault();
+		for(LotteryMatch match: matchList) {
+			Date matchTimeDate = match.getMatchTime();
+			Instant instant = matchTimeDate.toInstant();
+			int matchTime = Long.valueOf(instant.getEpochSecond()).intValue();
+			int betEndTime = this.getBetEndTime(matchTime, betPreTime);
+			
+			/*LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+			LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();*/
+			/*
+			int matchHour = matchDateTime.getHour();
+			int betEndTime = matchTime - betPreTime;
+			LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+			//今天展示第二天比赛时间
+//			if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+				if(matchWeekDay < 6 && matchHour < 9) {
+					betEndTime = Long.valueOf(LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				} else if(matchWeekDay > 5 && matchHour < 9 && matchHour > 0) {
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				}
+			}*/
+			//0-9点的赛事在当天不能投注
+			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+			if(hideMatch) {
+				continue;
+			}
+			/*LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
+	        int nowHour = localTime.getHour();
+	        int betHour = betendDateTime.getHour();
+			if(betendDateTime.toLocalDate().isEqual(LocalDate.now())){
+				if(nowHour < 9 && betHour < 9) {
+					if(matchWeekDay < 6) {
+						continue;
+					} else if(matchWeekDay > 5 && betHour > 0 ) {//周六日的1点之后
+						continue;
+					}
+				} else if(nowHour > 22 && betHour > 22) {//23点的比赛不再展示
+					continue;
+				}
+			}*/
+			boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
+			long times = getSecondDayDifference(new Date());
+			//投注结束（23点之前）
+			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
+				continue;
+			}
+			//投注结束
+			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
+				continue;
+			}
+			
+			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
+			matchDto.setIsShutDown(shutDownBetValue);
+			matchDto.setBetEndTime(betEndTime);
+			matchDto.setChangci(match.getChangci());
+			matchDto.setChangciId(match.getChangciId().toString());
+			matchDto.setHomeTeamAbbr(match.getHomeTeamAbbr());
+			matchDto.setHomeTeamId(match.getHomeTeamId());
+			matchDto.setHomeTeamName(match.getHomeTeamName());
+			matchDto.setHomeTeamRank(match.getHomeTeamRank());
+			matchDto.setIsHot(match.getIsHot());
+			matchDto.setLeagueAddr(match.getLeagueAddr());
+			matchDto.setLeagueId(match.getLeagueId().toString());
+			matchDto.setLeagueName(match.getLeagueName());
+			LocalDate showTimeDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault()).toLocalDate();
+			String matchDay = showTimeDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			DayOfWeek dayOfWeek = showTimeDate.getDayOfWeek();
+			String displayName = LocalWeekDate.getName(dayOfWeek.getValue());
+			String showMatchDay = displayName + " " + matchDay;
+			matchDto.setMatchDay(matchDay);
+			matchDto.setMatchId(match.getMatchId());
+			matchDto.setMatchTime(matchTime);
+			matchDto.setPlayCode(match.getMatchSn());
+			matchDto.setPlayType(Integer.parseInt(playType));
+			matchDto.setVisitingTeamAbbr(match.getVisitingTeamAbbr());
+			matchDto.setVisitingTeamId(match.getVisitingTeamId().toString());
+			matchDto.setVisitingTeamName(match.getVisitingTeamName());
+			matchDto.setVisitingTeamRank(match.getVisitingTeamRank());
+			List<DlJcZqMatchPlayDTO> matchPlays = matchPlayMap.get(match.getChangciId());
+			if(matchPlays == null || matchPlays.size() == 0) {
+				continue;
+			}
+			
+			if("6".equals(playType) && matchPlays.size() < 5) {
+				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
+				for(int i=1; i< 6; i++) {
+					if(!collect.contains(i)) {
+						DlJcZqMatchPlayDTO dto = new DlJcZqMatchPlayDTO();
+						dto.setPlayType(i);
+						dto.setIsShow(0);
+						matchPlays.add(dto);
+					}
+				}
+			}
+			matchPlays.sort((item1,item2)->item1.getPlayType().compareTo(item2.getPlayType()));
+			matchDto.setMatchPlays(matchPlays);
+			//
+			DlJcZqDateMatchDTO dlJcZqMatchDTO = map.get(matchDay);
+			if(null == dlJcZqMatchDTO) {
+				dlJcZqMatchDTO = new DlJcZqDateMatchDTO();
+				dlJcZqMatchDTO.setSortMatchDay(matchDay);
+				dlJcZqMatchDTO.setMatchDay(showMatchDay);
+				map.put(matchDay, dlJcZqMatchDTO);
+			}
+			//初始化投注选项
+			if(matchDto.getIsHot() == 1) {
+				dlJcZqMatchListDTO.getHotPlayList().add(matchDto);
+			} else {
+				dlJcZqMatchDTO.getPlayList().add(matchDto);
+			}
+			totalNum++;
+		}
+		map.forEach((key, value) ->{
+			value.getPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
+			dlJcZqMatchListDTO.getPlayList().add(value);
+		});
+		dlJcZqMatchListDTO.getHotPlayList().sort((item1,item2)->item1.getPlayCode().compareTo(item2.getPlayCode()));
+		dlJcZqMatchListDTO.getPlayList().sort((item1,item2)->item1.getSortMatchDay().compareTo(item2.getSortMatchDay()));
+		dlJcZqMatchListDTO.setAllMatchCount(totalNum.toString());
+		dlJcZqMatchListDTO.setLotteryClassifyId(1);
+		LotteryPlayClassify playClassify = lotteryPlayClassifyMapper.getPlayClassifyByPlayType(1, Integer.parseInt(playType));
+		Integer lotteryPlayClassifyId = playClassify == null?Integer.parseInt(playType):playClassify.getLotteryPlayClassifyId();
+		dlJcZqMatchListDTO.setLotteryPlayClassifyId(lotteryPlayClassifyId);
+		return dlJcZqMatchListDTO;
+	}
 	/**
 	 * 初始化球赛类型投注选项
 	 * @param dto
@@ -4017,6 +4150,56 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 		}
 		return betEndTime;
+	}
+	
+	//获取出票截至时间
+	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime) {
+		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
+		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+		int matchHour = matchDateTime.getHour();
+		int betEndTime = matchTime - betPreTime;
+		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+		int betHour = betendDateTime.getHour();
+		//LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+		//今天展示第二天比赛时间
+		//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+				return true;
+			} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
+				return true;
+			}
+		} else {
+			if(betHour > 22) {
+				return true;
+			}
+		}
+		return false;
+	}
+	//判断当前时间是否大于
+	public long getSecondDayDifference(Date date) {
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(date);
+	    int day = cal.get(Calendar.DATE);
+	    cal.set(Calendar.DATE, day + 1);
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+	    sdf.format(cal.getTime());
+	    long timeDiff = timeToBeginDay(cal.getTime()).getTime() - System.currentTimeMillis();
+	    return timeDiff;
+	}
+	
+	public Date timeToBeginDay(Date date) {
+	    if (date != null) {
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.setTime(date);
+	        calendar.set(Calendar.HOUR_OF_DAY, 3);
+	        calendar.set(Calendar.MINUTE, 0);
+	        calendar.set(Calendar.SECOND, 0);
+	        calendar.set(Calendar.MILLISECOND, 0);
+	        return calendar.getTime();
+	    }
+	    return null;
 	}
 	/*public boolean isHideMatch(Integer matchTime) {
 		Integer betEndTime = this.getBetEndTime(matchTime);
