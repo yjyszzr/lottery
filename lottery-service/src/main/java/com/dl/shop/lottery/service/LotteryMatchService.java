@@ -597,16 +597,38 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					continue;
 				}
 			}*/
-			boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
-			long times = getSecondDayDifference(new Date());
-			//投注结束（23点之前）
-			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
-				continue;
+			
+			String deviceUnique = "";
+	        UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+	        if ("android".equals(userDevice.getPlat())){
+	            log.info(JSON.toJSONString(userDevice));
+	            deviceUnique = userDevice.getAndroidid();
+	            log.info("android,"+deviceUnique);
+	        }else if("iphone".equals(userDevice.getPlat())){
+	            deviceUnique = userDevice.getIDFA();
+	            log.info("iphone,"+deviceUnique);
+	        }else if("h5".equals(userDevice.getPlat())){
+	            deviceUnique = "h5";
+	            log.info("h5,"+deviceUnique);
+	        }
+	        
+			if("h5".equals(deviceUnique)) {
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+					continue;
+				}
+			}else {
+				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
+				long times = getSecondDayDifference(new Date());
+				//投注结束（23点之前）
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
+					continue;
+				}
+				//投注结束
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
+					continue;
+				}
 			}
-			//投注结束
-			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
-				continue;
-			}
+			
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			matchDto.setIsShutDown(shutDownBetValue);
