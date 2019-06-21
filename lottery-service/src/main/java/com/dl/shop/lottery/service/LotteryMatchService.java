@@ -620,7 +620,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					continue;
 				}
 			}else {
-				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
+				boolean flag = getBetEndTimeByTF(matchTime, betPreTime,match.getChangci());
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
 				//投注结束（23点之前）
@@ -4182,7 +4182,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	//获取出票截至时间
-	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime) {
+	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime,String changciId) {
 		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
 		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
@@ -4195,12 +4195,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
 			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+				log.info("getMatchListDTO1"+changciId);
 				return true;
 			} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
+				log.info("getMatchListDTO2"+changciId);
 				return true;
 			}
 		} else {
 			if(betHour > 22) {
+				log.info("getMatchListDTO3"+changciId);
 				return true;
 			}
 		}
