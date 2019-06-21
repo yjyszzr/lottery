@@ -593,11 +593,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 				}
 			}*/
-			//0-9点的赛事在当天不能投注
-//			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-//			if(hideMatch) {
-//				continue;
-//			}
+			
 			/*LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
 	        int nowHour = localTime.getHour();
 	        int betHour = betendDateTime.getHour();
@@ -614,11 +610,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}*/
 			
 	        
-//			if("h5".equals(deviceUnique)) {
-//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-//					continue;
-//				}
-//			}else {
+			if("h5".equals(deviceUnique)) {
+				//0-9点的赛事在当天不能投注
+				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+				if(hideMatch) {
+					continue;
+				}
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+					continue;
+				}
+			}else {
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
@@ -632,7 +633,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					log.info("getMatchListDTO====23点之后"+match.getChangci());
 					continue;
 				}
-//			}
+			}
 			
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
