@@ -556,6 +556,21 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		Integer totalNum = 0;
 		Integer betPreTime = this.getBetPreTime();
 //		Locale defaultLocal = Locale.getDefault();
+		
+		String deviceUnique = "";
+        UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+        if ("android".equals(userDevice.getPlat())){
+            log.info(JSON.toJSONString(userDevice));
+            deviceUnique = userDevice.getAndroidid();
+            log.info("android,"+deviceUnique);
+        }else if("iphone".equals(userDevice.getPlat())){
+            deviceUnique = userDevice.getIDFA();
+            log.info("iphone,"+deviceUnique);
+        }else if("h5".equals(userDevice.getPlat())){
+            deviceUnique = "h5";
+            log.info("h5,"+deviceUnique);
+        }
+        log.info("getMatchListDTO"+matchList.size());
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
@@ -598,27 +613,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}*/
 			
-			String deviceUnique = "";
-	        UserDeviceInfo userDevice = SessionUtil.getUserDevice();
-	        if ("android".equals(userDevice.getPlat())){
-	            log.info(JSON.toJSONString(userDevice));
-	            deviceUnique = userDevice.getAndroidid();
-	            log.info("android,"+deviceUnique);
-	        }else if("iphone".equals(userDevice.getPlat())){
-	            deviceUnique = userDevice.getIDFA();
-	            log.info("iphone,"+deviceUnique);
-	        }else if("h5".equals(userDevice.getPlat())){
-	            deviceUnique = "h5";
-	            log.info("h5,"+deviceUnique);
-	        }
 	        
-			if("h5".equals(deviceUnique)) {
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-					continue;
-				}
-			}else {
+//			if("h5".equals(deviceUnique)) {
+//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+//					continue;
+//				}
+//			}else {
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
+				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0));
 				//投注结束（23点之前）
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
 					continue;
@@ -627,7 +630,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
 					continue;
 				}
-			}
+//			}
 			
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
@@ -659,6 +662,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setVisitingTeamRank(match.getVisitingTeamRank());
 			List<DlJcZqMatchPlayDTO> matchPlays = matchPlayMap.get(match.getChangciId());
 			if(matchPlays == null || matchPlays.size() == 0) {
+				log.info("getMatchListDTO"+"1");
 				continue;
 			}
 			
