@@ -624,10 +624,12 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0));
 				//投注结束（23点之前）
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
+					log.info("getMatchListDTO====23点之前"+match.getChangci());
 					continue;
 				}
 				//投注结束
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
+					log.info("getMatchListDTO====23点之后"+match.getChangci());
 					continue;
 				}
 //			}
