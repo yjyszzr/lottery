@@ -682,6 +682,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			matchDto.setVisitingTeamId(match.getVisitingTeamId().toString());
 			matchDto.setVisitingTeamName(match.getVisitingTeamName());
 			matchDto.setVisitingTeamRank(match.getVisitingTeamRank());
+			log.info("getMatchListDTO====23点之前"+match.getChangci());
 			List<DlJcZqMatchPlayDTO> matchPlays = matchPlayMap.get(match.getChangciId());
 			if(matchPlays == null || matchPlays.size() == 0) {
 				log.info("getMatchListDTO"+"1");
