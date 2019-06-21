@@ -316,6 +316,19 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
      * @return
      */
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
+		String deviceUnique = "";
+		UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+        if ("android".equals(userDevice.getPlat())){
+            log.info(JSON.toJSONString(userDevice));
+            deviceUnique = userDevice.getAndroidid();
+            log.info("android,"+deviceUnique);
+        }else if("iphone".equals(userDevice.getPlat())){
+            deviceUnique = userDevice.getIDFA();
+            log.info("iphone,"+deviceUnique);
+        }else if("h5".equals(userDevice.getPlat())){
+            deviceUnique = "h5";
+            log.info("h5,"+deviceUnique);
+        }
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
@@ -334,8 +347,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playMap.put(item.getChangciId(), item);
 			});
 			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
-				if(this.isStop(matchPlay)) {
-					continue;
+				if(!"h5".equals(deviceUnique)) {
+					if(this.isStop(matchPlay)) {
+						continue;
+					}
 				}
 				Integer changciId = matchPlay.getChangciId();
 				LotteryMatchPlay lotteryMatchPlay = playMap.get(changciId);
@@ -370,8 +385,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}else {
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				if(this.isStop(matchPlay)) {
-					continue;
+				if(!"h5".equals(deviceUnique)) {
+					if(this.isStop(matchPlay)) {
+						continue;
+					}
 				}
 				Integer playType2 = matchPlay.getPlayType();
 				if("6".equals(playType) && playType2 == 7) {
@@ -611,15 +628,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			
 	        
 			if("h5".equals(deviceUnique)) {
-				//0-9点的赛事在当天不能投注
-				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-				if(hideMatch) {
-					continue;
-				}
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-					continue;
-				}
-			}else {
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
@@ -631,6 +639,16 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				//投注结束
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
 					log.info("getMatchListDTO====23点之后"+match.getChangci());
+					continue;
+				}
+				
+			}else {
+				//0-9点的赛事在当天不能投注
+				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+				if(hideMatch) {
+					continue;
+				}
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 					continue;
 				}
 			}
