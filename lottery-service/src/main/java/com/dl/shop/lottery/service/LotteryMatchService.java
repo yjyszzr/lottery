@@ -622,17 +622,23 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}else {
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime,match.getChangci());
 				long times = getSecondDayDifference(new Date());
+				
+				int betEndTimeNew = this.getBetEndTimeNew(matchTime, betPreTime);
+				
+				if(Long.valueOf(betEndTimeNew) < Instant.now().getEpochSecond()) {
+					continue;
+				}
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
 				//投注结束（23点之前）
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
-					log.info("getMatchListDTO====23点之前"+match.getChangci());
-					continue;
-				}
-				//投注结束
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
-					log.info("getMatchListDTO====23点之后"+match.getChangci());
-					continue;
-				}
+//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && !flag) {
+//					log.info("getMatchListDTO====23点之前"+match.getChangci());
+//					continue;
+//				}
+//				//投注结束
+//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
+//					log.info("getMatchListDTO====23点之后"+match.getChangci());
+//					continue;
+//				}
 			}
 			
 			
@@ -4180,7 +4186,31 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 		return betEndTime;
 	}
-	
+	//获取出票截至时间
+		private int getBetEndTimeNew(Integer matchTime, Integer betPreTime) {
+			Instant instant = Instant.ofEpochSecond(matchTime.longValue());
+			LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+			int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
+			int matchHour = matchDateTime.getHour();
+			int betEndTime = matchTime - betPreTime;
+			LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(betEndTime), ZoneId.systemDefault());
+			int betHour = betendDateTime.getHour();
+			//LocalDateTime showDate = LocalDateTime.ofInstant(match.getShowTime().toInstant(), ZoneId.systemDefault());
+			//今天展示第二天比赛时间
+			//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
+			if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+				if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(3, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				}
+			} else {
+				if(betHour > 22) {
+					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+				}
+			}
+			return betEndTime;
+		}
 	//获取出票截至时间
 	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime,String changciId) {
 		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
