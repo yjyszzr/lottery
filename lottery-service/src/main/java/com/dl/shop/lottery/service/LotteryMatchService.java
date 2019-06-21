@@ -628,6 +628,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			
 	        
 			if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
+				log.info("getMatchListDTO00000");
 				//0-9点的赛事在当天不能投注
 				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
 				if(hideMatch) {
