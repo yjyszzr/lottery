@@ -997,12 +997,16 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存投注信息", notes = "保存投注信息")
     @PostMapping("/nSaveBetInfo")
     public BaseResult<String> nSaveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
+         
     	int val = lotteryMatchService.countShutDownBet();//是否停售 0:否  1:是  2:工作日停售 3:周末停售
     	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-        }else if(val==2) {
+        }else if(val==2 && "11".equals(appCodeName)) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为21:50");
-        }else if(val==3) {
+        }else if(val==3 && "11".equals(appCodeName)) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为22:50");
         }
     	
@@ -1067,9 +1071,6 @@ public class LotteryMatchController {
         boolean shdmixPlayForbbidon = false;//混合投注每场比赛禁止多种选项的投注
         boolean qddmixPlayTurnOn = true;//球多多混合投注每场比赛禁止多种选项的投注 开关
         boolean shmixPlayTurnOn = true;//圣和混合投注每场比赛禁止多种选项的投注 开关
-        UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
-        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
-        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
         Set<String> playTypeDetail = new HashSet<>();
         //混合投注每场比赛禁止多种选项的投注
         BusiIdsListParam busiIdsListParam = new BusiIdsListParam();
