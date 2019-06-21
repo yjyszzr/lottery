@@ -4211,7 +4211,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    Calendar cal = Calendar.getInstance();
 	    cal.setTime(date);
 	    int day = cal.get(Calendar.DATE);
-	    cal.set(Calendar.DATE, day + 1);
+	    if(cal.get(Calendar.HOUR_OF_DAY)<3) {
+	    	cal.set(Calendar.DATE, day);
+  	    }else {
+  	    	cal.set(Calendar.DATE, day + 1);
+  	    }
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 	    sdf.format(cal.getTime());
 	    long timeDiff = timeToBeginDay(cal.getTime()).getTime() - System.currentTimeMillis();
