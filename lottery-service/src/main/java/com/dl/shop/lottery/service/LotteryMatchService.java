@@ -627,17 +627,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}*/
 			
 	        
-			if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
-				log.info("getMatchListDTO00000");
-				//0-9点的赛事在当天不能投注
-				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-				if(hideMatch) {
-					continue;
-				}
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-					continue;
-				}
-			}else {
+//			if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
+//				log.info("getMatchListDTO00000");
+//				//0-9点的赛事在当天不能投注
+//				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+//				if(hideMatch) {
+//					continue;
+//				}
+//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+//					continue;
+//				}
+//			}else {
 				
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
@@ -652,7 +652,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					log.info("getMatchListDTO====23点之后"+match.getChangci());
 					continue;
 				}
-			}
+//			}
 			
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
