@@ -594,10 +594,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}*/
 			//0-9点的赛事在当天不能投注
-			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-			if(hideMatch) {
-				continue;
-			}
+//			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+//			if(hideMatch) {
+//				continue;
+//			}
 			/*LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
 	        int nowHour = localTime.getHour();
 	        int betHour = betendDateTime.getHour();
