@@ -27,6 +27,8 @@ public interface LotteryMatchMapper extends Mapper<LotteryMatch> {
 	 */
 	public List<LotteryMatch> getMatchList(@Param("leagueIds")String leagueId);
 	
+	public List<LotteryMatch> getMatchListTwo(@Param("leagueIds")String leagueId);
+	
 	public List<LotteryMatch> getMatchListByPlayCodes(@Param("playCodes")List<String> playCodes);
 	
 	public List<LotteryMatch> refreshInfos();

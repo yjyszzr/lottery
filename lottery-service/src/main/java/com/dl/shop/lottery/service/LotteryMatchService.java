@@ -318,7 +318,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	public DlJcZqMatchListDTO getMatchList(DlJcZqMatchListParam param) {
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchList(param.getLeagueId());
+		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
 		logger.info("获取matchList的大小="+matchList.size());
 		if(matchList == null || matchList.size() == 0) {
 			return dlJcZqMatchListDTO;
