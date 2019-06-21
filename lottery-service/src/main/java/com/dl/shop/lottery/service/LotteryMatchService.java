@@ -586,6 +586,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         }else if("h5".equals(userDevice.getPlat())){
             deviceUnique = "h5";
             log.info("h5,"+deviceUnique);
+        }else {
+        	deviceUnique = "h5";
+            log.info("h5,"+deviceUnique);
         }
         log.info("getMatchListDTO"+matchList.size()+deviceUnique);
 		for(LotteryMatch match: matchList) {
