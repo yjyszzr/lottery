@@ -615,7 +615,7 @@ public class LotteryMatchController {
         int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
         Date now = new Date();
         int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-        if("10".equals(appCodeName)) {
+        if(!"10".equals(appCodeName)) {
 	        if(nowTime - betEndTime > 0) {
 	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 	        }
@@ -790,7 +790,7 @@ public class LotteryMatchController {
         Instant instant = Instant.ofEpochSecond(curTime);
         LocalDateTime curDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         Boolean curTimeCanBz = lotteryMatchService.canBetByTime(curDateTime.getDayOfWeek().getValue(), curDateTime.getHour());
-        if("10".equals(appCodeName)) {
+        if(!"10".equals(appCodeName)) {
 	        if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
 	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 	        }
@@ -1059,7 +1059,7 @@ public class LotteryMatchController {
         int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
         Date now = new Date();
         int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-        if("10".equals(appCodeName)) {
+        if(!"10".equals(appCodeName)) {
 	        if(nowTime - betEndTime > 0) {
 	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
 	        }
