@@ -564,6 +564,9 @@ public class LotteryMatchController {
     @ApiOperation(value = "计算投注信息", notes = "计算投注信息,times默认值为1，betType默认值为11")
     @PostMapping("/getBetInfo") 
     public BaseResult<DLZQBetInfoDTO> getBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
     	Integer userId = SessionUtil.getUserId();   
     	SysConfigParam cfg = new SysConfigParam();
 		cfg.setBusinessId(67);//读取财务账号id
@@ -612,12 +615,14 @@ public class LotteryMatchController {
         int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
         Date now = new Date();
         int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-        if(nowTime - betEndTime > 0) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-        }
-        boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-        if(hideMatch) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+        if("10".equals(appCodeName)) {
+	        if(nowTime - betEndTime > 0) {
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
+	        boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+	        if(hideMatch) {
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
         }
         //校验串关
         String betTypeStr = param.getBetType();
@@ -736,6 +741,9 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存投注信息", notes = "保存投注信息")
     @PostMapping("/saveBetInfo")
     public BaseResult<BetPayInfoDTO> saveBetInfo(@Valid @RequestBody DlJcZqMatchBetParam param) {
+    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
         if(lotteryMatchService.isShutDownBet()) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
         }
@@ -782,13 +790,14 @@ public class LotteryMatchController {
         Instant instant = Instant.ofEpochSecond(curTime);
         LocalDateTime curDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         Boolean curTimeCanBz = lotteryMatchService.canBetByTime(curDateTime.getDayOfWeek().getValue(), curDateTime.getHour());
-        if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+        if("10".equals(appCodeName)) {
+	        if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
+	        if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
         }
-        if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-        }
-
         //校验串关
         String betTypeStr = param.getBetType();
         if(StringUtils.isBlank(betTypeStr)) {
@@ -1050,14 +1059,15 @@ public class LotteryMatchController {
         int betEndTime = lotteryMatchService.getBetEndTime(min.getMatchTime());
         Date now = new Date();
         int nowTime = Long.valueOf(now.toInstant().getEpochSecond()).intValue();
-        if(nowTime - betEndTime > 0) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+        if("10".equals(appCodeName)) {
+	        if(nowTime - betEndTime > 0) {
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
+	        boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
+	        if(hideMatch) {
+	            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
+	        }
         }
-        boolean hideMatch = lotteryMatchService.isHideMatch(betEndTime, min.getMatchTime());
-        if(hideMatch) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-        }
-
         //校验串关
         String betTypeStr = param.getBetType();
         if(StringUtils.isBlank(betTypeStr)) {
