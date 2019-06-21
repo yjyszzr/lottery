@@ -620,7 +620,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					continue;
 				}
 			}else {
-				boolean flag = getBetEndTimeByTF(matchTime, betPreTime,match.getChangci());
+				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
 				//投注结束（23点之前）
@@ -4182,7 +4182,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	}
 	
 	//获取出票截至时间
-	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime,String changciId) {
+	private boolean getBetEndTimeByTF(Integer matchTime, Integer betPreTime) {
 		Instant instant = Instant.ofEpochSecond(matchTime.longValue());
 		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
@@ -4211,7 +4211,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	    Calendar cal = Calendar.getInstance();
 	    cal.setTime(date);
 	    int day = cal.get(Calendar.DATE);
-	    if(cal.get(Calendar.HOUR_OF_DAY)<3) {
+	    if(cal.get(Calendar.HOUR_OF_DAY)<=3) {
 	    	cal.set(Calendar.DATE, day);
   	    }else {
   	    	cal.set(Calendar.DATE, day + 1);
