@@ -587,7 +587,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             deviceUnique = "h5";
             log.info("h5,"+deviceUnique);
         }
-        log.info("getMatchListDTO"+matchList.size());
+        log.info("getMatchListDTO"+matchList.size()+deviceUnique);
 		for(LotteryMatch match: matchList) {
 			Date matchTimeDate = match.getMatchTime();
 			Instant instant = matchTimeDate.toInstant();
