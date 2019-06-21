@@ -347,7 +347,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playMap.put(item.getChangciId(), item);
 			});
 			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
-				if(!"h5".equals(deviceUnique)) {
+				if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
@@ -385,7 +385,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}else {
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				if(!"h5".equals(deviceUnique)) {
+				if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
@@ -586,9 +586,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         }else if("h5".equals(userDevice.getPlat())){
             deviceUnique = "h5";
             log.info("h5,"+deviceUnique);
-        }else {
-        	deviceUnique = "h5";
-            log.info("h5,"+deviceUnique);
         }
         log.info("getMatchListDTO"+matchList.size()+deviceUnique);
 		for(LotteryMatch match: matchList) {
@@ -630,7 +627,17 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}*/
 			
 	        
-			if("h5".equals(deviceUnique)) {
+			if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
+				//0-9点的赛事在当天不能投注
+				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+				if(hideMatch) {
+					continue;
+				}
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+					continue;
+				}
+			}else {
+				
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
@@ -642,16 +649,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				//投注结束
 				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond() && flag && times<=0) {
 					log.info("getMatchListDTO====23点之后"+match.getChangci());
-					continue;
-				}
-				
-			}else {
-				//0-9点的赛事在当天不能投注
-				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-				if(hideMatch) {
-					continue;
-				}
-				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
 					continue;
 				}
 			}
