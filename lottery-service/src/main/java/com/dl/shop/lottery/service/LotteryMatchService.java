@@ -347,7 +347,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playMap.put(item.getChangciId(), item);
 			});
 			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
-				if("h5".equals(deviceUnique)) {
+				if(!"h5".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
@@ -385,7 +385,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}else {
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				if("h5".equals(deviceUnique)) {
+				if(!"h5".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
