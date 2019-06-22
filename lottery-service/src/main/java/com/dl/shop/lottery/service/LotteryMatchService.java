@@ -347,7 +347,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				playMap.put(item.getChangciId(), item);
 			});
 			for(LotteryMatchPlay matchPlay: hmatchPlayList) {
-				if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
+				if("h5".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
@@ -385,7 +385,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}else {
 			List<LotteryMatchPlay> matchPlayList = lotteryMatchPlayMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]), "6".equals(playType)?"":playType);
 			for(LotteryMatchPlay matchPlay: matchPlayList) {
-				if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
+				if("h5".equals(deviceUnique)) {
 					if(this.isStop(matchPlay)) {
 						continue;
 					}
@@ -627,18 +627,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}*/
 			
 	        
-//			if("iphone".equals(deviceUnique) || "android".equals(deviceUnique)) {
-//				log.info("getMatchListDTO00000");
-//				//0-9点的赛事在当天不能投注
-//				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-//				if(hideMatch) {
-//					continue;
-//				}
-//				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-//					continue;
-//				}
-//			}else {
-				
+			if("h5".equals(deviceUnique)) {
 				boolean flag = getBetEndTimeByTF(matchTime, betPreTime);
 				long times = getSecondDayDifference(new Date());
 				log.info("getMatchListDTO===="+(Long.valueOf(betEndTime) < Instant.now().getEpochSecond())+" &&"+ flag +" &&"+ (times<=0)+"&&"+match.getChangci());
@@ -652,7 +641,18 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 					log.info("getMatchListDTO====23点之后"+match.getChangci());
 					continue;
 				}
-//			}
+			}else {
+				log.info("getMatchListDTO00000");
+				//0-9点的赛事在当天不能投注
+				boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+				if(hideMatch) {
+					continue;
+				}
+				if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+					continue;
+				}
+				
+			}
 			
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
