@@ -89,7 +89,7 @@
   update 
   	dl_article  
   set 
-  	click_number =  #{clickNumber}  
+  	click_number =  #{clickNumber}
    where 
    	article_id = #{articleId}
   

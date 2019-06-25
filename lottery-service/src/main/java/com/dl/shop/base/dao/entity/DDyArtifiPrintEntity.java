@@ -1,9 +1,9 @@
 package com.dl.shop.base.dao.entity;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class DDyArtifiPrintEntity implements Serializable{
@@ -23,4 +23,7 @@ public class DDyArtifiPrintEntity implements Serializable{
 	
 	@ApiModelProperty(value = "logo")
 	public String logo;
+
+	@ApiModelProperty(value = "混合投注多种玩法标识:1-多种玩法 0-非多种玩法")
+	public String mixPlayBz;
 }

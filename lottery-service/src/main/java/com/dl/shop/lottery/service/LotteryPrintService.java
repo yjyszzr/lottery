@@ -184,6 +184,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	 * @param merchantOrderSn
 	 */
 	public String notifyPrintResultToMerchant(String notifyUrl,String merchantOrderSn){
+		log.info("merchantOrderSn="+merchantOrderSn+"&&&&&&&notifyUrl="+notifyUrl);
 		QueryPrintStakeParam param = new QueryPrintStakeParam();
 		param.setMerchantOrderSn(merchantOrderSn);
 		BaseResult<PrintStakeResultDTO> psRto = this.queryPrintResutToMerchant(param);
@@ -210,7 +211,8 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 	public boolean doPostMerchant(PrintStakeResultDTO printStakeResultDTO,String notifyUrl){
 		if(StringUtils.isEmpty(notifyUrl)) {
 //			notifyUrl = "http://123.57.34.133:8080/merchant/notify";
-			notifyUrl = "http://47.100.81.221:8080/api/callback/ticket/status";//商户接口
+//			notifyUrl = "http://47.100.81.221:8080/api/callback/ticket/status";//商户测试接口
+			notifyUrl = "http://app.shoumiba.cn/api/callback/ticket/status";//商户正式接口
 		}
 		ClientHttpRequestFactory clientFactory = restTemplateConfig.simpleClientHttpRequestFactory();
 		RestTemplate rest = restTemplateConfig.restTemplate(clientFactory);
@@ -225,6 +227,7 @@ public class LotteryPrintService extends AbstractService<LotteryPrint> {
 		if(user!=null) {
 			String strSign = user.getMerchantNo()+user.getMerchantPass()+timestamp+printStakeResultDTO.getOrderSn();
 			sign = MD5.getSign(strSign);
+			log.info("doPostMerchant签名为&&&签名前"+strSign+"***签名后"+sign);
 			
 		}
 		headers.set("Authorization", sign);

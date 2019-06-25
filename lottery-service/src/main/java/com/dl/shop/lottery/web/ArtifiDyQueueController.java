@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 动态队列
+ * 动态队列1
  * @author wht
  * @date 2018.10.16
  */
@@ -234,6 +234,7 @@ public class ArtifiDyQueueController {
 		//进入到分单逻辑
 		if(param.getType() != null && param.getType() == 1) {
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
+
 			//检查是否全部都操作完
 			boolean isAll = dyArtifiDao.isOperationAll(mobile);
 			if(isAll) {

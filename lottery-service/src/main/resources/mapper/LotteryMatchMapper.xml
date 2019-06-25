@@ -63,6 +63,23 @@
   	 order by match_time
   </select>
   
+  <select id="getMatchListTwo" resultMap="BaseResultMap">
+	select
+		match_id,league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
+		home_team_rank,visiting_team_id,visiting_team_name,visiting_team_abbr,visiting_team_rank,match_time,show_time,create_time,
+		is_show,is_del,match_sn,is_hot
+	from
+	dl_match 
+	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+  	 <if test="leagueIds!=null and leagueIds != ''">
+  	 	and league_id in
+  	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
+  	 		#{leagueId}
+  	 	</foreach>
+  	 </if>
+  	 order by match_time
+  </select>
+  
   <select id="getMatchListByPlayCodes" resultMap="BaseResultMap">
 	select
 		match_id,league_id,league_name,league_addr,changci_id,changci,home_team_id,home_team_name,home_team_abbr,
