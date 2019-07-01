@@ -14,11 +14,12 @@
     <result column="pic" jdbcType="INTEGER" property="pic" />
     <result column="fail_msg" jdbcType="INTEGER" property="failMsg" />
     <result column="store_id" jdbcType="INTEGER" property="storeId" />
+    <result column="bonus" jdbcType="DECIMAL" property="bonus" />
   </resultMap>
   
   <select id="queryLogByTime"  resultMap="BaseResultMap">
-  	select * from dl_log_operation where type = 2 and phone = #{phone} 
-  	and  add_time &gt; #{startTime} and add_time &lt; #{endTime}
+  	select op.*,o.bonus from dl_log_operation op left join dl_order o on op.order_sn = o.order_sn where op.type = 2 and op.phone = #{phone}
+  	and  op.add_time &gt; #{startTime} and op.add_time &lt; #{endTime}
   </select>
   
   <select id="queryLogByOrderSn" resultMap="BaseResultMap">

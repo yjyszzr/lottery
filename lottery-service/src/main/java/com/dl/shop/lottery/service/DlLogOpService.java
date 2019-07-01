@@ -1,16 +1,5 @@
 package com.dl.shop.lottery.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
-
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
@@ -21,8 +10,16 @@ import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlOpLog;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -44,7 +41,7 @@ public class DlLogOpService {
 		Integer sucNum = 0;
 		Integer failNum = 0;
 		if (!CollectionUtils.isEmpty(logList)) {
-			sucMoney = logList.stream().filter(s -> s.getOpType() == 1).map(s -> s.getMoneyPaid()).reduce(BigDecimal.ZERO, BigDecimal::add);
+			sucMoney = logList.stream().filter(s -> s.getOpType() == 1).map(s -> s.getMoneyPaid().add(s.getBonus())).reduce(BigDecimal.ZERO, BigDecimal::add);
 			sucNum = logList.stream().filter(s -> s.getOpType() == 1).collect(Collectors.toList()).size();
 			failNum = logList.stream().filter(s -> s.getOpType() == 2).collect(Collectors.toList()).size();
 		} else {
