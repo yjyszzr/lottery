@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 @Data
 @Table(name = "dl_log_operation")
-public class DlOpLog {
+public class NewDlOpLog {
 
 	@Id
 	@Column(name = "log_id")
@@ -20,6 +20,12 @@ public class DlOpLog {
 	 */
 	@Column(name = "type")
 	private Integer type;
+
+    /**
+     * 红包金额
+     */
+    @Column(name = "bonus")
+    private BigDecimal bonus;
 	
 	/**
 	 * 彩种id

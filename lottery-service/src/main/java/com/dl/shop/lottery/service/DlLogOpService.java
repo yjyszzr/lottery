@@ -8,6 +8,7 @@ import com.dl.lottery.dto.LogPicDetailDTO;
 import com.dl.lottery.dto.OperationRecordDTO;
 import com.dl.shop.lottery.dao.DlOpLogMapper;
 import com.dl.shop.lottery.model.DlOpLog;
+import com.dl.shop.lottery.model.NewDlOpLog;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class DlLogOpService {
 		log.info("queryLogByTime_startTime==========={}", startTime);
 		log.info("queryLogByTime_endTime==========={}", endTime);
 		OperationRecordDTO dto = new OperationRecordDTO();
-		List<DlOpLog> logList = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
+		List<NewDlOpLog> logList = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
 		log.info("queryLogByTime_logList==========={}", logList);
 		BigDecimal sucMoney = BigDecimal.ZERO;
 		Integer sucNum = 0;
@@ -49,8 +50,8 @@ public class DlLogOpService {
 		}
 
 		PageHelper.startPage(pageNum, pageSize);
-		List<DlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
-		PageInfo<DlOpLog> pageInfo = new PageInfo<DlOpLog>(logListAll);
+		List<NewDlOpLog> logListAll = dlOpLogMapper.queryLogByTime(phone, startTime, endTime);
+		PageInfo<NewDlOpLog> pageInfo = new PageInfo<NewDlOpLog>(logListAll);
 		List<DlOpLogDTO> opDTOList = new ArrayList<DlOpLogDTO>();
 		logListAll.stream().forEach(s -> {
 			DlOpLogDTO logDTO = new DlOpLogDTO();

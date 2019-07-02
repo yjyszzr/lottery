@@ -14,10 +14,24 @@
     <result column="pic" jdbcType="INTEGER" property="pic" />
     <result column="fail_msg" jdbcType="INTEGER" property="failMsg" />
     <result column="store_id" jdbcType="INTEGER" property="storeId" />
-    <result column="bonus" jdbcType="DECIMAL" property="bonus" />
   </resultMap>
+
+    <resultMap id="BaseResultNewMap" type="com.dl.shop.lottery.model.NewDlOpLog">
+        <id column="log_id" jdbcType="INTEGER" property="logId" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="order_sn" jdbcType="VARCHAR" property="orderSn" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />
+        <result column="op_type" jdbcType="INTEGER" property="opType" />
+        <result column="add_time" jdbcType="INTEGER" property="addTime" />
+        <result column="money_paid" jdbcType="DECIMAL" property="moneyPaid" />
+        <result column="lottery_classify_id" jdbcType="INTEGER" property="lotteryClassifyId" />
+        <result column="pic" jdbcType="INTEGER" property="pic" />
+        <result column="fail_msg" jdbcType="INTEGER" property="failMsg" />
+        <result column="store_id" jdbcType="INTEGER" property="storeId" />
+        <result column="bonus" jdbcType="DECIMAL" property="bonus" />
+    </resultMap>
   
-  <select id="queryLogByTime"  resultMap="BaseResultMap">
+  <select id="queryLogByTime"  resultMap="BaseResultNewMap">
   	select op.*,o.bonus from dl_log_operation op left join dl_order o on op.order_sn = o.order_sn where op.type = 2 and op.phone = #{phone}
   	and  op.add_time &gt; #{startTime} and op.add_time &lt; #{endTime}
   </select>
