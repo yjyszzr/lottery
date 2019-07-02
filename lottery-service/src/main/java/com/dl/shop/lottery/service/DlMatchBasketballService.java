@@ -631,10 +631,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		List<Double> minOdds = new ArrayList<Double>(playCellMap.size());
 		for(String playCode: playCellMap.keySet()) {
 			List<MatchBasketBallBetPlayCellDTO> list = playCellMap.get(playCode);
-			List<Double> allbetComOdds = new ArrayList<>();    this.allbetComOdds(list);
-			allbetComOdds.add(1.32);
-			allbetComOdds.add(2.32);
-			allbetComOdds.add(1.50);
+			List<Double> allbetComOdds   =   this.allbetComOdds(list);
+//			allbetComOdds.add(1.32);
+//			allbetComOdds.add(2.32);
+//			allbetComOdds.add(1.50);
 			log.info("allbetComOdds is not null: "+ JSONHelper.bean2json(allbetComOdds));
 			if(CollectionUtils.isEmpty(allbetComOdds)) {
 				continue;
