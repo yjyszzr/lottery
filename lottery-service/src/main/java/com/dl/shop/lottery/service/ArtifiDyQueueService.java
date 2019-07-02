@@ -3,6 +3,7 @@ package com.dl.shop.lottery.service;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.DateUtil;
+import com.dl.base.util.DateUtilNew;
 import com.dl.order.api.IOrderService;
 import com.dl.order.dto.OrderDTO;
 import com.dl.order.param.OrderPicParam;
@@ -304,6 +305,8 @@ public class ArtifiDyQueueService{
 //				logger.info("[modifyOrderStatusV2]" + " result:" + bR.getData());
 //			}
 //		}
+
+
 		return ResultGenerator.genSuccessResult("succ");
 	}
 
@@ -390,9 +393,9 @@ public class ArtifiDyQueueService{
 					for (DlArtifiPrintLottery entity : allocList) {
 						//更改已分配的状态
 						entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
-						//操作人
-						entity.setAdminName(mobile);
-						logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus());
+                        entity.setUpdateTime(DateUtilNew.getCurrentTimeLong());
+						entity.setAdminName(mobile);//操作人
+						logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus()+ " updateTime:"+DateUtilNew.getCurrentTimeLong());
 						int updateRst = dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
 						if(updateRst == 1){
 							preUpdateOrders.add(entity.getOrderSn());

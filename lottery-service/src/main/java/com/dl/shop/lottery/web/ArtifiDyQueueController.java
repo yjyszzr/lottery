@@ -214,9 +214,10 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "查询列表", notes = "查询列表")
 	@PostMapping("/queryV2")
 	public BaseResult<List<DDyArtifiPrintEntity>> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
+        List<DDyArtifiPrintEntity> rList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
 		if(userId == null) {
-			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg());
+			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg(),rList);
 		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
@@ -229,8 +230,8 @@ public class ArtifiDyQueueController {
 		if(mobile == null || mobile.length() <= 0) { 
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
-		//判断是否在白名单内
-		Condition c = new Condition(DlXNWhiteList.class);
+
+		//判断是否在白名单内	Condition c = new Condition(DlXNWhiteList.class);
 		c.createCriteria().andEqualTo("mobile",mobile);
 		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
 		if (xnWhiteListList.size() == 0) {
@@ -249,7 +250,7 @@ public class ArtifiDyQueueController {
 			artifiDyQueueService.allocLotteryV2(mobile);
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
-		List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile,0);
+		rList = dyArtifiDao.listAll(mobile,0);
         if(CollectionUtils.isEmpty(rList)){
             return ResultGenerator.genResult(LotteryResultEnum.DB_NO_DATA.getCode(),"暂无订单，请稍后尝试");
         }

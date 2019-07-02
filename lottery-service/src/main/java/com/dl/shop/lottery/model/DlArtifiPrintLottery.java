@@ -43,6 +43,13 @@ public class DlArtifiPrintLottery {
     @Column(name = "add_time")
     private Integer addTime;
 
+
+    /**
+     * 更新时间
+     */
+    @Column(name = "update_time")
+    private Integer updateTime;
+
     /**
      * 操作人ID
      */
@@ -237,5 +244,13 @@ public class DlArtifiPrintLottery {
      */
     public void setOperationTime(Integer operationTime) {
         this.operationTime = operationTime;
+    }
+
+    public Integer getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Integer updateTime) {
+        this.updateTime = updateTime;
     }
 }
