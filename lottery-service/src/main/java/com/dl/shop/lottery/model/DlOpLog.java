@@ -1,11 +1,11 @@
 package com.dl.shop.lottery.model;
 
-import java.math.BigDecimal;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
+import java.math.BigDecimal;
 
 @Data
 @Table(name = "dl_log_operation")
@@ -20,6 +20,12 @@ public class DlOpLog {
 	 */
 	@Column(name = "type")
 	private Integer type;
+
+    /**
+     * 红包金额
+     */
+    @Column(name = "bonus")
+    private BigDecimal bonus;
 	
 	/**
 	 * 彩种id

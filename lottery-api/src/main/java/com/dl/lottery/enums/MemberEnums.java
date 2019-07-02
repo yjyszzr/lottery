@@ -58,7 +58,8 @@ public enum MemberEnums {
 	QUERY_USER_FAIL(301065,"查询用户信息失败"),
 	QUERY_MOBILE_EMPTY(301066,"手机号码不能为空"),
 	MEDIA_TOKEN_FAIL(301067,"获取多媒体信息失败"),
-	QUERY_ORDER_FAIL(301068,"查询订单失败");
+	QUERY_ORDER_FAIL(301068,"查询订单失败"),
+    SAME_REQUEST(301069,"请勿重复提交");
 	
 //	MOBILE_ERROR(301012,"手机号码格式错误"),
 //	ALREADY_SMS_VERIFY(301013,"手机号已经验证过"),	

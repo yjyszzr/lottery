@@ -36,6 +36,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,7 @@ import tk.mybatis.mapper.entity.Condition;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 动态队列1
@@ -69,6 +71,9 @@ public class ArtifiDyQueueController {
 	private IUserService iUserService;
 	@Resource
 	private DlXNWhiteListService dlXNWhiteListService;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 	
 	@ApiOperation(value = "人工分单", notes = "人工分单")
 	@PostMapping("/tasktimer")
@@ -301,6 +306,12 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "更改订单状态", notes = "更改订单状态")
 	@PostMapping("/modifyV2")
 	public BaseResult<?> modifyOrderStatusV2(@RequestBody ArtifiLotteryModifyParamV2 params){
+        Boolean absent = stringRedisTemplate.opsForValue().setIfAbsent("modifyV2_"+params.getOrderSn(), "on");
+        stringRedisTemplate.expire("modifyV2_"+params.getOrderSn(), 10, TimeUnit.SECONDS);
+        if(!absent) {
+            return ResultGenerator.genResult(MemberEnums.SAME_REQUEST.getcode(), MemberEnums.SAME_REQUEST.getMsg());
+        }
+
 		int userId = SessionUtil.getUserId();
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
