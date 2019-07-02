@@ -7,11 +7,7 @@ import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
-import com.dl.base.util.DateUtil;
-import com.dl.base.util.IpUtil;
-import com.dl.base.util.JSONHelper;
-import com.dl.base.util.SNGenerator;
-import com.dl.base.util.SessionUtil;
+import com.dl.base.util.*;
 import com.dl.lottery.dto.*;
 import com.dl.lottery.enums.LotteryResultEnum;
 import com.dl.lottery.param.DateStrParam;
@@ -35,17 +31,13 @@ import com.dl.shop.lottery.dao2.DlLeagueTeamMapper;
 import com.dl.shop.lottery.model.LotteryMatch;
 import com.dl.shop.lottery.service.*;
 import com.dl.shop.lottery.utils.MD5;
-import com.dl.lottery.dto.UserBetDetailInfoDTO;
-import com.dl.lottery.dto.UserBetPayInfoDTO;
 import com.dl.shop.payment.enums.PayEnums;
 import com.dl.store.api.IStoreUserMoneyService;
 import com.dl.store.param.AwardParam;
-
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -323,10 +315,10 @@ public class LotteryMatchController {
         if(orderMoney < minBetMoney) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
         }
-        int canBetMoney = lotteryMatchService.canBetMoney();
-        if(orderMoney > canBetMoney) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-        }
+//        int canBetMoney = lotteryMatchService.canBetMoney();
+//        if(orderMoney > canBetMoney) {
+//            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//        }
 
         //缓存订单支付信息
         UserBetPayInfoDTO dto = new UserBetPayInfoDTO();
@@ -872,6 +864,7 @@ public class LotteryMatchController {
                 isCheckedBetType = false;
             }
         } catch (NumberFormatException e) {
+
         }
         if(!isCheckedBetType) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getCode(), LotteryResultEnum.BET_PLAY_TYPE_ENABLE.getMsg());
