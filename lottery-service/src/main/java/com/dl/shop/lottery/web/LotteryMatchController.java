@@ -383,9 +383,9 @@ public class LotteryMatchController {
     @PostMapping("/getBasketBallBetInfo")
     public BaseResult<DLLQBetInfoDTO> getBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
         //是否停售
-        if(dlMatchBasketballService.isBasketBallShutDownBet()) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-        }
+//        if(dlMatchBasketballService.isBasketBallShutDownBet()) {
+//            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//        }
         List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -899,10 +899,10 @@ public class LotteryMatchController {
         if(orderMoney < minBetMoney) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_WC.getCode(), "最低投注"+minBetMoney.intValue()+"元!");
         }
-        int canBetMoney = lotteryMatchService.canBetMoney();
-        if(orderMoney > canBetMoney) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-        }
+//        int canBetMoney = lotteryMatchService.canBetMoney();
+//        if(orderMoney > canBetMoney) {
+//            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+//        }
         String totalMoney = userInfoExceptPassRst.getData().getTotalMoney();
         Double userTotalMoney = Double.valueOf(totalMoney);
 
