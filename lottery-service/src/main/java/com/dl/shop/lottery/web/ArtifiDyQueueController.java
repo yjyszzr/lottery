@@ -231,7 +231,8 @@ public class ArtifiDyQueueController {
 			return ResultGenerator.genFailResult("手机号码不能为空");
 		}
 
-		//判断是否在白名单内	Condition c = new Condition(DlXNWhiteList.class);
+		//判断是否在白名单内
+        Condition c = new Condition(DlXNWhiteList.class);
 		c.createCriteria().andEqualTo("mobile",mobile);
 		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
 		if (xnWhiteListList.size() == 0) {
