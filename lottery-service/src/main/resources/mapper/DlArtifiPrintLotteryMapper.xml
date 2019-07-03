@@ -19,8 +19,7 @@
   </resultMap>
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
-  	select * from dl_artifi_print_lottery 
-  	where operation_status = 0 ORDER BY lottery_classify_id DESC
+        select * from dl_artifi_print_lottery  pl left join dl_order o on pl.order_sn = o.order_sn where operation_status = 0 ORDER BY o.match_time asc,o.ticket_amount desc,o.add_time asc
   </select>
   
   <select id="listLotteryTodayUnAllocNoLotto" resultMap="BaseResultMap">
