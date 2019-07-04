@@ -19,7 +19,7 @@
   </resultMap>
   
   <select id="listLotteryTodayUnAlloc" resultMap="BaseResultMap">
-        SELECT distinct(pl.order_sn),pl.*  FROM dl_artifi_print_lottery pl LEFT JOIN dl_order o ON pl.order_sn=o.order_sn LEFT JOIN dl_order_detail od ON pl.order_sn=od.order_sn WHERE pl.operation_status=0 ORDER BY od.match_time ASC,o.ticket_amount DESC,o.add_time ASC
+        SELECT distinct(pl.order_sn),pl.*  FROM dl_artifi_print_lottery pl LEFT JOIN dl_order o ON pl.order_sn=o.order_sn LEFT JOIN dl_order_detail od ON pl.order_sn=od.order_sn WHERE pl.operation_status=0 ORDER BY od.issue ASC,o.ticket_amount DESC,o.add_time ASC
   </select>
   
   <select id="listLotteryTodayUnAllocNoLotto" resultMap="BaseResultMap">
