@@ -143,7 +143,8 @@ public class ArtifiDyQueueController {
 		detailDTO.setDetail(mLottoOrderDetailDTO);
 		return ResultGenerator.genSuccessResult("succ",detailDTO);
 	}
-	
+
+
 	@ApiOperation(value = "订单详情", notes = "订单详情")
 	@PostMapping("/detail")
 	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
@@ -267,7 +268,9 @@ public class ArtifiDyQueueController {
 					entity.logo = "https://szcq-icon.oss-cn-beijing.aliyuncs.com/jingzu.png";
 				}else if(classifyId == 2) {
 					entity.logo = "https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png";
-				}
+				}else if(classifyId == 3) {
+                    entity.logo = "https://szcq-icon.oss-cn-beijing.aliyuncs.com/lancai.png";
+                }
 			}
 		}
 	}
