@@ -78,7 +78,9 @@ public class DlLogOpService {
 					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/jingzu.png");
 				} else if ("2".equals(classifyId)) {
 					logDTO.setLogo("https://szcq-icon.oss-cn-beijing.aliyuncs.com/daletou.png");
-				}
+				} else if("3".equals(classifyId)){
+                    logDTO.setLogo("hhttps://szcq-icon.oss-cn-beijing.aliyuncs.com/lancai.png");
+                }
 			}
 		}
 		log.info("queryLogByTime_dto==========={}", dto);
