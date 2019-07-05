@@ -977,7 +977,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 //		Double hhOdds = null, hdOdds = null, haOdds = null;
 		if(hhadBetPlay != null) {
 			List<DlJcLqMatchCellDTO> betCells = hhadBetPlay.getBetCells();
-			Integer fixNum = Integer.valueOf(hhadBetPlay.getFixedodds());
+			Double fixNum = Double.valueOf(hhadBetPlay.getFixedodds());
 			List<Double> naList = new ArrayList<Double>(aList.size()*3);
 			List<Double> ndList = new ArrayList<Double>(dList.size()*3);
 			List<Double> nhList = new ArrayList<Double>(hList.size()*3);
