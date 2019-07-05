@@ -34,7 +34,7 @@
            add_time = #{addTime},
            admin_id = #{adminId},
            admin_name = #{adminName},
-           <if test="statisticsPrint != null">›
+           <if test="statisticsPrint != null">
 		    statistics_print = #{statisticsPrint},
 		   </if>
            operation_time = #{operationTime}
