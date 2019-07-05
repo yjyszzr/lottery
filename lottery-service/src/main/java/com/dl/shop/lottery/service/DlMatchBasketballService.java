@@ -756,7 +756,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			//2。让球胜平负
 			if(hhadBetPlay != null) {
 				List<DlJcLqMatchCellDTO> betCells2 = hhadBetPlay.getBetCells();
-				int sucCode = sub + Integer.valueOf(hhadBetPlay.getFixedodds());
+				double sucCode = sub + Double.valueOf(hhadBetPlay.getFixedodds());
 				if(sucCode > 0) {
 					sucCode = MatchResultHadEnum.HAD_H.getCode();
 				}else if(sucCode < 0) {
@@ -764,7 +764,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 				}else {
 					sucCode = MatchResultHadEnum.HAD_D.getCode();
 				}
-				final int sucCode1 = sucCode;
+				final double sucCode1 = sucCode;
 				Optional<DlJcLqMatchCellDTO> optional = betCells2.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == sucCode1).findFirst();
 				if(optional.isPresent()) {
 					Double odds = Double.valueOf(optional.get().getCellOdds());//选中的让球胜平负玩法的可用赔率
@@ -977,7 +977,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 //		Double hhOdds = null, hdOdds = null, haOdds = null;
 		if(hhadBetPlay != null) {
 			List<DlJcLqMatchCellDTO> betCells = hhadBetPlay.getBetCells();
-			Integer fixNum = Integer.valueOf(hhadBetPlay.getFixedodds());
+			Double fixNum = Double.valueOf(hhadBetPlay.getFixedodds());
 			List<Double> naList = new ArrayList<Double>(aList.size()*3);
 			List<Double> ndList = new ArrayList<Double>(dList.size()*3);
 			List<Double> nhList = new ArrayList<Double>(hList.size()*3);
