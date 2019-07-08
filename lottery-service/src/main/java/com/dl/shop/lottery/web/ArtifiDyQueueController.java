@@ -352,8 +352,7 @@ public class ArtifiDyQueueController {
 		logger.info("[modifyOrderStatusV2]" + " failMsg:" + failMsg + " rFailMsg:" + rfailMsg);
 		OrderSnParam snParam =new OrderSnParam();
 		snParam.setOrderSn(params.getOrderSn());
-		BaseResult<OrderDTO> orderDTO =iOrderService.getOrderInfoByOrderSn(snParam);
-		if (orderDTO.getData().getMobile().equals("13722300001")) {
+		if (mobile.equals("13722300001")) {
 			params.setOrderStatus(1);
 		}
 		return artifiDyQueueService.modifyOrderStatusV2(userId,mobile,params.getOrderSn(),params.getOrderStatus(),params.getPicUrl(),rfailMsg);
