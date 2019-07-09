@@ -49,6 +49,7 @@ import tk.mybatis.mapper.entity.Condition;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -251,7 +252,12 @@ public class ArtifiDyQueueController {
 				dyArtifiDao.clearAll(mobile);
 			}
 			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
-			artifiDyQueueService.allocLotteryV2(mobile);
+			List<String> mobileList = getAllLoginInfo();
+			if(mobileList.contains("13722300001") && mobileList.contains("13722300002")) {//都包含说明两个出票用户同时在线
+				artifiDyQueueService.allocLotteryV2BySelect(mobile);//新分单逻辑
+			}else {
+				artifiDyQueueService.allocLotteryV2(mobile);//老分单逻辑
+			}
 		}
 		DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(baseCfg);
 		rList = dyArtifiDao.listAll(mobile,0);
@@ -260,6 +266,17 @@ public class ArtifiDyQueueController {
         }
         filterList(rList);
 		return ResultGenerator.genSuccessResult("succ",rList);
+	}
+	
+	//获取当前登录用户
+	private List<String> getAllLoginInfo() {
+		Set<String> keys = stringRedisTemplate.keys("XN_*");
+		List<String> strList = new ArrayList<String>();
+		for (String str : keys) {
+			str = str.replace("XN_", "");
+			strList.add(str);
+		}
+		return strList;
 	}
 	
 	private void filterList(List<DDyArtifiPrintEntity> rList) {

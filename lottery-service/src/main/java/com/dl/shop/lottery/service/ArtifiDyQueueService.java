@@ -432,4 +432,77 @@ public class ArtifiDyQueueService{
 			logger.error("---------------关键的分单的时候异常------------:"+throwable.getStackTrace());
 		}
 	}
+	/***
+	 * 分单逻辑v2
+	 * @param mobile 当前用户手机号
+	 */
+	public synchronized void allocLotteryV2BySelect(String mobile) {
+		try {
+			logger.info("[allocLotteryV2]");
+			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+			List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile, 0);
+			logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
+			if (rList.size() <= 0) {
+				List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+				if("13722300001".equals(mobile)) {//圣和店 老用户
+					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser();
+				}else if("13722300002".equals(mobile)) {//航天城店 新用户
+					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser();
+				}
+				//141手机号规则
+				//			if("18182506141".equals(mobile)) {
+				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+				//				logger.info("[allocLotteryV2]" + " 18182506141分配" + rSumList.size() + "个订单");
+				//			}else {
+				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocNoLotto();
+				//				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
+				//			}
+				List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao, mobile, rSumList, QUEUE_SIZE);
+				logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
+				//先批量进行更改订单状态
+
+				List<String> preUpdateOrders = new ArrayList<>();
+				if (allocList != null && allocList.size() > 0) {
+					for (DlArtifiPrintLottery entity : allocList) {
+						//更改已分配的状态
+						entity.setOperationStatus(DlArtifiPrintLottery.OPERATION_STATUS_ALLOCATED);
+                        entity.setUpdateTime(DateUtilNew.getCurrentTimeLong());
+						entity.setAdminName(mobile);//操作人
+						logger.info("[userLogin]" + " update orderSn:" + entity.getOrderSn() + " adminName:" + mobile + " opStatus:" + entity.getOperationStatus()+ " updateTime:"+DateUtilNew.getCurrentTimeLong());
+						int updateRst = dlArtifiPrintMapper.updateArtifiLotteryPrint(entity);
+						if(updateRst == 1){
+							preUpdateOrders.add(entity.getOrderSn());
+						}
+					}
+				}
+				//然后进行分单到该人手中
+				dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
+
+				List<String> preAddOrders = new ArrayList<>();
+				if (allocList != null && allocList.size() > 0) {
+					for (DlArtifiPrintLottery entity : allocList) {
+						int lotteryClassifyId = entity.getLotteryClassifyId();
+						String orderSn = entity.getOrderSn();
+						DDyArtifiPrintEntity dEntity = new DDyArtifiPrintEntity();
+						dEntity.orderSn = orderSn;
+						dEntity.status = 0;
+						dEntity.setLotteryClassifyId(lotteryClassifyId);
+						int addRst = dyArtifiDao.addDyArtifiPrintInfo(mobile, dEntity);
+						if(addRst == 1){
+							preAddOrders.add(orderSn);
+						}
+					}
+				}
+
+				List<String> diff = preUpdateOrders.stream().filter(item -> !preAddOrders.contains(item)).collect(Collectors.toList());
+				if(diff.size() > 0){
+					logger.info("已经轮寻的订单号包括:"+preUpdateOrders.toString());
+					logger.info("已经分配的订单号包括:"+preAddOrders.toString());
+					logger.info("差异订单号包括:"+diff.toString());
+				}
+			}
+		}catch(Throwable throwable){
+			logger.error("---------------关键的分单的时候异常------------:"+throwable.getStackTrace());
+		}
+	}
 }

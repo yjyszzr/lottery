@@ -7,12 +7,22 @@ import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 public interface DlArtifiPrintLotteryMapper extends Mapper<DlArtifiPrintLottery> {
 	
 	/**
-	 * 获取今天未分配的票
+	 * 获取今天所有未分配的票
 	 * @return
 	 */
 	public List<DlArtifiPrintLottery> listLotteryTodayUnAlloc();
+	/**
+	 * 获取今天新用户未分配的票
+	 * @return
+	 */
+	public List<DlArtifiPrintLottery> listLotteryTodayUnAllocByNewUser();
 	
-
+	/**
+	 * 获取今天老用户未分配的票
+	 * @return
+	 */
+	public List<DlArtifiPrintLottery> listLotteryTodayUnAllocByOldUser();
+	
 	/**
 	 * 获取今天未分配的票
 	 * @return
