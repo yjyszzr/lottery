@@ -298,12 +298,12 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		int betEndTime = matchTime - betPreTime;
 		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(matchTime), ZoneId.systemDefault());
 		int betHour = betendDateTime.getHour();
-        if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 8 && matchHour >=0) {
+        if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 10 && matchHour >=0) {
             LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
             betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(21, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
         } else if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 24 && matchHour >=10 )  {
             betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(21, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-        } else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 8 && matchHour >=0){
+        } else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 10 && matchHour >=0){
             LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
             betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(22, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
         } else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 24 && matchHour >=10){
