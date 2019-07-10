@@ -507,9 +507,9 @@ public class LotteryMatchController {
                             isCheckedBetType = false;
                         }
                     }else if("6".equals(playType)) {
-                        if(num == 1) {
+/*                        if(num == 1) {
                             isCheckedBetType = false;
-                        }
+                        }*/
                     }
                     if(num < 1 || num > 8) {
                         isCheckedBetType = false;
