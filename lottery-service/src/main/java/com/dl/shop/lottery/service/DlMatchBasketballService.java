@@ -253,6 +253,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		return dlJcLqMatchListDTO;
 	}
 
+
 	//{'h': '1.69', 'l': '1.80', 'goalline': '', 'p_code': 'HILO', 'o_type': 'F', 'p_id': '490628', 
 	//'p_status': 'Selling', 'single': '0', 'allup': '0', 'fixedodds': '+164.5', 'cbt': '2', 
 	//'int': '2', 'vbt': '0', 'h_trend': '0', 'a_trend': '0', 'd_trend': '0', 'l_trend': '0'}
@@ -301,12 +302,17 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		//今天展示第二天比赛时间
 		//if(betendDateTime.toLocalDate().isAfter(LocalDate.now()) && LocalDate.now().isEqual(showDate.toLocalDate())) {
 		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
-			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+			if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 8 && matchHour >=0) {
 				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
-				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-			} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
-				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-			}
+				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(21, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+			} else if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 24 && matchHour >=10 )  {
+				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(21, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+			} else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 8 && matchHour >=0){
+                LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
+                betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(22, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            } else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 24 && matchHour >=10){
+                betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(22, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            }
 		} else {
 			if(betHour > 22) {
 				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
