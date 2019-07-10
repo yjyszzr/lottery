@@ -264,7 +264,7 @@ public class LotteryMatchController {
                     if(minBetNum > num) {
                         minBetNum = num;
                     }
-                    if("3".equals(playType)) {
+/*                    if("3".equals(playType)) {
                         if(num > 4) {
                             isCheckedBetType = false;
                         }
@@ -279,7 +279,7 @@ public class LotteryMatchController {
                     }
                     if(num < 1 || num > 8) {
                         isCheckedBetType = false;
-                    }
+                    }*/
                 }
             }
             if(maxBetNum > matchBetPlays.size()) {
