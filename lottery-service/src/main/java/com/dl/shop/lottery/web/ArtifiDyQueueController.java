@@ -35,6 +35,8 @@ import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 import com.dl.shop.lottery.service.DlXNWhiteListService;
 import io.swagger.annotations.ApiOperation;
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,8 +256,10 @@ public class ArtifiDyQueueController {
 			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
 			List<String> mobileList = getAllLoginInfo();
 			if(mobileList.contains("13722300001") && mobileList.contains("13722300002")) {//都包含说明两个出票用户同时在线
+				logger.info("queryV2_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
 				artifiDyQueueService.allocLotteryV2BySelect(mobile);//新分单逻辑
 			}else {
+				logger.info("queryV1_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
 				artifiDyQueueService.allocLotteryV2(mobile);//老分单逻辑
 			}
 		}

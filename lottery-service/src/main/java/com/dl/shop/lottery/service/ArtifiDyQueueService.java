@@ -19,6 +19,8 @@ import com.dl.shop.lottery.model.DlArtifiPrintLottery;
 import com.dl.shop.lottery.model.DlOpLog;
 import com.dl.store.api.IStoreUserMoneyService;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -438,15 +440,17 @@ public class ArtifiDyQueueService{
 	 */
 	public synchronized void allocLotteryV2BySelect(String mobile) {
 		try {
-			logger.info("[allocLotteryV2]");
+			logger.info("[allocLotteryV2BySelect]");
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile, 0);
-			logger.info("[allocLotteryV2]" + " rList.size:" + rList.size());
+			logger.info("[allocLotteryV2BySelect]" + " rList.size:" + rList.size());
 			if (rList.size() <= 0) {
 				List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
 				if("13722300001".equals(mobile)) {//圣和店 老用户
+					logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
 					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser();
 				}else if("13722300002".equals(mobile)) {//航天城店 新用户
+					logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
 					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser();
 				}
 				//141手机号规则
@@ -458,7 +462,7 @@ public class ArtifiDyQueueService{
 				//				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
 				//			}
 				List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao, mobile, rSumList, QUEUE_SIZE);
-				logger.info("[allocLotteryV2]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
+				logger.info("[allocLotteryV2BySelect]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
 				//先批量进行更改订单状态
 
 				List<String> preUpdateOrders = new ArrayList<>();
@@ -496,9 +500,9 @@ public class ArtifiDyQueueService{
 
 				List<String> diff = preUpdateOrders.stream().filter(item -> !preAddOrders.contains(item)).collect(Collectors.toList());
 				if(diff.size() > 0){
-					logger.info("已经轮寻的订单号包括:"+preUpdateOrders.toString());
-					logger.info("已经分配的订单号包括:"+preAddOrders.toString());
-					logger.info("差异订单号包括:"+diff.toString());
+					logger.info("allocLotteryV2BySelect已经轮寻的订单号包括:"+preUpdateOrders.toString());
+					logger.info("allocLotteryV2BySelect已经分配的订单号包括:"+preAddOrders.toString());
+					logger.info("allocLotteryV2BySelect差异订单号包括:"+diff.toString());
 				}
 			}
 		}catch(Throwable throwable){
