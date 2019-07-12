@@ -115,7 +115,6 @@ public class LotteryMatchController {
 //    @Resource
 //    private MerchantService merchantService;
 
-
     @ApiOperation(value = "获取筛选条件列表-足球", notes = "获取筛选条件列表-足球")
     @PostMapping("/filterConditions")
     public BaseResult<List<LeagueInfoDTO>> getFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
@@ -265,7 +264,7 @@ public class LotteryMatchController {
                     if(minBetNum > num) {
                         minBetNum = num;
                     }
-                    if("3".equals(playType)) {
+/*                    if("3".equals(playType)) {
                         if(num > 4) {
                             isCheckedBetType = false;
                         }
@@ -280,7 +279,7 @@ public class LotteryMatchController {
                     }
                     if(num < 1 || num > 8) {
                         isCheckedBetType = false;
-                    }
+                    }*/
                 }
             }
             if(maxBetNum > matchBetPlays.size()) {
@@ -420,7 +419,7 @@ public class LotteryMatchController {
             min = matchBetPlays.stream().min((cell1,cell2)->cell1.getMatchTime()-cell2.getMatchTime()).get();
         }
 
-        int betEndTime = dlMatchBasketballService.getBetEndTimeNew(min.getMatchTime());
+      int betEndTime = dlMatchBasketballService.getBetEndTimeNew(min.getMatchTime());
         Instant betEndInstant = Instant.ofEpochSecond(betEndTime);
         LocalDateTime betEndDateTime = LocalDateTime.ofInstant(betEndInstant, ZoneId.systemDefault());
         Boolean betEndTimeCanBz = lotteryMatchService.canBetByTime(betEndDateTime.getDayOfWeek().getValue(), betEndDateTime.getHour());
@@ -432,9 +431,10 @@ public class LotteryMatchController {
         if(curTime - betEndTime >= 0) {//投注截止时间不能大于当前时间
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
         }
-        if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
+
+        /*if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-        }
+        }*/
 
         //校验篮彩的串关
         String betTypeStr = param.getBetType();
@@ -507,9 +507,9 @@ public class LotteryMatchController {
                             isCheckedBetType = false;
                         }
                     }else if("6".equals(playType)) {
-                        if(num == 1) {
+/*                        if(num == 1) {
                             isCheckedBetType = false;
-                        }
+                        }*/
                     }
                     if(num < 1 || num > 8) {
                         isCheckedBetType = false;
