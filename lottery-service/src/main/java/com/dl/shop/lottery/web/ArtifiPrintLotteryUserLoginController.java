@@ -1,13 +1,14 @@
 package com.dl.shop.lottery.web;
 
-import io.swagger.annotations.ApiOperation;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tk.mybatis.mapper.entity.Condition;
+
+import com.alibaba.fastjson.JSON;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.JSONHelper;
@@ -31,10 +33,8 @@ import com.dl.member.dto.UserLoginDTO;
 import com.dl.member.param.LoginLogParam;
 import com.dl.member.param.MobileInfoParam;
 import com.dl.member.param.MobilePwdCreateParam;
-import com.dl.member.param.SmsParam;
 import com.dl.member.param.UserIdRealParam;
 import com.dl.member.param.UserLoginWithPassParam;
-import com.dl.member.param.UserLoginWithSmsParam;
 import com.dl.member.param.UserRePwdParam;
 import com.dl.shop.auth.api.IAuthService;
 import com.dl.shop.auth.dto.InvalidateTokenDTO;
@@ -43,6 +43,9 @@ import com.dl.shop.lottery.model.DlXNWhiteList;
 import com.dl.shop.lottery.service.ArtifiDyQueueService;
 import com.dl.shop.lottery.service.ArtifiPrintLotteryUserLoginService;
 import com.dl.shop.lottery.service.DlXNWhiteListService;
+
+import io.swagger.annotations.ApiOperation;
+import tk.mybatis.mapper.entity.Condition;
 
 @RestController
 @RequestMapping("/artifiPrintLotteryUserLogin")
@@ -287,6 +290,17 @@ public class ArtifiPrintLotteryUserLoginController {
 	@PostMapping("/logout")
 	public BaseResult logout(@RequestBody String mobile) {
 		Integer userId = SessionUtil.getUserId();
+		if(userId==null) {
+			Map maps = (Map)JSON.parse(mobile);  
+			com.dl.member.param.TokenParam tokenParam = new com.dl.member.param.TokenParam();
+	        tokenParam.setUserToken(maps.get("skr").toString());
+	        BaseResult<UserDTO> userDTOBaseResult = userService.queryUserInfoByToken(tokenParam);
+	        if(userDTOBaseResult!=null && userDTOBaseResult.getData()!=null) {
+	        	userId = userDTOBaseResult.getData().getUserId();
+	        }else {
+	        	userId = 0;
+	        }
+		}
 		logger.info("登录人UserId:======================" + userId);
 		logger.info("退出人入参的手机号:======================" + mobile);
 		UserIdRealParam params = new UserIdRealParam();
