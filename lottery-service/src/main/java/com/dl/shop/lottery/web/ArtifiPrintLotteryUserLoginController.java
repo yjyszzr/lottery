@@ -188,7 +188,7 @@ public class ArtifiPrintLotteryUserLoginController {
 			return ResultGenerator.genResult(userLoginDTO.getCode(),userLoginDTO.getMsg());
 		}
 		logger.info("登录信息为:======================" + userLoginDTO);
-		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME, TimeUnit.SECONDS);
+		stringRedisTemplate.opsForValue().set("XN_" + mobile, "1", ProjectConstant.EXPIRE_TIME*24, TimeUnit.SECONDS);
 		List<String> mobileList = getAllLoginInfo();
 		logger.info("登录人数为:======================" + mobileList.size());
 		logger.info("登录人list:======================" + mobileList);
