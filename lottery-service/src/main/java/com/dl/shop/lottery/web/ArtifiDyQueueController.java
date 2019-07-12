@@ -222,6 +222,7 @@ public class ArtifiDyQueueController {
 	public BaseResult<List<DDyArtifiPrintEntity>> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
         List<DDyArtifiPrintEntity> rList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
+		logger.info("[allocLotteryV2]" + " userId:" + userId);
 		if(userId == null) {
 			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg(),rList);
 		}
