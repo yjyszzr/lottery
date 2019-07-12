@@ -194,6 +194,7 @@ public class ArtifiPrintLotteryUserLoginController {
 		logger.info("登录人list:======================" + mobileList);
 		// 调用用户登录
 		artifiDyQueueService.userLogin(mobile, mobileList);
+		logger.info("登录人UserId:======================" + SessionUtil.getUserId());
 		return ResultGenerator.genSuccessResult("登录成功", userLoginDTO.getData());
 	}
 	
