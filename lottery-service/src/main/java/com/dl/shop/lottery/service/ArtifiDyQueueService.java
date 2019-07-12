@@ -445,7 +445,7 @@ public class ArtifiDyQueueService{
 			List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile, 0);
 			logger.info("[allocLotteryV2BySelect]" + " rList.size:" + rList.size());
 			if (rList.size() <= 0) {
-				List<DlArtifiPrintLottery> rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
+				List<DlArtifiPrintLottery> rSumList = new ArrayList<DlArtifiPrintLottery>();
 				if("13722300001".equals(mobile)) {//圣和店 老用户
 					logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
 					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser();
