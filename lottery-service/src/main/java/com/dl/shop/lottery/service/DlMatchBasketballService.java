@@ -457,7 +457,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		Integer single = jsonObj.getInteger("single");
-		dto.setSingle(single);
+		dto.setSingle(1);//竞彩篮球的胜分差可以选择单关
 		Set<String> keySet = jsonObj.keySet();
 		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_H.getMsg(), null);
 		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
