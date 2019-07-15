@@ -477,9 +477,12 @@ public class LotteryMatchController {
         if(isCellError) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_HAS_NULL.getCode(), LotteryResultEnum.BET_CELL_HAS_NULL.getMsg());
         }
-        if(betTypeStr.contains("11")) {
-            if(!isAllSingle) {
-                return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
+
+        if (!param.getPlayType().equals("3")){//胜分差
+            if(betTypeStr.contains("11")) {
+                if(!isAllSingle) {
+                    return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_NO_SINGLE.getCode(), LotteryResultEnum.BET_CELL_NO_SINGLE.getMsg());
+                }
             }
         }
 
