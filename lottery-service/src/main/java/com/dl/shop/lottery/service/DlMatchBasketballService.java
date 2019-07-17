@@ -669,10 +669,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 //		PLAY_TYPE_MIX(6,"mix"), //混合过关
 //		PLAY_TYPE_TSO(7,"tso"); //2选1
 		
-		//比分
+		//比分 胜分差
 		Optional<MatchBasketBallBetPlayCellDTO> optionalcrs = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_CRS.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO crsBetPlay = optionalcrs.isPresent()?optionalcrs.get():null;
-		//总进球
+		// 大小分
 		Optional<MatchBasketBallBetPlayCellDTO> optionalttg = list.stream().filter(dto->Integer.parseInt(dto.getPlayType()) == (MatchPlayTypeEnum.PLAY_TYPE_TTG.getcode())).findFirst();
 		MatchBasketBallBetPlayCellDTO ttgBetPlay = optionalttg.isPresent()?optionalttg.get():null;
 		//让球胜平负
@@ -711,9 +711,38 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		
 	}
 
+	private List<Double> cc(
+			MatchBasketBallBetPlayCellDTO crsBetPlay,
+			MatchBasketBallBetPlayCellDTO ttgBetPlay,
+			MatchBasketBallBetPlayCellDTO hhadBetPlay,
+			MatchBasketBallBetPlayCellDTO hadBetPlay,
+			MatchBasketBallBetPlayCellDTO hafuBetPlay) {
+		//比分的所有项
+		List<DlJcLqMatchCellDTO> betCells = crsBetPlay.getBetCells(); 
+		List<Double> allBetSumOdds = new ArrayList<Double>();
+		for(DlJcLqMatchCellDTO dto: betCells) {
+			List<Double> allOdds = new ArrayList<Double>();
+			String cellOdds = dto.getCellOdds();
+			if(StringUtils.isNotBlank(cellOdds)) {
+				allOdds.add(Double.valueOf(cellOdds));
+			}
+			allBetSumOdds.addAll(allOdds);
+		}
+		List<DlJcLqMatchCellDTO> ttbetCells = ttgBetPlay.getBetCells();//大小分
+		for(DlJcLqMatchCellDTO dto1: ttbetCells) {
+			List<Double> ttAllOdds = new ArrayList<Double>();
+			String cellOdds = dto1.getCellOdds();
+			if(StringUtils.isNotBlank(cellOdds)) {
+				ttAllOdds.add(Double.valueOf(cellOdds));
+			}
+			allBetSumOdds.addAll(ttAllOdds);
+		}
+		List<Double> c = this.cc2(hhadBetPlay, hadBetPlay, hafuBetPlay);
+		allBetSumOdds.addAll(c);
+		return allBetSumOdds;
+	}
 
-	
-	private List<Double> cc(MatchBasketBallBetPlayCellDTO crsBetPlay, MatchBasketBallBetPlayCellDTO ttgBetPlay,
+	private List<Double> ccBak(MatchBasketBallBetPlayCellDTO crsBetPlay, MatchBasketBallBetPlayCellDTO ttgBetPlay,
 			MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay, MatchBasketBallBetPlayCellDTO hafuBetPlay) {
 		//比分的所有项
 		List<DlJcLqMatchCellDTO> betCells = crsBetPlay.getBetCells();//比分的所有选项
@@ -736,7 +765,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			if(StringUtils.isNotBlank(cellOdds)) {
 				allOdds.add(Double.valueOf(cellOdds));
 			}
-			//1.总进球
+			//1.大小分
 			if(ttgBetPlay != null) {
 				List<DlJcLqMatchCellDTO> betCells2 = ttgBetPlay.getBetCells();
 				int sucCode = sum > 7?7:sum;
@@ -751,7 +780,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 					}
 				}
 			}
-			//2。让球胜平负
+			//2.让分胜平负
 			if(hhadBetPlay != null) {
 				List<DlJcLqMatchCellDTO> betCells2 = hhadBetPlay.getBetCells();
 				double sucCode = sub + Double.valueOf(hhadBetPlay.getFixedodds());
@@ -901,8 +930,6 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		}
 		return allBetSumOdds;
 	}
-	
-	
 	
 	private List<Double> cc2(MatchBasketBallBetPlayCellDTO hhadBetPlay, MatchBasketBallBetPlayCellDTO hadBetPlay,
 			MatchBasketBallBetPlayCellDTO hafuBetPlay) {
