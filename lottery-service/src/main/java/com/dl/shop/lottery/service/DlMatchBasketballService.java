@@ -457,7 +457,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		String playContent = dto.getPlayContent();
 		JSONObject jsonObj = JSON.parseObject(playContent);
 		Integer single = jsonObj.getInteger("single");
-		dto.setSingle(single);
+		dto.setSingle(1);//竞彩篮球的胜分差可以选择单关
 		Set<String> keySet = jsonObj.keySet();
 		DlJcZqMatchCellDTO homeCell = new DlJcZqMatchCellDTO(MatchBasketBallResultHDCEnum.HHD_H.getCode().toString(), MatchBasketBallResultHDCEnum.HHD_H.getMsg(), null);
 		homeCell.setCellSons(new ArrayList<DlJcZqMatchCellDTO>(6));
@@ -986,14 +986,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 					allOdds.add(odds);
 				} else {
 					if(fixNum > 0) {
-						if(ish && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+						if(ish && MatchBasketBallResultHDCEnum.HHD_H.getCode().equals(cellCode)) {
 						/*	hList.forEach(item->Double.sum(item, odds));
 							nhList.addAll(hList);*/
 							for(Double item: hList) {
 								nhList.add(Double.sum(item, odds));
 							}
 						}
-						if(isd && MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+						if(isd && MatchBasketBallResultHDCEnum.HHD_H.getCode().equals(cellCode)) {
 							/*dList.forEach(item->Double.sum(item, odds));
 							ndList.addAll(dList);*/
 							for(Double item: dList) {
@@ -1001,7 +1001,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 							}
 						}
 						if(isa) {
-							if(!MatchResultHadEnum.HAD_H.getCode().equals(cellCode)) {
+							if(!MatchBasketBallResultHDCEnum.HHD_H.getCode().equals(cellCode)) {
 								List<Double> tnaList = new ArrayList<Double>(aList);
 								for(Double item: tnaList) {
 									naList.add(Double.sum(item, odds));
@@ -1012,7 +1012,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 						}
 					}else {
 						if(ish) {
-							if(!MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+							if(!MatchBasketBallResultHDCEnum.HHD_A.getCode().equals(cellCode)) {
 								List<Double> tnhList = new ArrayList<Double>(hList);
 								/*tnhList.forEach(item->Double.sum(item, odds));
 								nhList.addAll(tnhList);*/
@@ -1021,14 +1021,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 								}
 							}
 						}
-						if(isd && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+						if(isd && MatchBasketBallResultHDCEnum.HHD_A.getCode().equals(cellCode)) {
 							/*dList.forEach(item->Double.sum(item, odds));
 							ndList.addAll(dList);*/
 							for(Double item: dList) {
 								ndList.add(Double.sum(item, odds));
 							}
 						}
-						if(isa && MatchResultHadEnum.HAD_A.getCode().equals(cellCode)) {
+						if(isa && MatchBasketBallResultHDCEnum.HHD_A.getCode().equals(cellCode)) {
 							/*aList.forEach(item->Double.sum(item, odds));
 							naList.addAll(aList);*/
 							for(Double item: aList) {
