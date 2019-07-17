@@ -363,5 +363,103 @@ public class LotteryNavBannerController {
         }
         return ResultGenerator.genSuccessResult("success",list);
     }
+    @ApiOperation(value = "首页悬浮图", notes = "首页悬浮图")
+    @PostMapping("/openNavsSusp")
+    public BaseResult<DlBannerPicDTO> openNavsSusp(@RequestBody EmptyParam param){
+        Integer dealSwitch = 2;//默认交易版
+        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
+        if(switchRst.getCode() != 0){
+            dealSwitch = 2;
+        }else{
+            SwitchConfigDTO switchConfigDTO = switchRst.getData();
+            Integer dealTurnOn = switchConfigDTO.getTurnOn();
+            dealSwitch = dealTurnOn == 1?2:1;
+        }
 
+        UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo.getAppCodeName();
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
+        List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(4,appCodeName);
+        List<LotteryNavBanner> navFilterList = new ArrayList<>();
+        if(dealSwitch == 2){
+            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
+        }
+
+        DlBannerPicDTO dto = new DlBannerPicDTO();
+        List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
+        if(navFilterList.size() > 0){
+            LotteryNavBanner navBanner = navList.get(0);
+            UserDeviceInfo userDevice = SessionUtil.getUserDevice();
+            String plat = userDevice.getPlat(); //1-android,2-iphone
+            String deviceUnique = "";
+            boolean isflag = false;
+            if ("android".equals(userDevice.getPlat())){
+                log.info(JSON.toJSONString(userDevice));
+                deviceUnique = userDevice.getAndroidid();
+                isflag = true;
+                log.info("android,"+deviceUnique);
+            }else if("iphone".equals(userDevice.getPlat())){
+                deviceUnique = userDevice.getIDFA();
+                log.info("iphone,"+deviceUnique);
+            }else if("h5".equals(userDevice.getPlat())){
+                deviceUnique = "h5";
+                log.info("h5,"+deviceUnique);
+            }
+
+            log.info("deviceUnique:"+deviceUnique);
+            if(!StringUtils.isEmpty(deviceUnique)){
+                if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
+                    dto.setBannerName(navBanner.getBannerName());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerLink(navBanner.getBannerLink());
+                    dto.setStartTime(navBanner.getStartTime());
+                    dto.setEndTime(navBanner.getEndTime());
+                }
+                log.info("isflag："+isflag);
+                if(isflag) {
+                	log.info("isflag："+isflag);
+                	dto.setBannerName(navBanner.getBannerName());
+                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                    dto.setBannerLink(navBanner.getBannerLink());
+                    dto.setStartTime(navBanner.getStartTime());
+                    dto.setEndTime(navBanner.getEndTime());
+                }else {
+                	MacParam macParam = new MacParam();
+                    macParam.setMac(deviceUnique);
+                    BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+                    if(deviceActionControlDTOBaseResult.getCode() == 0){
+                        DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+                        Integer alertTime = deviceActionControlDTO.getUpdateTime();
+                        Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+                        if(endTodayTime - alertTime > 0){
+                            dto.setBannerName(navBanner.getBannerName());
+                            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                            dto.setBannerLink(navBanner.getBannerLink());
+                            dto.setStartTime(navBanner.getStartTime());
+                            dto.setEndTime(navBanner.getEndTime());
+                            MacParam updateMac = new MacParam();
+                            updateMac.setMac(deviceUnique);
+                            iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+                        }
+                    }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
+                        DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+                        deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+                        deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
+                        deviceParam.setAlertTimes(1);
+                        deviceParam.setBusiType(1);
+                        deviceParam.setMac(deviceUnique);
+                        iDeviceControlService.add(deviceParam);
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+                    }
+                }
+            }
+
+        }
+
+        return ResultGenerator.genSuccessResult("success",dto);
+    }
 }

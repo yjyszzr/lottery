@@ -257,6 +257,11 @@ public class ArtifiDyQueueController {
 			logger.info("[queryOrderListV2]" + " getType -> " + param.getType());
 			//获取在线人数据
 			List<String> mobileList = ArtifiLoginManager.getInstance().getCopyList();
+			if(mobileList.contains(mobile)) {
+			}else {//如果当前登录队列中不包含当前用户则手动添加
+				mobileList.add(mobile);
+				ArtifiLoginManager.getInstance().setList(mobileList);
+			}
 			if(mobileList.contains("13722300001") && mobileList.contains("13722300002")) {//都包含说明两个出票用户同时在线
 				logger.info("queryV2_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
 				artifiDyQueueService.allocLotteryV2BySelect(mobile);//新分单逻辑
