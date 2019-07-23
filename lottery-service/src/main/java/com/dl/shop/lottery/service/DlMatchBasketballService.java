@@ -778,7 +778,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		
 		Optional<Double> odds = c.stream().max((a1,a2) -> Double.valueOf(a1).compareTo(Double.valueOf(a2)));
 		if (odds.isPresent()) {
-			DlJcLqMatchCellDTO dxfMaxCellOdds = dxfBetPlay.getBetCells().stream().max((cellOdds1, cellOdds2) -> Double.valueOf(cellOdds1.getCellCode()).compareTo(Double.valueOf(cellOdds2.getCellCode()))).get();
+			DlJcLqMatchCellDTO dxfMaxCellOdds = dxfBetPlay.getBetCells().stream().max(Comparator.comparingDouble( DlJcLqMatchCellDTO ::getCellOddsD)).get();
 			double sum = odds.get();
 			sum+= Double.valueOf(dxfMaxCellOdds.getCellOdds()) ;
 			allBetSumOdds.add(sum);
