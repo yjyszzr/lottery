@@ -717,13 +717,14 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		//胜分差
 		Double sum = 0.0;
 		List<DlJcLqMatchCellDTO> sfcBetCells = sfcBetPlay.getBetCells(); 
-		DlJcLqMatchCellDTO sfcMaxCellOdds = sfcBetCells.stream().max((cellOdds1, cellOdds2) -> Double.valueOf(cellOdds1.getCellCode()).compareTo(Double.valueOf(cellOdds2.getCellCode()))).get();
+//		DlJcLqMatchCellDTO sfcMaxCellOdds = sfcBetCells.stream().max((cellOdds1, cellOdds2) -> Double.valueOf(cellOdds1.getCellCode()).compareTo(Double.valueOf(cellOdds2.getCellCode()))).get();
+		DlJcLqMatchCellDTO sfcMaxCellOdds = sfcBetCells.stream().max(Comparator.comparingDouble( DlJcLqMatchCellDTO ::getCellOddsD) ).get();
 		allOdds.add(Double.valueOf(sfcMaxCellOdds.getCellOdds()));
 		sum += Double.valueOf(sfcMaxCellOdds.getCellOdds());
 		//大小分
 		if ( dxfBetPlay != null) {
 			List<DlJcLqMatchCellDTO> dxfBetCells = dxfBetPlay.getBetCells(); 
-			Optional<DlJcLqMatchCellDTO> dxfMaxCellOdds = dxfBetCells.stream().max((cellOdds1, cellOdds2) -> Double.valueOf(cellOdds1.getCellCode()).compareTo(Double.valueOf(cellOdds2.getCellCode())));
+			Optional<DlJcLqMatchCellDTO> dxfMaxCellOdds = dxfBetCells.stream().max(Comparator.comparingDouble( DlJcLqMatchCellDTO ::getCellOddsD));
 			allOdds.add(Double.valueOf(dxfMaxCellOdds.get().getCellOdds()));
 			sum += Double.valueOf(dxfMaxCellOdds.get().getCellOdds());
 		}
