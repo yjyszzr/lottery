@@ -733,7 +733,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		//让球胜负
 		if (rqsfBetPlay != null) {
 			List<DlJcLqMatchCellDTO> rqsfBetCells = rqsfBetPlay.getBetCells(); 
-			if (sfcMaxCellOdds.getCellCode().compareTo("6")>0) {//code > 6 是客胜 1-6是主胜
+			if (Integer.parseInt(sfcMaxCellOdds.getCellCode())>6) {//code > 6 是客胜 1-6是主胜
 				Optional<DlJcLqMatchCellDTO> rqsfMaxCellOdds = rqsfBetCells.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == 2 ).findFirst();
 				if (rqsfMaxCellOdds.isPresent()) {
 					Double odds = Double.valueOf(rqsfMaxCellOdds.get().getCellOdds());//选中的总进球玩法的可用赔率
@@ -752,7 +752,7 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		//胜负
 		if (sfBetPlay != null) {
 			List<DlJcLqMatchCellDTO> sfBetCells = sfBetPlay.getBetCells(); 
-			if (sfcMaxCellOdds.getCellCode().compareTo("6")>0) {//code > 6 是客胜 1-6是主胜
+			if (Integer.parseInt(sfcMaxCellOdds.getCellCode())>6) {//code > 6 是客胜 1-6是主胜
 				Optional<DlJcLqMatchCellDTO> sfMaxCellOdds = sfBetCells.stream().filter(betCell->Integer.parseInt(betCell.getCellCode()) == 2 ).findFirst();
 				if (sfMaxCellOdds.isPresent()) {
 					Double odds = Double.valueOf(sfMaxCellOdds.get().getCellOdds());//选中的总进球玩法的可用赔率
