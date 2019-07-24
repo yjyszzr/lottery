@@ -767,8 +767,8 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 					allOdds.add(odds);
 				}
 			}
-			allOdds.add(sum);
 		}
+		allOdds.add(sum);
 		allBetSumOdds.addAll(allOdds);
 		return allBetSumOdds;
 	}
