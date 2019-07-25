@@ -385,12 +385,11 @@ public class LotteryNavBannerController {
             navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
 
-        DlBannerPicDTO dto = new DlBannerPicDTO();
-        List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
+        DlBannerPicDTO dto = null;
         if(navFilterList.size() > 0){
+        	dto=new DlBannerPicDTO();
             LotteryNavBanner navBanner = navList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
-            String plat = userDevice.getPlat(); //1-android,2-iphone
             String deviceUnique = "";
             boolean isflag = true;
             if ("android".equals(userDevice.getPlat())){
