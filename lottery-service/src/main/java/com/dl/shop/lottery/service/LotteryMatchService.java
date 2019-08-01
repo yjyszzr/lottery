@@ -3463,11 +3463,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			dto.setCellCode(cellName);
 			if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_HDC.getcode()) {
-				String name = MatchBasketBallResultHDCEnum.getName(Integer.parseInt(cellName));
+				String name = MatchBasketResultHdEnum.getName(Integer.parseInt(cellName));
 				dto.setCellName(name);
 				dtos.add(dto);
 			}else if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_MNL.getcode()) {
-				String name = MatchBasketResultHdEnum.getName(Integer.parseInt(cellName));
+				String name = MatchBasketBallResultHDCEnum.getName(Integer.parseInt(cellName));
 				dto.setCellName(name);
 				dtos.add(dto);
 			}else if(playType == MatchBasketPlayTypeEnum.PLAY_TYPE_WNM.getcode()) {

@@ -129,6 +129,13 @@ public class LotteryMatchController {
         return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
     }
 
+    @ApiOperation(value = "compare", notes = "compare")
+    @PostMapping("/conpare")
+    public BaseResult<List<BasketBallLeagueInfoDTO>> getBasketBallFilterConditions(@Valid @RequestBody GetFilterConditionsParam param) {
+        List<BasketBallLeagueInfoDTO> leagueInfos = dlMatchBasketballService.getBasketBallFilterConditions();
+        return ResultGenerator.genSuccessResult("获取筛选条件列表成功", leagueInfos);
+    }
+
     @ApiOperation(value = "获取赛事列表-足球", notes = "获取赛事列表-足球")
     @PostMapping("/getMatchList")
     public BaseResult<DlJcZqMatchListDTO> getMatchList(@Valid @RequestBody DlJcZqMatchListParam param) {
