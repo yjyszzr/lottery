@@ -155,11 +155,12 @@ public class LotteryHallService {
 				dto.setSubTitle(s.getSubTitle());
 			}
 
+
+			dto.setStatus(s.getStatus()+"");
             String appVersion = userDeviceInfo.getAppv();
             if(appVersion.equals("5.0.0")){//用于线上测试
                 dto.setStatus("0");
             }
-			dto.setStatus(s.getStatus()+"");
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
