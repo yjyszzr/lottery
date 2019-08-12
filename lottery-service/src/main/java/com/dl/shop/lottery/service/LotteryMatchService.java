@@ -312,14 +312,6 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 		}
 
     /**
-     *
-     * @return
-     */
-		public Boolean isStopEveDay(){
-
-        }
-
-    /**
      * 获取赛事列表
      * @param param
      * @return
