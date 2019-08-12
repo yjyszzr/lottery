@@ -433,9 +433,9 @@ public class LotteryMatchController {
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
         }
 
-        if(curTimeCanBz && curDateTime > 5) {//投注截止时间或当前时间都不在足彩的售卖时间内
+        if(curTimeCanBz && curDateTime.getDayOfWeek().getValue() > 5) {//投注截止时间或当前时间都不在足彩的售卖时间内
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为23:00");
-        }else if(curTimeCanBz && curDateTime <= 5){
+        }else if(curTimeCanBz && curDateTime.getDayOfWeek().getValue() <= 5){
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为22:00");
         }
 
