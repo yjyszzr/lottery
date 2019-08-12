@@ -310,6 +310,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 			}
 			return false;
 		}
+
+    /**
+     *
+     * @return
+     */
+		public Boolean isStopEveDay(){
+
+        }
+
     /**
      * 获取赛事列表
      * @param param
@@ -331,7 +340,11 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         }
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
+		List<LotteryMatch> matchListV = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
+        List<LotteryMatch> matchList = new ArrayList<LotteryMatch>();
+		for(LotteryMatch lotteryMatch:matchListV){
+
+        }
 		logger.info("获取matchList的大小="+matchList.size());
 		if(matchList == null || matchList.size() == 0) {
 			return dlJcZqMatchListDTO;
@@ -4278,15 +4291,15 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 	
 	/**
 	 * 根据当前时间和最小比赛时间是否在这个范围判断是否可以投注：
-	 * 1-5:9-24 点可投注,其他时间不可投
-	 * 6-7:9-24 点可投注，其他时间不可投
+	 * 1-5:9-22 点可投注,其他时间不可投
+	 * 6-7:9-23 点可投注，其他时间不可投
 	 * @return
 	 */
 	public Boolean canBetByTime(Integer weekday,Integer hour) {
-        if(weekday >= 1 && weekday <= 5 && hour >= 9 && hour <= 24) {
+        if(weekday >= 1 && weekday <= 5 && hour >= 9 && hour <= 22) {
         	return true;
         }
-        if(weekday >= 6 && weekday <= 7 && hour >= 9 && hour <= 24){
+        if(weekday >= 6 && weekday <= 7 && hour >= 9 && hour <= 23){
         	return true;
         }
 		return false;

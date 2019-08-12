@@ -268,6 +268,22 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		}
 		return false;
 	}
+
+    /**
+     * 1-5:截止到22：00 6-7：截止到23：00
+     * @param matchPlay
+     * @return
+     */
+    private boolean isStopEveDay(DlMatchPlayBasketball matchPlay) {
+        String playContent = matchPlay.getPlayContent();
+        JSONObject jsonObj = JSON.parseObject(playContent);
+        String cbtValue = jsonObj.getString("cbt");
+        if("2".equals(cbtValue)) {
+            Boolean isStop = Boolean.TRUE;
+            return isStop;
+        }
+        return false;
+    }
 	
 	
 	public Integer getBetPreTime() {

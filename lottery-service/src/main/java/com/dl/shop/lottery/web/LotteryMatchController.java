@@ -433,9 +433,11 @@ public class LotteryMatchController {
             return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
         }
 
-        /*if(curTimeCanBz && betEndTimeCanBz) {//投注截止时间或当前时间都不在足彩的售卖时间内
-            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), LotteryResultEnum.BET_TIME_LIMIT.getMsg());
-        }*/
+        if(curTimeCanBz && curDateTime > 5) {//投注截止时间或当前时间都不在足彩的售卖时间内
+            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为23:00");
+        }else if(curTimeCanBz && curDateTime <= 5){
+            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为22:00");
+        }
 
         //校验篮彩的串关
         String betTypeStr = param.getBetType();
@@ -579,6 +581,16 @@ public class LotteryMatchController {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
         }else if(matchBetPlays.size() > 8){
             return ResultGenerator.genResult(LotteryResultEnum.MATCH_BEYOND_EIGHT.getCode(), LotteryResultEnum.MATCH_BEYOND_EIGHT.getMsg());
+        }
+
+        Integer curTime = DateUtil.getCurrentTimeLong();
+        Instant instant = Instant.ofEpochSecond(curTime);
+        LocalDateTime curDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        Boolean curTimeCanBz = lotteryMatchService.canBetByTime(curDateTime.getDayOfWeek().getValue(), curDateTime.getHour());
+        if(curTimeCanBz && curDateTime > 5) {//投注截止时间或当前时间都不在足彩的售卖时间内
+            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为23:00");
+        }else if(curTimeCanBz && curDateTime <= 5){
+            return ResultGenerator.genResult(LotteryResultEnum.BET_TIME_LIMIT.getCode(), "竞彩游戏开售时间为10:00，停售时间为22:00");
         }
 
         //设置投注倍数
@@ -1011,14 +1023,16 @@ public class LotteryMatchController {
     	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
         }else if(val==2 && "11".equals(appCodeName)) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为21:50");
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为10:00，停售时间为22:00");
         }else if(val==3 && "11".equals(appCodeName)) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为09:00，停售时间为22:50");
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为10:00，停售时间为22:00");
         }
+
+
     	
-//        if(lotteryMatchService.isShutDownBet()) {
+//      if(lotteryMatchService.isShutDownBet()) {
 //            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-//        }
+//      }
         List<MatchBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
