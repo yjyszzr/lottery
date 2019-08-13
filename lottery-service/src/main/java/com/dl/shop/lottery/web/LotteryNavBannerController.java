@@ -382,11 +382,11 @@ public class LotteryNavBannerController {
         List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(4,appCodeName);
         List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
-//            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
+            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
-
+        log.info("susp():dealSwitch="+dealSwitch+";navFilterList="+navFilterList.size());
         DlBannerPicDTO dto = null;
-        if(navFilterList.size() > 0){
+        if(navList.size() > 0){
         	dto=new DlBannerPicDTO();
             LotteryNavBanner navBanner = navList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
