@@ -377,12 +377,12 @@ public class LotteryNavBannerController {
         }
 
         UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
-        String appCodeNameStr = userDeviceInfo.getAppCodeName();
+        String appCodeNameStr = userDeviceInfo==null?"11":userDeviceInfo.getAppCodeName();
         String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr;
         List<LotteryNavBanner> navList = lotteryNavBannerService.queryNavBannerByType(4,appCodeName);
         List<LotteryNavBanner> navFilterList = new ArrayList<>();
         if(dealSwitch == 2){
-            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
+//            navFilterList = navList.stream().filter(s->"2".equals(s.getIsTransaction())).collect(Collectors.toList());
         }
 
         DlBannerPicDTO dto = null;
