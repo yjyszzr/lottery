@@ -454,7 +454,7 @@ public class ArtifiDyQueueService{
 					logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
 //					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser(); //新用户分配给02店铺
 				}
-				//141手机号规则
+				//141手机号规则 
 				//			if("18182506141".equals(mobile)) {
 				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
 				//				logger.info("[allocLotteryV2]" + " 18182506141分配" + rSumList.size() + "个订单");
