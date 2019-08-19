@@ -1025,7 +1025,7 @@ public class LotteryMatchController {
         }else if(val==2 && "11".equals(appCodeName)) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为22:00");
         }else if(val==3 && "11".equals(appCodeName)) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为22:00");
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为23:00");
         }
 
 
