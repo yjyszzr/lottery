@@ -70,7 +70,7 @@
 		is_show,is_del,match_sn,is_hot
 	from
 	dl_match 
-	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt; 10 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= date(match_time)
+	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &gt; 10 and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt; date(match_time)
   	 <if test="leagueIds!=null and leagueIds != ''">
   	 	and league_id in
   	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
