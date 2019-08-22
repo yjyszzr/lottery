@@ -330,6 +330,8 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
             deviceUnique = "h5";
             log.info("h5,"+deviceUnique);
         }
+
+        deviceUnique = "h5";
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
 		List<LotteryMatch> matchListV = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
@@ -474,10 +476,10 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}*/
 			//0-9点的赛事在当天不能投注
-			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
-			if(hideMatch) {
-				continue;
-			}
+//			boolean hideMatch = this.isHideMatch(betEndTime, matchTime);
+//			if(hideMatch) {
+//				continue;
+//			}
 			/*LocalTime localTime = LocalTime.now(ZoneId.systemDefault());
 	        int nowHour = localTime.getHour();
 	        int betHour = betendDateTime.getHour();
@@ -493,9 +495,9 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
 				}
 			}*/
 			//投注结束（23点之前）
-			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
-				continue;
-			}
+//			if(Long.valueOf(betEndTime) < Instant.now().getEpochSecond()) {
+//				continue;
+//			}
 			
 			DlJcZqMatchDTO matchDto = new DlJcZqMatchDTO();
 			matchDto.setIsShutDown(shutDownBetValue);
