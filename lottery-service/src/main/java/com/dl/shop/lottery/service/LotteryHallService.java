@@ -156,10 +156,10 @@ public class LotteryHallService {
                 String appVersion = userDeviceInfo.getAppv();
                 int diff = CompareUtil.compareVersion(appVersion,"1.3.0");//蓝彩 高于等于1.3.0 显示蓝彩
                 if(diff >= 0){
-                    dto.setStatus("1");
+                    dto.setStatus("0");
                 }
                 if(appVersion.equals("5.0.0")){//用于线上测试
-                    dto.setStatus("1");
+                    dto.setStatus("0");
                 }
             }else {
 				dto.setSubTitle(s.getSubTitle());
