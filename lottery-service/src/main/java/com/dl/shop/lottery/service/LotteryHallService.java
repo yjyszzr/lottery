@@ -4,6 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
+import com.dl.base.util.CompareUtil;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
@@ -151,16 +152,21 @@ public class LotteryHallService {
 			if(2 == s.getLotteryClassifyId()) {
 				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version + " classifyId:" + s.getLotteryClassifyId());
 				dto.setSubTitle(this.queryLatestLottoPrizes());
-			}else {
+			}else if(3 == s.getLotteryClassifyId()){
+                String appVersion = userDeviceInfo.getAppv();
+                int diff = CompareUtil.compareVersion(appVersion,"1.3.0");//蓝彩 高于等于1.3.0 显示蓝彩
+                if(diff >= 0){
+                    dto.setStatus("1");
+                }
+                if(appVersion.equals("5.0.0")){//用于线上测试
+                    dto.setStatus("1");
+                }
+            }else {
 				dto.setSubTitle(s.getSubTitle());
 			}
 
-
 			dto.setStatus(s.getStatus()+"");
-            String appVersion = userDeviceInfo.getAppv();
-            if(appVersion.equals("5.0.0")){//用于线上测试
-                dto.setStatus("0");
-            }
+
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
