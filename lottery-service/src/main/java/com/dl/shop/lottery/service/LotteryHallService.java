@@ -152,7 +152,7 @@ public class LotteryHallService {
 			if(2 == s.getLotteryClassifyId()) {
 				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version + " classifyId:" + s.getLotteryClassifyId());
 				dto.setSubTitle(this.queryLatestLottoPrizes());
-			}else if(3 == s.getLotteryClassifyId()){
+			}else if(3000 == s.getLotteryClassifyId()){
                 String appVersion = userDeviceInfo.getAppv();
                 int diff = CompareUtil.compareVersion(appVersion,"1.3.0");//蓝彩 高于等于1.3.0 显示蓝彩
                 if(diff >= 0){
