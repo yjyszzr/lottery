@@ -149,6 +149,7 @@ public class LotteryHallService {
 			dto.setLotteryId(s.getLotteryClassifyId().toString());
 			dto.setLotteryImg(lotteryConfig.getBannerShowUrl()+s.getLotteryImg());
 			dto.setLotteryName(s.getLotteryName());
+            dto.setStatus(s.getStatus()+"");
 			if(2 == s.getLotteryClassifyId()) {
 				log.info("[getHallDataAllLottery1]" + " channel:" + channel + " ver:" + version + " classifyId:" + s.getLotteryClassifyId());
 				dto.setSubTitle(this.queryLatestLottoPrizes());
@@ -164,9 +165,6 @@ public class LotteryHallService {
             }else {
 				dto.setSubTitle(s.getSubTitle());
 			}
-
-			dto.setStatus(s.getStatus()+"");
-
 			dto.setStatusReason(s.getStatusReason());
 			dto.setRedirectUrl(s.getRedirectUrl());
 			lotteryClassifys.add(dto);
@@ -174,6 +172,11 @@ public class LotteryHallService {
 		dlHallDTO.setLotteryClassifys(lotteryClassifys);
 		return dlHallDTO;
 	}
+
+    public static void main(String[] args) {
+        int diff = CompareUtil.compareVersion("1.3.0","1.3.0");
+        System.out.print(diff);
+    }
 	
 	public String  queryLatestLottoPrizes() {
 		String prizes = "";
