@@ -162,6 +162,7 @@ public class LotteryHallService {
                 if(appVersion.equals("5.0.0")){//用于线上测试
                     dto.setStatus("0");
                 }
+                dto.setSubTitle(s.getSubTitle());
             }else {
 				dto.setSubTitle(s.getSubTitle());
 			}
