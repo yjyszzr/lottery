@@ -33,6 +33,7 @@ import com.dl.member.enums.MemberEnums;
 import com.dl.member.param.DlDeviceActionControlParam;
 import com.dl.member.param.MacParam;
 import com.dl.member.param.StrParam;
+import com.dl.member.param.UpdateAppParam;
 import com.dl.member.param.UserBonusIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
@@ -251,22 +252,18 @@ public class LotteryNavBannerController {
             if(!StringUtils.isEmpty(deviceUnique)){
             	if(navBanner.getId()==316) {//版本升级bannner
             		log.info("版本升级bannner");
-//            		DLAppUpdateLog dLAppUpdateLog = dLAppUpdateLogService.queryUpdateAppLog(userDevice.getChannel(), userDevice.getAppv());
-//                	if(null == dLAppUpdateLog) {
-//                		log.info("android版本升级接口返回数据判断接口没有最新版本");
-//                	}else {
-                		int diff = CompareUtil.compareVersion(userDevice.getAppv(), "1.3.0");
-                    	if(diff >= 0) {
-                    		log.info("android版本升级接口返回数据判断接口没有最新版本");
-                    	}else {
-                    		dto = new DlBannerPicDTO();
-                            dto.setBannerName(navBanner.getBannerName());
-                            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-                            dto.setBannerLink(navBanner.getBannerLink());
-                            dto.setStartTime(navBanner.getStartTime());
-                            dto.setEndTime(navBanner.getEndTime());
-                    	}
-//                	}
+            		UpdateAppParam updateAppParam = new UpdateAppParam();
+            		updateAppParam.setChannel(userDevice.getChannel());
+            		updateAppParam.setVersion(userDevice.getAppv());
+            		BaseResult<Integer> dLAppUpdateLog = iDeviceControlService.queryUpdateAppI(updateAppParam);
+            		if(dLAppUpdateLog!=null && dLAppUpdateLog.getData()==0) {//有新版本升级
+            			dto = new DlBannerPicDTO();
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+            		}
             	}else {
             		if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
                     	dto = new DlBannerPicDTO();
