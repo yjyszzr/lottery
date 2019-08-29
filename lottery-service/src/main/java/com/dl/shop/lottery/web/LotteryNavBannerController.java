@@ -19,6 +19,7 @@ import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.CompareUtil;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlBannerPicDTO;
@@ -59,6 +60,9 @@ public class LotteryNavBannerController {
 
     @Resource
     private IDeviceControlService iDeviceControlService;
+    
+//    @Resource
+//    private DLAppUpdateLogService dLAppUpdateLogService;
 
     @Resource
     private IUserBonusService iUserBonusService;
@@ -246,12 +250,22 @@ public class LotteryNavBannerController {
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
             	if(navBanner.getId()==316) {//版本升级bannner
-            		dto = new DlBannerPicDTO();
-                    dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-                    dto.setBannerLink(navBanner.getBannerLink());
-                    dto.setStartTime(navBanner.getStartTime());
-                    dto.setEndTime(navBanner.getEndTime());
+//            		DLAppUpdateLog dLAppUpdateLog = dLAppUpdateLogService.queryUpdateAppLog(userDevice.getChannel(), userDevice.getAppv());
+//                	if(null == dLAppUpdateLog) {
+//                		log.info("android版本升级接口返回数据判断接口没有最新版本");
+//                	}else {
+                		int diff = CompareUtil.compareVersion(userDevice.getAppv(), "1.3.0");
+                    	if(diff >= 0) {
+                    		log.info("android版本升级接口返回数据判断接口没有最新版本");
+                    	}else {
+                    		dto = new DlBannerPicDTO();
+                            dto.setBannerName(navBanner.getBannerName());
+                            dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                            dto.setBannerLink(navBanner.getBannerLink());
+                            dto.setStartTime(navBanner.getStartTime());
+                            dto.setEndTime(navBanner.getEndTime());
+                    	}
+//                	}
             	}else {
             		if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
                     	dto = new DlBannerPicDTO();
