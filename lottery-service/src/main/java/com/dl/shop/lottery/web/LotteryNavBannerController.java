@@ -246,7 +246,7 @@ public class LotteryNavBannerController {
         }
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
-            LotteryNavBanner navBanner = navList.get(0);
+            LotteryNavBanner navBanner = navFilterList.get(0);
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
             	if(navBanner.getId()==316) {//版本升级bannner
@@ -412,7 +412,7 @@ public class LotteryNavBannerController {
         DlBannerPicDTO dto = null;
         if(navList.size() > 0){
         	dto=new DlBannerPicDTO();
-            LotteryNavBanner navBanner = navList.get(0);
+            LotteryNavBanner navBanner = navFilterList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
             String deviceUnique = "";
             boolean isflag = true;
