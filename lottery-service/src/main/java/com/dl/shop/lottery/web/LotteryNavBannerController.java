@@ -250,6 +250,7 @@ public class LotteryNavBannerController {
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
             	if(navBanner.getId()==316) {//版本升级bannner
+            		log.info("版本升级bannner");
 //            		DLAppUpdateLog dLAppUpdateLog = dLAppUpdateLogService.queryUpdateAppLog(userDevice.getChannel(), userDevice.getAppv());
 //                	if(null == dLAppUpdateLog) {
 //                		log.info("android版本升级接口返回数据判断接口没有最新版本");
