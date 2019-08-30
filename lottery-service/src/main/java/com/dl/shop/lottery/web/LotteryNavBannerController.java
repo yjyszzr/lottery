@@ -19,6 +19,7 @@ import com.dl.base.model.UserDeviceInfo;
 import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
+import com.dl.base.util.CompareUtil;
 import com.dl.base.util.DateUtil;
 import com.dl.base.util.SessionUtil;
 import com.dl.lottery.dto.DlBannerPicDTO;
@@ -32,6 +33,7 @@ import com.dl.member.enums.MemberEnums;
 import com.dl.member.param.DlDeviceActionControlParam;
 import com.dl.member.param.MacParam;
 import com.dl.member.param.StrParam;
+import com.dl.member.param.UpdateAppParam;
 import com.dl.member.param.UserBonusIdParam;
 import com.dl.shop.lottery.configurer.LotteryConfig;
 import com.dl.shop.lottery.model.LotteryNavBanner;
@@ -59,6 +61,9 @@ public class LotteryNavBannerController {
 
     @Resource
     private IDeviceControlService iDeviceControlService;
+    
+//    @Resource
+//    private DLAppUpdateLogService dLAppUpdateLogService;
 
     @Resource
     private IUserBonusService iUserBonusService;
@@ -205,14 +210,14 @@ public class LotteryNavBannerController {
     @PostMapping("/openNavsNew")
     public BaseResult<List<Object>> openNavsNew(@RequestBody EmptyParam param){
         Integer dealSwitch = 2;//默认交易版
-        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
-        if(switchRst.getCode() != 0){
-            dealSwitch = 2;
-        }else{
-            SwitchConfigDTO switchConfigDTO = switchRst.getData();
-            Integer dealTurnOn = switchConfigDTO.getTurnOn();
-            dealSwitch = dealTurnOn == 1?2:1;
-        }
+//        BaseResult<SwitchConfigDTO> switchRst = iSwitchConfigService.querySwitch(new StrParam(""));
+//        if(switchRst.getCode() != 0){
+//            dealSwitch = 2;
+//        }else{
+//            SwitchConfigDTO switchConfigDTO = switchRst.getData();
+//            Integer dealTurnOn = switchConfigDTO.getTurnOn();
+//            dealSwitch = dealTurnOn == 1?2:1;
+//        }
 
         UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
         String appCodeNameStr = userDeviceInfo.getAppCodeName();
@@ -242,53 +247,69 @@ public class LotteryNavBannerController {
         }
         List<DlBannerPicDTO> navPicDTOList = new ArrayList<>();
         if(navFilterList.size() > 0){
-            LotteryNavBanner navBanner = navList.get(0);
+            LotteryNavBanner navBanner = navFilterList.get(0);
             log.info("deviceUnique:"+deviceUnique);
             if(!StringUtils.isEmpty(deviceUnique)){
-                if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
-                	dto = new DlBannerPicDTO();
-                    dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
-                    dto.setBannerLink(navBanner.getBannerLink());
-                    dto.setStartTime(navBanner.getStartTime());
-                    dto.setEndTime(navBanner.getEndTime());
-                }
-
-                MacParam macParam = new MacParam();
-                macParam.setMac(deviceUnique);
-                macParam.setBusiType(1);
-                BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
-                if(deviceActionControlDTOBaseResult.getCode() == 0){
-                    DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
-                    Integer alertTime = deviceActionControlDTO.getUpdateTime();
-                    Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
-                    if(endTodayTime - alertTime > 0){
+            	if(navBanner.getId()==316) {//版本升级bannner
+            		log.info("版本升级bannner");
+            		UpdateAppParam updateAppParam = new UpdateAppParam();
+            		updateAppParam.setChannel(userDevice.getChannel());
+            		updateAppParam.setVersion(userDevice.getAppv());
+            		BaseResult<Integer> dLAppUpdateLog = iDeviceControlService.queryUpdateAppI(updateAppParam);
+            		if(dLAppUpdateLog!=null && dLAppUpdateLog.getData()==0) {//有新版本升级
+            			dto = new DlBannerPicDTO();
+                        dto.setBannerName(navBanner.getBannerName());
+                        dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                        dto.setBannerLink(navBanner.getBannerLink());
+                        dto.setStartTime(navBanner.getStartTime());
+                        dto.setEndTime(navBanner.getEndTime());
+            		}
+            	}else {
+            		if(deviceUnique.equals("h5")){//h5特色需求 如果有开屏图，总是返回
                     	dto = new DlBannerPicDTO();
                         dto.setBannerName(navBanner.getBannerName());
                         dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
                         dto.setBannerLink(navBanner.getBannerLink());
                         dto.setStartTime(navBanner.getStartTime());
                         dto.setEndTime(navBanner.getEndTime());
-                        MacParam updateMac = new MacParam();
-                        updateMac.setMac(deviceUnique);
-                        updateMac.setBusiType(1);
-                        iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+                    }else {
+                    	MacParam macParam = new MacParam();
+                        macParam.setMac(deviceUnique);
+                        macParam.setBusiType(1);
+                        BaseResult<DlDeviceActionControlDTO> deviceActionControlDTOBaseResult = iDeviceControlService.queryDeviceByIMEI(macParam);
+                        if(deviceActionControlDTOBaseResult.getCode() == 0){
+                            DlDeviceActionControlDTO deviceActionControlDTO = deviceActionControlDTOBaseResult.getData();
+                            Integer alertTime = deviceActionControlDTO.getUpdateTime();
+                            Integer endTodayTime = DateUtil.getTimeAfterDays(new Date(),0,0,0,0);
+                            if(endTodayTime - alertTime > 0){
+                            	dto = new DlBannerPicDTO();
+                                dto.setBannerName(navBanner.getBannerName());
+                                dto.setBannerImage(lotteryConfig.getBannerShowUrl()+ navBanner.getBannerImage());
+                                dto.setBannerLink(navBanner.getBannerLink());
+                                dto.setStartTime(navBanner.getStartTime());
+                                dto.setEndTime(navBanner.getEndTime());
+                                MacParam updateMac = new MacParam();
+                                updateMac.setMac(deviceUnique);
+                                updateMac.setBusiType(1);
+                                iDeviceControlService.updateDeviceControlUpdteTime(updateMac);
+                            }
+                        }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
+                            DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
+                            deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
+                            deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
+                            deviceParam.setAlertTimes(1);
+                            deviceParam.setBusiType(1);
+                            deviceParam.setMac(deviceUnique);
+                            iDeviceControlService.add(deviceParam);
+                            dto = new DlBannerPicDTO();
+                            dto.setBannerName(navBanner.getBannerName());
+                            dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
+                            dto.setBannerLink(navBanner.getBannerLink());
+                            dto.setStartTime(navBanner.getStartTime());
+                            dto.setEndTime(navBanner.getEndTime());
+                        }
                     }
-                }else if(deviceActionControlDTOBaseResult.getCode() == MemberEnums.DBDATA_IS_NULL.getcode()){
-                    DlDeviceActionControlParam deviceParam = new DlDeviceActionControlParam();
-                    deviceParam.setAddTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setUpdateTime(DateUtil.getCurrentTimeLong());
-                    deviceParam.setAlertTimes(1);
-                    deviceParam.setBusiType(1);
-                    deviceParam.setMac(deviceUnique);
-                    iDeviceControlService.add(deviceParam);
-                    dto = new DlBannerPicDTO();
-                    dto.setBannerName(navBanner.getBannerName());
-                    dto.setBannerImage(lotteryConfig.getBannerShowUrl() + navBanner.getBannerImage());
-                    dto.setBannerLink(navBanner.getBannerLink());
-                    dto.setStartTime(navBanner.getStartTime());
-                    dto.setEndTime(navBanner.getEndTime());
-                }
+            	}
             }
 
         }
@@ -388,7 +409,7 @@ public class LotteryNavBannerController {
         DlBannerPicDTO dto = null;
         if(navList.size() > 0){
         	dto=new DlBannerPicDTO();
-            LotteryNavBanner navBanner = navList.get(0);
+            LotteryNavBanner navBanner = navFilterList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();
             String deviceUnique = "";
             boolean isflag = true;
