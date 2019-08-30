@@ -208,8 +208,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 			if(matchPlays == null || matchPlays.size() == 0) {
 				continue;
 			}
-			
-			if("5".equals(playType)) {
+
+
+			if("5".equals(playType) && matchPlays.size() < 4) {
 				List<Integer> collect = matchPlays.stream().map(dto->dto.getPlayType()).collect(Collectors.toList());
 				for(int i=1; i<= 4; i++) {
 					if(!collect.contains(i)) {
