@@ -384,6 +384,7 @@ public class LotteryMatchController {
         String dtoJson = JSONHelper.bean2json(dto);
         String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
         String payToken = MD5.crypt(keyStr);
+       	logger.info("预设总分payToken*******dtoJson="+dtoJson);
         stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         return ResultGenerator.genSuccessResult("success", payToken);
     }
