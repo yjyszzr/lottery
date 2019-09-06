@@ -351,8 +351,9 @@ public class LotteryMatchController {
             Optional<MatchBasketBallBetCellDTO> forecastScore = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
             if(forecastScore.isPresent()) {
             	String forecastScoreA = forecastScore.get().getFixedOdds();
-            	String num =forecastScoreA.replaceAll("[^-+\\d]", "");
-            	   logger.info("预设总分*******8num="+num);
+            	logger.info("预设总分替换前*******num="+forecastScoreA);
+            	String num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
+            	   logger.info("预设总分替换后*******num="+num);
             	dizqUserBetCellInfoDTO.setForecastScore(num);
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
@@ -2115,5 +2116,5 @@ public class LotteryMatchController {
 //		List<String> ids = lotteryMatchService.getCancelMatches(param);
 //		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", ids);
 //	}
-
+ 
 }
