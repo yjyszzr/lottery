@@ -352,6 +352,7 @@ public class LotteryMatchController {
             if(forecastScore.isPresent()) {
             	String forecastScoreA = forecastScore.get().getFixedOdds();
             	String num =forecastScoreA.replaceAll("[^-+\\d]", "");
+            	   logger.info("预设总分*******8num="+num);
             	dizqUserBetCellInfoDTO.setForecastScore(num);
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
