@@ -19,4 +19,6 @@ public class MatchBasketBallBetCellDTO implements Serializable{
 	private Integer single;
 	@ApiModelProperty("让球数")
 	private String fixedOdds;
+	@ApiModelProperty("预设分数")
+	private String forecastScore;
 }

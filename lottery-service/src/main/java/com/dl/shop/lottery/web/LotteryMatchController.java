@@ -1,6 +1,7 @@
 package com.dl.shop.lottery.web;
 
 import com.dl.base.context.BaseContextHandler;
+import com.dl.base.enums.MatchBasketPlayTypeEnum;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.model.UserDeviceInfo;
@@ -346,6 +347,11 @@ public class LotteryMatchController {
                 String fixOdds = findFirst.get().getFixedOdds();
                 logger.info("**************************fixOdds="+fixOdds);
                 dizqUserBetCellInfoDTO.setFixedodds(fixOdds);
+            }
+            Optional<MatchBasketBallBetCellDTO> forecastScore = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
+            if(forecastScore.isPresent()) {
+            	String forecastScoreA = forecastScore.get().getForecastScore();
+            	dizqUserBetCellInfoDTO.setForecastScore(forecastScoreA);
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
         }

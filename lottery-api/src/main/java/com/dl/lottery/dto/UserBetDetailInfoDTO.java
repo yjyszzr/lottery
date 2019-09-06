@@ -24,6 +24,8 @@ public class UserBetDetailInfoDTO {
     public String playCode;
     @ApiModelProperty("让球数")
     private String fixedodds;
+    @ApiModelProperty("预设总分")
+    private String forecastScore;
 
     @ApiModelProperty(value="投注选项详情")
     private String ticketData;
