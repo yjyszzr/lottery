@@ -350,8 +350,9 @@ public class LotteryMatchController {
             }
             Optional<MatchBasketBallBetCellDTO> forecastScore = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
             if(forecastScore.isPresent()) {
-            	String forecastScoreA = forecastScore.get().getForecastScore();
-            	dizqUserBetCellInfoDTO.setForecastScore(forecastScoreA);
+            	String forecastScoreA = forecastScore.get().getFixedOdds();
+            	String num =forecastScoreA.replaceAll("[^-+\\d]", "");
+            	dizqUserBetCellInfoDTO.setForecastScore(num);
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
         }
