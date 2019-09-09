@@ -158,6 +158,7 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
     @PostMapping("/saveBasketBallBetInfo")
     public BaseResult<String> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
+    	 logger.info("param===================="+param);
         if(lotteryMatchService.isShutDownBet()) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
         }
