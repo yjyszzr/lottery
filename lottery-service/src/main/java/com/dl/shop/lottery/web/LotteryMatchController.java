@@ -383,10 +383,13 @@ public class LotteryMatchController {
         dto.setRequestFrom(requestFrom);
         dto.setUserId(SessionUtil.getUserId());
         dto.setIssue(betInfo.getIssue());
-        String dtoJson = JSONHelper.bean2json(dto);
+//        String dtoJson = JSONHelper.bean2json(dto);
+        String dtoJson = "{\"betDetailInfos\":[{\"betType\":\"\",\"changci\":\"周二301\",\"fixedodds\":\"+12.5\",\"forecastScore\":\"163.5\",\"isDan\":\"0\",\"lotteryClassifyId\":\"3\",\"lotteryPlayClassifyId\":\"6\",\"matchId\":\"1690\",\"matchTeam\":\"阿根廷VS塞尔维亚\",\"matchTime\":\"1568113200\",\"playCode\":\"201909102301\",\"ticketData\":\"01|201909102301|2@1.70;04|201909102301|2@1.75\"},{\"betType\":\"\",\"changci\":\"周二302\",\"fixedodds\":\"\",\"forecastScore\":\"148.5\",\"isDan\":\"0\",\"lotteryClassifyId\":\"3\",\"lotteryPlayClassifyId\":\"6\",\"matchId\":\"1691\",\"matchTeam\":\"西班牙VS波兰\",\"matchTime\":\"1568120400\",\"playCode\":\"201909102302\",\"ticketData\":\"02|201909102302|2@5.45;04|201909102302|2@1.75\"}],\"betNum\":\"4\",\"betType\":\"21\",\"bonusAmount\":null,\"bonusId\":\"\",\"forecastMoney\":\"29.75~248.40\",\"issue\":\"201909102302\",\"lotteryClassifyId\":\"3\",\"lotteryPlayClassifyId\":\"6\",\"orderMoney\":\"40.0\",\"playType\":\"6\",\"playTypeDetail\":\"\",\"requestFrom\":\"android\",\"surplus\":null,\"thirdPartyPaid\":null,\"ticketNum\":\"0\",\"times\":\"5\",\"userId\":\"1000000084\"} ";
         String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
         String payToken = MD5.crypt(keyStr);
        	logger.info("预设总分payToken*******dtoJson="+dtoJson);
+       	
+       	
         stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         return ResultGenerator.genSuccessResult("success", payToken);
     }
