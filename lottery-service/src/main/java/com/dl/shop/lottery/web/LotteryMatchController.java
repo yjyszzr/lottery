@@ -351,7 +351,7 @@ public class LotteryMatchController {
             Optional<MatchBasketBallBetCellDTO> forecastScore = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
             if(forecastScore.isPresent()) {
             	logger.info("场次玩法=========="+forecastScore);
-            	String forecastScoreA = forecastScore.get().getFixedOdds();
+            	String forecastScoreA = forecastScore.get().getForecastScore();
             	logger.info("预设总分替换前*******num="+forecastScoreA);
             	String num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
             	   logger.info("预设总分替换后*******num="+num);
