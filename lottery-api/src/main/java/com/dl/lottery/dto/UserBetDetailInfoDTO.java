@@ -1,12 +1,18 @@
 package com.dl.lottery.dto;
 
+import java.io.Serializable;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class UserBetDetailInfoDTO {
+public class UserBetDetailInfoDTO  implements Serializable{
 
-    @ApiModelProperty(value="赛事id")
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@ApiModelProperty(value="赛事id")
     private Integer matchId;
     @ApiModelProperty(value = "场次:周三001", required = true)
     public String changci;
@@ -24,11 +30,12 @@ public class UserBetDetailInfoDTO {
     public String playCode;
     @ApiModelProperty("让球数")
     private String fixedodds;
-    @ApiModelProperty("预设总分")
-    private String forecastScore;
-
     @ApiModelProperty(value="投注选项详情")
     private String ticketData;
     @ApiModelProperty(value = "投注方式：大乐透:0单式，1复式，2胆拖")
     private String betType;
+    @ApiModelProperty(value ="预设总分")
+    public String forecastScore;
+    @ApiModelProperty(value ="篮球队名称")
+    public String baskballTameName;
 }

@@ -366,6 +366,7 @@ public class LotteryMatchController {
             	String num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
             	   logger.info("预设总分替换后*******num="+num);
             	dizqUserBetCellInfoDTO.setForecastScore(num);
+            	dizqUserBetCellInfoDTO.setBaskballTameName("足球小子");
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
         }
