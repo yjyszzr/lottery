@@ -158,19 +158,10 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
     @PostMapping("/saveBasketBallBetInfo")
     public BaseResult<String> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
-    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
-        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
-        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr; 
-         
-    	int val = lotteryMatchService.countShutDownBet();//是否停售 0:否  1:是  2:工作日停售 3:周末停售
-    	if(val==1) {
+    	 logger.info("param===================="+param);
+        if(lotteryMatchService.isShutDownBet()) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
-        }else if(val==2 && "11".equals(appCodeName)) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为22:00");
-        }else if(val==3 && "11".equals(appCodeName)) {
-            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为23:00");
         }
-    	
         List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
