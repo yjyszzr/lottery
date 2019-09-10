@@ -393,14 +393,14 @@ public class LotteryMatchController {
         dto.setUserId(SessionUtil.getUserId());
         dto.setIssue(betInfo.getIssue());
         String dtoJson = JSONHelper.bean2json(dto);
-//        String dtoJson = "{\"forecastScore\":\"163.5\"} ";
-        String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
-//        String payToken = MD5.crypt(keyStr);
-        String payToken =keyStr;
+        String keyStr = "bet_info_" + SessionUtil.getUserId() +"_" + System.currentTimeMillis()+"";
+        String payToken = MD5.crypt(keyStr);
+//        String payToken =keyStr;
        	logger.info("预设总分payToken*******dtoJson="+dtoJson);
        	logger.info("预设总分payTokenKey*******payToken="+payToken);
        	
        	
+       	stringRedisTemplate.opsForValue().set(keyStr, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         return ResultGenerator.genSuccessResult("success", payToken);
     }
