@@ -158,10 +158,19 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
     @PostMapping("/saveBasketBallBetInfo")
     public BaseResult<String> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
-    	 logger.info("param===================="+param);
-        if(lotteryMatchService.isShutDownBet()) {
+    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr; 
+         
+    	int val = lotteryMatchService.countShutDownBet();//是否停售 0:否  1:是  2:工作日停售 3:周末停售
+    	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+        }else if(val==2 && "11".equals(appCodeName)) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为22:00");
+        }else if(val==3 && "11".equals(appCodeName)) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为23:00");
         }
+    	
         List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -386,14 +395,12 @@ public class LotteryMatchController {
         String dtoJson = JSONHelper.bean2json(dto);
 //        String dtoJson = "{\"forecastScore\":\"163.5\"} ";
         String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
-        String payToken = MD5.crypt(keyStr);
-//        String payToken =keyStr;
-        logger.info("预设总分Key*******未加密key="+keyStr);
-       	logger.info("预设总分Key*******key="+payToken);
-       	logger.info("预设总分value*******value="+dtoJson);
+//        String payToken = MD5.crypt(keyStr);
+        String payToken =keyStr;
+       	logger.info("预设总分payToken*******dtoJson="+dtoJson);
+       	logger.info("预设总分payTokenKey*******payToken="+payToken);
        	
        	
-       	stringRedisTemplate.opsForValue().set(keyStr, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
         return ResultGenerator.genSuccessResult("success", payToken);
     }
