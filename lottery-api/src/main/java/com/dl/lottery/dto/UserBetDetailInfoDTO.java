@@ -36,6 +36,4 @@ public class UserBetDetailInfoDTO  implements Serializable{
     private String betType;
     @ApiModelProperty(value ="预设总分")
     public String forecastScore;
-    @ApiModelProperty(value ="篮球队名称")
-    public String baskballTameName;
 }
