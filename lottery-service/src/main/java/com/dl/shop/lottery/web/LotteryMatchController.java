@@ -393,7 +393,7 @@ public class LotteryMatchController {
         dto.setUserId(SessionUtil.getUserId());
         dto.setIssue(betInfo.getIssue());
         String dtoJson = JSONHelper.bean2json(dto);
-        String keyStr = "tzxx" + SessionUtil.getUserId() + "" +System.currentTimeMillis()+"";
+        String keyStr = "tzxx" + SessionUtil.getUserId() + "_" +System.currentTimeMillis()+"";
 //        String payToken = MD5.crypt(keyStr);
 //        String payToken =keyStr;
        	logger.info("预设总分payToken*******dtoJson="+dtoJson);
