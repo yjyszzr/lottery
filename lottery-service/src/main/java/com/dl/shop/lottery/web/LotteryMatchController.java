@@ -1,6 +1,7 @@
 package com.dl.shop.lottery.web;
 
 import com.dl.base.context.BaseContextHandler;
+import com.dl.base.enums.MatchBasketPlayTypeEnum;
 import com.dl.base.enums.MatchPlayTypeEnum;
 import com.dl.base.enums.SNBusinessCodeEnum;
 import com.dl.base.model.UserDeviceInfo;
@@ -157,9 +158,19 @@ public class LotteryMatchController {
     @ApiOperation(value = "保存篮彩投注信息", notes = "保存篮彩投注信息")
     @PostMapping("/saveBasketBallBetInfo")
     public BaseResult<String> saveBasketBallBetInfo(@Valid @RequestBody DlJcLqMatchBetParam param) {
-        if(lotteryMatchService.isShutDownBet()) {
+    	UserDeviceInfo userDeviceInfo = SessionUtil.getUserDevice();
+        String appCodeNameStr = userDeviceInfo!=null?userDeviceInfo.getAppCodeName():"";
+        String appCodeName = StringUtils.isEmpty(appCodeNameStr)?"10":appCodeNameStr; 
+         
+    	int val = lotteryMatchService.countShutDownBet();//是否停售 0:否  1:是  2:工作日停售 3:周末停售
+    	if(val==1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), LotteryResultEnum.BET_MATCH_STOP.getMsg());
+        }else if(val==2 && "11".equals(appCodeName)) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为22:00");
+        }else if(val==3 && "11".equals(appCodeName)) {
+            return ResultGenerator.genResult(LotteryResultEnum.BET_MATCH_STOP.getCode(), "竞彩游戏开售时间为9:00，停售时间为23:00");
         }
+    	
         List<MatchBasketBallBetPlayDTO> matchBetPlays = param.getMatchBetPlays();
         if(matchBetPlays == null || matchBetPlays.size() < 1) {
             return ResultGenerator.genResult(LotteryResultEnum.BET_CELL_EMPTY.getCode(), LotteryResultEnum.BET_CELL_EMPTY.getMsg());
@@ -347,6 +358,15 @@ public class LotteryMatchController {
                 logger.info("**************************fixOdds="+fixOdds);
                 dizqUserBetCellInfoDTO.setFixedodds(fixOdds);
             }
+            Optional<MatchBasketBallBetCellDTO> forecastScore = matchCell.getMatchBetCells().stream().filter(item->Integer.valueOf(item.getPlayType()).equals(MatchBasketPlayTypeEnum.PLAY_TYPE_HILO.getcode())).findFirst();
+            if(forecastScore.isPresent()) {
+            	logger.info("场次玩法=========="+forecastScore);
+            	String forecastScoreA = forecastScore.get().getForecastScore();
+            	logger.info("预设总分替换前*******num="+forecastScoreA);
+            	String num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
+            	   logger.info("预设总分替换后*******num="+num);
+            	dizqUserBetCellInfoDTO.setForecastScore(num);
+            }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
         }
         dto.setTimes(param.getTimes());
@@ -373,10 +393,16 @@ public class LotteryMatchController {
         dto.setUserId(SessionUtil.getUserId());
         dto.setIssue(betInfo.getIssue());
         String dtoJson = JSONHelper.bean2json(dto);
-        String keyStr = "bet_info_" + SessionUtil.getUserId() +"_"+ System.currentTimeMillis();
+        String keyStr = "tzxx" + SessionUtil.getUserId() + "_" +System.currentTimeMillis()+"";
         String payToken = MD5.crypt(keyStr);
+//        String payToken =keyStr;
+       	logger.info("预设总分payToken*******dtoJson="+dtoJson);
+       	logger.info("预设总分payTokenKey*******payToken="+keyStr);
+       	
+       	
         stringRedisTemplate.opsForValue().set(payToken, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
-        return ResultGenerator.genSuccessResult("success", payToken);
+        stringRedisTemplate.opsForValue().set(keyStr, dtoJson, ProjectConstant.BET_INFO_EXPIRE_TIME, TimeUnit.MINUTES);
+        return ResultGenerator.genSuccessResult("success", keyStr);
     }
 
     @ApiOperation(value = "计算篮球投注信息", notes = "计算篮球投注信息,times默认值为1，betType默认值为11")
@@ -2107,5 +2133,5 @@ public class LotteryMatchController {
 //		List<String> ids = lotteryMatchService.getCancelMatches(param);
 //		return ResultGenerator.genSuccessResult("获取筛选条件列表成功", ids);
 //	}
-
+ 
 }

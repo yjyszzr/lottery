@@ -3,12 +3,17 @@ package com.dl.lottery.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class UserBetPayInfoDTO {
+public class UserBetPayInfoDTO implements Serializable {
 
-    @ApiModelProperty(value="用户id")
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@ApiModelProperty(value="用户id")
     private Integer userId;
     @ApiModelProperty(value="彩票种类")
     private int lotteryClassifyId;
