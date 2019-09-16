@@ -136,9 +136,9 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		Map<Integer, List<DlJcLqMatchPlayDTO>> matchPlayMap = new HashMap<Integer, List<DlJcLqMatchPlayDTO>>();
 		List<DlMatchPlayBasketball> matchPlayList = dlMatchPlayBasketballMapper.matchPlayListByChangciIds(changciIds.toArray(new Integer[changciIds.size()]),"6".equals(playType)?"":playType);
 		for(DlMatchPlayBasketball matchPlay: matchPlayList) {
-//			if(this.isStop(matchPlay)) {
-//				continue;
-//			}
+			if(this.isStop(matchPlay)) {
+				continue;
+			}
 			
 			Integer changciId = matchPlay.getChangciId();
 			DlJcLqMatchPlayDTO matchPlayDto = this.initDlJcZqMatchCell(matchPlay);	
@@ -329,6 +329,37 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 
 		return betEndTime;
 	}
+
+
+	if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {//圣和版本
+        if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+            if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+                LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
+                betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            } else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
+                betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            }
+        } else {
+            if(betHour > 22) {
+                if(matchWeekDay < 7 && matchWeekDay > 1) {//周1-5
+                    betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+                }else {
+                    betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+                }
+            }
+        }
+
+    }else {
+        if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
+            if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
+                LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
+                betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            } else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
+                betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+            }
+        } else {
+            if(betHour > 22) {
+                betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getE
 	
 	/**
 	 * 初始化球赛类型投注选项
