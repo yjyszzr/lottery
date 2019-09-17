@@ -363,8 +363,11 @@ public class LotteryMatchController {
             	logger.info("场次玩法=========="+forecastScore);
             	String forecastScoreA = forecastScore.get().getForecastScore();
             	logger.info("预设总分替换前*******num="+forecastScoreA);
-            	String num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
-            	   logger.info("预设总分替换后*******num="+num);
+            	String num = "";
+            	if (!StringUtils.isEmpty(forecastScoreA)) {
+            		num =forecastScoreA.replaceAll("\\+", "").replaceAll("\\-", "");
+            		logger.info("预设总分替换后*******num="+num);
+				}
             	dizqUserBetCellInfoDTO.setForecastScore(num);
             }
             betDetailInfos.add(dizqUserBetCellInfoDTO);
