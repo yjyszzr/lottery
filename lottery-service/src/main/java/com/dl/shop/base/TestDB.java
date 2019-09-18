@@ -6,7 +6,7 @@ public class TestDB {
 	public TestDB() {
 //		DataBaseCfg cfg = new DataBaseCfg();
 //		cfg.setDriver("com.mysql.jdbc.Driver");
-//		cfg.setUrl("jdbc:mysql://39.106.18.39:3306/cxm_test");
+//		cfg.setUrl("jdbc:mysql://49.232.65.109:3306/cxm_test");
 //		cfg.setUserName("caixiaomi");
 //		cfg.setUserPass("cxmtest");
 //		
