@@ -53,7 +53,7 @@
 		is_show,is_del,match_sn,is_hot
 	from
 	dl_match 
-	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(SECOND, NOW(),match_time) >= 0
   	 <if test="leagueIds!=null and leagueIds != ''">
   	 	and league_id in
   	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
@@ -70,7 +70,7 @@
 		is_show,is_del,match_sn,is_hot
 	from
 	dl_match 
-	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+	where is_del = 0 and is_show=1 and TIMESTAMPDIFF(SECOND, NOW(),match_time) >= 0
       <if test="leagueIds!=null and leagueIds != ''">
   	 	and league_id in
   	 	<foreach collection="leagueIds.split(',')" item="leagueId" open="(" close=")" separator=",">
@@ -100,7 +100,7 @@
 		league_name as leagueName,
 		league_addr as leagueAddr
 	from dl_match getMatchList
-	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(SECOND, NOW(),match_time) >= 0
   	 order by leagueId
   </select>
 
@@ -110,7 +110,7 @@
   
   <select id="getChangcidIsUnEnd" resultType="int">
   	select changci_id from dl_match 
-  	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(MINUTE, match_time, NOW()) &lt; 10
+  	where DATEDIFF(show_time,NOW()) &gt;= 0 and is_del = 0 and is_show=1 and TIMESTAMPDIFF(SECOND, NOW(),match_time) >= 0
   </select>
   
   <select id="getMatchListUnknowScoreToday" resultMap="BaseResultMap">
