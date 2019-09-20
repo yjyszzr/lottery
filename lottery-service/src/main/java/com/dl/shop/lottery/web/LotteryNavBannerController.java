@@ -407,7 +407,7 @@ public class LotteryNavBannerController {
         }
         log.info("susp():dealSwitch="+dealSwitch+";navFilterList="+navFilterList.size());
         DlBannerPicDTO dto = null;
-        if(navList.size() > 0){
+        if(navFilterList.size() > 0){
         	dto=new DlBannerPicDTO();
             LotteryNavBanner navBanner = navFilterList.get(0);
             UserDeviceInfo userDevice = SessionUtil.getUserDevice();

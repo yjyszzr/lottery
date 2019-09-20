@@ -334,11 +334,7 @@ public class LotteryMatchService extends AbstractService<LotteryMatch> {
         deviceUnique = "h5";
 		long start = System.currentTimeMillis();
 		DlJcZqMatchListDTO dlJcZqMatchListDTO = new DlJcZqMatchListDTO();
-		List<LotteryMatch> matchListV = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
-        List<LotteryMatch> matchList = new ArrayList<LotteryMatch>();
-		for(LotteryMatch lotteryMatch:matchListV){
-
-        }
+		List<LotteryMatch> matchList = lotteryMatchMapper.getMatchListTwo(param.getLeagueId());
 		logger.info("获取matchList的大小="+matchList.size());
 		if(matchList == null || matchList.size() == 0) {
 			return dlJcZqMatchListDTO;
