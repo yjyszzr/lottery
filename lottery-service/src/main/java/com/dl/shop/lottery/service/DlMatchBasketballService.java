@@ -313,9 +313,10 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 		LocalDateTime matchDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		int matchWeekDay = matchDateTime.getDayOfWeek().getValue();
 		int matchHour = matchDateTime.getHour();
-		int betEndTime = matchTime - betPreTime;
-		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(matchTime), ZoneId.systemDefault());
-		int betHour = betendDateTime.getHour();
+		int betEndTime = matchTime;
+//		int betEndTime = matchTime - betPreTime;
+//		LocalDateTime betendDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(matchTime), ZoneId.systemDefault());
+//		int betHour = betendDateTime.getHour();
 //        if(matchWeekDay <= 5 && matchWeekDay >= 1 && matchHour <= 10 && matchHour >=0) {
 //            LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
 //            betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(21, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
@@ -327,40 +328,43 @@ public class DlMatchBasketballService extends AbstractService<DlMatchBasketball>
 //        } else if(matchWeekDay <= 7 && matchWeekDay >= 6 && matchHour <= 24 && matchHour >=10){
 //            betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(22, 50, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
 //        }
-		
 		UserDeviceInfo uinfo = SessionUtil.getUserDevice();
-        if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {//圣和版本
-    		if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
-    			if(matchWeekDay <= 5 && matchWeekDay >= 1 && (matchHour < 9 || betHour < 10)) {
-    				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
-    				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    			}else if((matchWeekDay == 7 || matchWeekDay == 6) && (matchHour < 9 || betHour < 10)) {
-    				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
-    				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    			}else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
-    				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    			}
-    		} else {
-    			if(betHour > 22) {
-    				if(matchWeekDay <= 5 && matchWeekDay >= 1) {//周1-5
-    					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    				}else {
-    					betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    				}
-    			}
-    		}
-        	
+		if(uinfo!=null && "11".equals(uinfo.getAppCodeName())) {//圣和版本
+        	int nowWeekDay = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()).getDayOfWeek().getValue();
+        	if(nowWeekDay <= 5 && nowWeekDay >= 1) {
+        		if(matchDateTime.toLocalDate().isAfter(LocalDate.now())) {
+        			if(matchHour < 9) {
+        				LocalDate preLocalDate = matchDateTime.plusDays(-1).toLocalDate();
+        				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+        			}
+        		} else {
+					if(matchHour >= 22) {
+    					betEndTime = Long.valueOf(LocalDateTime.of(matchDateTime.toLocalDate(), LocalTime.of(22, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+        			}
+        		}
+        	}else {
+        		if(matchDateTime.toLocalDate().isAfter(LocalDate.now())) {
+        			if(matchHour < 9) {
+        				LocalDate preLocalDate = matchDateTime.plusDays(-1).toLocalDate();
+        				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+        			}
+        		} else {
+					if(matchHour >= 23) {
+    					betEndTime = Long.valueOf(LocalDateTime.of(matchDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+        			}
+        		}
+        	}
         }else {
-        	if(betendDateTime.toLocalDate().isAfter(LocalDate.now())) {
-    			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || betHour < 10)) {
-    				LocalDate preLocalDate = betendDateTime.plusDays(-1).toLocalDate();
+        	if(matchDateTime.toLocalDate().isAfter(LocalDate.now())) {
+    			if(matchWeekDay < 7 && matchWeekDay > 1 && (matchHour < 9 || matchHour < 10)) {
+    				LocalDate preLocalDate = matchDateTime.plusDays(-1).toLocalDate();
     				betEndTime = Long.valueOf(LocalDateTime.of(preLocalDate, LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
-    			} else if(matchHour > 0 && (matchHour < 9 || betHour < 10))  {
-    				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+    			} else if(matchHour > 0 && (matchHour < 9 || matchHour < 10))  {
+    				betEndTime = Long.valueOf(LocalDateTime.of(matchDateTime.toLocalDate(), LocalTime.of(00, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
     			}
     		} else {
-    			if(betHour > 22) {
-    				betEndTime = Long.valueOf(LocalDateTime.of(betendDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
+    			if(matchHour > 22) {
+    				betEndTime = Long.valueOf(LocalDateTime.of(matchDateTime.toLocalDate(), LocalTime.of(23, 00, 00)).toInstant(ZoneOffset.ofHours(8)).getEpochSecond()).intValue();
     			}
     		}
         }
