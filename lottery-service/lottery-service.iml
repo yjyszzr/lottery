@@ -4,21 +4,30 @@
     <facet type="Spring" name="Spring">
       <configuration />
     </facet>
+    <facet type="web" name="Web">
+      <configuration>
+        <webroots />
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/src/main/java" />
+          <root url="file://$MODULE_DIR$/src/main/resources" />
+        </sourceRoots>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="lottery-api" />
-    <orderEntry type="module" module-name="base" />
+    <orderEntry type="library" name="Maven: com.dl:base:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.netflix.servo:servo-apache:0.7.4" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:annotations:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.sction:phprpc:3.0.2" level="project" />
@@ -39,12 +48,12 @@
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.8.11" level="project" />
     <orderEntry type="library" name="Maven: com.belerweb:pinyin4j:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: io.swagger:swagger-annotations:1.5.10" level="project" />
-    <orderEntry type="module" module-name="lotto-api" />
-    <orderEntry type="module" module-name="order-api" />
-    <orderEntry type="module" module-name="payment-api" />
-    <orderEntry type="module" module-name="member-api" />
-    <orderEntry type="module" module-name="auth-api" />
-    <orderEntry type="module" module-name="storeH5-api" />
+    <orderEntry type="library" name="Maven: com.dl:lotto-api:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.dl:order-api:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.dl:payment-api:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.dl:member-api:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.dl:auth-api:1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.dl:storeH5-api:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter-eureka:1.3.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-tomcat:1.5.8.RELEASE" level="project" />
