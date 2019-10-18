@@ -15,4 +15,7 @@ public class DlHallMixDTO implements Serializable{
 	
 	@ApiModelProperty(value = "咨询列表对象")
 	public PageInfo<DLArticleDTO> dlArticlePage;
+	
+	@ApiModelProperty(value = "推广链接url")
+	public String inviteUrl;
 }
