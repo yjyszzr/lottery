@@ -1,22 +1,31 @@
 package com.dl.shop.lottery.web;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import com.dl.base.model.UserDeviceInfo;
-import com.dl.base.param.EmptyParam;
-import com.dl.lottery.dto.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dl.base.model.UserDeviceInfo;
+import com.dl.base.param.EmptyParam;
 import com.dl.base.result.BaseResult;
 import com.dl.base.result.ResultGenerator;
 import com.dl.base.util.SessionUtil;
+import com.dl.lottery.dto.DLArticleDTO;
+import com.dl.lottery.dto.DlDiscoveryHallClassifyDTO;
+import com.dl.lottery.dto.DlHallDTO;
+import com.dl.lottery.dto.DlHallMixDTO;
+import com.dl.lottery.dto.DlPlayClassifyDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
 import com.dl.lottery.param.PageParam;
+import com.dl.member.api.ISysConfigService;
+import com.dl.member.dto.SysConfigDTO;
+import com.dl.member.param.SysConfigParam;
 import com.dl.shop.lottery.service.DlArticleService;
 import com.dl.shop.lottery.service.LotteryHallService;
 import com.github.pagehelper.PageHelper;
@@ -24,15 +33,14 @@ import com.github.pagehelper.PageInfo;
 
 import io.swagger.annotations.ApiOperation;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/lottery/hall")
 public class LotteryHallController {
 
 	@Resource
 	private LotteryHallService lotteryHallService;
-
+	@Resource
+	private ISysConfigService sysConfigService;
 	@Resource
 	private DlArticleService articleService;
 
@@ -96,7 +104,14 @@ public class LotteryHallController {
 
 		dlHallMixDTO.setDlHallDTO(dlHallDTO);
 		dlHallMixDTO.setDlArticlePage(pageInfo);
-
+		
+		//推广活动url
+        SysConfigParam sysConfigParam = new SysConfigParam();
+        sysConfigParam.setBusinessId(73);
+        BaseResult<SysConfigDTO> configData = sysConfigService.querySysConfig(sysConfigParam);
+		if(configData != null && configData.getData()!=null){
+			dlHallMixDTO.setInviteUrl(configData.getData().getValueTxt());
+        }
 		return ResultGenerator.genSuccessResult("获取彩票大厅数据成功", dlHallMixDTO);
 	}
 
