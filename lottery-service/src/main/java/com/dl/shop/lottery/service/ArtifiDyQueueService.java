@@ -446,14 +446,14 @@ public class ArtifiDyQueueService{
 			logger.info("[allocLotteryV2BySelect]" + " rList.size:" + rList.size());
 			if (rList.size() <= 0) {
 				List<DlArtifiPrintLottery> rSumList = new ArrayList<DlArtifiPrintLottery>();
-				if("13722300001".equals(mobile)) {//圣和店 老用户
-					logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
-					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser(); //老用户分配给01店铺
-//					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();//全部给01店铺
-				}else if("13722300002".equals(mobile)) {//航天城店 新用户
+				if("13722300002".equals(mobile)) {//航天城店 新用户
 					logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
 					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser(); //新用户分配给02店铺
-				}
+				}else  {//圣和店 老用户
+                    logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
+                    rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser(); //老用户分配给01店铺
+//					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();//全部给01店铺
+                }
 				//141手机号规则 
 				//			if("18182506141".equals(mobile)) {
 				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
