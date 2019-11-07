@@ -264,7 +264,7 @@ public class ArtifiDyQueueController {
 //			}
 //			if(mobileList.contains("13722300001") && mobileList.contains("13722300002")) {//都包含说明两个出票用户同时在线
 //				logger.info("queryV2_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
-				artifiDyQueueService.allocLotteryV2BySelect(mobile);//新分单逻辑
+				artifiDyQueueService.allocLotteryV2BySelect(mobile,param.getPageSize());//新分单逻辑
 //			}else {
 //				logger.info("queryV1_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
 //				artifiDyQueueService.allocLotteryV2(mobile);//老分单逻辑
