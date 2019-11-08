@@ -247,6 +247,7 @@ public class ArtifiDyQueueController {
         Condition c = new Condition(DlXNWhiteList.class);
 		c.createCriteria().andEqualTo("mobile",mobile);
 		List<DlXNWhiteList> xnWhiteListList = dlXNWhiteListService.findByCondition(c);
+		logger.info("[queryOrderList]" + " xnWhiteListList:" + xnWhiteListList.size());
 		if (xnWhiteListList.size() == 0) {
 			return ResultGenerator.genResult(MemberEnums.NO_REGISTER.getcode(), MemberEnums.NO_REGISTER.getMsg());
 		}
