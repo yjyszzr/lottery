@@ -227,7 +227,7 @@ public class ArtifiDyQueueController {
 			userId=470257;
 			BaseContextHandler.setUserID("470257");
 		}
-		logger.info("[queryOrderList]" + " userId:" + userId );
+		logger.info("[queryOrderList]" + " userId:" + userId);
 		if(userId == null) {
 			return ResultGenerator.genResult(MemberEnums.USER_LOGIN_TIPS.getcode(),MemberEnums.USER_LOGIN_TIPS.getMsg(),rList);
 		}
