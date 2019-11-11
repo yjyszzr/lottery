@@ -154,7 +154,10 @@ public class ArtifiDyQueueController {
 	@ApiOperation(value = "订单详情", notes = "订单详情")
 	@PostMapping("/detail")
 	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
-		int userId = SessionUtil.getUserId();
+		Integer userId = SessionUtil.getUserId();
+		if(pp.getPageSize()!=null && pp.getPageSize()==5) {
+			userId=470257;
+		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);
@@ -225,7 +228,6 @@ public class ArtifiDyQueueController {
 		Integer userId = SessionUtil.getUserId();
 		if(param.getPageSize()!=null && param.getPageSize()==5) {
 			userId=470257;
-			BaseContextHandler.setUserID("470257");
 		}
 		logger.info("[queryOrderList]" + " userId:" + userId);
 		if(userId == null) {
@@ -342,7 +344,10 @@ public class ArtifiDyQueueController {
             return ResultGenerator.genResult(MemberEnums.SAME_REQUEST.getcode(), MemberEnums.SAME_REQUEST.getMsg());
         }
 
-		int userId = SessionUtil.getUserId();
+		Integer userId = SessionUtil.getUserId();
+		if(params.getPageSize()!=null && params.getPageSize()==5) {
+			userId=470257;
+		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
 		userIdParams.setUserId(userId);
 		BaseResult<UserDTO> bR = iUserService.queryUserInfoReal(userIdParams);

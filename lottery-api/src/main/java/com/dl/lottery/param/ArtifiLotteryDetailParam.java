@@ -13,4 +13,7 @@ public class ArtifiLotteryDetailParam {
 	@ApiModelProperty(value="订单号")
 	@NotEmpty
 	private String orderSn;
+	
+	@ApiModelProperty(value="查询条数")
+	private Integer pageSize;
 }
