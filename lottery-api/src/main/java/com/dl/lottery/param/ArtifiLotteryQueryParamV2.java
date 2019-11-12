@@ -12,5 +12,5 @@ public class ArtifiLotteryQueryParamV2 {
 	@NotEmpty
 	private Integer type; //0自动刷新  1按钮手动刷新
 	@ApiModelProperty(value="每日赛事值为5")
-	private Integer appCode;
+	private Integer appCode; 
 }
