@@ -47,6 +47,8 @@
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.0.4" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.8.11" level="project" />
     <orderEntry type="library" name="Maven: com.belerweb:pinyin4j:2.5.0" level="project" />
+    <orderEntry type="library" name="Maven: com.getsentry.raven:raven-logback:8.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.getsentry.raven:raven:8.0.2" level="project" />
     <orderEntry type="library" name="Maven: io.swagger:swagger-annotations:1.5.10" level="project" />
     <orderEntry type="library" name="Maven: com.dl:lotto-api:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.dl:order-api:1.0-SNAPSHOT" level="project" />

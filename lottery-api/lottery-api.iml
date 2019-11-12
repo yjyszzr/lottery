@@ -27,8 +27,6 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.8.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-logging:1.5.8.RELEASE" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.11" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.11" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jul-to-slf4j:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:log4j-over-slf4j:1.7.25" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.yaml:snakeyaml:1.17" level="project" />
@@ -113,6 +111,10 @@
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.8.11" level="project" />
     <orderEntry type="library" name="Maven: com.belerweb:pinyin4j:2.5.0" level="project" />
+    <orderEntry type="library" name="Maven: com.getsentry.raven:raven-logback:8.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.getsentry.raven:raven:8.0.2" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.11" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.11" level="project" />
     <orderEntry type="library" name="Maven: com.dl:member-api:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter-feign:1.3.5.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.cloud:spring-cloud-starter:1.2.4.RELEASE" level="project" />

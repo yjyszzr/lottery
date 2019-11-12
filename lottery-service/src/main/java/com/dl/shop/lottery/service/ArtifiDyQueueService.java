@@ -438,22 +438,34 @@ public class ArtifiDyQueueService{
 	 * 分单逻辑v2
 	 * @param mobile 当前用户手机号
 	 */
-	public synchronized void allocLotteryV2BySelect(String mobile) {
+	public synchronized void allocLotteryV2BySelect(String mobile,Integer pageSize) {
 		try {
 			logger.info("[allocLotteryV2BySelect]");
 			DyArtifiPrintDao dyArtifiDao = new DyArtifiPrintImple(dataBaseCfg);
 			List<DDyArtifiPrintEntity> rList = dyArtifiDao.listAll(mobile, 0);
 			logger.info("[allocLotteryV2BySelect]" + " rList.size:" + rList.size());
 			if (rList.size() <= 0) {
+				List<DlArtifiPrintLottery> allocList = new ArrayList<DlArtifiPrintLottery>();
 				List<DlArtifiPrintLottery> rSumList = new ArrayList<DlArtifiPrintLottery>();
-				if("13722300001".equals(mobile)) {//圣和店 老用户
-					logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
-					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser(); //老用户分配给01店铺
-//					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();//全部给01店铺
-				}else if("13722300002".equals(mobile)) {//航天城店 新用户
-					logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
-					rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser(); //新用户分配给02店铺
+				if(pageSize!=null && pageSize==5) {//单独app
+					if("13722300002".equals(mobile)) {//航天城店 新用户
+						logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
+						rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser(); //新用户分配给02店铺
+						allocList = allocLottery(dyArtifiDao, mobile, rSumList, 5);
+					}
+				}else {
+					if("13722300001".equals(mobile)) {//圣和店 老用户
+						logger.info("13722300001_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
+						rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByOldUser(); //老用户分配给01店铺
+//						rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();//全部给01店铺
+						allocList = allocLottery(dyArtifiDao, mobile, rSumList, QUEUE_SIZE);
+					}else if("13722300002".equals(mobile)) {//航天城店 新用户
+						logger.info("13722300002_allocLotteryV2BySelect查询分单情况:mobile="+mobile);
+						rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocByNewUser(); //新用户分配给02店铺
+						allocList = allocLottery(dyArtifiDao, mobile, rSumList, QUEUE_SIZE);
+					}
 				}
+				
 				//141手机号规则 
 				//			if("18182506141".equals(mobile)) {
 				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAlloc();
@@ -462,7 +474,6 @@ public class ArtifiDyQueueService{
 				//				rSumList = dlArtifiPrintMapper.listLotteryTodayUnAllocNoLotto();
 				//				logger.info("[allocLotteryV2]" + " 普通手机号分配:" + rSumList.size()+"个订单");
 				//			}
-				List<DlArtifiPrintLottery> allocList = allocLottery(dyArtifiDao, mobile, rSumList, QUEUE_SIZE);
 				logger.info("[allocLotteryV2BySelect]" + " 今日未分配订单个数:" + rSumList.size() + " 分配订单给:" + mobile + "订单个数:" + allocList.size());
 				//先批量进行更改订单状态
 
