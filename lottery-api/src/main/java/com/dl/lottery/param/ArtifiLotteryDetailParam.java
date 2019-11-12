@@ -14,6 +14,6 @@ public class ArtifiLotteryDetailParam {
 	@NotEmpty
 	private String orderSn;
 	
-	@ApiModelProperty(value="查询条数")
-	private Integer pageSize;
+	@ApiModelProperty(value="每日赛事值为5")
+	private Integer appCode;
 }

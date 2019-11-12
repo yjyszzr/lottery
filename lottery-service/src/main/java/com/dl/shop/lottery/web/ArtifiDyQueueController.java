@@ -155,7 +155,7 @@ public class ArtifiDyQueueController {
 	@PostMapping("/detail")
 	public BaseResult<?> queryDetail(@RequestBody ArtifiLotteryDetailParam pp){
 		Integer userId = SessionUtil.getUserId();
-		if(pp.getPageSize()!=null && pp.getPageSize()==5) {
+		if(pp.getAppCode()!=null && pp.getAppCode()==5) {
 			userId=470257;
 		}
 		UserIdRealParam userIdParams = new UserIdRealParam();
@@ -226,7 +226,7 @@ public class ArtifiDyQueueController {
 	public BaseResult<List<DDyArtifiPrintEntity>> queryOrderListV2(@RequestBody ArtifiLotteryQueryParamV2 param){
         List<DDyArtifiPrintEntity> rList = new ArrayList<>();
 		Integer userId = SessionUtil.getUserId();
-		if(param.getPageSize()!=null && param.getPageSize()==5) {
+		if(param.getAppCode()!=null && param.getAppCode()==5) {
 			userId=470257;
 		}
 		logger.info("[queryOrderList]" + " userId:" + userId);
@@ -272,7 +272,7 @@ public class ArtifiDyQueueController {
 //			}
 //			if(mobileList.contains("13722300001") && mobileList.contains("13722300002")) {//都包含说明两个出票用户同时在线
 //				logger.info("queryV2_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
-				artifiDyQueueService.allocLotteryV2BySelect(mobile,param.getPageSize());//新分单逻辑
+				artifiDyQueueService.allocLotteryV2BySelect(mobile,param.getAppCode());//新分单逻辑
 //			}else {
 //				logger.info("queryV1_allocLotteryV2BySelect查询分单情况：mobileList="+JSONUtils.valueToString(mobileList));
 //				artifiDyQueueService.allocLotteryV2(mobile);//老分单逻辑
@@ -345,7 +345,7 @@ public class ArtifiDyQueueController {
         }
 
 		Integer userId = SessionUtil.getUserId();
-		if(params.getPageSize()!=null && params.getPageSize()==5) {
+		if(params.getAppCode()!=null && params.getAppCode()==5) {
 			userId=470257;
 		}
 		UserIdRealParam userIdParams = new UserIdRealParam();

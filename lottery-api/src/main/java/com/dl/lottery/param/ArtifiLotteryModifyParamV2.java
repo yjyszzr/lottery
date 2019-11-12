@@ -20,6 +20,6 @@ public class ArtifiLotteryModifyParamV2 {
 	@ApiModelProperty(value="失败原因")
 	private String failMsg;
 	
-	@ApiModelProperty(value="查询条数")
-	private Integer pageSize;
+	@ApiModelProperty(value="每日赛事值为5")
+	private Integer appCode;
 }
