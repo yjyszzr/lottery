@@ -1,99 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<property name="LOG_DIR" value="/a/logs/app/lottery"/>
-	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
-		</encoder>
-	</appender>
+    <property name="LOG_DIR" value="/a/logs/app/lottery"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
+        </encoder>
+    </appender>
 
-	<appender name="rollingFileINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_DIR}/lottery-info.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/info/lottery-info.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
-		</filter>
-	</appender>
+    <appender name="rollingFileINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/lottery-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/info/lottery-info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
 
-	<appender name="rollingFileERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_DIR}/lottery-error.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOG_DIR}/error/lottery-error.%d{yyyy-MM-dd}.log</fileNamePattern>
-			<maxHistory>30</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>INFO</level>
-		</filter>
-	</appender>
+    <appender name="rollingFileERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/lottery-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/error/lottery-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%p] - %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
 
-	<!-- 测试环境，配置sentry用来收集日志-->
-	<appender name="sentry-dev" class="com.getsentry.raven.logback.SentryAppender">
-		<dsn>http://bb6df239739e48198bfaa30d449457a5:d910de8ddacc47fbbb0866e4bf37c29b@49.232.65.109:9000/13</dsn>
-		<tags>tag1:value1,tag2:value2</tags>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>WARN</level>
-		</filter>
-	</appender>
+    <!-- 测试环境，配置sentry用来收集日志-->
+    <appender name="sentry-dev" class="com.getsentry.raven.logback.SentryAppender">
+        <dsn>http://bb6df239739e48198bfaa30d449457a5:d910de8ddacc47fbbb0866e4bf37c29b@49.232.65.109:9000/13</dsn>
+        <tags>tag1:value1,tag2:value2</tags>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
 
-	<!-- 生产环境，配置sentry用来收集日志-->
-	<appender name="sentry-prod" class="com.getsentry.raven.logback.SentryAppender">
-		<dsn>http://9ca61d20eda7403890c366ff58f70345:af47457bc3d3448cbfab7672092ff132@49.232.65.109:9000/14</dsn>
-		<tags>tag1:value1,tag2:value2</tags>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>WARN</level>
-		</filter>
-	</appender>
+    <!-- 生产环境，配置sentry用来收集日志-->
+    <appender name="sentry-prod" class="com.getsentry.raven.logback.SentryAppender">
+        <dsn>http://9ca61d20eda7403890c366ff58f70345:af47457bc3d3448cbfab7672092ff132@49.232.65.109:9000/14</dsn>
+        <tags>tag1:value1,tag2:value2</tags>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
 
-	<!-- 生产环境228，配置sentry用来收集日志-->
-	<appender name="sentry-every" class="com.getsentry.raven.logback.SentryAppender">
-		<dsn>http://25a8dc949b9748c7ab02eb80c18ad0bf:1e452663507e4af68620d8024f3c3170@49.232.65.109:9000/32</dsn>
-		<tags>tag1:value1,tag2:value2</tags>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>WARN</level>
-		</filter>
-	</appender>
+    <!-- 生产环境228，配置sentry用来收集日志-->
+    <appender name="sentry-every" class="com.getsentry.raven.logback.SentryAppender">
+        <dsn>http://25a8dc949b9748c7ab02eb80c18ad0bf:1e452663507e4af68620d8024f3c3170@49.232.65.109:9000/32</dsn>
+        <tags>tag1:value1,tag2:value2</tags>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
 
-	<logger name="com.dl.shop.lottery" level="INFO"/>
-	<logger name="org.springframework" level="INFO"/>
-	<logger name="com.dl.base.mapper" level="INFO"/>
-	<logger name="com.alibaba.druid" level="WARN"/>
+    <logger name="com.dl.shop.lottery" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="com.dl.base.mapper" level="INFO"/>
+    <logger name="com.alibaba.druid" level="WARN"/>
 
-	<!-- 开发、测试环境日志配置-->
-	<springProfile name="dev">
-		<root level="info">
-			<appender-ref ref="console"/>
-			<appender-ref ref="rollingFileINFO"/>
-			<appender-ref ref="rollingFileERROR"/>
-			<appender-ref ref="sentry-dev"/>
-		</root>
-	</springProfile>
+    <!-- 开发、测试环境日志配置-->
+    <springProfile name="dev">
+        <root level="info">
+            <appender-ref ref="console"/>
+            <appender-ref ref="rollingFileINFO"/>
+            <appender-ref ref="rollingFileERROR"/>
+            <appender-ref ref="sentry-dev"/>
+        </root>
+    </springProfile>
 
-	<!-- 生产环境日志配置-->
-	<springProfile name="prod">
-		<root level="info">
-			<appender-ref ref="console"/>
-			<appender-ref ref="rollingFileINFO"/>
-			<appender-ref ref="rollingFileERROR"/>
-			<appender-ref ref="sentry-prod"/>
-		</root>
-	</springProfile>
+    <!-- 生产环境日志配置-->
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="console"/>
+            <appender-ref ref="rollingFileINFO"/>
+            <appender-ref ref="rollingFileERROR"/>
+            <appender-ref ref="sentry-prod"/>
+        </root>
+    </springProfile>
 
-	<!-- 生产环境日志配置228-->
-	<springProfile name="every">
-		<root level="info">
-			<appender-ref ref="console"/>
-			<appender-ref ref="rollingFileINFO"/>
-			<appender-ref ref="rollingFileERROR"/>
-			<appender-ref ref="sentry-every"/>
-		</root>
-	</springProfile>
+    <!-- 生产环境日志配置228-->
+    <springProfile name="every">
+        <root level="info">
+            <appender-ref ref="console"/>
+            <appender-ref ref="rollingFileINFO"/>
+            <appender-ref ref="rollingFileERROR"/>
+            <appender-ref ref="sentry-every"/>
+        </root>
+    </springProfile>
 </configuration>
