@@ -533,7 +533,7 @@ public class LotteryHallService {
 		return dlActivityDTO;
 	}
 
-	/**
+/**
 	 * 获取中奖信息列表
 	 * 
 	 * @return
@@ -567,43 +567,43 @@ public class LotteryHallService {
 					}
 				}
 			}else {
-				if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
-					log.info("球多多展示比赛信息");
-					List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
-					if (CollectionUtils.isNotEmpty(latestMatchs)) {
-						for (LotteryMatch match : latestMatchs) {
-							DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
-							String msg = match.getHomeTeamAbbr() +" VS " + match.getVisitingTeamAbbr() + " "+ DateUtil.toStringDateByFormat(match.getMatchTime(),"yyyy-MM-dd HH:mm");
-							dlWinningLogDTO.setWinningMsg(msg);
-							dlWinningLogDTOs.add(dlWinningLogDTO);
-						}
-					}
-				}else{
-					Condition condition = new Condition(LotteryWinningLogTemp.class);
-					condition.createCriteria().andCondition("is_show=", 1);
-					List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
-	
-					if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
-						for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
-							DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
-							String phone = winningLog.getPhone();
-							log.info("phone========{},{}", phone, org.apache.commons.lang3.StringUtils.isBlank(phone));
-							if (org.apache.commons.lang3.StringUtils.isBlank(phone)) {
-								continue;
-							}
-							log.info("winningLog========{}", winningLog);
-							phone = phone.substring(0, 3) + "****" + phone.substring(7);
-							dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
-	//						问题二：大厅页跑马灯文案模拟字样去掉
-							log.info("appCodeNameStr======{}", appCodeNameStr);
-							if ("11".equals(appCodeNameStr)) { //圣和彩店
-								dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
-							}
-							dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
-							dlWinningLogDTOs.add(dlWinningLogDTO);
-						}
-					}
-				}
+//				if(("android".equals(plat) && channel.compareTo("c28000") >= 0) || ("iphone".equals(plat) && channel.compareTo("c30000") >= 0) || ("h5".equals(plat) && version.compareTo("2.1.1") > 0)){
+                log.info("球多多展示比赛信息");
+                List<LotteryMatch> latestMatchs = lotteryMatchService .queryLatest3Match();
+                if (CollectionUtils.isNotEmpty(latestMatchs)) {
+                    for (LotteryMatch match : latestMatchs) {
+                        DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+                        String msg = match.getHomeTeamAbbr() +" VS " + match.getVisitingTeamAbbr() + " "+ DateUtil.toStringDateByFormat(match.getMatchTime(),"yyyy-MM-dd HH:mm");
+                        dlWinningLogDTO.setWinningMsg(msg);
+                        dlWinningLogDTOs.add(dlWinningLogDTO);
+                    }
+                }
+//				}else{
+//					Condition condition = new Condition(LotteryWinningLogTemp.class);
+//					condition.createCriteria().andCondition("is_show=", 1);
+//					List<LotteryWinningLogTemp> lotteryWinningLogTemps = lotteryWinningLogTempMapper.selectByCondition(condition);
+//
+//					if (CollectionUtils.isNotEmpty(lotteryWinningLogTemps)) {
+//						for (LotteryWinningLogTemp winningLog : lotteryWinningLogTemps) {
+//							DlWinningLogDTO dlWinningLogDTO = new DlWinningLogDTO();
+//							String phone = winningLog.getPhone();
+//							log.info("phone========{},{}", phone, org.apache.commons.lang3.StringUtils.isBlank(phone));
+//							if (org.apache.commons.lang3.StringUtils.isBlank(phone)) {
+//								continue;
+//							}
+//							log.info("winningLog========{}", winningLog);
+//							phone = phone.substring(0, 3) + "****" + phone.substring(7);
+//							dlWinningLogDTO.setWinningMsg(MessageFormat.format(ProjectConstant.FORMAT_WINNING_MSG, phone));
+//	//						问题二：大厅页跑马灯文案模拟字样去掉
+//							log.info("appCodeNameStr======{}", appCodeNameStr);
+//							if ("11".equals(appCodeNameStr)) { //圣和彩店
+//								dlWinningLogDTO.setWinningMsg(dlWinningLogDTO.getWinningMsg()!=null?dlWinningLogDTO.getWinningMsg().replaceAll("模拟", ""):"");
+//							}
+//							dlWinningLogDTO.setWinningMoney(winningLog.getWinningMoney().toString());
+//							dlWinningLogDTOs.add(dlWinningLogDTO);
+//						}
+//					}
+//				}
 			}
 		}else{
 			Condition condition = new Condition(LotteryWinningLogTemp.class);
