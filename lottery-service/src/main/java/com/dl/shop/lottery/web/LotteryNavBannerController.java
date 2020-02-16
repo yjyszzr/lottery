@@ -255,7 +255,7 @@ public class LotteryNavBannerController {
             		UpdateAppParam updateAppParam = new UpdateAppParam();
             		updateAppParam.setChannel(userDevice.getChannel());
             		updateAppParam.setVersion(userDevice.getAppv());
-            		BaseResult<Integer> dLAppUpdateLog = iDeviceControlService.queryUpdateAppI(updateAppParam);
+            		BaseResult<Integer> dLAppUpdateLog = null;//iDeviceControlService.queryUpdateAppI(updateAppParam);
             		if(dLAppUpdateLog!=null && dLAppUpdateLog.getData()==0) {//有新版本升级
             			dto = new DlBannerPicDTO();
                         dto.setBannerName(navBanner.getBannerName());
