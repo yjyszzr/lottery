@@ -78,8 +78,7 @@ import com.dl.shop.lottery.model.LotteryReward;
 import com.dl.shop.lottery.model.PeriodReward;
 import com.dl.shop.lottery.model.PeriodRewardDetail;
 import com.google.common.base.Joiner;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.PreparedStatement;
+
 
 import lombok.extern.slf4j.Slf4j;
 import tk.mybatis.mapper.entity.Condition;
