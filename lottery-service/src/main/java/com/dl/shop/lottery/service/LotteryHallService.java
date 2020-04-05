@@ -18,7 +18,7 @@ import com.dl.lottery.dto.DlPlayClassifyDTO.DlPlayTitleDTO;
 import com.dl.lottery.dto.DlPlayClassifyDetailDTO;
 import com.dl.lottery.param.DlPlayClassifyParam;
 import com.dl.lottery.param.HallParam;
-import com.dl.lotto.api.ISuperLottoService;
+// import com.dl.lotto.api.ISuperLottoService;
 import com.dl.lotto.dto.LottoDTO;
 import com.dl.member.api.ISwitchConfigService;
 import com.dl.member.api.ISysConfigService;
@@ -73,8 +73,8 @@ public class LotteryHallService {
 	@Resource
 	private IUserService userService;
 	
-	@Resource
-	private	ISuperLottoService iSuperLottoService;
+// 	@Resource
+// 	private	ISuperLottoService iSuperLottoService;
 	
 	@Resource
 	private ISwitchConfigService  iSwitchConfigService;
@@ -180,15 +180,16 @@ public class LotteryHallService {
     }
 	
 	public String  queryLatestLottoPrizes() {
-		String prizes = "";
-		EmptyParam emptyParam = new EmptyParam();
-		emptyParam.setEmptyStr("");
-		BaseResult<LottoDTO> lottoDtoRst = iSuperLottoService.queryLottoLatestPrizes(emptyParam);
-		if(0 != lottoDtoRst.getCode()) {
-			return prizes;
-		}
-		LottoDTO lottoDTO = lottoDtoRst.getData();
-		return lottoDTO.getPrizes();
+// 		String prizes = "";
+// 		EmptyParam emptyParam = new EmptyParam();
+// 		emptyParam.setEmptyStr("");
+// 		BaseResult<LottoDTO> lottoDtoRst = iSuperLottoService.queryLottoLatestPrizes(emptyParam);
+// 		if(0 != lottoDtoRst.getCode()) {
+// 			return prizes;
+// 		}
+// 		LottoDTO lottoDTO = lottoDtoRst.getData();
+// 		return lottoDTO.getPrizes();
+		return "";
 	}
 	
 	/**
